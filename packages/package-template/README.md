@@ -1,1 +1,1 @@
-# @ulthar/template
+# @ulthar/package-template

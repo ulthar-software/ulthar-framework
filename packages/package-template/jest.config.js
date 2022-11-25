@@ -1,16 +1,18 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
-    preset: "ts-jest",
-    testEnvironment: "node",
+export default {
+    preset: "ts-jest/presets/js-with-ts-esm",
+    passWithNoTests: true,
+    collectCoverageFrom: ["src/**/*.ts", "!src/**/*.spec.ts"],
+    moduleNameMapper: {
+        "^(\\.{1,2}/.*)\\.js$": "$1",
+    },
     collectCoverage: true,
-    jest: {
-        transform: {
-            "^.+\\.tsx?$": [
-                "ts-jest",
-                {
-                    tsconfig: "tsconfig.spec.json",
-                },
-            ],
-        },
+    transform: {
+        "^.+\\.tsx?$": [
+            "ts-jest",
+            {
+                useESM: true,
+            },
+        ],
     },
 };
