@@ -996,9 +996,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/template@workspace:packages/template":
+"@ulthar/package-template@workspace:packages/package-template":
   version: 0.0.0-use.local
-  resolution: "@ulthar/template@workspace:packages/template"
+  resolution: "@ulthar/package-template@workspace:packages/package-template"
   dependencies:
     "@types/jest": ^29.2.3
     jest: ^29.3.1

@@ -4,5 +4,6 @@
         "noEmit": false,
         "outDir": "dist"
     },
+    "files": ["src/index.ts"],
     "exclude": ["**/*.spec.ts"]
 }
