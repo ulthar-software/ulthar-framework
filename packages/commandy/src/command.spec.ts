@@ -1,18 +1,16 @@
 import { Command } from "./command";
-import { CommandOptions } from "./command-config";
 
 describe("Command", () => {
     it("should parse and execute a simple command given a simple configuration", () => {
         const fn = jest.fn();
-        const commandConfig = {
+        const command = new Command({
             name: "test-command",
             handler: fn,
-        };
-        const command = new Command(commandConfig);
+        });
         command.run([]);
         expect(fn).toHaveBeenCalledWith({});
     });
-    it("should parse a command given configuration with an argument", () => {
+    it("should parse a command given a configuration with an argument", () => {
         const fn = jest.fn();
         const command = new Command({
             name: "test-command",
@@ -28,5 +26,101 @@ describe("Command", () => {
         expect(fn).toHaveBeenCalledWith({
             "test-arg": "banana",
         });
+    });
+
+    it("should throw while parsing a command given less arguments than configured", () => {
+        const fn = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            handler: fn,
+            args: [
+                {
+                    name: "test-arg",
+                    type: "string",
+                },
+            ],
+        });
+        expect(() => {
+            command.run([]);
+        }).toThrow();
+        expect(fn).not.toHaveBeenCalled();
+    });
+
+    it("should throw while parsing a command given more arguments than configured", () => {
+        const fn = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            handler: fn,
+            args: [],
+        });
+        expect(() => {
+            command.run(["banana"]);
+        }).toThrow();
+        expect(fn).not.toHaveBeenCalled();
+    });
+
+    it("should parse a command argument type when it is a number", () => {
+        const fn = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            handler: fn,
+            args: [
+                {
+                    name: "test-arg",
+                    type: "number",
+                },
+            ],
+        });
+        command.run(["15"]);
+        expect(fn).toHaveBeenCalledWith({
+            "test-arg": 15,
+        });
+        expect(() => {
+            command.run(["banana"]);
+        }).toThrow();
+    });
+
+    it("should parse a command argument when it has options", () => {
+        const fn = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            handler: fn,
+            args: [
+                {
+                    name: "test-arg",
+                    type: "string",
+                    options: ["one", "two", "three"],
+                },
+            ],
+        });
+        command.run(["one"]);
+        expect(fn).toHaveBeenCalledWith({
+            "test-arg": "one",
+        });
+        expect(() => {
+            command.run(["four"]);
+        }).toThrow();
+    });
+
+    it("should parse a command argument of type number when it has options", () => {
+        const fn = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            handler: fn,
+            args: [
+                {
+                    name: "test-arg",
+                    type: "number",
+                    options: [12, 13, 14],
+                },
+            ],
+        });
+        command.run(["12"]);
+        expect(fn).toHaveBeenCalledWith({
+            "test-arg": 12,
+        });
+        expect(() => {
+            command.run(["16"]);
+        }).toThrow();
     });
 });

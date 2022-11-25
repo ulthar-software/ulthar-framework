@@ -1,8 +1,8 @@
-import { MaybePromise } from "@ulthar/typey";
 import { ArgumentOptions } from "./argument-options";
+import { CommandHandler } from "./command-handler";
 
 export interface CommandOptions {
     name: string;
-    handler: (args: Record<string, any>) => MaybePromise<void>;
+    handler: CommandHandler;
     args?: ArgumentOptions[];
 }

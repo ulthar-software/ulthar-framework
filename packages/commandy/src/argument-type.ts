@@ -1,1 +1,1 @@
-export type ArgumentType = "string";
+export type ArgumentType = "string" | "number";
