@@ -13,6 +13,7 @@
         "test": "jest"
     },
     "dependencies": {
+        "@ulthar/asserty": "workspace:^",
         "@ulthar/typey": "workspace:^"
     }
 }

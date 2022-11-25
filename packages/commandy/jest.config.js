@@ -8,7 +8,7 @@ export default {
     },
     collectCoverage: true,
     transform: {
-        "^.+\\.tsx?$": [
+        "^.+\\.[tj]sx?$": [
             "ts-jest",
             {
                 useESM: true,
