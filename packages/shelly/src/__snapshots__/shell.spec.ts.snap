@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`shell should call a shell command and resolve with its output when it's done 1`] = `
+"total 36
+drwxr-xr-x 4 piarrot piarrot 4096 Dec 10 13:46 .
+drwxr-xr-x 8 piarrot piarrot 4096 Dec 10 13:42 ..
+drwxr-xr-x 3 piarrot piarrot 4096 Dec 10 13:46 coverage
+-rw-r--r-- 1 piarrot piarrot  451 Dec 10 13:42 jest.config.js
+-rw-r--r-- 1 piarrot piarrot  451 Dec 10 13:49 package.json
+-rw-r--r-- 1 piarrot piarrot   17 Dec 10 13:42 README.md
+drwxr-xr-x 3 piarrot piarrot 4096 Dec 10 13:47 src
+-rw-r--r-- 1 piarrot piarrot   73 Dec 10 13:42 tsconfig.json
+-rw-r--r-- 1 piarrot piarrot  183 Dec 10 13:42 tsconfig.lib.json
+"
+`;
+
+exports[`shell should reject with the error and the stderr 1`] = `
+"/bin/sh: line 1: command-not-found: command not found
+"
+`;
