@@ -1,0 +1,23 @@
+{
+    "name": "@ulthar/cli",
+    "packageManager": "yarn@3.3.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "bin": "dist/index.js",
+    "devDependencies": {
+        "@types/jest": "^29.2.3",
+        "@types/node": "^18.11.12",
+        "jest": "^29.3.1",
+        "ts-jest": "^29.0.3",
+        "typescript": "^4.9.3"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.lib.json",
+        "test": "jest"
+    },
+    "dependencies": {
+        "@ulthar/commandy": "workspace:^",
+        "@ulthar/shelly": "workspace:^"
+    }
+}
