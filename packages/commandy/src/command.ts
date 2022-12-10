@@ -1,5 +1,5 @@
 import { assert } from "@ulthar/asserty";
-import { CommandOptions } from "./command-config";
+import { CommandOptions } from "./command-options";
 import { CommandHandler } from "./command-handler";
 import { Argument } from "./argument";
 
@@ -8,11 +8,11 @@ export class Command {
     private handler: CommandHandler;
     private argOptions: Argument[];
 
-    constructor(config: CommandOptions) {
-        this._name = config.name;
-        this.handler = config.handler;
-        this.argOptions = config.args
-            ? config.args.map((opts) => new Argument(opts))
+    constructor(opts: CommandOptions) {
+        this._name = opts.name;
+        this.handler = opts.handler;
+        this.argOptions = opts.args
+            ? opts.args.map((opts) => new Argument(opts))
             : [];
     }
 
