@@ -2,7 +2,7 @@ import { shell } from "./shell";
 
 describe("shell", () => {
     it("should call a shell command and resolve with its output when it's done", async () => {
-        const result = await shell("ls -al");
+        const result = await shell("ls");
 
         expect(result).toMatchSnapshot();
     });
