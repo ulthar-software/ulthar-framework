@@ -28,6 +28,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/commandy"\
       },\
       {\
+        "name": "@ulthar/deppy",\
+        "reference": "workspace:packages/deppy"\
+      },\
+      {\
         "name": "@ulthar/package-template",\
         "reference": "workspace:packages/package-template"\
       },\
@@ -46,6 +50,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@ulthar/asserty", ["workspace:packages/asserty"]],\
       ["@ulthar/cli", ["workspace:packages/cli"]],\
       ["@ulthar/commandy", ["workspace:packages/commandy"]],\
+      ["@ulthar/deppy", ["workspace:packages/deppy"]],\
       ["@ulthar/package-template", ["workspace:packages/package-template"]],\
       ["@ulthar/shelly", ["workspace:packages/shelly"]],\
       ["@ulthar/typey", ["workspace:packages/typey"]],\
@@ -1554,6 +1559,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.11.9"],\
             ["@ulthar/asserty", "workspace:packages/asserty"],\
             ["@ulthar/typey", "workspace:packages/typey"],\
+            ["jest", "virtual:3d0657ea13e0a1a86159b809e5ea71fddd673d99a8cc9b78cc151e9a29dd748a0a7fccbcb34fc38db01b74a17f3526b788c3de04ead2f25cbc8a031b98498cd3#npm:29.3.1"],\
+            ["ts-jest", "virtual:3d0657ea13e0a1a86159b809e5ea71fddd673d99a8cc9b78cc151e9a29dd748a0a7fccbcb34fc38db01b74a17f3526b788c3de04ead2f25cbc8a031b98498cd3#npm:29.0.3"],\
+            ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@ulthar/deppy", [\
+        ["workspace:packages/deppy", {\
+          "packageLocation": "./packages/deppy/",\
+          "packageDependencies": [\
+            ["@ulthar/deppy", "workspace:packages/deppy"],\
+            ["@types/jest", "npm:29.2.3"],\
             ["jest", "virtual:3d0657ea13e0a1a86159b809e5ea71fddd673d99a8cc9b78cc151e9a29dd748a0a7fccbcb34fc38db01b74a17f3526b788c3de04ead2f25cbc8a031b98498cd3#npm:29.3.1"],\
             ["ts-jest", "virtual:3d0657ea13e0a1a86159b809e5ea71fddd673d99a8cc9b78cc151e9a29dd748a0a7fccbcb34fc38db01b74a17f3526b788c3de04ead2f25cbc8a031b98498cd3#npm:29.0.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
