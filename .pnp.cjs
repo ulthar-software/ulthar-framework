@@ -1550,6 +1550,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@ulthar/commandy", "workspace:packages/commandy"],\
             ["@types/jest", "npm:29.2.3"],\
+            ["@types/node", "npm:18.11.9"],\
             ["@ulthar/asserty", "workspace:packages/asserty"],\
             ["@ulthar/typey", "workspace:packages/typey"],\
             ["jest", "virtual:3d0657ea13e0a1a86159b809e5ea71fddd673d99a8cc9b78cc151e9a29dd748a0a7fccbcb34fc38db01b74a17f3526b788c3de04ead2f25cbc8a031b98498cd3#npm:29.3.1"],\

@@ -1,5 +1,5 @@
 import { assert } from "@ulthar/asserty";
-import { ArgumentOptions } from "./argument-options";
+import { ArgumentOptions } from "./argument-options.js";
 
 export type ArgumentParser = (value: string) => any;
 

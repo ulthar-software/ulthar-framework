@@ -1,5 +1,5 @@
-import { Program } from "./program";
-import { ProgramOptions } from "./program-options";
+import { Program } from "./program.js";
+import { ProgramOptions } from "./program-options.js";
 
 export function createCLI(opts: ProgramOptions): Program {
     return new Program(opts);

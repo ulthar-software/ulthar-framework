@@ -1,1 +1,1 @@
-export * from "./create-cli";
+export * from "./create-cli.js";

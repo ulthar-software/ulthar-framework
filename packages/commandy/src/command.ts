@@ -1,7 +1,7 @@
 import { assert } from "@ulthar/asserty";
-import { CommandOptions } from "./command-options";
-import { CommandHandler } from "./command-handler";
-import { Argument } from "./argument";
+import { CommandOptions } from "./command-options.js";
+import { CommandHandler } from "./command-handler.js";
+import { Argument } from "./argument.js";
 
 export class Command {
     private _name: string;

@@ -1,4 +1,4 @@
-import { Command } from "./command";
+import { Command } from "./command.js";
 
 describe("Command", () => {
     it("should parse and execute a simple command given a simple configuration", () => {

@@ -1023,6 +1023,7 @@ __metadata:
   resolution: "@ulthar/commandy@workspace:packages/commandy"
   dependencies:
     "@types/jest": ^29.2.3
+    "@types/node": "npm:*"
     "@ulthar/asserty": "workspace:^"
     "@ulthar/typey": "workspace:^"
     jest: ^29.3.1

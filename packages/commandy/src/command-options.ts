@@ -1,5 +1,5 @@
-import { ArgumentOptions } from "./argument-options";
-import { CommandHandler } from "./command-handler";
+import { ArgumentOptions } from "./argument-options.js";
+import { CommandHandler } from "./command-handler.js";
 
 export interface CommandOptions {
     name: string;
