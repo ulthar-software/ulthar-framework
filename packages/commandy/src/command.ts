@@ -1,7 +1,8 @@
-import { assert } from "@ulthar/asserty";
+import {} from "@ulthar/blamey";
 import { CommandOptions } from "./command-options.js";
 import { CommandHandler } from "./command-handler.js";
 import { Argument } from "./argument.js";
+import { errors } from "./errors.js";
 
 export class Command {
     private _name: string;
@@ -18,9 +19,9 @@ export class Command {
 
     run(argv: string[]) {
         const args: Record<string, any> = {};
-        assert(
+        errors.assert(
             argv.length === this.argOptions.length,
-            "Incorrect number of arguments"
+            "INVALID_ARGUMENTS"
         );
         this.argOptions.forEach((arg, i) => {
             args[arg.name] = arg.parse(argv[i]);
