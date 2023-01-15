@@ -1,5 +1,5 @@
-import { assert } from "@ulthar/asserty";
 import { ArgumentOptions } from "./argument-options.js";
+import { errors } from "./errors.js";
 
 export type ArgumentParser = (value: string) => any;
 
@@ -12,7 +12,10 @@ export class Argument {
 
     private assertValidOption(value: any) {
         if (this.options.length > 0) {
-            assert(this.options.includes(value), "Value is not an option");
+            errors.assert(this.options.includes(value), "INVALID_OPTION", {
+                value,
+                options: this.options.join(", "),
+            });
         }
     }
 

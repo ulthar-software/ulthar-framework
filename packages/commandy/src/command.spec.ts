@@ -1,4 +1,5 @@
 import { Command } from "./command.js";
+import { errors } from "./errors.js";
 
 describe("Command", () => {
     it("should parse and execute a simple command given a simple configuration", () => {
@@ -75,6 +76,11 @@ describe("Command", () => {
         });
         expect(() => {
             command.run(["four"]);
-        }).toThrow();
+        }).toThrow(
+            errors.render("INVALID_OPTION", {
+                value: "four",
+                options: ["one", "two", "three"].join(", "),
+            })
+        );
     });
 });

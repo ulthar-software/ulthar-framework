@@ -1,5 +1,5 @@
 {
-    "name": "@ulthar/asserty",
+    "name": "@ulthar/blamey",
     "packageManager": "yarn@3.3.0",
     "private": true,
     "type": "module",
@@ -13,5 +13,9 @@
     "scripts": {
         "build": "tsc -p tsconfig.lib.json",
         "test": "jest"
+    },
+    "dependencies": {
+        "@ulthar/temply": "workspace:^",
+        "@ulthar/typey": "workspace:^"
     }
 }
