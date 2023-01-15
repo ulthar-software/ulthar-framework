@@ -18,7 +18,7 @@ export class ErrorContainer<ErrorMap extends Record<string, ErrorTemplate>> {
         errorKey: ErrorKey,
         context?: Record<string, unknown>
     ) {
-        throw this.map[errorKey].render(<string>errorKey, context);
+        throw this.render(errorKey, context);
     }
 
     is<ErrorKey extends keyof ErrorMap>(
