@@ -4,6 +4,7 @@ import { createCLI } from "@ulthar/commandy";
 import { shell } from "@ulthar/shelly";
 
 createCLI({
+    name: "cli",
     commands: [
         {
             name: "new",

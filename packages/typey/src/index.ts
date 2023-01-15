@@ -1,1 +1,1 @@
-export * from "./maybe-promise";
+export * from "./maybe-promise.js";
