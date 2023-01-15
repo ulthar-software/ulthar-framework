@@ -1,5 +1,6 @@
 export * from "./types/maybe-promise.js";
 export * from "./types/typeof-class.js";
+export * from "./types/object-key-map.js";
 
 export * from "./time/milliseconds.js";
 
