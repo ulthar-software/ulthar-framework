@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createCLI } from "@ulthar/commandy";
-import { shell } from "@ulthar/shelly";
+import { $ } from "@ulthar/shelly";
 
 createCLI({
     name: "cli",
@@ -14,17 +14,58 @@ createCLI({
                 },
             ],
             handler: async ({ packageName }) => {
-                await shell(`yarn packages/${packageName} init`);
-                await shell(
-                    `cp packages/package-template/* packages/${packageName} -r`
+                await $([`yarn`, `packages/${packageName}`, `init`]);
+                await $([
+                    "cp",
+                    "-r",
+                    "packages/package-template/*",
+                    `packages/${packageName}`,
+                ]);
+                await $([
+                    "sed -i",
+                    `s/package-template/${packageName}/g`,
+                    `packages/${packageName}/README.md`,
+                ]);
+                await $([
+                    "sed -i",
+                    `s/package-template/${packageName}/g`,
+                    `packages/${packageName}/package.json`,
+                ]);
+                await $([`yarn`, `install`]);
+            },
+        },
+        {
+            name: "build",
+            handler: async () => {
+                await $(
+                    [
+                        "yarn",
+                        "workspaces foreach",
+                        `--exclude @ulthar/package-template`,
+                        "run",
+                        "build",
+                    ],
+                    {
+                        pipeToStdout: true,
+                    }
                 );
-                await shell(
-                    `sed -i "s/package-template/${packageName}/g" packages/${packageName}/README.md`
+            },
+        },
+        {
+            name: "test",
+            handler: async () => {
+                await $(
+                    [
+                        "yarn",
+                        "workspaces foreach",
+                        `--exclude @ulthar/package-template`,
+                        "run",
+                        "test",
+                    ],
+                    {
+                        pipeToStdout: true,
+                    }
                 );
-                await shell(
-                    `sed -i "s/package-template/${packageName}/g" packages/${packageName}/package.json`
-                );
-                await shell(`yarn install`);
             },
         },
     ],

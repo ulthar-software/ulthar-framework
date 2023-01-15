@@ -13,7 +13,7 @@
         "typescript": "^4.9.3"
     },
     "scripts": {
-        "build": "yarn workspaces foreach run build",
-        "test": "yarn workspaces foreach run test"
+        "build": "cli build",
+        "test": "cli test"
     }
 }
