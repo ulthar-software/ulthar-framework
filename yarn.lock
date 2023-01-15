@@ -1002,7 +1002,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/cli@workspace:packages/cli":
+"@ulthar/cli@workspace:^, @ulthar/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@ulthar/cli@workspace:packages/cli"
   dependencies:
@@ -1072,6 +1072,7 @@ __metadata:
   dependencies:
     "@types/eslint": ^8
     "@types/prettier": ^2
+    "@ulthar/cli": "workspace:^"
     eslint: ^8.28.0
     prettier: ^2.8.0
     typescript: ^4.9.3
