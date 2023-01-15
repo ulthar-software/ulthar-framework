@@ -72,7 +72,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/prettier", "npm:2.7.1"],\
             ["@ulthar/cli", "workspace:packages/cli"],\
             ["eslint", "npm:8.28.0"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["prettier", "npm:2.8.0"],\
+            ["ts-jest", "virtual:71788661bf17ba8507f75ee38a66960f4acad6e5bfd8813953d6720c3054b0214e276919bff87b9fa33d0b0232b02f0e4f551494f4adb29e324ad7641152ae89#npm:29.0.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
           ],\
           "linkType": "SOFT"\
@@ -1649,7 +1651,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/prettier", "npm:2.7.1"],\
             ["@ulthar/cli", "workspace:packages/cli"],\
             ["eslint", "npm:8.28.0"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["prettier", "npm:2.8.0"],\
+            ["ts-jest", "virtual:71788661bf17ba8507f75ee38a66960f4acad6e5bfd8813953d6720c3054b0214e276919bff87b9fa33d0b0232b02f0e4f551494f4adb29e324ad7641152ae89#npm:29.0.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
           ],\
           "linkType": "SOFT"\
@@ -5059,6 +5063,47 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-jest", "npm:29.0.3"]\
           ],\
           "linkType": "SOFT"\
+        }],\
+        ["virtual:71788661bf17ba8507f75ee38a66960f4acad6e5bfd8813953d6720c3054b0214e276919bff87b9fa33d0b0232b02f0e4f551494f4adb29e324ad7641152ae89#npm:29.0.3", {\
+          "packageLocation": "./.yarn/__virtual__/ts-jest-virtual-502575d2f8/4/.yarn/berry/cache/ts-jest-npm-29.0.3-c1e6bc8a8a-8.zip/node_modules/ts-jest/",\
+          "packageDependencies": [\
+            ["ts-jest", "virtual:71788661bf17ba8507f75ee38a66960f4acad6e5bfd8813953d6720c3054b0214e276919bff87b9fa33d0b0232b02f0e4f551494f4adb29e324ad7641152ae89#npm:29.0.3"],\
+            ["@babel/core", null],\
+            ["@jest/types", null],\
+            ["@types/babel-jest", null],\
+            ["@types/babel__core", null],\
+            ["@types/esbuild", null],\
+            ["@types/jest", null],\
+            ["@types/jest__types", null],\
+            ["@types/typescript", null],\
+            ["babel-jest", null],\
+            ["bs-logger", "npm:0.2.6"],\
+            ["esbuild", null],\
+            ["fast-json-stable-stringify", "npm:2.1.0"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
+            ["jest-util", "npm:29.3.1"],\
+            ["json5", "npm:2.2.1"],\
+            ["lodash.memoize", "npm:4.1.2"],\
+            ["make-error", "npm:1.3.6"],\
+            ["semver", "npm:7.3.8"],\
+            ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"],\
+            ["yargs-parser", "npm:21.1.1"]\
+          ],\
+          "packagePeers": [\
+            "@babel/core",\
+            "@jest/types",\
+            "@types/babel-jest",\
+            "@types/babel__core",\
+            "@types/esbuild",\
+            "@types/jest",\
+            "@types/jest__types",\
+            "@types/typescript",\
+            "babel-jest",\
+            "esbuild",\
+            "jest",\
+            "typescript"\
+          ],\
+          "linkType": "HARD"\
         }],\
         ["virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3", {\
           "packageLocation": "./.yarn/__virtual__/ts-jest-virtual-e2bd188496/4/.yarn/berry/cache/ts-jest-npm-29.0.3-c1e6bc8a8a-8.zip/node_modules/ts-jest/",\

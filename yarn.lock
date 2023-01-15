@@ -1099,7 +1099,9 @@ __metadata:
     "@types/prettier": ^2
     "@ulthar/cli": "workspace:^"
     eslint: ^8.28.0
+    jest: "npm:^29.3.1"
     prettier: ^2.8.0
+    ts-jest: "npm:^29.0.3"
     typescript: ^4.9.3
   languageName: unknown
   linkType: soft
