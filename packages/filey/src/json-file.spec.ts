@@ -69,6 +69,7 @@ describe("JSON File", () => {
         await file.write(content);
         expect(await file.exists()).toBe(true);
         expect(await file.read()).toEqual(content);
+        await file.delete();
     });
 
     it("should delete a file", async () => {
