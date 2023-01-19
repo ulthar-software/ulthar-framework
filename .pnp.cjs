@@ -32,6 +32,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/deppy"\
       },\
       {\
+        "name": "@ulthar/filey",\
+        "reference": "workspace:packages/filey"\
+      },\
+      {\
         "name": "@ulthar/package-template",\
         "reference": "workspace:packages/package-template"\
       },\
@@ -55,6 +59,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@ulthar/cli", ["workspace:packages/cli"]],\
       ["@ulthar/commandy", ["workspace:packages/commandy"]],\
       ["@ulthar/deppy", ["workspace:packages/deppy"]],\
+      ["@ulthar/filey", ["workspace:packages/filey"]],\
       ["@ulthar/package-template", ["workspace:packages/package-template"]],\
       ["@ulthar/shelly", ["workspace:packages/shelly"]],\
       ["@ulthar/temply", ["workspace:packages/temply"]],\
@@ -1565,7 +1570,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@ulthar/commandy", "workspace:packages/commandy"],\
             ["@types/jest", "npm:29.2.3"],\
-            ["@types/node", "npm:18.11.9"],\
+            ["@types/node", "npm:18.11.12"],\
             ["@ulthar/blamey", "workspace:packages/blamey"],\
             ["@ulthar/typey", "workspace:packages/typey"],\
             ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
@@ -1582,6 +1587,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ulthar/deppy", "workspace:packages/deppy"],\
             ["@types/jest", "npm:29.2.3"],\
             ["@ulthar/typey", "workspace:packages/typey"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
+            ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
+            ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@ulthar/filey", [\
+        ["workspace:packages/filey", {\
+          "packageLocation": "./packages/filey/",\
+          "packageDependencies": [\
+            ["@ulthar/filey", "workspace:packages/filey"],\
+            ["@types/jest", "npm:29.2.3"],\
+            ["@types/node", "npm:18.11.12"],\
+            ["@ulthar/blamey", "workspace:packages/blamey"],\
             ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
