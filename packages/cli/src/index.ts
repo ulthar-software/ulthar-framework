@@ -42,7 +42,6 @@ createCLI({
                         "yarn",
                         "workspaces foreach",
                         `--exclude @ulthar/package-template`,
-                        "--colors",
                         "-tpv",
                         "run",
                         "build",
@@ -56,7 +55,7 @@ createCLI({
         {
             name: "test",
             handler: async () => {
-                await $(["yarn", "jest", "--verbose", "--colors"], {
+                await $(["yarn", "jest", "--verbose"], {
                     pipeToStdout: true,
                 });
             },

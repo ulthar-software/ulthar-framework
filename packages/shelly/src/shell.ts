@@ -10,13 +10,16 @@ export function shell(command: string[], opts: ShellOptions = {}) {
     const streamToPipe = opts.streamToPipe ?? process.stdout;
     return new Promise<string>((resolve, reject) => {
         const parsedCommand = command.join(" ");
+        const env = {
+            ...process.env,
+        };
+        if (pipeToStdout) {
+            env.FORCE_COLOR = "1";
+        }
         const child = exec(
             parsedCommand,
             {
-                env: {
-                    ...process.env,
-                    FORCE_COLOR: "1",
-                },
+                env,
             },
             (error, stdout, stderr) => {
                 if (error) {
