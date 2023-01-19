@@ -19,10 +19,10 @@ export class Command {
 
     run(argv: string[]) {
         const args: Record<string, any> = {};
-        errors.assert(
-            argv.length === this.argOptions.length,
-            "INVALID_ARGUMENTS"
-        );
+        errors
+            .assert(argv.length === this.argOptions.length)
+            .orThrow("INVALID_ARGUMENTS");
+
         this.argOptions.forEach((arg, i) => {
             args[arg.name] = arg.parse(argv[i]);
         });

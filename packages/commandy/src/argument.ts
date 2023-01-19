@@ -12,10 +12,12 @@ export class Argument {
 
     private assertValidOption(value: any) {
         if (this.options.length > 0) {
-            errors.assert(this.options.includes(value), "INVALID_OPTION", {
-                value,
-                options: this.options.join(", "),
-            });
+            errors
+                .assert(this.options.includes(value))
+                .orThrow("INVALID_OPTION", {
+                    value,
+                    options: this.options.join(", "),
+                });
         }
     }
 

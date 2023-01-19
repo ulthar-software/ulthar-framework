@@ -28,11 +28,11 @@ describe("Error Container", () => {
         const errors = new ErrorContainer(errorMap);
 
         expect(() => {
-            errors.assert(true, "ERROR_1");
+            errors.assert(true).orThrow("ERROR_1");
         }).not.toThrow();
 
         expect(() => {
-            errors.assert(false, "ERROR_1");
+            errors.assert(false).orThrow("ERROR_1");
         }).toThrow("Hello World");
     });
 

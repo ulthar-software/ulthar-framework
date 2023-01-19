@@ -4,14 +4,17 @@ import { ErrorTemplate } from "./error-template.js";
 export class ErrorContainer<ErrorMap extends Record<string, ErrorTemplate>> {
     constructor(private map: ErrorMap) {}
 
-    assert<ErrorKey extends keyof ErrorMap>(
-        value: any,
-        errorKey: ErrorKey,
-        context?: Record<string, unknown>
-    ) {
-        if (!value) {
-            this.throw(errorKey, context);
-        }
+    assert<ErrorKey extends keyof ErrorMap>(value: any) {
+        return {
+            orThrow: (
+                errorKey: ErrorKey,
+                context?: Record<string, unknown>
+            ) => {
+                if (!value) {
+                    this.throw(errorKey, context);
+                }
+            },
+        };
     }
 
     throw<ErrorKey extends keyof ErrorMap>(
