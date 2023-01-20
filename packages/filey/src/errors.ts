@@ -10,6 +10,9 @@ export const ERRORS = {
     INVALID_JSON: new ErrorTemplate(
         "Requested file '{{path}}' doesn't contain valid JSON: \n{{err}}"
     ),
+    NOT_A_DIRECTORY: new ErrorTemplate(
+        "The path '{{path}}' is not a directory"
+    ),
 };
 
 export const Errors = new ErrorContainer(ERRORS);
