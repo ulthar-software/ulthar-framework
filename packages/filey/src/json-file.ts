@@ -1,6 +1,6 @@
 import { readFile, rm, stat, writeFile } from "fs/promises";
 import path from "path";
-import { Errors } from "./errors";
+import { Errors } from "./errors.js";
 
 export class JSONFile<T extends Record<string, any> = Record<string, any>> {
     constructor(private filePath: string) {
