@@ -227,7 +227,108 @@ function shell(command, opts = {}) {
 }
 var $ = shell;
 
+// ../filey/dist/errors.js
+var ERRORS = {
+  INVALID_RELATIVE_PATH: new ErrorTemplate("File paths must always be ABSOLUTE paths. Tried to use '{{path}}'"),
+  MISSING_FILE: new ErrorTemplate("Requested file '{{path}}' does not exists"),
+  INVALID_JSON: new ErrorTemplate("Requested file '{{path}}' doesn't contain valid JSON: \n{{err}}"),
+  NOT_A_DIRECTORY: new ErrorTemplate("The path '{{path}}' is not a directory")
+};
+var Errors = new ErrorContainer(ERRORS);
+
+// ../filey/dist/get-all-files.js
+import { readdir } from "fs/promises";
+import { join } from "path";
+
+// ../filey/dist/is-directory.js
+import { stat } from "fs/promises";
+async function isDirectory(filePath) {
+  return (await stat(filePath)).isDirectory();
+}
+
+// ../filey/dist/get-all-files.js
+async function getAllFilesInDirectory(dirPath) {
+  Errors.assert(await isDirectory(dirPath)).orThrow("NOT_A_DIRECTORY", {
+    path: dirPath
+  });
+  const files = await readdir(dirPath);
+  const result = [];
+  for (const file of files) {
+    const fullFilePath = join(dirPath, file);
+    if (await isDirectory(fullFilePath)) {
+      result.push(...(await getAllFilesInDirectory(fullFilePath)).map((f) => join(file, f)));
+    } else {
+      result.push(file);
+    }
+  }
+  return result;
+}
+
+// dist/utils/package-template.js
+import { basename as basename2, join as join2 } from "path";
+var PackageTemplate = class {
+  templateDir;
+  templatePackageName;
+  constructor(templateDir) {
+    this.templateDir = templateDir;
+    this.templatePackageName = basename2(templateDir);
+  }
+  async applyTo(packageName) {
+    const packageWorkspaceDir = join2("packages", packageName);
+    await $(["cp", "-r", `${this.templateDir}/*`, packageWorkspaceDir]);
+    const filesInTemplate = await getAllFilesInDirectory(this.templateDir);
+    for (const file of filesInTemplate) {
+      await $([
+        "sed -i",
+        `s/${this.templatePackageName}/${packageName}/g`,
+        join2(packageWorkspaceDir, file)
+      ]);
+    }
+  }
+};
+
+// dist/utils/load-config.js
+async function loadConfig() {
+  return {
+    TEMPLATES: {
+      lib: new PackageTemplate("packages/package-template")
+    }
+  };
+}
+
+// dist/utils/yarn.js
+var YARN = {
+  async addWorkspacePackage(packageName) {
+    await $([`yarn`, `packages/${packageName}`, `init`]);
+  },
+  async addPackages(packages) {
+    await $(["yarn", "add", ...packages], { pipeToStdout: true });
+  },
+  async update() {
+    await $([`yarn`, `install`]);
+  },
+  async run(cmd) {
+    await $(["yarn", ...cmd], {
+      pipeToStdout: true
+    });
+  },
+  async workspacesRun(cmd) {
+    await $([
+      "yarn",
+      "workspaces foreach",
+      `--exclude @ulthar/package-template`,
+      `--exclude @ulthar/framework`,
+      "-tpv",
+      "run",
+      ...cmd
+    ], {
+      pipeToStdout: true
+    });
+  }
+};
+
 // dist/index.js
+var { TEMPLATES } = await loadConfig();
 createCLI({
   name: "cli",
   commands: [
@@ -239,47 +340,21 @@ createCLI({
         }
       ],
       handler: async ({ packageName }) => {
-        await $([`yarn`, `packages/${packageName}`, `init`]);
-        await $([
-          "cp",
-          "-r",
-          "packages/package-template/*",
-          `packages/${packageName}`
-        ]);
-        await $([
-          "sed -i",
-          `s/package-template/${packageName}/g`,
-          `packages/${packageName}/README.md`
-        ]);
-        await $([
-          "sed -i",
-          `s/package-template/${packageName}/g`,
-          `packages/${packageName}/package.json`
-        ]);
-        await $([`yarn`, `install`]);
+        await YARN.addWorkspacePackage(packageName);
+        await TEMPLATES["lib"].applyTo(packageName);
+        await YARN.update();
       }
     },
     {
       name: "build",
       handler: async () => {
-        await $([
-          "yarn",
-          "workspaces foreach",
-          `--exclude @ulthar/package-template`,
-          "-tpv",
-          "run",
-          "build"
-        ], {
-          pipeToStdout: true
-        });
+        await YARN.workspacesRun(["build"]);
       }
     },
     {
       name: "test",
       handler: async () => {
-        await $(["yarn", "jest", "--verbose"], {
-          pipeToStdout: true
-        });
+        await YARN.run(["jest", "--verbose"]);
       }
     }
   ]

@@ -1165,6 +1165,7 @@ __metadata:
     "@types/jest": ^29.2.3
     "@types/node": ^18.11.12
     "@ulthar/commandy": "workspace:^"
+    "@ulthar/filey": "workspace:^"
     "@ulthar/shelly": "workspace:^"
     esbuild: ^0.17.3
     jest: ^29.3.1
@@ -1201,7 +1202,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/filey@workspace:packages/filey":
+"@ulthar/filey@workspace:^, @ulthar/filey@workspace:packages/filey":
   version: 0.0.0-use.local
   resolution: "@ulthar/filey@workspace:packages/filey"
   dependencies:
@@ -1210,6 +1211,21 @@ __metadata:
     "@ulthar/blamey": "workspace:^"
     jest: ^29.3.1
     ts-jest: ^29.0.3
+    typescript: ^4.9.3
+  languageName: unknown
+  linkType: soft
+
+"@ulthar/framework@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/framework@workspace:."
+  dependencies:
+    "@types/eslint": ^8
+    "@types/prettier": ^2
+    "@ulthar/cli": "workspace:^"
+    eslint: ^8.28.0
+    jest: "npm:^29.3.1"
+    prettier: ^2.8.0
+    ts-jest: "npm:^29.0.3"
     typescript: ^4.9.3
   languageName: unknown
   linkType: soft
@@ -1255,21 +1271,6 @@ __metadata:
     "@types/jest": ^29.2.3
     jest: ^29.3.1
     ts-jest: ^29.0.3
-    typescript: ^4.9.3
-  languageName: unknown
-  linkType: soft
-
-"@ulthar/ulthar-framework@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@ulthar/ulthar-framework@workspace:."
-  dependencies:
-    "@types/eslint": ^8
-    "@types/prettier": ^2
-    "@ulthar/cli": "workspace:^"
-    eslint: ^8.28.0
-    jest: "npm:^29.3.1"
-    prettier: ^2.8.0
-    ts-jest: "npm:^29.0.3"
     typescript: ^4.9.3
   languageName: unknown
   linkType: soft

@@ -1,5 +1,5 @@
 {
-    "name": "@ulthar/ulthar-framework",
+    "name": "@ulthar/framework",
     "packageManager": "yarn@3.3.0",
     "type": "module",
     "workspaces": [

@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
 import { createCLI } from "@ulthar/commandy";
-import { $ } from "@ulthar/shelly";
+import { loadConfig } from "./utils/load-config";
+import { YARN } from "./utils/yarn";
+
+const { TEMPLATES } = await loadConfig();
 
 createCLI({
     name: "cli",
@@ -14,50 +17,21 @@ createCLI({
                 },
             ],
             handler: async ({ packageName }) => {
-                await $([`yarn`, `packages/${packageName}`, `init`]);
-                await $([
-                    "cp",
-                    "-r",
-                    "packages/package-template/*",
-                    `packages/${packageName}`,
-                ]);
-                await $([
-                    "sed -i",
-                    `s/package-template/${packageName}/g`,
-                    `packages/${packageName}/README.md`,
-                ]);
-                await $([
-                    "sed -i",
-                    `s/package-template/${packageName}/g`,
-                    `packages/${packageName}/package.json`,
-                ]);
-                await $([`yarn`, `install`]);
+                await YARN.addWorkspacePackage(packageName);
+                await TEMPLATES["lib"].applyTo(packageName);
+                await YARN.update();
             },
         },
         {
             name: "build",
             handler: async () => {
-                await $(
-                    [
-                        "yarn",
-                        "workspaces foreach",
-                        `--exclude @ulthar/package-template`,
-                        "-tpv",
-                        "run",
-                        "build",
-                    ],
-                    {
-                        pipeToStdout: true,
-                    }
-                );
+                await YARN.workspacesRun(["build"]);
             },
         },
         {
             name: "test",
             handler: async () => {
-                await $(["yarn", "jest", "--verbose"], {
-                    pipeToStdout: true,
-                });
+                await YARN.run(["jest", "--verbose"]);
             },
         },
     ],
