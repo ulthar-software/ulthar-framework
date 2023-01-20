@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-"use strict";
 
 // ../commandy/dist/program.js
-var import_path = require("path");
+import { basename } from "path";
 
 // ../blamey/dist/error-container.js
 var ErrorContainer = class {
@@ -177,7 +176,7 @@ var Program = class {
     }
   }
   parseArgs(args) {
-    if ((0, import_path.basename)(args[0]) == "node") {
+    if (basename(args[0]) == "node") {
       return args.slice(2);
     }
     if (args[0] == this.name) {
@@ -199,17 +198,20 @@ function createCLI(opts) {
 }
 
 // ../shelly/dist/shell.js
-var import_node_child_process = require("node:child_process");
+import { exec } from "node:child_process";
 function shell(command, opts = {}) {
   const pipeToStdout = opts.pipeToStdout ?? false;
   const streamToPipe = opts.streamToPipe ?? process.stdout;
   return new Promise((resolve, reject) => {
     const parsedCommand = command.join(" ");
-    const child = (0, import_node_child_process.exec)(parsedCommand, {
-      env: {
-        ...process.env,
-        FORCE_COLOR: "1"
-      }
+    const env = {
+      ...process.env
+    };
+    if (pipeToStdout) {
+      env.FORCE_COLOR = "1";
+    }
+    const child = exec(parsedCommand, {
+      env
     }, (error, stdout, stderr) => {
       if (error) {
         reject(stderr);
@@ -275,7 +277,7 @@ createCLI({
     {
       name: "test",
       handler: async () => {
-        await $(["yarn", "jest", "--verbose", "--colors"], {
+        await $(["yarn", "jest", "--verbose"], {
           pipeToStdout: true
         });
       }

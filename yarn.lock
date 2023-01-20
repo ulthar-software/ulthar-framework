@@ -1171,7 +1171,7 @@ __metadata:
     ts-jest: ^29.0.3
     typescript: ^4.9.3
   bin:
-    cli: bin/cli.cjs
+    cli: bin/cli.mjs
   languageName: unknown
   linkType: soft
 
