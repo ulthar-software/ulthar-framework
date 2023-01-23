@@ -83,4 +83,47 @@ describe("Command", () => {
             })
         );
     });
+
+    it("should parse a command with subcommands", () => {
+        const fn1 = jest.fn();
+        const fn2 = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            commands: [
+                {
+                    name: "foo",
+                    handler: fn1,
+                },
+                {
+                    name: "bar",
+                    handler: fn2,
+                    args: [
+                        {
+                            name: "test-arg",
+                        },
+                    ],
+                },
+            ],
+        });
+
+        command.run(["foo"]);
+        expect(fn1).toHaveBeenCalledWith({});
+
+        command.run(["bar", "baz"]);
+        expect(fn2).toHaveBeenCalledWith({ "test-arg": "baz" });
+
+        expect(() => {
+            command.run(["fee"]);
+        }).toThrow(errors.render("INVALID_SUBCOMMAND", { cmdName: "fee" }));
+
+        expect(() => {
+            command.run([]);
+        }).toThrow(
+            errors.render("NO_SUBCOMMAND", { subcommands: ["foo", "bar"] })
+        );
+
+        expect(() => {
+            command.run(["bar"]);
+        }).toThrow();
+    });
 });

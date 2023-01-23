@@ -92,8 +92,11 @@ var ErrorTemplate = class {
 
 // ../commandy/dist/errors.js
 var errors = new ErrorContainer({
-  INVALID_ARGUMENTS: new ErrorTemplate("Invalid number of arguments", ErrorType.USER_ERROR),
-  INVALID_OPTION: new ErrorTemplate("Value '{{value}}' is not an option: {{options}}", ErrorType.USER_ERROR)
+  INVALID_ARGUMENTS: new ErrorTemplate("Invalid number of arguments.", ErrorType.USER_ERROR),
+  INVALID_OPTION: new ErrorTemplate("Value '{{value}}' is not a valid option. Available options are: {{options}}.", ErrorType.USER_ERROR),
+  INVALID_SUBCOMMAND: new ErrorTemplate("'{{cmdName}}' is not a valid subcommand.", ErrorType.USER_ERROR),
+  NO_SUBCOMMAND: new ErrorTemplate("No subcommand selected.\n Available options are: {{subcommands}}", ErrorType.USER_ERROR),
+  INVALID_COMMAND: new ErrorTemplate("Cannot have a handler function AND subcommands: {{cmdName}}")
 });
 
 // ../commandy/dist/argument.js
@@ -124,20 +127,41 @@ var Argument = class {
 // ../commandy/dist/command.js
 var Command = class {
   _name;
-  handler;
-  argOptions;
+  handler = null;
+  argOptions = [];
+  subcommands = {};
   constructor(opts) {
     this._name = opts.name;
-    this.handler = opts.handler;
-    this.argOptions = opts.args ? opts.args.map((opts2) => new Argument(opts2)) : [];
+    if ("handler" in opts) {
+      this.handler = opts.handler;
+      this.argOptions = opts.args ? opts.args.map((opts2) => new Argument(opts2)) : [];
+      errors.assert(!("commands" in opts)).orThrow("INVALID_COMMAND", {
+        cmdName: opts.name
+      });
+    } else {
+      for (const cmdOpt of opts.commands) {
+        this.subcommands[cmdOpt.name] = new Command(cmdOpt);
+      }
+    }
   }
   run(argv) {
-    const args = {};
-    errors.assert(argv.length === this.argOptions.length).orThrow("INVALID_ARGUMENTS");
-    this.argOptions.forEach((arg, i) => {
-      args[arg.name] = arg.parse(argv[i]);
-    });
-    this.handler(args);
+    if (this.handler) {
+      const args = {};
+      errors.assert(argv.length === this.argOptions.length).orThrow("INVALID_ARGUMENTS");
+      this.argOptions.forEach((arg, i) => {
+        args[arg.name] = arg.parse(argv[i]);
+      });
+      this.handler(args);
+    } else {
+      errors.assert(argv[0]).orThrow("NO_SUBCOMMAND", {
+        subcommands: Object.keys(this.subcommands)
+      });
+      const cmd = this.subcommands[argv[0]];
+      errors.assert(cmd).orThrow("INVALID_SUBCOMMAND", {
+        cmdName: argv[0]
+      });
+      cmd.run(argv.slice(1));
+    }
   }
 };
 
@@ -333,17 +357,22 @@ createCLI({
   name: "cli",
   commands: [
     {
-      name: "new",
-      args: [
+      name: "package",
+      commands: [
         {
-          name: "packageName"
+          name: "new",
+          args: [
+            {
+              name: "packageName"
+            }
+          ],
+          handler: async ({ packageName }) => {
+            await YARN.addWorkspacePackage(packageName);
+            await TEMPLATES["lib"].applyTo(packageName);
+            await YARN.update();
+          }
         }
-      ],
-      handler: async ({ packageName }) => {
-        await YARN.addWorkspacePackage(packageName);
-        await TEMPLATES["lib"].applyTo(packageName);
-        await YARN.update();
-      }
+      ]
     },
     {
       name: "build",

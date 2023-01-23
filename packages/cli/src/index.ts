@@ -10,17 +10,22 @@ createCLI({
     name: "cli",
     commands: [
         {
-            name: "new",
-            args: [
+            name: "package",
+            commands: [
                 {
-                    name: "packageName",
+                    name: "new",
+                    args: [
+                        {
+                            name: "packageName",
+                        },
+                    ],
+                    handler: async ({ packageName }) => {
+                        await YARN.addWorkspacePackage(packageName);
+                        await TEMPLATES["lib"].applyTo(packageName);
+                        await YARN.update();
+                    },
                 },
             ],
-            handler: async ({ packageName }) => {
-                await YARN.addWorkspacePackage(packageName);
-                await TEMPLATES["lib"].applyTo(packageName);
-                await YARN.update();
-            },
         },
         {
             name: "build",
