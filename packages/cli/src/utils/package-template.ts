@@ -3,14 +3,14 @@ import { getAllFilesInDirectory } from "@ulthar/filey";
 import { basename, join } from "path";
 
 export class PackageTemplate {
-    private templatePackageName: string;
+    public templatePackageName: string;
 
     constructor(private templateDir: string) {
         this.templatePackageName = basename(templateDir);
     }
 
-    async applyTo(packageName: string) {
-        const packageWorkspaceDir = join("packages", packageName);
+    async applyTo(packageName: string, packagesDir: string = "packages") {
+        const packageWorkspaceDir = join(packagesDir, packageName);
 
         await $(["cp", "-r", `${this.templateDir}/*`, packageWorkspaceDir]);
 

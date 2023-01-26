@@ -36,10 +36,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/filey"\
       },\
       {\
-        "name": "@ulthar/package-template",\
-        "reference": "workspace:packages/package-template"\
-      },\
-      {\
         "name": "@ulthar/shelly",\
         "reference": "workspace:packages/shelly"\
       },\
@@ -50,6 +46,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@ulthar/typey",\
         "reference": "workspace:packages/typey"\
+      },\
+      {\
+        "name": "@ulthar/lib-template",\
+        "reference": "workspace:templates/lib-template"\
       }\
     ],\
     "enableTopLevelFallback": true,\
@@ -61,7 +61,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@ulthar/deppy", ["workspace:packages/deppy"]],\
       ["@ulthar/filey", ["workspace:packages/filey"]],\
       ["@ulthar/framework", ["workspace:."]],\
-      ["@ulthar/package-template", ["workspace:packages/package-template"]],\
+      ["@ulthar/lib-template", ["workspace:templates/lib-template"]],\
       ["@ulthar/shelly", ["workspace:packages/shelly"]],\
       ["@ulthar/temply", ["workspace:packages/temply"]],\
       ["@ulthar/typey", ["workspace:packages/typey"]]\
@@ -1852,6 +1852,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ulthar/cli", "workspace:packages/cli"],\
             ["@types/jest", "npm:29.2.3"],\
             ["@types/node", "npm:18.11.12"],\
+            ["@ulthar/blamey", "workspace:packages/blamey"],\
             ["@ulthar/commandy", "workspace:packages/commandy"],\
             ["@ulthar/filey", "workspace:packages/filey"],\
             ["@ulthar/shelly", "workspace:packages/shelly"],\
@@ -1926,11 +1927,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@ulthar/package-template", [\
-        ["workspace:packages/package-template", {\
-          "packageLocation": "./packages/package-template/",\
+      ["@ulthar/lib-template", [\
+        ["workspace:templates/lib-template", {\
+          "packageLocation": "./templates/lib-template/",\
           "packageDependencies": [\
-            ["@ulthar/package-template", "workspace:packages/package-template"],\
+            ["@ulthar/lib-template", "workspace:templates/lib-template"],\
             ["@types/jest", "npm:29.2.3"],\
             ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\

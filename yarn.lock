@@ -1247,6 +1247,7 @@ __metadata:
   dependencies:
     "@types/jest": ^29.2.3
     "@types/node": ^18.11.12
+    "@ulthar/blamey": "workspace:^"
     "@ulthar/commandy": "workspace:^"
     "@ulthar/filey": "workspace:^"
     "@ulthar/shelly": "workspace:^"
@@ -1314,9 +1315,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/package-template@workspace:packages/package-template":
+"@ulthar/lib-template@workspace:templates/lib-template":
   version: 0.0.0-use.local
-  resolution: "@ulthar/package-template@workspace:packages/package-template"
+  resolution: "@ulthar/lib-template@workspace:templates/lib-template"
   dependencies:
     "@types/jest": ^29.2.3
     jest: ^29.3.1

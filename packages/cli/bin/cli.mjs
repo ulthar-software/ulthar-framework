@@ -342,6 +342,11 @@ function createCLI(opts) {
   return new Program(opts);
 }
 
+// dist/errors.js
+var errors2 = new ErrorContainer({
+  INVALID_TEMPLATE_TYPE: new ErrorTemplate("Invalid template type: {{type}}. Options are: {{validTypes}}", ErrorType.USER_ERROR)
+});
+
 // ../shelly/dist/shell.js
 import { exec } from "node:child_process";
 async function shell(command, opts = {}) {
@@ -423,8 +428,8 @@ var PackageTemplate = class {
     this.templateDir = templateDir;
     this.templatePackageName = basename2(templateDir);
   }
-  async applyTo(packageName) {
-    const packageWorkspaceDir = join2("packages", packageName);
+  async applyTo(packageName, packagesDir = "packages") {
+    const packageWorkspaceDir = join2(packagesDir, packageName);
     await $(["cp", "-r", `${this.templateDir}/*`, packageWorkspaceDir]);
     const filesInTemplate = await getAllFilesInDirectory(this.templateDir);
     for (const file of filesInTemplate) {
@@ -441,15 +446,15 @@ var PackageTemplate = class {
 async function loadConfig() {
   return {
     TEMPLATES: {
-      lib: new PackageTemplate("packages/package-template")
+      lib: new PackageTemplate("templates/lib-template")
     }
   };
 }
 
 // dist/utils/yarn.js
 var YARN = {
-  async addWorkspacePackage(packageName) {
-    await $([`yarn`, `packages/${packageName}`, `init`]);
+  async addWorkspacePackage(packageName, packagesDir = "packages") {
+    await $([`yarn`, `${packagesDir}/${packageName}`, `init`]);
   },
   async addPackages(packages) {
     await $(["yarn", "add", ...packages], { pipeToStdout: true });
@@ -463,10 +468,11 @@ var YARN = {
     });
   },
   async workspacesRun(cmd) {
+    const { TEMPLATES: TEMPLATES2 } = await loadConfig();
     await $([
       "yarn",
       "workspaces foreach",
-      `--exclude @ulthar/package-template`,
+      ...Object.keys(TEMPLATES2).map((k) => `--exclude @ulthar/${TEMPLATES2[k].templatePackageName}`),
       `--exclude @ulthar/framework`,
       "-tpv",
       "run",
@@ -487,14 +493,39 @@ createCLI({
       commands: [
         {
           name: "new",
+          flags: [{ type: "value", name: "type", aliases: ["t"] }],
+          args: [
+            {
+              name: "packageName"
+            }
+          ],
+          handler: async ({ packageName, type }) => {
+            type = type ?? "lib";
+            const validTypes = Object.keys(TEMPLATES);
+            errors2.assert(validTypes.includes(type)).orThrow("INVALID_TEMPLATE_TYPE", {
+              type,
+              validTypes
+            });
+            await YARN.addWorkspacePackage(packageName);
+            await TEMPLATES[type].applyTo(packageName);
+            await YARN.update();
+          }
+        }
+      ]
+    },
+    {
+      name: "template",
+      commands: [
+        {
+          name: "new",
           args: [
             {
               name: "packageName"
             }
           ],
           handler: async ({ packageName }) => {
-            await YARN.addWorkspacePackage(packageName);
-            await TEMPLATES["lib"].applyTo(packageName);
+            await YARN.addWorkspacePackage(packageName, "templates");
+            await TEMPLATES["lib"].applyTo(packageName, "templates");
             await YARN.update();
           }
         }

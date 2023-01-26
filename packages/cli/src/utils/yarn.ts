@@ -1,8 +1,12 @@
 import { $ } from "@ulthar/shelly";
+import { loadConfig } from "./load-config";
 
 export const YARN = {
-    async addWorkspacePackage(packageName: string) {
-        await $([`yarn`, `packages/${packageName}`, `init`]);
+    async addWorkspacePackage(
+        packageName: string,
+        packagesDir: string = "packages"
+    ) {
+        await $([`yarn`, `${packagesDir}/${packageName}`, `init`]);
     },
     async addPackages(packages: string[]) {
         await $(["yarn", "add", ...packages], { pipeToStdout: true });
@@ -16,11 +20,15 @@ export const YARN = {
         });
     },
     async workspacesRun(cmd: string[]) {
+        const { TEMPLATES } = await loadConfig();
         await $(
             [
                 "yarn",
                 "workspaces foreach",
-                `--exclude @ulthar/package-template`,
+                ...Object.keys(TEMPLATES).map(
+                    (k) =>
+                        `--exclude @ulthar/${TEMPLATES[k].templatePackageName}`
+                ),
                 `--exclude @ulthar/framework`,
                 "-tpv",
                 "run",
