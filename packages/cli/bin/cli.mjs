@@ -126,12 +126,14 @@ var Argument = class {
 
 // ../commandy/dist/command.js
 var Command = class {
-  _name;
+  name;
   handler = null;
   argOptions = [];
   subcommands = {};
+  passExtraArgs = false;
   constructor(opts) {
-    this._name = opts.name;
+    this.name = opts.name;
+    this.passExtraArgs = opts.passExtraArgs ?? false;
     if ("handler" in opts) {
       this.handler = opts.handler;
       this.argOptions = opts.args ? opts.args.map((opts2) => new Argument(opts2)) : [];
@@ -147,10 +149,13 @@ var Command = class {
   run(argv) {
     if (this.handler) {
       const args = {};
-      errors.assert(argv.length === this.argOptions.length).orThrow("INVALID_ARGUMENTS");
+      errors.assert(argv.length >= this.argOptions.length && (argv.length === this.argOptions.length || this.passExtraArgs)).orThrow("INVALID_ARGUMENTS");
       this.argOptions.forEach((arg, i) => {
         args[arg.name] = arg.parse(argv[i]);
       });
+      if (this.passExtraArgs) {
+        args.extraArgs = argv.slice(this.argOptions.length);
+      }
       this.handler(args);
     } else {
       errors.assert(argv[0]).orThrow("NO_SUBCOMMAND", {
@@ -376,14 +381,16 @@ createCLI({
     },
     {
       name: "build",
-      handler: async () => {
-        await YARN.workspacesRun(["build"]);
+      passExtraArgs: true,
+      handler: async ({ extraArgs }) => {
+        await YARN.workspacesRun(["build", ...extraArgs]);
       }
     },
     {
       name: "test",
-      handler: async () => {
-        await YARN.run(["jest", "--verbose"]);
+      passExtraArgs: true,
+      handler: async ({ extraArgs }) => {
+        await YARN.run(["jest", "--verbose", ...extraArgs]);
       }
     }
   ]

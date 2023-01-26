@@ -29,14 +29,16 @@ createCLI({
         },
         {
             name: "build",
-            handler: async () => {
-                await YARN.workspacesRun(["build"]);
+            passExtraArgs: true,
+            handler: async ({ extraArgs }) => {
+                await YARN.workspacesRun(["build", ...extraArgs]);
             },
         },
         {
             name: "test",
-            handler: async () => {
-                await YARN.run(["jest", "--verbose"]);
+            passExtraArgs: true,
+            handler: async ({ extraArgs }) => {
+                await YARN.run(["jest", "--verbose", ...extraArgs]);
             },
         },
     ],

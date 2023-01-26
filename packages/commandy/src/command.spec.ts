@@ -58,6 +58,18 @@ describe("Command", () => {
         expect(fn).not.toHaveBeenCalled();
     });
 
+    it("should pass all extra args to the handler when configured", () => {
+        const fn = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            handler: fn,
+            passExtraArgs: true,
+            args: [],
+        });
+        command.run(["banana"]);
+        expect(fn).toHaveBeenCalledWith({ extraArgs: ["banana"] });
+    });
+
     it("should parse a command argument when it has options", () => {
         const fn = jest.fn();
         const command = new Command({
