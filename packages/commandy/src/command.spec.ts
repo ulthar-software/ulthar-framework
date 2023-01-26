@@ -11,6 +11,7 @@ describe("Command", () => {
         command.run([]);
         expect(fn).toHaveBeenCalledWith({});
     });
+
     it("should parse a command given a configuration with an argument", () => {
         const fn = jest.fn();
         const command = new Command({
@@ -25,6 +26,22 @@ describe("Command", () => {
         command.run(["banana"]);
         expect(fn).toHaveBeenCalledWith({
             "test-arg": "banana",
+        });
+    });
+
+    it("should parse a command given a configuration with a flag", () => {
+        const fn = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            handler: fn,
+            args: [{ name: "arg" }],
+            flags: [{ name: "f" }, { name: "output", type: "value" }],
+        });
+        command.run(["-f", "--output=foo/bar", "test"]);
+        expect(fn).toHaveBeenCalledWith({
+            f: true,
+            output: "foo/bar",
+            arg: "test",
         });
     });
 
@@ -137,5 +154,42 @@ describe("Command", () => {
         expect(() => {
             command.run(["bar"]);
         }).toThrow();
+    });
+
+    it("should correctly parse the flags of a top command and subcommands", () => {
+        const fn1 = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            flags: [
+                {
+                    name: "output",
+                    type: "value",
+                },
+            ],
+            commands: [
+                {
+                    name: "foo",
+                    handler: fn1,
+                    flags: [
+                        {
+                            name: "t",
+                        },
+                    ],
+                },
+            ],
+        });
+
+        command.run(["foo"]);
+        expect(fn1).toHaveBeenCalledWith({});
+
+        command.run(["foo", "-t"]);
+        expect(fn1).toHaveBeenCalledWith({ t: true });
+
+        expect(() => {
+            command.run(["--output=bar"]);
+        }).toThrow(errors.render("NO_SUBCOMMAND", { subcommands: ["foo"] }));
+
+        command.run(["--output=bar", "foo"]);
+        expect(fn1).toHaveBeenCalledWith({ output: "bar" });
     });
 });
