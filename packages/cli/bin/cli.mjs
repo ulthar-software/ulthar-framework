@@ -391,14 +391,71 @@ var ERRORS = {
 };
 var Errors = new ErrorContainer(ERRORS);
 
+// ../filey/dist/json-file.js
+import { readFile, rm, stat, writeFile } from "fs/promises";
+import path from "path";
+var JSONFile = class {
+  filePath;
+  constructor(filePath) {
+    this.filePath = filePath;
+    Errors.assert(path.isAbsolute(filePath)).orThrow("INVALID_RELATIVE_PATH", {
+      path: filePath
+    });
+  }
+  async readWithDefaultValue(defaultValue, opts = {}) {
+    let ensure = opts.writeIfMissing ?? false;
+    try {
+      return await this.read();
+    } catch {
+      if (ensure) {
+        await this.write(defaultValue);
+      }
+    }
+    return defaultValue;
+  }
+  async read() {
+    let contents;
+    try {
+      contents = await readFile(this.filePath, "utf-8");
+    } catch {
+      throw Errors.render("MISSING_FILE", { path: this.filePath });
+    }
+    try {
+      return JSON.parse(contents);
+    } catch (err) {
+      throw Errors.render("INVALID_JSON", {
+        path: this.filePath,
+        err: err.message
+      });
+    }
+  }
+  async write(content) {
+    await writeFile(this.filePath, JSON.stringify(content, null, 4), "utf-8");
+  }
+  async delete() {
+    try {
+      await rm(this.filePath);
+    } catch {
+    }
+  }
+  async exists() {
+    try {
+      await stat(this.filePath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+};
+
 // ../filey/dist/get-all-files.js
 import { readdir } from "fs/promises";
 import { join } from "path";
 
 // ../filey/dist/is-directory.js
-import { stat } from "fs/promises";
+import { stat as stat2 } from "fs/promises";
 async function isDirectory(filePath) {
-  return (await stat(filePath)).isDirectory();
+  return (await stat2(filePath)).isDirectory();
 }
 
 // ../filey/dist/get-all-files.js
@@ -443,11 +500,32 @@ var PackageTemplate = class {
 };
 
 // dist/utils/load-config.js
-async function loadConfig() {
+import { join as join3 } from "path";
+
+// dist/utils/config.js
+async function getDefaultConfig(rootDir) {
   return {
-    TEMPLATES: {
-      lib: new PackageTemplate("templates/lib-template")
+    templates: {
+      lib: "templates/lib-template"
     }
+  };
+}
+
+// dist/utils/resolve-root-dir.js
+async function resolveRootDir() {
+  return process.cwd();
+}
+
+// dist/utils/load-config.js
+async function loadConfig() {
+  const rootDir = await resolveRootDir();
+  const configFile = new JSONFile(join3(rootDir, "ulthar.json"));
+  const config = await configFile.readWithDefaultValue(await getDefaultConfig(rootDir), { writeIfMissing: true });
+  return {
+    TEMPLATES: Object.keys(config.templates).reduce((acc, key) => ({
+      ...acc,
+      [key]: new PackageTemplate(config?.templates[key])
+    }), {})
   };
 }
 

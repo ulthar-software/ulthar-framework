@@ -15,7 +15,7 @@ export class JSONFile<T extends Record<string, any> = Record<string, any>> {
     async readWithDefaultValue(
         defaultValue: T,
         opts: { writeIfMissing?: boolean } = {}
-    ): Promise<T | undefined> {
+    ): Promise<T> {
         let ensure = opts.writeIfMissing ?? false;
         try {
             return await this.read();
