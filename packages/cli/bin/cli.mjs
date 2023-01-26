@@ -124,48 +124,164 @@ var Argument = class {
   }
 };
 
+// ../commandy/dist/flag.js
+var Flag = class {
+  name;
+  aliases;
+  type;
+  constructor(opts) {
+    this.name = opts.name;
+    this.aliases = opts.aliases ?? [];
+    this.type = opts.type ?? "simple";
+  }
+  parse(arg) {
+    if (this.type == "simple") {
+      return true;
+    } else {
+      return arg.split("=")[1];
+    }
+  }
+  matches(arg) {
+    for (const alias of this.aliases.concat([this.name])) {
+      if (alias.length == 1) {
+        if (this.matchesSingleLetterAlias(arg, alias)) {
+          return true;
+        }
+      } else {
+        if (this.matchesMultiLetterAlias(arg, alias)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  matchesMultiLetterAlias(arg, alias) {
+    if (this.type == "simple") {
+      return arg == `--${alias}`;
+    } else {
+      return arg.startsWith(`--${alias}=`);
+    }
+  }
+  matchesSingleLetterAlias(arg, alias) {
+    if (this.type == "simple") {
+      return arg == `-${alias}`;
+    } else {
+      return arg.startsWith(`-${alias}=`);
+    }
+  }
+};
+
+// ../commandy/dist/utils/is-flag.js
+function isFlag(arg) {
+  return arg.startsWith("-");
+}
+
+// ../commandy/dist/utils/parse-flags-upto-positional.js
+function parseFlagsUptoPositional(argv, flags) {
+  const parsedFlags = {};
+  if (flags.length > 0) {
+    for (let i = 0; i < argv.length; i++) {
+      const arg = argv[i];
+      if (isFlag(arg)) {
+        for (const flag of flags) {
+          if (flag.matches(arg)) {
+            parsedFlags[flag.name] = flag.parse(arg);
+            break;
+          }
+        }
+      } else {
+        return [argv.slice(i), parsedFlags];
+      }
+    }
+    return [[], parsedFlags];
+  } else {
+    return [argv, {}];
+  }
+}
+
+// ../commandy/dist/utils/parse-all-flags.js
+function parseAllFlags(argv, flags) {
+  const argsWithoutFlags = [];
+  const parsedFlags = {};
+  if (flags.length > 0) {
+    for (const arg of argv) {
+      if (isFlag(arg)) {
+        for (const flag of flags) {
+          if (flag.matches(arg)) {
+            parsedFlags[flag.name] = flag.parse(arg);
+            break;
+          }
+        }
+      } else {
+        argsWithoutFlags.push(arg);
+      }
+    }
+    return [argsWithoutFlags, parsedFlags];
+  } else {
+    return [argv, {}];
+  }
+}
+
 // ../commandy/dist/command.js
 var Command = class {
   name;
   handler = null;
-  argOptions = [];
+  positionalArguments = [];
+  flags = [];
   subcommands = {};
   passExtraArgs = false;
   constructor(opts) {
     this.name = opts.name;
     this.passExtraArgs = opts.passExtraArgs ?? false;
+    this.flags = opts.flags?.map((flagOptions) => new Flag(flagOptions)) ?? [];
     if ("handler" in opts) {
-      this.handler = opts.handler;
-      this.argOptions = opts.args ? opts.args.map((opts2) => new Argument(opts2)) : [];
-      errors.assert(!("commands" in opts)).orThrow("INVALID_COMMAND", {
-        cmdName: opts.name
-      });
+      this.parseLeafCommand(opts);
     } else {
-      for (const cmdOpt of opts.commands) {
-        this.subcommands[cmdOpt.name] = new Command(cmdOpt);
-      }
+      this.parseTopCommand(opts);
     }
   }
-  run(argv) {
+  run(argv, topCommandFlags = {}) {
     if (this.handler) {
-      const args = {};
-      errors.assert(argv.length >= this.argOptions.length && (argv.length === this.argOptions.length || this.passExtraArgs)).orThrow("INVALID_ARGUMENTS");
-      this.argOptions.forEach((arg, i) => {
-        args[arg.name] = arg.parse(argv[i]);
-      });
-      if (this.passExtraArgs) {
-        args.extraArgs = argv.slice(this.argOptions.length);
-      }
-      this.handler(args);
+      const [argsWithoutFlags, parsedFlags] = parseAllFlags(argv, this.flags);
+      const parsedArgs = this.parsePositionalArgs(argsWithoutFlags);
+      this.handler(Object.assign(topCommandFlags, parsedArgs, parsedFlags));
     } else {
-      errors.assert(argv[0]).orThrow("NO_SUBCOMMAND", {
-        subcommands: Object.keys(this.subcommands)
-      });
-      const cmd = this.subcommands[argv[0]];
-      errors.assert(cmd).orThrow("INVALID_SUBCOMMAND", {
-        cmdName: argv[0]
-      });
-      cmd.run(argv.slice(1));
+      const [argsWithoutFlags, parsedFlags] = parseFlagsUptoPositional(argv, this.flags);
+      const cmd = this.parseSubCommand(argsWithoutFlags);
+      cmd.run(argsWithoutFlags.slice(1), Object.assign(topCommandFlags, parsedFlags));
+    }
+  }
+  parseSubCommand(argv) {
+    errors.assert(argv[0]).orThrow("NO_SUBCOMMAND", {
+      subcommands: Object.keys(this.subcommands)
+    });
+    const cmd = this.subcommands[argv[0]];
+    errors.assert(cmd).orThrow("INVALID_SUBCOMMAND", {
+      cmdName: argv[0]
+    });
+    return cmd;
+  }
+  parsePositionalArgs(argv) {
+    const parsedArgs = {};
+    errors.assert(argv.length >= this.positionalArguments.length && (argv.length === this.positionalArguments.length || this.passExtraArgs)).orThrow("INVALID_ARGUMENTS");
+    this.positionalArguments.forEach((arg, i) => {
+      parsedArgs[arg.name] = arg.parse(argv[i]);
+    });
+    if (this.passExtraArgs) {
+      parsedArgs.extraArgs = argv.slice(this.positionalArguments.length);
+    }
+    return parsedArgs;
+  }
+  parseLeafCommand(opts) {
+    this.handler = opts.handler;
+    this.positionalArguments = opts.args ? opts.args.map((opts2) => new Argument(opts2)) : [];
+    errors.assert(!("commands" in opts)).orThrow("INVALID_COMMAND", {
+      cmdName: opts.name
+    });
+  }
+  parseTopCommand(opts) {
+    for (const cmdOpt of opts.commands) {
+      this.subcommands[cmdOpt.name] = new Command(cmdOpt);
     }
   }
 };
@@ -228,31 +344,36 @@ function createCLI(opts) {
 
 // ../shelly/dist/shell.js
 import { exec } from "node:child_process";
-function shell(command, opts = {}) {
+async function shell(command, opts = {}) {
   const pipeToStdout = opts.pipeToStdout ?? false;
   const streamToPipe = opts.streamToPipe ?? process.stdout;
-  return new Promise((resolve, reject) => {
-    const parsedCommand = command.join(" ");
-    const env = {
-      ...process.env
-    };
-    if (pipeToStdout) {
-      env.FORCE_COLOR = "1";
-    }
-    const child = exec(parsedCommand, {
-      env
-    }, (error, stdout, stderr) => {
-      if (error) {
-        reject(stderr);
-      } else {
-        resolve(stdout);
-      }
-    });
-    if (pipeToStdout) {
-      child.stdout?.pipe(streamToPipe);
-      child.stderr?.pipe(streamToPipe);
-    }
-  });
+  try {
+    await (() => {
+      return new Promise((resolve, reject) => {
+        const parsedCommand = command.join(" ");
+        const env = {
+          ...process.env
+        };
+        if (pipeToStdout) {
+          env.FORCE_COLOR = "1";
+        }
+        const child = exec(parsedCommand, {
+          env
+        }, (error, stdout, stderr) => {
+          if (error) {
+            reject(stderr);
+          } else {
+            resolve(stdout);
+          }
+        });
+        if (pipeToStdout) {
+          child.stdout?.pipe(streamToPipe);
+          child.stderr?.pipe(streamToPipe);
+        }
+      });
+    })();
+  } catch {
+  }
 }
 var $ = shell;
 
