@@ -5,10 +5,15 @@ export type ArgumentParser = (value: string) => any;
 
 export class Argument {
     private _name: string;
+    private _isOptional: boolean;
+    private options: any[];
+
     get name(): string {
         return this._name;
     }
-    private options: any[];
+    public get isOptional(): boolean {
+        return this._isOptional;
+    }
 
     private assertValidOption(value: any) {
         if (this.options.length > 0) {
@@ -23,6 +28,7 @@ export class Argument {
 
     constructor(opts: ArgumentOptions) {
         this._name = opts.name;
+        this._isOptional = opts.optional ?? false;
         this.options = opts.options ? opts.options : [];
     }
 

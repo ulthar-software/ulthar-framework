@@ -64,12 +64,9 @@ export class Command {
 
     private parsePositionalArgs(argv: string[]) {
         const parsedArgs: Record<string, any> = {};
+
         errors
-            .assert(
-                argv.length >= this.positionalArguments.length &&
-                    (argv.length === this.positionalArguments.length ||
-                        this.passExtraArgs)
-            )
+            .assert(this.isValidAmountOfArgs(argv))
             .orThrow("INVALID_ARGUMENTS");
 
         this.positionalArguments.forEach((arg, i) => {
@@ -79,6 +76,20 @@ export class Command {
             parsedArgs.extraArgs = argv.slice(this.positionalArguments.length);
         }
         return parsedArgs;
+    }
+
+    private getRequiredPositionalArgumentsCount() {
+        return this.positionalArguments.filter((arg) => !arg.isOptional).length;
+    }
+
+    private isValidAmountOfArgs(argv: string[]) {
+        const requiredArgsCount = this.getRequiredPositionalArgumentsCount();
+        return (
+            argv.length >= requiredArgsCount &&
+            (argv.length === requiredArgsCount ||
+                argv.length === this.positionalArguments.length ||
+                this.passExtraArgs)
+        );
     }
 
     private parseLeafCommand(opts: LeafCommand) {

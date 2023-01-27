@@ -62,6 +62,25 @@ describe("Command", () => {
         expect(fn).not.toHaveBeenCalled();
     });
 
+    it("should parse optional arguments", () => {
+        const fn = jest.fn();
+        const command = new Command({
+            name: "test-command",
+            handler: fn,
+            args: [
+                {
+                    name: "opt",
+                    optional: true,
+                },
+            ],
+        });
+        command.run([]);
+        expect(fn).toHaveBeenCalledWith({});
+
+        command.run(["banana"]);
+        expect(fn).toHaveBeenCalledWith({ opt: "banana" });
+    });
+
     it("should throw while parsing a command given more arguments than configured", () => {
         const fn = jest.fn();
         const command = new Command({
