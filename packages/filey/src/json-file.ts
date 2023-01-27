@@ -1,15 +1,15 @@
-import { readFile, rm, stat, writeFile } from "fs/promises";
-import path from "path";
 import { Errors } from "./errors.js";
+import { FileOptions } from "./file-options.js";
+import { IFile } from "./file.js";
+import { TextFile } from "./text-file";
 
-export class JSONFile<T extends Record<string, any> = Record<string, any>> {
-    constructor(private filePath: string) {
-        Errors.assert(path.isAbsolute(filePath)).orThrow(
-            "INVALID_RELATIVE_PATH",
-            {
-                path: filePath,
-            }
-        );
+export class JSONFile<T extends Record<string, any> = Record<string, any>>
+    implements IFile<T>
+{
+    private file: TextFile;
+
+    constructor(private filePath: string, opts?: FileOptions) {
+        this.file = new TextFile(filePath, opts);
     }
 
     async readWithDefaultValue(
@@ -28,12 +28,8 @@ export class JSONFile<T extends Record<string, any> = Record<string, any>> {
     }
 
     async read(): Promise<T> {
-        let contents: string;
-        try {
-            contents = await readFile(this.filePath, "utf-8");
-        } catch {
-            throw Errors.render("MISSING_FILE", { path: this.filePath });
-        }
+        let contents: string = await this.file.read();
+
         try {
             return JSON.parse(contents);
         } catch (err: any) {
@@ -45,25 +41,14 @@ export class JSONFile<T extends Record<string, any> = Record<string, any>> {
     }
 
     async write(content: T): Promise<void> {
-        await writeFile(
-            this.filePath,
-            JSON.stringify(content, null, 4),
-            "utf-8"
-        );
+        await this.file.write(JSON.stringify(content, null, 4));
     }
 
     async delete(): Promise<void> {
-        try {
-            await rm(this.filePath);
-        } catch {}
+        await this.file.delete();
     }
 
     async exists(): Promise<boolean> {
-        try {
-            await stat(this.filePath);
-            return true;
-        } catch {
-            return false;
-        }
+        return await this.file.exists();
     }
 }

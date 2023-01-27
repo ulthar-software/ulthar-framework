@@ -4,6 +4,8 @@ exports[`Get all files should get all files under a directory 1`] = `
 [
   "__snapshots__/get-all-files.spec.ts.snap",
   "errors.ts",
+  "file-options.ts",
+  "file.ts",
   "get-all-files.spec.ts",
   "get-all-files.ts",
   "index.ts",
@@ -13,5 +15,6 @@ exports[`Get all files should get all files under a directory 1`] = `
   "json-file.ts",
   "tests/not-a-json-file.txt",
   "tests/some-file.json",
+  "text-file.ts",
 ]
 `;
