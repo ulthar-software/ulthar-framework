@@ -39,4 +39,9 @@ export const YARN = {
             }
         );
     },
+    async packageRun(packageName: string, cmd: string[]) {
+        await $(["yarn", `packages/${packageName}`, ...cmd], {
+            pipeToStdout: true,
+        });
+    },
 };

@@ -64,9 +64,19 @@ createCLI({
         },
         {
             name: "build",
+            args: [
+                {
+                    name: "packageName",
+                    optional: true,
+                },
+            ],
             passExtraArgs: true,
-            handler: async ({ extraArgs }) => {
-                await YARN.workspacesRun(["build", ...extraArgs]);
+            handler: async ({ extraArgs, packageName }) => {
+                if (packageName) {
+                    await YARN.packageRun(packageName, ["build", ...extraArgs]);
+                } else {
+                    await YARN.workspacesRun(["build", ...extraArgs]);
+                }
             },
         },
         {

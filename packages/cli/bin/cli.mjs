@@ -102,10 +102,14 @@ var errors = new ErrorContainer({
 // ../commandy/dist/argument.js
 var Argument = class {
   _name;
+  _isOptional;
+  options;
   get name() {
     return this._name;
   }
-  options;
+  get isOptional() {
+    return this._isOptional;
+  }
   assertValidOption(value) {
     if (this.options.length > 0) {
       errors.assert(this.options.includes(value)).orThrow("INVALID_OPTION", {
@@ -116,6 +120,7 @@ var Argument = class {
   }
   constructor(opts) {
     this._name = opts.name;
+    this._isOptional = opts.optional ?? false;
     this.options = opts.options ? opts.options : [];
   }
   parse(value) {
@@ -263,7 +268,7 @@ var Command = class {
   }
   parsePositionalArgs(argv) {
     const parsedArgs = {};
-    errors.assert(argv.length >= this.positionalArguments.length && (argv.length === this.positionalArguments.length || this.passExtraArgs)).orThrow("INVALID_ARGUMENTS");
+    errors.assert(this.isValidAmountOfArgs(argv)).orThrow("INVALID_ARGUMENTS");
     this.positionalArguments.forEach((arg, i) => {
       parsedArgs[arg.name] = arg.parse(argv[i]);
     });
@@ -271,6 +276,13 @@ var Command = class {
       parsedArgs.extraArgs = argv.slice(this.positionalArguments.length);
     }
     return parsedArgs;
+  }
+  getRequiredPositionalArgumentsCount() {
+    return this.positionalArguments.filter((arg) => !arg.isOptional).length;
+  }
+  isValidAmountOfArgs(argv) {
+    const requiredArgsCount = this.getRequiredPositionalArgumentsCount();
+    return argv.length >= requiredArgsCount && (argv.length === requiredArgsCount || argv.length === this.positionalArguments.length || this.passExtraArgs);
   }
   parseLeafCommand(opts) {
     this.handler = opts.handler;
@@ -558,6 +570,11 @@ var YARN = {
     ], {
       pipeToStdout: true
     });
+  },
+  async packageRun(packageName, cmd) {
+    await $(["yarn", `packages/${packageName}`, ...cmd], {
+      pipeToStdout: true
+    });
   }
 };
 
@@ -611,9 +628,19 @@ createCLI({
     },
     {
       name: "build",
+      args: [
+        {
+          name: "packageName",
+          optional: true
+        }
+      ],
       passExtraArgs: true,
-      handler: async ({ extraArgs }) => {
-        await YARN.workspacesRun(["build", ...extraArgs]);
+      handler: async ({ extraArgs, packageName }) => {
+        if (packageName) {
+          await YARN.packageRun(packageName, ["build", ...extraArgs]);
+        } else {
+          await YARN.workspacesRun(["build", ...extraArgs]);
+        }
       }
     },
     {
