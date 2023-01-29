@@ -28,12 +28,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/commandy"\
       },\
       {\
+        "name": "@ulthar/debby",\
+        "reference": "workspace:packages/debby"\
+      },\
+      {\
         "name": "@ulthar/deppy",\
         "reference": "workspace:packages/deppy"\
       },\
       {\
         "name": "@ulthar/editor",\
         "reference": "workspace:packages/editor"\
+      },\
+      {\
+        "name": "@ulthar/editor-core",\
+        "reference": "workspace:packages/editor-core"\
       },\
       {\
         "name": "@ulthar/filey",\
@@ -66,8 +74,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@ulthar/blamey", ["workspace:packages/blamey"]],\
       ["@ulthar/cli", ["workspace:packages/cli"]],\
       ["@ulthar/commandy", ["workspace:packages/commandy"]],\
+      ["@ulthar/debby", ["workspace:packages/debby"]],\
       ["@ulthar/deppy", ["workspace:packages/deppy"]],\
       ["@ulthar/editor", ["workspace:packages/editor"]],\
+      ["@ulthar/editor-core", ["workspace:packages/editor-core"]],\
       ["@ulthar/filey", ["workspace:packages/filey"]],\
       ["@ulthar/framework", ["workspace:."]],\
       ["@ulthar/lib-template", ["workspace:templates/lib-template"]],\
@@ -1845,6 +1855,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/uuid", [\
+        ["npm:9.0.0", {\
+          "packageLocation": "./.yarn/cache/@types-uuid-npm-9.0.0-979023c16f-59ae56d954.zip/node_modules/@types/uuid/",\
+          "packageDependencies": [\
+            ["@types/uuid", "npm:9.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/yargs", [\
         ["npm:17.0.14", {\
           "packageLocation": "./.yarn/cache/@types-yargs-npm-17.0.14-dfaac868a7-7c57156043.zip/node_modules/@types/yargs/",\
@@ -1924,6 +1943,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@ulthar/debby", [\
+        ["workspace:packages/debby", {\
+          "packageLocation": "./packages/debby/",\
+          "packageDependencies": [\
+            ["@ulthar/debby", "workspace:packages/debby"],\
+            ["@types/jest", "npm:29.2.3"],\
+            ["@types/uuid", "npm:9.0.0"],\
+            ["@ulthar/typey", "workspace:packages/typey"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
+            ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
+            ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"],\
+            ["uuid", "npm:9.0.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@ulthar/deppy", [\
         ["workspace:packages/deppy", {\
           "packageLocation": "./packages/deppy/",\
@@ -1947,6 +1982,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ulthar/filey", "workspace:packages/filey"],\
             ["electron", "npm:22.1.0"],\
             ["electronmon", "npm:2.0.2"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
+            ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
+            ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@ulthar/editor-core", [\
+        ["workspace:packages/editor-core", {\
+          "packageLocation": "./packages/editor-core/",\
+          "packageDependencies": [\
+            ["@ulthar/editor-core", "workspace:packages/editor-core"],\
+            ["@types/jest", "npm:29.2.3"],\
             ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
@@ -6613,6 +6661,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/util-deprecate-npm-1.0.2-e3fe1a219c-474acf1146.zip/node_modules/util-deprecate/",\
           "packageDependencies": [\
             ["util-deprecate", "npm:1.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["uuid", [\
+        ["npm:9.0.0", {\
+          "packageLocation": "./.yarn/cache/uuid-npm-9.0.0-46c41e3e43-8dd2c83c43.zip/node_modules/uuid/",\
+          "packageDependencies": [\
+            ["uuid", "npm:9.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\

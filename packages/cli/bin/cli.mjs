@@ -403,46 +403,28 @@ var ERRORS = {
 };
 var Errors = new ErrorContainer(ERRORS);
 
-// ../filey/dist/json-file.js
+// ../filey/dist/text-file.js
+import { isAbsolute } from "path";
 import { readFile, rm, stat, writeFile } from "fs/promises";
-import path from "path";
-var JSONFile = class {
+var TextFile = class {
   filePath;
-  constructor(filePath) {
+  encoding;
+  constructor(filePath, opts) {
     this.filePath = filePath;
-    Errors.assert(path.isAbsolute(filePath)).orThrow("INVALID_RELATIVE_PATH", {
+    Errors.assert(isAbsolute(filePath)).orThrow("INVALID_RELATIVE_PATH", {
       path: filePath
     });
-  }
-  async readWithDefaultValue(defaultValue, opts = {}) {
-    let ensure = opts.writeIfMissing ?? false;
-    try {
-      return await this.read();
-    } catch {
-      if (ensure) {
-        await this.write(defaultValue);
-      }
-    }
-    return defaultValue;
+    this.encoding = opts?.encoding ?? "utf-8";
   }
   async read() {
-    let contents;
     try {
-      contents = await readFile(this.filePath, "utf-8");
+      return await readFile(this.filePath, this.encoding);
     } catch {
       throw Errors.render("MISSING_FILE", { path: this.filePath });
     }
-    try {
-      return JSON.parse(contents);
-    } catch (err) {
-      throw Errors.render("INVALID_JSON", {
-        path: this.filePath,
-        err: err.message
-      });
-    }
   }
   async write(content) {
-    await writeFile(this.filePath, JSON.stringify(content, null, 4), "utf-8");
+    await writeFile(this.filePath, content, this.encoding);
   }
   async delete() {
     try {
@@ -457,6 +439,47 @@ var JSONFile = class {
     } catch {
       return false;
     }
+  }
+};
+
+// ../filey/dist/json-file.js
+var JSONFile = class {
+  filePath;
+  file;
+  constructor(filePath, opts) {
+    this.filePath = filePath;
+    this.file = new TextFile(filePath, opts);
+  }
+  async readWithDefaultValue(defaultValue, opts = {}) {
+    let ensure = opts.writeIfMissing ?? false;
+    try {
+      return await this.read();
+    } catch {
+      if (ensure) {
+        await this.write(defaultValue);
+      }
+    }
+    return defaultValue;
+  }
+  async read() {
+    let contents = await this.file.read();
+    try {
+      return JSON.parse(contents);
+    } catch (err) {
+      throw Errors.render("INVALID_JSON", {
+        path: this.filePath,
+        err: err.message
+      });
+    }
+  }
+  async write(content) {
+    await this.file.write(JSON.stringify(content, null, 4));
+  }
+  async delete() {
+    await this.file.delete();
+  }
+  async exists() {
+    return await this.file.exists();
   }
 };
 

@@ -1238,6 +1238,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/uuid@npm:^9":
+  version: 9.0.0
+  resolution: "@types/uuid@npm:9.0.0"
+  checksum: 59ae56d9547c8758588659da2a2b4c97cce79c2aae1798c892bb29452ef08e87859dea2ec3a66bfa88d0d2153147520be2b1893be920f9f0bc9c53a3207ea6aa
+  languageName: node
+  linkType: hard
+
 "@types/yargs-parser@npm:*":
   version: 21.0.0
   resolution: "@types/yargs-parser@npm:21.0.0"
@@ -1309,12 +1316,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@ulthar/debby@workspace:packages/debby":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/debby@workspace:packages/debby"
+  dependencies:
+    "@types/jest": ^29.2.3
+    "@types/uuid": ^9
+    "@ulthar/typey": "workspace:^"
+    jest: ^29.3.1
+    ts-jest: ^29.0.3
+    typescript: ^4.9.3
+    uuid: ^9.0.0
+  languageName: unknown
+  linkType: soft
+
 "@ulthar/deppy@workspace:packages/deppy":
   version: 0.0.0-use.local
   resolution: "@ulthar/deppy@workspace:packages/deppy"
   dependencies:
     "@types/jest": ^29.2.3
     "@ulthar/typey": "workspace:^"
+    jest: ^29.3.1
+    ts-jest: ^29.0.3
+    typescript: ^4.9.3
+  languageName: unknown
+  linkType: soft
+
+"@ulthar/editor-core@workspace:packages/editor-core":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/editor-core@workspace:packages/editor-core"
+  dependencies:
+    "@types/jest": ^29.2.3
     jest: ^29.3.1
     ts-jest: ^29.0.3
     typescript: ^4.9.3
@@ -5318,6 +5350,15 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 474acf1146cb2701fe3b074892217553dfcf9a031280919ba1b8d651a068c9b15d863b7303cb15bd00a862b498e6cf4ad7b4a08fb134edd5a6f7641681cb54a2
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 
