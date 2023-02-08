@@ -1322,6 +1322,7 @@ __metadata:
   dependencies:
     "@types/jest": ^29.2.3
     "@types/uuid": ^9
+    "@ulthar/blamey": "workspace:^"
     "@ulthar/typey": "workspace:^"
     jest: ^29.3.1
     ts-jest: ^29.0.3

@@ -16,6 +16,7 @@
         "test": "jest"
     },
     "dependencies": {
+        "@ulthar/blamey": "workspace:^",
         "@ulthar/typey": "workspace:^",
         "uuid": "^9.0.0"
     }

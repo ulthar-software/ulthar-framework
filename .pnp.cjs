@@ -1950,6 +1950,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ulthar/debby", "workspace:packages/debby"],\
             ["@types/jest", "npm:29.2.3"],\
             ["@types/uuid", "npm:9.0.0"],\
+            ["@ulthar/blamey", "workspace:packages/blamey"],\
             ["@ulthar/typey", "workspace:packages/typey"],\
             ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
