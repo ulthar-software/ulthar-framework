@@ -1,4 +1,4 @@
-import { Provider } from "./provider";
+import { Provider } from "./provider.js";
 
 export class Module {
     dependencies: Provider[] = [];

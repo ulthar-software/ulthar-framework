@@ -1,8 +1,8 @@
-import { Concept } from "./concept";
-import { Module } from "./module";
-import { Error } from "./error";
-import { Model } from "./model";
-import { Role } from "./role";
+import { Concept } from "./concept.js";
+import { Module } from "./module.js";
+import { Error } from "./error.js";
+import { Model } from "./model.js";
+import { Role } from "./role.js";
 
 export class Interactor extends Module {
     concepts: Concept[] = [];

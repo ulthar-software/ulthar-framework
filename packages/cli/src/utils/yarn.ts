@@ -1,5 +1,5 @@
 import { $ } from "@ulthar/shelly";
-import { loadConfig } from "./load-config";
+import { loadConfig } from "./load-config.js";
 
 export const YARN = {
     async addWorkspacePackage(

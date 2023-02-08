@@ -1,7 +1,7 @@
 import { dialog } from "electron";
-import { PickDirectoryDialogOptions } from "./dialog-options";
-import { DialogResult } from "./dialog-result";
-import { PickDialogResult } from "./pick-dialog-result";
+import { PickDirectoryDialogOptions } from "./dialog-options.js";
+import { DialogResult } from "./dialog-result.js";
+import { PickDialogResult } from "./pick-dialog-result.js";
 
 export async function showPickDirectoryDialog(
     opts: PickDirectoryDialogOptions

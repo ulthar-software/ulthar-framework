@@ -1,4 +1,4 @@
-import { DialogResult } from "./dialog-result";
+import { DialogResult } from "./dialog-result.js";
 
 export interface PickDialogResult {
     status: DialogResult;

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { createCLI } from "@ulthar/commandy";
-import { errors } from "./errors";
-import { loadConfig } from "./utils/load-config";
-import { YARN } from "./utils/yarn";
+import { errors } from "./errors.js";
+import { loadConfig } from "./utils/load-config.js";
+import { YARN } from "./utils/yarn.js";
 
 const { TEMPLATES } = await loadConfig();
 

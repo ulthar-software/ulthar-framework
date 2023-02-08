@@ -1,5 +1,5 @@
-import { Flag } from "../flag";
-import { isFlag } from "./is-flag";
+import { Flag } from "../flag.js";
+import { isFlag } from "./is-flag.js";
 
 export function parseFlagsUptoPositional(
     argv: string[],
