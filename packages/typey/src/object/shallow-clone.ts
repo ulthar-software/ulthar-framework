@@ -1,0 +1,23 @@
+import { isObject } from "./is-object.js";
+
+export function shallowClone<T>(originalThing: T): T {
+    if (!isObject(originalThing)) return originalThing;
+
+    if (Array.isArray(originalThing)) {
+        return shallowCloneArray(originalThing);
+    }
+
+    return shallowCloneObject(originalThing);
+}
+
+function shallowCloneArray<T extends Array<unknown>>(originalArray: T): T {
+    const newArray = [...originalArray] as T;
+    Object.setPrototypeOf(newArray, Object.getPrototypeOf(originalArray));
+    return newArray;
+}
+
+function shallowCloneObject<T>(originalObject: T): T {
+    const newObject = Object.assign({}, originalObject);
+    Object.setPrototypeOf(newObject, Object.getPrototypeOf(originalObject));
+    return newObject;
+}

@@ -1,13 +1,11 @@
-export * from "./types/maybe-promise.js";
-export * from "./types/typeof-class.js";
-export * from "./types/typeof-property.js";
-export * from "./types/class-of-type.js";
-export * from "./types/object-key-map.js";
+export * from "./types";
 
-export * from "./time/milliseconds.js";
+export * from "./time";
 
-export * from "./events/event-listener.js";
-export * from "./events/event-dispatcher.js";
+export * from "./events";
 
-export * from "./observables/observable.js";
-export * from "./observables/observable-subject.js";
+export * from "./observables";
+
+export * from "./object";
+
+export * from "./immutability";
