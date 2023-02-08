@@ -1,8 +1,8 @@
 import { isAbsolute } from "path";
 import { readFile, rm, stat, writeFile } from "fs/promises";
-import { Errors } from "./errors";
-import { FileOptions } from "./file-options";
-import { IFile } from "./file";
+import { Errors } from "./errors.js";
+import { FileOptions } from "./file-options.js";
+import { IFile } from "./file.js";
 
 export class TextFile implements IFile<string> {
     protected encoding;
