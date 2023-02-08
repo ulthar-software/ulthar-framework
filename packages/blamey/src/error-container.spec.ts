@@ -20,7 +20,7 @@ describe("Error Container", () => {
         } catch (err: any) {
             expect(err).toBeInstanceOf(BlameyError);
             const blErr = err as BlameyError;
-            expect(blErr.type).toBe(ErrorType.SYSTEM_ERROR);
+            expect(blErr.type).toBe(ErrorType.USER_ERROR);
         }
     });
 
