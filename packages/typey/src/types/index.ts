@@ -4,3 +4,5 @@ export * from "./typeof-property.js";
 export * from "./class-of-type.js";
 export * from "./object-key-map.js";
 export * from "./key-matching.js";
+export * from "./maybe.js";
+export * from "./optional.js";

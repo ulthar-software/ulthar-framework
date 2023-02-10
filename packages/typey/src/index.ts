@@ -9,3 +9,5 @@ export * from "./observables";
 export * from "./object";
 
 export * from "./immutability";
+
+export * from "./functions";
