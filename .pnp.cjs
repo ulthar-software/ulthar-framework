@@ -2071,6 +2071,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ulthar/shelly", "workspace:packages/shelly"],\
             ["@types/jest", "npm:29.2.3"],\
             ["@types/node", "npm:18.11.12"],\
+            ["@ulthar/typey", "workspace:packages/typey"],\
             ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
