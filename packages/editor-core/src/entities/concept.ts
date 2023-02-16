@@ -1,6 +1,10 @@
-import { Type } from "./type.js";
+import { Maybe } from "@ulthar/typey";
+import { Type } from "./types/type.js";
 
 export class Concept {
-    isConcrete = false;
-    type?: Type;
+    type: Maybe<Type>;
+
+    get isConcrete(): boolean {
+        return !!this.type;
+    }
 }
