@@ -9,9 +9,11 @@
     "devDependencies": {
         "@types/eslint": "^8",
         "@types/prettier": "^2",
+        "@typescript-eslint/eslint-plugin": "latest",
+        "@typescript-eslint/parser": "latest",
         "@ulthar/cli": "workspace:^",
         "@yarnpkg/sdks": "^3.0.0-rc.36",
-        "eslint": "^8.28.0",
+        "eslint": "^8.34.0",
         "jest": "npm:^29.3.1",
         "prettier": "^2.8.0",
         "ts-jest": "npm:^29.0.3",
