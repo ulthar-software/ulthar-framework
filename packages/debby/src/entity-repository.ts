@@ -1,13 +1,15 @@
-import { EntityId, EntityIdProperty, IEntity } from "./entity.js";
-
-export type FullEntityMutation<T extends IEntity> = Omit<T, "id">;
-
-export type PartialEntityMutation<T extends IEntity> = Partial<
-    FullEntityMutation<T>
->;
+import { Immutable, Maybe } from "@ulthar/typey";
+import { EntityId, IEntity } from "./entity.js";
+import {
+    FullEntityMutation,
+    PartialEntityMutation,
+} from "./types/entity-mutation.js";
 
 export interface IEntityRepository<T extends IEntity> {
-    findById(id: EntityId): Promise<T | null>;
-    mutate(id: EntityId, entityMutations: PartialEntityMutation<T>): Promise<T>;
-    save(entity: T): Promise<void>;
+    findById(id: EntityId): Promise<Maybe<Immutable<T>>>;
+    mutate(
+        id: EntityId,
+        entityMutations: PartialEntityMutation<T>
+    ): Promise<Immutable<T>>;
+    create(entity: FullEntityMutation<T>): Promise<Immutable<T>>;
 }

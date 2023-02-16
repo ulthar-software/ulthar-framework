@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { v4 as uuidV4 } from "uuid";
 import { IEntity } from "./entity";
 import { Errors } from "./errors";
@@ -5,8 +8,8 @@ import { InMemoryRepository } from "./in-memory-repository";
 
 describe("In-Memory Repository", () => {
     class TestEntity implements IEntity {
-        id: string = Date.now().toString();
-        name: string = "";
+        id = "";
+        name = "";
         someObject?: any;
     }
 
@@ -30,7 +33,7 @@ describe("In-Memory Repository", () => {
         expect(savedEntity!.name).toBe(originalEntity.name);
     });
 
-    it("should mutate an entity", async () => {
+    it("should mutate an entity and return a cloned updated object", async () => {
         const repo = new InMemoryRepository(TestEntity, {
             uuidFactory: uuidV4,
         });
@@ -55,11 +58,42 @@ describe("In-Memory Repository", () => {
         expect(savedEntity!.someObject).not.toEqual(originalEntity.someObject);
     });
 
+    it("should always return inmutable entities", async () => {
+        const repo = new InMemoryRepository(TestEntity, {
+            uuidFactory: uuidV4,
+        });
+
+        const originalEntity = await repo.create({
+            name: "anyString",
+            someObject: {
+                bar: "foo",
+            },
+        });
+        expect(() => {
+            //@ts-ignore
+            originalEntity.name = "anotherString";
+        }).toThrow();
+
+        const result = await repo.mutate(originalEntity.id, {
+            name: "anotherString",
+        });
+        expect(() => {
+            //@ts-ignore
+            result.name = "yetAnotherString";
+        }).toThrow();
+
+        const found = await repo.findById(originalEntity.id);
+        expect(() => {
+            //@ts-ignore
+            found!.name = "yetAnotherString";
+        }).toThrow();
+    });
+
     it("should return null if entity does not exists", async () => {
         const repo = new InMemoryRepository(TestEntity, {
             uuidFactory: uuidV4,
         });
-        expect(await repo.findById("banana")).toBeNull();
+        expect(await repo.findById("anyString")).toBeUndefined();
     });
 
     it("should fail to mutate an entity that does not exists", async () => {
@@ -67,10 +101,12 @@ describe("In-Memory Repository", () => {
             uuidFactory: uuidV4,
         });
         await expect(async () => {
-            await repo.mutate("banana", {
-                name: "thing",
+            await repo.mutate("anyString", {
+                name: "anotherString",
             });
-        }).rejects.toThrow(Errors.render("ENTITY_NOT_FOUND", { id: "banana" }));
+        }).rejects.toThrow(
+            Errors.render("ENTITY_NOT_FOUND", { id: "anyString" })
+        );
     });
 
     it("should create an entity given a partial", async () => {
@@ -78,43 +114,12 @@ describe("In-Memory Repository", () => {
             uuidFactory: uuidV4,
         });
         const entity = await repo.create({
-            name: "thing",
+            name: "anyString",
         });
 
         expect(entity instanceof TestEntity).toBe(true);
-        expect(entity.name).toBe("thing");
+        expect(entity.name).toBe("anyString");
         expect(entity.id).toEqual(expect.any(String));
-    });
-
-    it("should define indexable properties and do simple searches on them", async () => {
-        const repo = new InMemoryRepository(TestEntity, {
-            uuidFactory: uuidV4,
-            indexes: ["name"],
-        });
-        const originalEntity = await repo.create({
-            name: "bar",
-        });
-        const foundEntity = await repo.findOneByIndex("name", "bar");
-
-        expect(foundEntity).not.toBeNull();
-        expect(foundEntity).toEqual(originalEntity);
-
-        //Entities found by index remain inmutable.
-        foundEntity!.name = "baz";
-        const newFoundEntity = await repo.findOneByIndex("name", "bar");
-        expect(newFoundEntity!.name).not.toBe(foundEntity!.name);
-    });
-
-    it("should fail querying for a not defined index", async () => {
-        const repo = new InMemoryRepository(TestEntity, {
-            uuidFactory: uuidV4,
-        });
-        await repo.create({
-            name: "bar",
-        });
-        await expect(async () => {
-            const foundEntity = await repo.findOneByIndex("name", "bar");
-        }).rejects.toThrow(Errors.render("INDEX_NOT_DEFINED"));
     });
 
     // it("should define a find interface", async () => {
