@@ -4,7 +4,12 @@ module.exports = {
         es2021: true,
         node: true,
     },
-    extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    extends: [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:@typescript-eslint/strict",
+    ],
     overrides: [],
     parser: "@typescript-eslint/parser",
     parserOptions: {
@@ -12,10 +17,4 @@ module.exports = {
         sourceType: "module",
     },
     plugins: ["@typescript-eslint"],
-    rules: {
-        indent: ["error", 4],
-        "linebreak-style": ["error", "unix"],
-        quotes: ["error", "double", { allowTemplateLiterals: true }],
-        semi: ["error", "always"],
-    },
 };
