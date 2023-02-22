@@ -11,3 +11,5 @@ export * from "./object";
 export * from "./immutability";
 
 export * from "./functions";
+
+export * from "./pagination";
