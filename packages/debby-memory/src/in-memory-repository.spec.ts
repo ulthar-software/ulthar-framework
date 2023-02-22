@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { v4 as uuidV4 } from "uuid";
-import { IEntity } from "./entity";
+import { randomUUID } from "crypto";
+import { IEntity } from "@ulthar/debby";
 import { Errors } from "./errors";
 import { InMemoryRepository } from "./in-memory-repository";
 
@@ -15,7 +15,7 @@ describe("In-Memory Repository", () => {
 
     it("should save an entity and get a saved entity", async () => {
         const repo = new InMemoryRepository(TestEntity, {
-            uuidFactory: uuidV4,
+            uuidFactory: randomUUID,
         });
 
         const originalEntity = await repo.create({
@@ -35,7 +35,7 @@ describe("In-Memory Repository", () => {
 
     it("should mutate an entity and return a cloned updated object", async () => {
         const repo = new InMemoryRepository(TestEntity, {
-            uuidFactory: uuidV4,
+            uuidFactory: randomUUID,
         });
         const originalEntity = await repo.create({
             name: "Foo",
@@ -60,7 +60,7 @@ describe("In-Memory Repository", () => {
 
     it("should always return inmutable entities", async () => {
         const repo = new InMemoryRepository(TestEntity, {
-            uuidFactory: uuidV4,
+            uuidFactory: randomUUID,
         });
 
         const originalEntity = await repo.create({
@@ -91,14 +91,14 @@ describe("In-Memory Repository", () => {
 
     it("should return null if entity does not exists", async () => {
         const repo = new InMemoryRepository(TestEntity, {
-            uuidFactory: uuidV4,
+            uuidFactory: randomUUID,
         });
         expect(await repo.findById("anyString")).toBeUndefined();
     });
 
     it("should fail to mutate an entity that does not exists", async () => {
         const repo = new InMemoryRepository(TestEntity, {
-            uuidFactory: uuidV4,
+            uuidFactory: randomUUID,
         });
         await expect(async () => {
             await repo.mutate("anyString", {
@@ -111,7 +111,7 @@ describe("In-Memory Repository", () => {
 
     it("should create an entity given a partial", async () => {
         const repo = new InMemoryRepository(TestEntity, {
-            uuidFactory: uuidV4,
+            uuidFactory: randomUUID,
         });
         const entity = await repo.create({
             name: "anyString",
@@ -122,10 +122,7 @@ describe("In-Memory Repository", () => {
         expect(entity.id).toEqual(expect.any(String));
     });
 
-    // it("should define a find interface", async () => {
-    //     const repo = new InMemoryRepository(TestEntity);
-    //     const entity = await repo.find({
-    //         name: "banana",
-    //     });
-    // });
+    it("should define a find interface", async () => {
+        fail("test not implemented");
+    });
 });

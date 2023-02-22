@@ -4,13 +4,14 @@ import {
     makeDeepImmutable,
     Maybe,
 } from "@ulthar/typey";
-import { IEntityRepository } from "./entity-repository.js";
-import { EntityId, IEntity } from "./entity.js";
 import { Errors } from "./errors.js";
 import {
+    EntityId,
     FullEntityMutation,
+    IEntity,
+    IEntityRepository,
     PartialEntityMutation,
-} from "./types/entity-mutation.js";
+} from "@ulthar/debby";
 
 export interface InMemoryRepositoryOptions<T> {
     uuidFactory: () => string;
@@ -48,8 +49,8 @@ export class InMemoryRepository<T extends IEntity>
         entityMutations: PartialEntityMutation<T>
     ): Promise<Immutable<T>> {
         const oldEntity = this.table.get(id);
-        if (!oldEntity) Errors.throw("ENTITY_NOT_FOUND", { id });
-        const entity = Object.assign(oldEntity!, entityMutations);
+        if (!oldEntity) throw Errors.render("ENTITY_NOT_FOUND", { id });
+        const entity = Object.assign(oldEntity, entityMutations);
         return makeDeepImmutable(entity);
     }
 }

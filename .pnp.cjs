@@ -32,6 +32,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/debby"\
       },\
       {\
+        "name": "@ulthar/debby-memory",\
+        "reference": "workspace:packages/debby-memory"\
+      },\
+      {\
         "name": "@ulthar/deppy",\
         "reference": "workspace:packages/deppy"\
       },\
@@ -75,6 +79,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@ulthar/cli", ["workspace:packages/cli"]],\
       ["@ulthar/commandy", ["workspace:packages/commandy"]],\
       ["@ulthar/debby", ["workspace:packages/debby"]],\
+      ["@ulthar/debby-memory", ["workspace:packages/debby-memory"]],\
       ["@ulthar/deppy", ["workspace:packages/deppy"]],\
       ["@ulthar/editor", ["workspace:packages/editor"]],\
       ["@ulthar/editor-core", ["workspace:packages/editor-core"]],\
@@ -2172,6 +2177,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@ulthar/debby-memory", [\
+        ["workspace:packages/debby-memory", {\
+          "packageLocation": "./packages/debby-memory/",\
+          "packageDependencies": [\
+            ["@ulthar/debby-memory", "workspace:packages/debby-memory"],\
+            ["@types/jest", "npm:29.2.3"],\
+            ["@types/node", "npm:18.11.9"],\
+            ["@ulthar/blamey", "workspace:packages/blamey"],\
+            ["@ulthar/debby", "workspace:packages/debby"],\
+            ["@ulthar/typey", "workspace:packages/typey"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
+            ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
+            ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@ulthar/deppy", [\
         ["workspace:packages/deppy", {\
           "packageLocation": "./packages/deppy/",\
@@ -2208,6 +2230,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@ulthar/editor-core", "workspace:packages/editor-core"],\
             ["@types/jest", "npm:29.2.3"],\
+            ["@ulthar/debby", "workspace:packages/debby"],\
             ["@ulthar/typey", "workspace:packages/typey"],\
             ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\

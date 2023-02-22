@@ -1437,7 +1437,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/debby@workspace:packages/debby":
+"@ulthar/debby-memory@workspace:packages/debby-memory":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/debby-memory@workspace:packages/debby-memory"
+  dependencies:
+    "@types/jest": ^29.2.3
+    "@types/node": "npm:*"
+    "@ulthar/blamey": "workspace:^"
+    "@ulthar/debby": "workspace:^"
+    "@ulthar/typey": "workspace:^"
+    jest: ^29.3.1
+    ts-jest: ^29.0.3
+    typescript: ^4.9.3
+  languageName: unknown
+  linkType: soft
+
+"@ulthar/debby@workspace:^, @ulthar/debby@workspace:packages/debby":
   version: 0.0.0-use.local
   resolution: "@ulthar/debby@workspace:packages/debby"
   dependencies:
@@ -1469,6 +1484,7 @@ __metadata:
   resolution: "@ulthar/editor-core@workspace:packages/editor-core"
   dependencies:
     "@types/jest": ^29.2.3
+    "@ulthar/debby": "workspace:^"
     "@ulthar/typey": "workspace:^"
     jest: ^29.3.1
     ts-jest: ^29.0.3

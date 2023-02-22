@@ -1,11 +1,12 @@
 {
-    "name": "@ulthar/editor-core",
+    "name": "@ulthar/debby-memory",
     "packageManager": "yarn@3.3.0",
     "private": true,
     "type": "module",
     "main": "dist/index.js",
     "devDependencies": {
         "@types/jest": "^29.2.3",
+        "@types/node": "npm:*",
         "jest": "^29.3.1",
         "ts-jest": "^29.0.3",
         "typescript": "^4.9.3"
@@ -15,6 +16,7 @@
         "test": "jest"
     },
     "dependencies": {
+        "@ulthar/blamey": "workspace:^",
         "@ulthar/debby": "workspace:^",
         "@ulthar/typey": "workspace:^"
     }
