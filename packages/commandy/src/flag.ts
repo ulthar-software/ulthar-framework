@@ -1,4 +1,4 @@
-import { FlagOptions, FlagType } from "./flag-options";
+import { FlagOptions, FlagType } from "./flag-options.js";
 
 export class Flag {
     name: string;

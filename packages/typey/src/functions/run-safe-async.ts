@@ -1,4 +1,4 @@
-import { Maybe } from "../types/maybe";
+import { Maybe } from "../types/maybe.js";
 
 export async function runSafeAsync<T>(
     fn: () => Promise<T>

@@ -1,5 +1,5 @@
-import { Maybe } from "../types";
-import { PaginatedResult } from "./paginated-result";
+import { Maybe } from "../types/index.js";
+import { PaginatedResult } from "./paginated-result.js";
 
 export function getNextAndPrev<T>(result: PaginatedResult<T>): {
     next: Maybe<number>;

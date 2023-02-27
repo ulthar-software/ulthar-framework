@@ -1,4 +1,4 @@
-import { Maybe } from "../types/maybe";
+import { Maybe } from "../types/maybe.js";
 
 export function runSafeSync<T>(fn: () => T): [Maybe<T>, Maybe<Error>] {
     try {
