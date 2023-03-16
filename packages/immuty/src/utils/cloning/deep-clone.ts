@@ -1,4 +1,4 @@
-import { isObject } from "./is-object.js";
+import { isObject } from "../type-detection/is-object.js";
 
 export function deepClone<T>(originalThing: T): T {
     if (!isObject(originalThing)) return originalThing;

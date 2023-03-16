@@ -24,6 +24,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/cli"\
       },\
       {\
+        "name": "@ulthar/collecty",\
+        "reference": "workspace:packages/collecty"\
+      },\
+      {\
         "name": "@ulthar/commandy",\
         "reference": "workspace:packages/commandy"\
       },\
@@ -52,6 +56,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/filey"\
       },\
       {\
+        "name": "@ulthar/immuty",\
+        "reference": "workspace:packages/immuty"\
+      },\
+      {\
         "name": "@ulthar/orbit",\
         "reference": "workspace:packages/orbit"\
       },\
@@ -77,6 +85,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "fallbackExclusionList": [\
       ["@ulthar/blamey", ["workspace:packages/blamey"]],\
       ["@ulthar/cli", ["workspace:packages/cli"]],\
+      ["@ulthar/collecty", ["workspace:packages/collecty"]],\
       ["@ulthar/commandy", ["workspace:packages/commandy"]],\
       ["@ulthar/debby", ["workspace:packages/debby"]],\
       ["@ulthar/debby-memory", ["workspace:packages/debby-memory"]],\
@@ -85,6 +94,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@ulthar/editor-core", ["workspace:packages/editor-core"]],\
       ["@ulthar/filey", ["workspace:packages/filey"]],\
       ["@ulthar/framework", ["workspace:."]],\
+      ["@ulthar/immuty", ["workspace:packages/immuty"]],\
       ["@ulthar/lib-template", ["workspace:templates/lib-template"]],\
       ["@ulthar/orbit", ["workspace:packages/orbit"]],\
       ["@ulthar/shelly", ["workspace:packages/shelly"]],\
@@ -2144,6 +2154,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@ulthar/collecty", [\
+        ["workspace:packages/collecty", {\
+          "packageLocation": "./packages/collecty/",\
+          "packageDependencies": [\
+            ["@ulthar/collecty", "workspace:packages/collecty"],\
+            ["@types/jest", "npm:29.2.3"],\
+            ["@ulthar/blamey", "workspace:packages/blamey"],\
+            ["@ulthar/typey", "workspace:packages/typey"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
+            ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
+            ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@ulthar/commandy", [\
         ["workspace:packages/commandy", {\
           "packageLocation": "./packages/commandy/",\
@@ -2269,6 +2294,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
             ["prettier", "npm:2.8.0"],\
             ["ts-jest", "virtual:4e94c2aeed96589938af829e4ae006ebb07322c39f1e247061bea918d2f9aa0e79f6e18e4fc1e3f3cd986dff06e30f57393206b6ed824e8d615b84478c7c0b21#npm:29.0.3"],\
+            ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@ulthar/immuty", [\
+        ["workspace:packages/immuty", {\
+          "packageLocation": "./packages/immuty/",\
+          "packageDependencies": [\
+            ["@ulthar/immuty", "workspace:packages/immuty"],\
+            ["@types/jest", "npm:29.2.3"],\
+            ["@ulthar/blamey", "workspace:packages/blamey"],\
+            ["@ulthar/typey", "workspace:packages/typey"],\
+            ["jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.3.1"],\
+            ["ts-jest", "virtual:935d7e4fb0f6e20f2c940fb8bdc8936ddde00b553215def539f918bed61edca9ea55bc013ac0b1110efe67b3495212ff278d89360fd10c7937cf335dd1ada435#npm:29.0.3"],\
             ["typescript", "patch:typescript@npm%3A4.9.3#~builtin<compat/typescript>::version=4.9.3&hash=d73830"]\
           ],\
           "linkType": "SOFT"\

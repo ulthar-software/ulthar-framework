@@ -8,8 +8,6 @@ export * from "./observables/index.js";
 
 export * from "./object/index.js";
 
-export * from "./immutability/index.js";
-
 export * from "./functions/index.js";
 
 export * from "./pagination/index.js";

@@ -1,6 +1,6 @@
 import { shallowClone } from "./shallow-clone";
 
-describe("Deep Clone", () => {
+describe("Shallow Clone", () => {
     it("should clone a number", () => {
         const original = 42;
         const cloned = shallowClone(original);

@@ -1,5 +1,5 @@
-import { isDate } from "./is-date.js";
-import { isObject } from "./is-object.js";
+import { isDateObject } from "../type-detection/is-date-object.js";
+import { isObject } from "../type-detection/is-object.js";
 
 /**
  * Generates a deep object diff.
@@ -25,7 +25,7 @@ export function objectDiff<T extends Record<string, any>>(
     }
 
     //Handle dates
-    if (isDate(objectA) || isDate(objectB)) {
+    if (isDateObject(objectA) || isDateObject(objectB)) {
         if (objectA.valueOf() == objectB.valueOf()) return undefined;
         return {
             oldValue: objectA,

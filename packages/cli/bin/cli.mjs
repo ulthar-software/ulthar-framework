@@ -677,7 +677,12 @@ createCLI({
       name: "test",
       passExtraArgs: true,
       handler: async ({ extraArgs }) => {
-        await YARN.run(["jest", "--verbose", ...extraArgs]);
+        await YARN.run([
+          "jest",
+          "--verbose",
+          "--cache=false",
+          ...extraArgs
+        ]);
       }
     }
   ]

@@ -1423,6 +1423,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@ulthar/collecty@workspace:packages/collecty":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/collecty@workspace:packages/collecty"
+  dependencies:
+    "@types/jest": ^29.2.3
+    "@ulthar/blamey": "workspace:^"
+    "@ulthar/typey": "workspace:^"
+    jest: ^29.3.1
+    ts-jest: ^29.0.3
+    typescript: ^4.9.3
+  languageName: unknown
+  linkType: soft
+
 "@ulthar/commandy@workspace:^, @ulthar/commandy@workspace:packages/commandy":
   version: 0.0.0-use.local
   resolution: "@ulthar/commandy@workspace:packages/commandy"
@@ -1533,6 +1546,19 @@ __metadata:
     jest: "npm:^29.3.1"
     prettier: ^2.8.0
     ts-jest: "npm:^29.0.3"
+    typescript: ^4.9.3
+  languageName: unknown
+  linkType: soft
+
+"@ulthar/immuty@workspace:packages/immuty":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/immuty@workspace:packages/immuty"
+  dependencies:
+    "@types/jest": ^29.2.3
+    "@ulthar/blamey": "workspace:^"
+    "@ulthar/typey": "workspace:^"
+    jest: ^29.3.1
+    ts-jest: ^29.0.3
     typescript: ^4.9.3
   languageName: unknown
   linkType: soft
