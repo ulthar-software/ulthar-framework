@@ -15,13 +15,20 @@ createCLI({
             commands: [
                 {
                     name: "new",
-                    flags: [{ type: "value", name: "type", aliases: ["t"] }],
+                    flags: [
+                        { name: "type", type: "value", aliases: ["t"] },
+                        {
+                            name: "directory",
+                            type: "value",
+                            aliases: ["d"],
+                        },
+                    ],
                     args: [
                         {
                             name: "packageName",
                         },
                     ],
-                    handler: async ({ packageName, type }) => {
+                    handler: async ({ packageName, type, directory }) => {
                         type = type ?? "lib";
                         const validTypes = Object.keys(TEMPLATES);
                         errors
@@ -31,8 +38,8 @@ createCLI({
                                 validTypes,
                             });
 
-                        await YARN.addWorkspacePackage(packageName);
-                        await TEMPLATES[type].applyTo(packageName);
+                        await YARN.addWorkspacePackage(packageName, directory);
+                        await TEMPLATES[type].applyTo(packageName, directory);
                         await YARN.update();
                     },
                 },
