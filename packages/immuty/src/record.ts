@@ -1,3 +1,4 @@
+import { deepClone } from "./utils/cloning/deep-clone.js";
 import { shallowClone } from "./utils/cloning/shallow-clone.js";
 
 export class ImmutableRecord<T extends Record<string, any>> {
@@ -8,17 +9,27 @@ export class ImmutableRecord<T extends Record<string, any>> {
     }
 
     set<K extends keyof T>(key: K, value: T[K]) {
-        return this.mutate((obj) => (obj[key] = value));
+        return this.shallowMutate((obj) => (obj[key] = value));
     }
 
-    mutate(mutation: (value: T) => void) {
-        const newObj = this.copy();
+    shallowMutate(mutation: (value: T) => void) {
+        const newObj = this.shallowClone();
         mutation(newObj.value);
         return newObj;
     }
 
-    copy() {
+    deepMutate(mutation: (value: T) => void) {
+        const newObj = this.deepClone();
+        mutation(newObj.value);
+        return newObj;
+    }
+
+    shallowClone() {
         return new ImmutableRecord(shallowClone(this.value));
+    }
+
+    deepClone() {
+        return new ImmutableRecord(deepClone(this.value));
     }
 
     asMutable() {

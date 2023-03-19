@@ -7,9 +7,7 @@ describe("Immutable Record", () => {
         };
 
         const immutable = new ImmutableRecord(plainObj);
-        const copy = immutable.mutate((obj) => {
-            obj.foo = "baz";
-        });
+        const copy = immutable.shallowMutate((o) => (o.foo = "baz"));
 
         expect(immutable.get("foo")).not.toBe(copy.get("foo"));
         expect(immutable).not.toBe(copy);
