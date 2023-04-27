@@ -37,6 +37,6 @@ export class ImmutableRecord<T extends Record<string, any>> {
     }
 
     toJSON() {
-        return this.value;
+        return deepClone(this.value);
     }
 }

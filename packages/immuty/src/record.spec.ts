@@ -41,4 +41,17 @@ describe("Immutable Record", () => {
         expect(immutable).not.toEqual(plainObj);
         expect(immutable.asMutable()).toEqual(plainObj);
     });
+
+    test("Given an immutable record, making a deep mutation returns a new immutable record", () => {
+        const immutable = new ImmutableRecord({
+            foo: {
+                bar: "baz",
+            },
+        });
+        const copy = immutable.deepMutate((o) => (o.foo.bar = "qux"));
+
+        expect(immutable.get("foo").bar).not.toBe(copy.get("foo").bar);
+        expect(immutable.get("foo")).not.toBe(copy.get("foo"));
+        expect(immutable).not.toBe(copy);
+    });
 });
