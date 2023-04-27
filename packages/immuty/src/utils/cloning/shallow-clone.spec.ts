@@ -1,3 +1,4 @@
+import { ICloneable } from "./cloneable.js";
 import { shallowClone } from "./shallow-clone";
 
 describe("Shallow Clone", () => {
@@ -49,5 +50,24 @@ describe("Shallow Clone", () => {
 
         expect(cloned.aFunction).toEqual(original.aFunction);
         expect(cloned instanceof Test).toBe(true);
+    });
+
+    it("should clone a cloneable object", () => {
+        const fn = jest.fn();
+        class Test implements ICloneable<Test> {
+            aFunction() {
+                return this.name;
+            }
+            constructor(private name: string) {}
+            clone(): Test {
+                fn();
+                return new Test(this.name);
+            }
+        }
+        const original = new Test("A name");
+        const cloned = shallowClone(original);
+        expect(cloned.aFunction).toEqual(original.aFunction);
+        expect(cloned instanceof Test).toBe(true);
+        expect(fn).toBeCalledTimes(1);
     });
 });
