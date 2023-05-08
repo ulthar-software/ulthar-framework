@@ -9,7 +9,11 @@ export class Interactor extends Module {
     throws: Error[] = [];
     roles: Role[] = [];
 
-    constructor(public requestModel: Model, public responseModel: Model) {
-        super();
+    constructor(
+        name: string,
+        public requestModel: Model,
+        public responseModel: Model
+    ) {
+        super(name);
     }
 }
