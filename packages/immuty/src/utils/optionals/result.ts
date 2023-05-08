@@ -1,18 +1,40 @@
-export class Result<T, const E extends string> {
-    static of<T>(value: T): Result<T, never> {
-        return new Result(value);
-    }
-    static err<const E extends string>(err: E): Result<any, E> {
-        return new Result(null, err);
-    }
+export type Result<T, E> = Value<T> | Error<E>;
 
-    private constructor(private value: T, private err?: E) {}
-
-    match(matcher: ResultPatternMatcher<T, E>): void {
-        if (this.value) matcher.just(this.value);
-        else matcher.err(this.err!);
-    }
+export interface Error<E> {
+    error: E;
 }
+
+export interface Value<T> {
+    value: T;
+}
+
+export const Result = {
+    of<T>(value: T): Value<T> {
+        return { value };
+    },
+    err<const E extends string>(error: E): Error<E> {
+        return { error };
+    },
+    match<T, E>(
+        result: Result<T, E>,
+        matcher: ResultPatternMatcher<T, E>
+    ): void {
+        if (this.succeeded(result)) matcher.just(result.value);
+        else matcher.err(result.error);
+    },
+    failed<T, E>(result: Result<T, E>): result is Error<E> {
+        return (<any>result).error !== undefined;
+    },
+    succeeded<T, E>(result: Result<T, E>): result is Value<T> {
+        return (<any>result).value !== undefined;
+    },
+    unwrap<T>(result: Value<T>): T {
+        return result.value;
+    },
+    unwrapError<E>(result: Error<E>): E {
+        return result.error;
+    },
+} as const;
 
 export interface ResultPatternMatcher<T, E> {
     just: (value: T) => void;
