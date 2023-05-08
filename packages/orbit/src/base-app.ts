@@ -5,10 +5,10 @@ import {
     ipcMain,
     Menu,
 } from "electron";
-import { EVENTS } from "./electron-events";
-import { openFileEventHandler } from "./handlers/open-file-event-handler";
-import { pickDirectoryEventHandler } from "./handlers/pick-directory-event-handler";
-import { pickFileEventHandler } from "./handlers/pick-file-event-handler";
+import { EVENTS } from "./electron-events.js";
+import { openFileEventHandler } from "./handlers/open-file-event-handler.js";
+import { pickDirectoryEventHandler } from "./handlers/pick-directory-event-handler.js";
+import { pickFileEventHandler } from "./handlers/pick-file-event-handler.js";
 
 export class BaseApp {
     protected electronApp: ElectronApp;

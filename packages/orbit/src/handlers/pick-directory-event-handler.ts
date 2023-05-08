@@ -1,6 +1,6 @@
 import { IpcMainInvokeEvent } from "electron";
-import { PickDirectoryDialogOptions } from "../dialogs/dialog-options";
-import { showPickDirectoryDialog } from "../dialogs/pick-directory-dialog";
+import { PickDirectoryDialogOptions } from "../dialogs/dialog-options.js";
+import { showPickDirectoryDialog } from "../dialogs/pick-directory-dialog.js";
 
 export async function pickDirectoryEventHandler(
     event: IpcMainInvokeEvent,

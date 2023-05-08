@@ -1,9 +1,9 @@
-import { ParsedConfig } from "./parsed-config";
-import { PackageTemplate } from "./package-template";
+import { ParsedConfig } from "./parsed-config.js";
+import { PackageTemplate } from "./package-template.js";
 import { JSONFile } from "@ulthar/filey";
 import { join } from "path";
-import { Config, getDefaultConfig } from "./config";
-import { resolveRootDir } from "./resolve-root-dir";
+import { Config, getDefaultConfig } from "./config.js";
+import { resolveRootDir } from "./resolve-root-dir.js";
 
 export async function loadConfig(): Promise<ParsedConfig> {
     const rootDir = await resolveRootDir();

@@ -3,7 +3,7 @@ const config = {
     projects: ["<rootDir>/packages/*"],
     collectCoverage: true,
     coverageDirectory: "<rootDir>/coverage",
-    cache: false,
+    collectCoverageFrom: ["**/*.{ts,tsx}", "!dist/**/*"],
 };
 
 export default config;

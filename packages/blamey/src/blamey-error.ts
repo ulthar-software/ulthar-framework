@@ -1,4 +1,4 @@
-import { ErrorType } from "./error-type";
+import { ErrorType } from "./error-type.js";
 
 export class BlameyError extends Error {
     public get type(): ErrorType {

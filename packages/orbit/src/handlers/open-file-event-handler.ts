@@ -1,8 +1,8 @@
 import { IpcMainInvokeEvent } from "electron";
 import { TextFile, JSONFile, IFile } from "@ulthar/filey";
-import { OpenFileDialogOptions } from "../dialogs/dialog-options";
-import { DialogResult } from "../dialogs/dialog-result";
-import { showPickFileDialog } from "../dialogs/pick-file-dialog";
+import { OpenFileDialogOptions } from "../dialogs/dialog-options.js";
+import { DialogResult } from "../dialogs/dialog-result.js";
+import { showPickFileDialog } from "../dialogs/pick-file-dialog.js";
 
 export interface OpenFileEventHandlerResult {
     path?: string;

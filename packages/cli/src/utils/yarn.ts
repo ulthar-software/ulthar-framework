@@ -1,27 +1,27 @@
-import { $ } from "@ulthar/shelly";
-import { loadConfig } from "./load-config";
+import { $$ } from "@ulthar/shelly";
+import { loadConfig } from "./load-config.js";
 
 export const YARN = {
     async addWorkspacePackage(
         packageName: string,
         packagesDir: string = "packages"
     ) {
-        await $([`yarn`, `${packagesDir}/${packageName}`, `init`]);
+        await $$([`yarn`, `${packagesDir}/${packageName}`, `init`]);
     },
     async addPackages(packages: string[]) {
-        await $(["yarn", "add", ...packages], { pipeToStdout: true });
+        await $$(["yarn", "add", ...packages], { pipeToStdout: true });
     },
     async update() {
-        await $([`yarn`, `install`]);
+        await $$([`yarn`, `install`]);
     },
     async run(cmd: string[]) {
-        await $(["yarn", ...cmd], {
+        await $$(["yarn", ...cmd], {
             pipeToStdout: true,
         });
     },
     async workspacesRun(cmd: string[]) {
         const { TEMPLATES } = await loadConfig();
-        await $(
+        await $$(
             [
                 "yarn",
                 "workspaces foreach",
@@ -40,7 +40,7 @@ export const YARN = {
         );
     },
     async packageRun(packageName: string, cmd: string[]) {
-        await $(["yarn", `packages/${packageName}`, ...cmd], {
+        await $$(["yarn", `packages/${packageName}`, ...cmd], {
             pipeToStdout: true,
         });
     },

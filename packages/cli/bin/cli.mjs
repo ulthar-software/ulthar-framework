@@ -80,7 +80,7 @@ var ErrorType;
 var ErrorTemplate = class {
   errorType;
   template;
-  constructor(template, errorType = ErrorType.SYSTEM_ERROR) {
+  constructor(template, errorType = ErrorType.USER_ERROR) {
     this.errorType = errorType;
     this.template = new Template(template);
   }
@@ -361,38 +361,45 @@ var errors2 = new ErrorContainer({
 
 // ../shelly/dist/shell.js
 import { exec } from "node:child_process";
-async function shell(command, opts = {}) {
-  const pipeToStdout = opts.pipeToStdout ?? false;
-  const streamToPipe = opts.streamToPipe ?? process.stdout;
+
+// ../typey/dist/functions/run-safe-async.js
+async function runSafeAsync(fn) {
   try {
-    await (() => {
-      return new Promise((resolve, reject) => {
-        const parsedCommand = command.join(" ");
-        const env = {
-          ...process.env
-        };
-        if (pipeToStdout) {
-          env.FORCE_COLOR = "1";
-        }
-        const child = exec(parsedCommand, {
-          env
-        }, (error, stdout, stderr) => {
-          if (error) {
-            reject(stderr);
-          } else {
-            resolve(stdout);
-          }
-        });
-        if (pipeToStdout) {
-          child.stdout?.pipe(streamToPipe);
-          child.stderr?.pipe(streamToPipe);
-        }
-      });
-    })();
-  } catch {
+    return [await fn(), void 0];
+  } catch (err) {
+    return [void 0, err];
   }
 }
+
+// ../shelly/dist/shell.js
+var shell = (command, opts = {}) => {
+  const pipeToStdout = opts.pipeToStdout ?? false;
+  const streamToPipe = opts.streamToPipe ?? process.stdout;
+  return new Promise((resolve, reject) => {
+    const parsedCommand = command.join(" ");
+    const env = {
+      ...process.env
+    };
+    if (pipeToStdout) {
+      env.FORCE_COLOR = "1";
+    }
+    const child = exec(parsedCommand, {
+      env
+    }, (error, stdout, stderr) => {
+      if (error) {
+        reject(stderr);
+      } else {
+        resolve(stdout);
+      }
+    });
+    if (pipeToStdout) {
+      child.stdout?.pipe(streamToPipe);
+      child.stderr?.pipe(streamToPipe);
+    }
+  });
+};
 var $ = shell;
+var $$ = async (command, opts = {}) => await runSafeAsync(() => $(command, opts));
 
 // ../filey/dist/errors.js
 var ERRORS = {
@@ -403,46 +410,28 @@ var ERRORS = {
 };
 var Errors = new ErrorContainer(ERRORS);
 
-// ../filey/dist/json-file.js
+// ../filey/dist/text-file.js
+import { isAbsolute } from "path";
 import { readFile, rm, stat, writeFile } from "fs/promises";
-import path from "path";
-var JSONFile = class {
+var TextFile = class {
   filePath;
-  constructor(filePath) {
+  encoding;
+  constructor(filePath, opts) {
     this.filePath = filePath;
-    Errors.assert(path.isAbsolute(filePath)).orThrow("INVALID_RELATIVE_PATH", {
+    Errors.assert(isAbsolute(filePath)).orThrow("INVALID_RELATIVE_PATH", {
       path: filePath
     });
-  }
-  async readWithDefaultValue(defaultValue, opts = {}) {
-    let ensure = opts.writeIfMissing ?? false;
-    try {
-      return await this.read();
-    } catch {
-      if (ensure) {
-        await this.write(defaultValue);
-      }
-    }
-    return defaultValue;
+    this.encoding = opts?.encoding ?? "utf-8";
   }
   async read() {
-    let contents;
     try {
-      contents = await readFile(this.filePath, "utf-8");
+      return await readFile(this.filePath, this.encoding);
     } catch {
       throw Errors.render("MISSING_FILE", { path: this.filePath });
     }
-    try {
-      return JSON.parse(contents);
-    } catch (err) {
-      throw Errors.render("INVALID_JSON", {
-        path: this.filePath,
-        err: err.message
-      });
-    }
   }
   async write(content) {
-    await writeFile(this.filePath, JSON.stringify(content, null, 4), "utf-8");
+    await writeFile(this.filePath, content, this.encoding);
   }
   async delete() {
     try {
@@ -457,6 +446,47 @@ var JSONFile = class {
     } catch {
       return false;
     }
+  }
+};
+
+// ../filey/dist/json-file.js
+var JSONFile = class {
+  filePath;
+  file;
+  constructor(filePath, opts) {
+    this.filePath = filePath;
+    this.file = new TextFile(filePath, opts);
+  }
+  async readWithDefaultValue(defaultValue, opts = {}) {
+    let ensure = opts.writeIfMissing ?? false;
+    try {
+      return await this.read();
+    } catch {
+      if (ensure) {
+        await this.write(defaultValue);
+      }
+    }
+    return defaultValue;
+  }
+  async read() {
+    let contents = await this.file.read();
+    try {
+      return JSON.parse(contents);
+    } catch (err) {
+      throw Errors.render("INVALID_JSON", {
+        path: this.filePath,
+        err: err.message
+      });
+    }
+  }
+  async write(content) {
+    await this.file.write(JSON.stringify(content, null, 4));
+  }
+  async delete() {
+    await this.file.delete();
+  }
+  async exists() {
+    return await this.file.exists();
   }
 };
 
@@ -544,22 +574,22 @@ async function loadConfig() {
 // dist/utils/yarn.js
 var YARN = {
   async addWorkspacePackage(packageName, packagesDir = "packages") {
-    await $([`yarn`, `${packagesDir}/${packageName}`, `init`]);
+    await $$([`yarn`, `${packagesDir}/${packageName}`, `init`]);
   },
   async addPackages(packages) {
-    await $(["yarn", "add", ...packages], { pipeToStdout: true });
+    await $$(["yarn", "add", ...packages], { pipeToStdout: true });
   },
   async update() {
-    await $([`yarn`, `install`]);
+    await $$([`yarn`, `install`]);
   },
   async run(cmd) {
-    await $(["yarn", ...cmd], {
+    await $$(["yarn", ...cmd], {
       pipeToStdout: true
     });
   },
   async workspacesRun(cmd) {
     const { TEMPLATES: TEMPLATES2 } = await loadConfig();
-    await $([
+    await $$([
       "yarn",
       "workspaces foreach",
       ...Object.keys(TEMPLATES2).map((k) => `--exclude @ulthar/${TEMPLATES2[k].templatePackageName}`),
@@ -572,7 +602,7 @@ var YARN = {
     });
   },
   async packageRun(packageName, cmd) {
-    await $(["yarn", `packages/${packageName}`, ...cmd], {
+    await $$(["yarn", `packages/${packageName}`, ...cmd], {
       pipeToStdout: true
     });
   }
@@ -588,21 +618,28 @@ createCLI({
       commands: [
         {
           name: "new",
-          flags: [{ type: "value", name: "type", aliases: ["t"] }],
+          flags: [
+            { name: "type", type: "value", aliases: ["t"] },
+            {
+              name: "directory",
+              type: "value",
+              aliases: ["d"]
+            }
+          ],
           args: [
             {
               name: "packageName"
             }
           ],
-          handler: async ({ packageName, type }) => {
+          handler: async ({ packageName, type, directory }) => {
             type = type ?? "lib";
             const validTypes = Object.keys(TEMPLATES);
             errors2.assert(validTypes.includes(type)).orThrow("INVALID_TEMPLATE_TYPE", {
               type,
               validTypes
             });
-            await YARN.addWorkspacePackage(packageName);
-            await TEMPLATES[type].applyTo(packageName);
+            await YARN.addWorkspacePackage(packageName, directory);
+            await TEMPLATES[type].applyTo(packageName, directory);
             await YARN.update();
           }
         }
@@ -647,7 +684,12 @@ createCLI({
       name: "test",
       passExtraArgs: true,
       handler: async ({ extraArgs }) => {
-        await YARN.run(["jest", "--verbose", ...extraArgs]);
+        await YARN.run([
+          "jest",
+          "--verbose",
+          "--cache=false",
+          ...extraArgs
+        ]);
       }
     }
   ]

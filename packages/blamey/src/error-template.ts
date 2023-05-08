@@ -7,7 +7,7 @@ export class ErrorTemplate {
 
     constructor(
         template: string,
-        private errorType: ErrorType = ErrorType.SYSTEM_ERROR
+        private errorType: ErrorType = ErrorType.USER_ERROR
     ) {
         this.template = new Template(template);
     }

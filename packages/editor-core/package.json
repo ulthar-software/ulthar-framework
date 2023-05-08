@@ -1,0 +1,20 @@
+{
+    "name": "@ulthar/editor-core",
+    "packageManager": "yarn@3.3.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "devDependencies": {
+        "@types/jest": "^29.5.1",
+        "jest": "^29.5.0",
+        "ts-jest": "^29.1.0",
+        "typescript": "^5.0.4"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.lib.json",
+        "test": "jest"
+    },
+    "dependencies": {
+        "@ulthar/typey": "workspace:^"
+    }
+}

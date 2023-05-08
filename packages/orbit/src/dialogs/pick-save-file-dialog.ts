@@ -1,6 +1,6 @@
 import { dialog } from "electron";
-import { DialogResult } from "./dialog-result";
-import { PickDialogResult } from "./pick-dialog-result";
+import { DialogResult } from "./dialog-result.js";
+import { PickDialogResult } from "./pick-dialog-result.js";
 
 export async function showPickSaveFileDialog(
     name: string,

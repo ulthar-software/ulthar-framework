@@ -1,7 +1,7 @@
 import { readdir } from "fs/promises";
 import { join } from "path";
-import { Errors } from "./errors";
-import { isDirectory } from "./is-directory";
+import { Errors } from "./errors.js";
+import { isDirectory } from "./is-directory.js";
 
 export async function getAllFilesInDirectory(dirPath: string) {
     Errors.assert(await isDirectory(dirPath)).orThrow("NOT_A_DIRECTORY", {

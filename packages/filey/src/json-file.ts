@@ -1,7 +1,7 @@
 import { Errors } from "./errors.js";
 import { FileOptions } from "./file-options.js";
 import { IFile } from "./file.js";
-import { TextFile } from "./text-file";
+import { TextFile } from "./text-file.js";
 
 export class JSONFile<T extends Record<string, any> = Record<string, any>>
     implements IFile<T>
