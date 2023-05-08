@@ -1,4 +1,5 @@
 import { ImmutableArray } from "./array.js";
+import { Result } from "./utils/optionals/result.js";
 
 describe("Immutable Array", () => {
     test("Given an array, create an immutable array of it", () => {
@@ -110,9 +111,29 @@ describe("Immutable Array", () => {
         const immutable = new ImmutableArray([1, 2, 3]);
         const result = immutable.find((e) => e === 2);
 
+        if (Result.failed(result)) {
+            fail("Expected to find the element");
+        }
+        const value = Result.unwrap(result);
+
         expect(immutable.get(0)).toBe(1);
         expect(immutable.get(1)).toBe(2);
         expect(immutable.get(2)).toBe(3);
-        expect(result).toBe(2);
+        expect(value).toBe(2);
+    });
+
+    test("Given an immutable array, trying to find a missing elements returns an Error result", () => {
+        const immutable = new ImmutableArray([1, 2, 3]);
+        const result = immutable.find((e) => e === 4);
+
+        if (Result.succeeded(result)) {
+            fail("Expected to not find the element");
+        }
+        const error = Result.unwrapError(result);
+
+        expect(immutable.get(0)).toBe(1);
+        expect(immutable.get(1)).toBe(2);
+        expect(immutable.get(2)).toBe(3);
+        expect(error).toBe("Element not found");
     });
 });

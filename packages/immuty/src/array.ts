@@ -2,6 +2,7 @@ import { Func, KeysMatching, ObjectKey } from "@ulthar/typey";
 import { shallowClone } from "./utils/cloning/shallow-clone.js";
 import { mutateShallow } from "./utils/mutation/mutate-shallow.js";
 import { DeepReadonly } from "./utils/readonly/deep-readonly.js";
+import { Result } from "./utils/optionals/result.js";
 
 export class ImmutableArray<T> {
     private _innerArray: T[] = [];
@@ -38,8 +39,12 @@ export class ImmutableArray<T> {
         return new ImmutableArray(this._innerArray.filter(predicate));
     }
 
-    find(predicate: (value: DeepReadonly<T>, index: number) => boolean): T {
-        return this._innerArray.find(predicate);
+    find(
+        predicate: (value: DeepReadonly<T>, index: number) => boolean
+    ): Result<T, "Element not found"> {
+        const value = this._innerArray.find(predicate);
+        if (value) return Result.of(value);
+        return Result.err("Element not found");
     }
 
     reduce<U>(
