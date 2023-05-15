@@ -1,0 +1,52 @@
+export const SlideElementStylesPropertyNames = [
+    "width",
+    "height",
+    "backgroundColor",
+    "backgroundImage",
+    "backgroundSize",
+    "backgroundPosition",
+    "backgroundRepeat",
+    "color",
+    "fontFamily",
+    "fontSize",
+    "fontWeight",
+    "fontStyle",
+    "textAlign",
+    "textTransform",
+    "textDecoration",
+    "lineHeight",
+    "letterSpacing",
+    "padding",
+    "margin",
+    "border",
+    "borderRadius",
+    "boxShadow",
+    "opacity",
+    "transform",
+    "transition",
+    "zIndex",
+    "overflow",
+    "position",
+    "top",
+    "right",
+    "bottom",
+    "left",
+    "display",
+    "flexDirection",
+    "flexWrap",
+    "justifyContent",
+    "alignItems",
+    "alignContent",
+    "flexBasis",
+    "flexGrow",
+    "flexShrink",
+    "order",
+    "animation",
+] as const;
+
+export type SlideElementStylesPropertyName =
+    (typeof SlideElementStylesPropertyNames)[number];
+
+export type SlideElementStyles = {
+    [k in SlideElementStylesPropertyName]?: string;
+};
