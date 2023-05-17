@@ -49,4 +49,12 @@ export class Container<TokenTypeMap extends Record<string, unknown>> {
         }
         return this.dependencies[key];
     }
+
+    getPlainDependencyMap(): TokenTypeMap {
+        const map = {} as Record<string, unknown>;
+        for (const key in this.dependencies) {
+            map[key] = this.dependencies[key].current;
+        }
+        return map as TokenTypeMap;
+    }
 }
