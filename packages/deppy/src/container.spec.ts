@@ -66,4 +66,17 @@ describe("Dependency Injection Utils", () => {
         const resolved = container.resolve("dep1");
         expect(resolved).toBe(dep1);
     });
+
+    it("should get a plain dependency map", () => {
+        const dep1 = { foo: "bar" };
+        const dep2 = { banana: "manzana" };
+
+        container.register("dep1", dep1);
+        container.register("dep2", dep2);
+
+        expect(container.getPlainDependencyMap()).toEqual({
+            dep1,
+            dep2,
+        });
+    });
 });
