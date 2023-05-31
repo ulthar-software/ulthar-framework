@@ -11,15 +11,16 @@ export interface CodeElementProps {
 export function CodeElement({ element }: CodeElementProps) {
     const [code, setCode] = useState(element.properties.code);
     useEffect(() => {
-        if (element.properties.code !== code) setCode(element.properties.code);
         if (!element.properties.code) {
             (async () => {
                 const res = await fetch(element.properties.file!);
                 const code = await res.text();
                 setCode(code);
             })();
+            return;
         }
-    }, [element.properties.code]);
+        if (element.properties.code !== code) setCode(element.properties.code);
+    }, [element.properties.code, element.properties.file]);
 
     useEffect(() => {
         if (code) {

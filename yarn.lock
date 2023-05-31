@@ -107,7 +107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.21.0, @babel/core@npm:^7.21.4":
+"@babel/core@npm:^7.15.5, @babel/core@npm:^7.21.0, @babel/core@npm:^7.21.4":
   version: 7.21.8
   resolution: "@babel/core@npm:7.21.8"
   dependencies:
@@ -3284,6 +3284,15 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: ab0355efbad17d29492503230387679dfb780b63b25408990d2e4cf421012dae61d6199ddc309f4d2409ce4e9d3002d187702700dd8f4f8770ebbba651ed066c
+  languageName: node
+  linkType: hard
+
+"babel-plugin-prismjs@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "babel-plugin-prismjs@npm:2.1.0"
+  peerDependencies:
+    prismjs: ^1.18.0
+  checksum: 8bc59ca46b493cb255ec914e26a0dd39c1aaee881e3701d6726db40152d4a176a96ac1438f80b0d705b188bee4106538de809bc79dff9774400da3d8331affce
   languageName: node
   linkType: hard
 
@@ -6933,6 +6942,7 @@ __metadata:
     ts-jest: "npm:^29.1.0"
     typescript: ^5.0.2
     vite: ^4.3.2
+    vite-plugin-prismjs: ^0.0.8
   languageName: unknown
   linkType: soft
 
@@ -7447,6 +7457,16 @@ __metadata:
     "@types/istanbul-lib-coverage": ^2.0.1
     convert-source-map: ^1.6.0
   checksum: a49c34bf0a3af0c11041a3952a2600913904a983bd1bc87148b5c033bc5c1d02d5a13620fcdbfa2c60bc582a2e2970185780f0c844b4c3a220abf405f8af6311
+  languageName: node
+  linkType: hard
+
+"vite-plugin-prismjs@npm:^0.0.8":
+  version: 0.0.8
+  resolution: "vite-plugin-prismjs@npm:0.0.8"
+  dependencies:
+    "@babel/core": ^7.15.5
+    babel-plugin-prismjs: ^2.1.0
+  checksum: 71dd6048b6ec7663375d24b7500a8847b831fbefdd38376f1b7d3f488ef470e38ef6e102df7b7a438a4d69ebd5f0b6e1eccc08fedfcf7d8dfebb24b0fbfaae96
   languageName: node
   linkType: hard
 

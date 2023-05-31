@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 type Matcher = {
     tag: string;
+    regexp?: string;
     component: (props: { children: ReactNode }) => JSX.Element;
 };
 
@@ -16,18 +17,32 @@ export const Emph = styled.em(({ theme }) => ({
 const matchers: Matcher[] = [
     {
         tag: "**",
+        regexp: "\\*\\*",
         component: ({ children }) => <Strong>{children}</Strong>,
     },
     {
         tag: "__",
         component: ({ children }) => <Emph>{children}</Emph>,
     },
+    {
+        tag: "~~",
+        component: ({ children }) => (
+            <span
+                style={{
+                    textDecoration: "line-through",
+                }}
+            >
+                {children}
+            </span>
+        ),
+    },
 ];
 
 export function parseStringMarkdown(text: string): ReactNode[] | ReactNode {
     if (!text) return null;
 
-    const regex = new RegExp(`(\\*\\*|__)`);
+    const regexp = matchers.map((t) => t.regexp ?? t.tag).join("|");
+    const regex = new RegExp(`(${regexp})`, "g");
     const parts = text.split(regex);
 
     const result = parts

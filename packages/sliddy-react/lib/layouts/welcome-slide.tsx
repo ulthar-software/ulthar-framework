@@ -5,7 +5,6 @@ import { TitleHeading, Heading } from "../utils/heading.js";
 import { Logo } from "../utils/logo.js";
 import { MediaIFrame } from "../utils/media-iframe.js";
 import { parseStringMarkdown } from "../utils/parse-markdown.js";
-import { FlexSpacer } from "../utils/spacer.js";
 
 export interface WelcomeSlideProps {
     title: string;
@@ -37,7 +36,9 @@ export function WelcomeSlide({
                 }}
             >
                 <TitleHeading>{parseStringMarkdown(title)}</TitleHeading>
-                <Heading>{parseStringMarkdown(subtitle)}</Heading>
+                <Heading style={{ fontSize: "1.4em" }}>
+                    {parseStringMarkdown(subtitle)}
+                </Heading>
                 <Heading
                     style={{
                         position: "absolute",

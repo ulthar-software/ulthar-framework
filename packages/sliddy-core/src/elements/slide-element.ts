@@ -18,5 +18,5 @@ export interface SlideElement {
     type: SlideElementType;
     styles?: SlideElementStyles;
     properties?: Record<string, string>;
-    content?: string | string[] | SlideElement[];
+    content?: string | string[] | SlideElement[] | SlideElement[][];
 }

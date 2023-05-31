@@ -6,7 +6,15 @@ export interface UnorderedListElementProps {
 
 export function UnorderedListElement({ element }: UnorderedListElementProps) {
     return (
-        <ul style={{ ...element.styles } as any}>
+        <ul
+            style={
+                {
+                    padding: "18px",
+                    paddingLeft: "58px",
+                    ...element.styles,
+                } as any
+            }
+        >
             {element.content.map((item, index) => (
                 <li key={index}>{item}</li>
             ))}

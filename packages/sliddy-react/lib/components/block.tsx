@@ -1,6 +1,6 @@
 import { SlideElement } from "@ulthar/sliddy-core";
 import { FlexContainer } from "../utils/flex-container.tsx";
-import { createComponentFromElement } from "./component-factory.tsx";
+import { createComponentsFromElementArray } from "./component-factory.tsx";
 
 interface BlockElementProps {
     element: SlideElement;
@@ -12,12 +12,7 @@ export function BlockElement({ element }: BlockElementProps) {
     if (Array.isArray(element.content))
         return (
             <FlexContainer style={element.styles as any}>
-                {element.content.map((element: SlideElement | string) => {
-                    if (typeof element === "string") {
-                        return element;
-                    }
-                    return createComponentFromElement(element);
-                })}
+                {createComponentsFromElementArray(element.content)}
             </FlexContainer>
         );
     return (

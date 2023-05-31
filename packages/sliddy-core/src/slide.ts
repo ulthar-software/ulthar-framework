@@ -4,7 +4,7 @@ import { PropertyValue } from "./property-value.js";
 
 export interface Slide {
     type: string;
-    elements?: Array<SlideElement>;
+    elements?: SlideElement[] | SlideElement[][];
     properties?: Record<string, PropertyValue>;
     style?: SlideElementStyles;
     notes?: string;
