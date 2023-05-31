@@ -31,33 +31,28 @@ const DeckProgressSlider = styled.div(({ theme }) => ({
 }));
 
 export function DeckComponent({ deck }: DeckProps) {
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [currentIndex, setCurrentIndex] = useState<number>(-1);
     const [cursorPointer, setCursorPointer] = useState<boolean>(false);
 
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            console.log(event.key);
-            switch (event.key) {
-                case "ArrowLeft":
-                    setCurrentIndex((prevIndex) =>
-                        prevIndex > 0 ? prevIndex - 1 : prevIndex
-                    );
-                    break;
-                case "ArrowRight":
-                    setCurrentIndex((prevIndex) =>
-                        prevIndex < deck.slides.length - 1
-                            ? prevIndex + 1
-                            : prevIndex
-                    );
-                    break;
-                case "p":
-                    setCursorPointer((prev) => !prev);
-                    break;
-            }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [deck.slides.length]);
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        switch (event.key) {
+            case "ArrowLeft":
+                setCurrentIndex((prevIndex) =>
+                    prevIndex > 0 ? prevIndex - 1 : prevIndex
+                );
+                break;
+            case "ArrowRight":
+                setCurrentIndex((prevIndex) =>
+                    prevIndex < deck.slides.length - 1
+                        ? prevIndex + 1
+                        : prevIndex
+                );
+                break;
+            case "p":
+                setCursorPointer((prev) => !prev);
+                break;
+        }
+    };
 
     useEffect(() => {
         document.title = deck.name;
@@ -65,17 +60,24 @@ export function DeckComponent({ deck }: DeckProps) {
         const hash = window.location.hash;
         if (hash) {
             const index = parseInt(hash.substring(1));
+            console.log(index);
             if (!isNaN(index)) {
                 setCurrentIndex(index);
             }
+        } else {
+            setCurrentIndex(0);
         }
     }, []);
 
     useEffect(() => {
-        if (currentIndex > 0) {
-            window.location.hash = `#${currentIndex}`;
+        if (currentIndex >= 0) {
+            window.location.hash = `${currentIndex}`;
         }
     }, [currentIndex]);
+
+    if (currentIndex < 0) {
+        return null;
+    }
 
     const currentSlide = deck.slides[currentIndex];
 
@@ -95,34 +97,10 @@ export function DeckComponent({ deck }: DeckProps) {
                             ((currentIndex + 1) / deck.slides.length) * 100
                         }%`,
                     }}
+                    tabIndex={0}
+                    onKeyDown={handleKeyDown}
                 />
             </DeckContainer>
         </ThemeProvider>
     );
-    // return (
-    //     <ThemeProvider theme={deck.styles as DefaultTheme}>
-    //         <DeckContainer>
-    //             <SlideContainer
-    //                 style={{
-    //                     transform: `translateX(${translateX}%)`,
-    //                 }}
-    //             >
-    //                 {deck.slides.map((slide: any, index: number) => (
-    //                     <SlideComponent
-    //                         key={slide.id}
-    //                         index={index}
-    //                         slide={slide}
-    //                     />
-    //                 ))}
-    //             </SlideContainer>
-    //             <DeckProgressSlider
-    //                 style={{
-    //                     width: `${
-    //                         ((currentIndex + 1) / deck.slides.length) * 100
-    //                     }%`,
-    //                 }}
-    //             />
-    //         </DeckContainer>
-    //     </ThemeProvider>
-    // );
 }

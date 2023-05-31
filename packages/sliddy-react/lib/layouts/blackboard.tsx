@@ -19,7 +19,6 @@ export function Blackboard({ title, file }: BlackboardProps) {
                 const response = await fetch(file);
                 const blob = await response.blob();
                 const scene = await loadFromBlob(blob, null, null);
-                console.log(scene);
                 setScene(scene);
             } catch (err) {
                 console.error(err);
@@ -27,7 +26,7 @@ export function Blackboard({ title, file }: BlackboardProps) {
         })();
     }, [file]);
 
-    if (!scene) return <div>Loading...</div>;
+    if (file && !scene) return <div>Loading...</div>;
 
     return (
         <FlexContainer
@@ -42,7 +41,6 @@ export function Blackboard({ title, file }: BlackboardProps) {
                 <Excalidraw
                     UIOptions={{
                         canvasActions: {
-                            // saveAsImage: false,
                             loadScene: false,
                             export: {
                                 saveFileToDisk: true,
