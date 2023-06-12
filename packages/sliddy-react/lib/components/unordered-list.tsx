@@ -1,4 +1,5 @@
 import { SlideUnorderedListElement } from "@ulthar/sliddy-core";
+import { parseStringMarkdown } from "../utils/parse-markdown.tsx";
 
 export interface UnorderedListElementProps {
     element: SlideUnorderedListElement;
@@ -16,7 +17,7 @@ export function UnorderedListElement({ element }: UnorderedListElementProps) {
             }
         >
             {element.content.map((item, index) => (
-                <li key={index}>{item}</li>
+                <li key={index}>{parseStringMarkdown(item)}</li>
             ))}
         </ul>
     );
