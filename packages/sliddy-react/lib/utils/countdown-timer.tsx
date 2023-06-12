@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 export interface CountDownTimerProps {
     targetHour: number;
     targetMinute: number;
+    targetSeconds?: number;
     prependText?: string;
     timeoutMessage: string;
 }
@@ -25,6 +26,7 @@ function formatTime(time: number) {
 export function CountdownTimer({
     targetHour,
     targetMinute,
+    targetSeconds,
     timeoutMessage,
     prependText,
 }: CountDownTimerProps) {
@@ -39,7 +41,7 @@ export function CountdownTimer({
                 now.getDate(),
                 targetHour,
                 targetMinute,
-                0
+                targetSeconds ?? 0
             );
             let diff: number = target.valueOf() - now.valueOf();
 

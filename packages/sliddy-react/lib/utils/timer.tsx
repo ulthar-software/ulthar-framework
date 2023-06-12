@@ -15,6 +15,10 @@ export function Timer({
 }: TimerProps) {
     const [targetTimestamp, setTargetTimestamp] = useState<number | null>(null);
 
+    const startTimer = () => {
+        setTargetTimestamp(Date.now() + durationInMinutes * 60 * 1000);
+    };
+
     if (!targetTimestamp) {
         return (
             <button
@@ -25,11 +29,7 @@ export function Timer({
                     backgroundColor: "#E84545",
                     border: "none",
                 }}
-                onClick={() =>
-                    setTargetTimestamp(
-                        Date.now() + durationInMinutes * 1000 * 60
-                    )
-                }
+                onClick={startTimer}
             >
                 {buttonText}
             </button>
@@ -38,11 +38,13 @@ export function Timer({
     const date = new Date(targetTimestamp);
     const targetHour = date.getHours();
     const targetMinute = date.getMinutes();
+    const targetSeconds = date.getSeconds();
 
     return (
         <CountdownTimer
             targetHour={targetHour}
             targetMinute={targetMinute}
+            targetSeconds={targetSeconds}
             timeoutMessage={timeoutMessage}
             prependText={prependText}
         />
