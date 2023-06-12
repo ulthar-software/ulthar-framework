@@ -32,12 +32,14 @@ export function CodeElement({ element }: CodeElementProps) {
         <pre
             style={{
                 height: "100%",
+                maxWidth: "100%",
+                fontSize: "24px",
                 ...(element.styles as any),
             }}
         >
             <code
                 className={"language-" + element.properties.language}
-                style={{ fontSize: "24px" }}
+                style={{ fontSize: "inherit" }}
             >
                 {code}
             </code>
