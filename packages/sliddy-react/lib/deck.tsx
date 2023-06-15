@@ -32,27 +32,31 @@ const DeckProgressSlider = styled.div(({ theme }) => ({
 
 export function DeckComponent({ deck }: DeckProps) {
     const [currentIndex, setCurrentIndex] = useState<number>(-1);
-    const [cursorPointer, setCursorPointer] = useState<boolean>(false);
+    // const [cursorPointer, setCursorPointer] = useState<boolean>(false);
 
-    const handleKeyDown = (event: React.KeyboardEvent) => {
-        switch (event.key) {
-            case "ArrowLeft":
-                setCurrentIndex((prevIndex) =>
-                    prevIndex > 0 ? prevIndex - 1 : prevIndex
-                );
-                break;
-            case "ArrowRight":
-                setCurrentIndex((prevIndex) =>
-                    prevIndex < deck.slides.length - 1
-                        ? prevIndex + 1
-                        : prevIndex
-                );
-                break;
-            case "p":
-                setCursorPointer((prev) => !prev);
-                break;
-        }
-    };
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            switch (event.key) {
+                case "ArrowLeft":
+                    setCurrentIndex((prevIndex) =>
+                        prevIndex > 0 ? prevIndex - 1 : prevIndex
+                    );
+                    break;
+                case "ArrowRight":
+                    setCurrentIndex((prevIndex) =>
+                        prevIndex < deck.slides.length - 1
+                            ? prevIndex + 1
+                            : prevIndex
+                    );
+                    break;
+                // case "p":
+                //     setCursorPointer((prev) => !prev);
+                //     break;
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
 
     useEffect(() => {
         document.title = deck.name;
@@ -84,11 +88,11 @@ export function DeckComponent({ deck }: DeckProps) {
     return (
         <ThemeProvider theme={deck.styles as DefaultTheme}>
             <DeckContainer
-                style={{
-                    cursor: cursorPointer
-                        ? "url(laser-pointer.png) 4 12, auto"
-                        : "default",
-                }}
+            // style={{
+            //     cursor: cursorPointer
+            //         ? "url(laser-pointer.png) 4 12, auto"
+            //         : "default",
+            // }}
             >
                 <SlideComponent index={currentIndex} slide={currentSlide} />
                 <DeckProgressSlider
@@ -97,8 +101,6 @@ export function DeckComponent({ deck }: DeckProps) {
                             ((currentIndex + 1) / deck.slides.length) * 100
                         }%`,
                     }}
-                    tabIndex={0}
-                    onKeyDown={handleKeyDown}
                 />
             </DeckContainer>
         </ThemeProvider>
