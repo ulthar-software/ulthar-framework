@@ -6,5 +6,5 @@ export const DefaultLayout = styled.div({
     alignItems: "center",
     justifyContent: "center",
     height: "100vh",
-    padding: "200px 200px",
+    padding: "150px 150px",
 });

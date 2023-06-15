@@ -8,9 +8,11 @@ export interface TitleProps {
     subtitle: string;
     image?: string;
     imageColumnColor?: string;
+    style?: React.CSSProperties;
 }
 
 export function TitleLayout({
+    style,
     title,
     subtitle,
     image,
@@ -43,6 +45,8 @@ export function TitleLayout({
                     width: image ? "70%" : "100%",
                     justifyContent: "center",
                     alignItems: "center",
+                    textAlign: "center",
+                    ...style,
                 }}
             >
                 <Heading>{parseStringMarkdown(title)}</Heading>
