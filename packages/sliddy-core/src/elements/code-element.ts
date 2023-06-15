@@ -7,5 +7,6 @@ export interface SlideCodeElement extends SlideElement {
         language: string;
         code?: string;
         file?: string;
+        lineNumbers?: boolean;
     };
 }

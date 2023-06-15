@@ -17,6 +17,6 @@ export type SlideElementType = (typeof SlideElementTypeNames)[number];
 export interface SlideElement {
     type: SlideElementType;
     styles?: SlideElementStyles;
-    properties?: Record<string, string>;
+    properties?: Record<string, any>;
     content?: string | string[] | SlideElement[] | SlideElement[][];
 }

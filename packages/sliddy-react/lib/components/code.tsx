@@ -28,8 +28,13 @@ export function CodeElement({ element }: CodeElementProps) {
         }
     }, [code]);
 
+    const lineNumbers = element.properties.lineNumbers ?? true;
+    const prismClasses: string[] = [];
+    if (lineNumbers) prismClasses.push("line-numbers");
+
     return (
         <pre
+            className={prismClasses.join(" ")}
             style={{
                 height: "100%",
                 maxWidth: "100%",
