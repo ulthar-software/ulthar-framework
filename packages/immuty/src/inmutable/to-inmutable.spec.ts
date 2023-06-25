@@ -1,6 +1,6 @@
-import { makeDeepReadonly } from "./make-deep-readonly.js";
+import { toInmutable } from "./to-inmutable.js";
 
-describe("makeDeepReadonly", () => {
+describe("To Inmutable", () => {
     it("should make an object fully readonly", () => {
         const obj = {
             foo: "bar",
@@ -9,7 +9,7 @@ describe("makeDeepReadonly", () => {
             },
         };
 
-        const readonlyObj = makeDeepReadonly(obj);
+        const readonlyObj = toInmutable(obj);
 
         expect(readonlyObj).not.toBe(obj);
 

@@ -1,5 +1,4 @@
 import { isObject } from "../type-detection/is-object.js";
-import { isCloneable, MaybeCloneable } from "./cloneable.js";
 
 export function shallowClone<T>(originalThing: T): T {
     if (!isObject(originalThing)) return originalThing;
@@ -7,8 +6,6 @@ export function shallowClone<T>(originalThing: T): T {
     if (Array.isArray(originalThing)) {
         return shallowCloneArray(originalThing);
     }
-
-    if (isCloneable(originalThing)) return originalThing.clone();
 
     return shallowCloneObject(originalThing);
 }

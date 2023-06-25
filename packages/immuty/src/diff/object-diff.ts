@@ -1,5 +1,4 @@
-import { isDateObject } from "../type-detection/is-date-object.js";
-import { isObject } from "../type-detection/is-object.js";
+import { isDateObject, isObject } from "../type-detection/index.js";
 
 /**
  * Generates a deep object diff.
