@@ -1,3 +1,4 @@
+import { Inmutable } from "../types/inmutable.js";
 import { EventListener } from "./event-listener.js";
 
 /**
@@ -11,7 +12,7 @@ export class EventDispatcher<T> {
      * Trigger an event notification to all subscribers
      * @param value Event Value
      */
-    dispatch(value: T) {
+    dispatch(value: Inmutable<T>) {
         this.listeners.forEach((cb) => {
             cb(value);
         });
@@ -24,9 +25,12 @@ export class EventDispatcher<T> {
      * @returns unsubscribe function
      */
     subscribe(listener: EventListener<T>) {
-        this.listeners.push(listener);
+        this.listeners = [...this.listeners, listener];
         return () => {
-            this.listeners.splice(this.listeners.indexOf(listener), 1);
+            this.listeners = this.listeners.toSpliced(
+                this.listeners.indexOf(listener),
+                1
+            );
         };
     }
 }

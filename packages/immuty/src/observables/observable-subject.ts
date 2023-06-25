@@ -1,4 +1,4 @@
-import { EventDispatcher } from "../events/event-dispatcher.js";
+import { EventDispatcher } from "../events/index.js";
 import { Observable } from "./observable.js";
 
 /**
