@@ -1,4 +1,4 @@
-import { toInmutable } from "./to-inmutable.js";
+import { toImmutable } from "./to-immutable.js";
 
 describe("To Inmutable", () => {
     it("should make an object fully readonly", () => {
@@ -9,7 +9,7 @@ describe("To Inmutable", () => {
             },
         };
 
-        const readonlyObj = toInmutable(obj);
+        const readonlyObj = toImmutable(obj);
 
         expect(readonlyObj).not.toBe(obj);
 

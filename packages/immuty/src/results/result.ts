@@ -1,5 +1,5 @@
 import { Error } from "../errors/index.js";
-import { Inmutable } from "../inmutable/index.js";
+import { Immutable } from "../immutable/index.js";
 
 /**
  * Interface for the Result type common signature.
@@ -23,21 +23,21 @@ export interface IResult<T, E extends Error> {
      * @param onSuccess Function to map the value of the Result to a new value.
      * @param onFailure Function to map the error of the Result to a new value.
      */
-    map<U>(fn: (value: Inmutable<T>) => U): Result<U, E>;
+    map<U>(fn: (value: Immutable<T>) => U): Result<U, E>;
 
     /**
      * Maps the value of the Result to a new value.
      * Returns the new value wrapped in a Result.
      * The provided function must return a Promise.
      */
-    asyncMap<U>(fn: (value: Inmutable<T>) => Promise<U>): Promise<Result<U, E>>;
+    asyncMap<U>(fn: (value: Immutable<T>) => Promise<U>): Promise<Result<U, E>>;
 
     /**
      * Maps the value of the Result to a new Result.
      * The provided function must return a Result.
      */
     flatMap<U, R extends Error>(
-        fn: (value: Inmutable<T>) => Result<U, R>
+        fn: (value: Immutable<T>) => Result<U, R>
     ): Result<U, E | R>;
 
     /**
@@ -45,7 +45,7 @@ export interface IResult<T, E extends Error> {
      * The provided function must return a Promise that resolves to a Result.
      */
     asyncFlatMap<U, R extends Error>(
-        fn: (value: Inmutable<T>) => Promise<Result<U, R>>
+        fn: (value: Immutable<T>) => Promise<Result<U, R>>
     ): Promise<Result<U, E | R>>;
 }
 
@@ -96,8 +96,8 @@ export class ErrorResult<E extends Error> implements IResult<never, E> {
     /**
      * Unwraps the error contained in this Result.
      */
-    unwrapError(): Inmutable<E> {
-        return this.error as Inmutable<E>;
+    unwrapError(): Immutable<E> {
+        return this.error as Immutable<E>;
     }
 
     /**
@@ -162,8 +162,8 @@ export class OkResult<T> implements IResult<T, never> {
     /**
      * Unwraps the value of the Result.
      */
-    unwrap(): Inmutable<T> {
-        return this.value as Inmutable<T>;
+    unwrap(): Immutable<T> {
+        return this.value as Immutable<T>;
     }
 
     /**
@@ -171,8 +171,8 @@ export class OkResult<T> implements IResult<T, never> {
      * The mapping function must return a value and that
      * value will be wrapped in a new Result.
      */
-    map<U>(fn: (value: Inmutable<T>) => U): OkResult<U> {
-        return Result.ok(fn(this.value as Inmutable<T>));
+    map<U>(fn: (value: Immutable<T>) => U): OkResult<U> {
+        return Result.ok(fn(this.value as Immutable<T>));
     }
 
     /**
@@ -180,9 +180,9 @@ export class OkResult<T> implements IResult<T, never> {
      * The mapping function must return a Promise of a value
      */
     async asyncMap<U>(
-        fn: (value: Inmutable<T>) => Promise<U>
+        fn: (value: Immutable<T>) => Promise<U>
     ): Promise<Result<U, never>> {
-        return Result.ok(await fn(this.value as Inmutable<T>));
+        return Result.ok(await fn(this.value as Immutable<T>));
     }
 
     /**
@@ -190,9 +190,9 @@ export class OkResult<T> implements IResult<T, never> {
      * The mapping function must return a Result.
      */
     flatMap<U, R extends Error>(
-        fn: (value: Inmutable<T>) => Result<U, R>
+        fn: (value: Immutable<T>) => Result<U, R>
     ): Result<U, R> {
-        return fn(this.value as Inmutable<T>);
+        return fn(this.value as Immutable<T>);
     }
 
     /**
@@ -200,8 +200,8 @@ export class OkResult<T> implements IResult<T, never> {
      * The mapping function must return a Promise of a Result.
      */
     async asyncFlatMap<U, R extends Error>(
-        fn: (value: Inmutable<T>) => Promise<Result<U, R>>
+        fn: (value: Immutable<T>) => Promise<Result<U, R>>
     ): Promise<Result<U, R>> {
-        return fn(this.value as Inmutable<T>);
+        return fn(this.value as Immutable<T>);
     }
 }

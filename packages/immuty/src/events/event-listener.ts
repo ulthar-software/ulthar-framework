@@ -1,3 +1,3 @@
-import { Inmutable } from "../types/inmutable.js";
+import { Immutable } from "../immutable/index.js";
 
-export type EventListener<T> = (value: Inmutable<T>) => void | Promise<void>;
+export type EventListener<T> = (value: Immutable<T>) => void | Promise<void>;

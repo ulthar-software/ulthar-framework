@@ -1,4 +1,4 @@
-import { Inmutable } from "../types/inmutable.js";
+import { Immutable } from "../immutable/index.js";
 import { EventListener } from "./event-listener.js";
 
 /**
@@ -12,7 +12,7 @@ export class EventDispatcher<T> {
      * Trigger an event notification to all subscribers
      * @param value Event Value
      */
-    dispatch(value: Inmutable<T>) {
+    dispatch(value: Immutable<T>) {
         this.listeners.forEach((cb) => {
             cb(value);
         });

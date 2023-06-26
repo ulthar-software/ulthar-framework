@@ -1,4 +1,4 @@
-import { Inmutable } from "./inmutable.js";
+import { Immutable } from "./immutable.js";
 
 describe("Inmutable Type", () => {
     test("given a type it should return a readonly version of it", () => {
@@ -10,7 +10,7 @@ describe("Inmutable Type", () => {
                 name: string;
             };
         };
-        type DeepReadonlyThing = Inmutable<Thing>;
+        type DeepReadonlyThing = Immutable<Thing>;
         const thing: DeepReadonlyThing = {
             id: "1",
             name: "thing",

@@ -5,7 +5,7 @@ import {
     ErrorTag,
     TagFromError,
 } from "../errors/index.js";
-import { Inmutable } from "../inmutable/index.js";
+import { Immutable } from "../immutable/index.js";
 import { Result } from "../results/result.js";
 import { MaybePromise } from "../types/maybe-promise.js";
 
@@ -50,7 +50,7 @@ export class Effect<T, E extends Error> {
      * Maps the effect into a new effect given a function that returns a Result.
      */
     map<U, R extends Error>(
-        newEffect: (value: Inmutable<T>) => Result<U, R>
+        newEffect: (value: Immutable<T>) => Result<U, R>
     ): Effect<U, E | R> {
         return new Effect(async () => (await this.run()).flatMap(newEffect));
     }
@@ -59,7 +59,7 @@ export class Effect<T, E extends Error> {
      * Maps the effect into a new effect given a function that returns an Effect.
      */
     flatMap<U, R extends Error>(
-        effectCreator: (value: Inmutable<T>) => Effect<U, R>
+        effectCreator: (value: Immutable<T>) => Effect<U, R>
     ): Effect<U, E | R> {
         return new Effect(async () => {
             const result = await this.run();
@@ -73,7 +73,7 @@ export class Effect<T, E extends Error> {
      * Maps the effect into a new effect given a function that returns a Promise.
      */
     mapPromise<U, R extends Error>(
-        newEffect: (value: Inmutable<T>) => Promise<U>,
+        newEffect: (value: Immutable<T>) => Promise<U>,
         error: (error: unknown) => R
     ): Effect<U, E | R> {
         return new Effect(async () => {
