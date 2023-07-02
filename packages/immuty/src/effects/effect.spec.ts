@@ -23,12 +23,12 @@ class JsonBodyError implements Error {
 }
 
 function request(url: string) {
-    return Effect.fromPromise(
+    return Effect.of(
         () => fetch(url),
         (e) => new FetchError()
     )
-        .retry({ errors: ["FetchError"] })
-        .mapPromise(
+        .retry()
+        .map(
             (r) => r.json(),
             (e) => new JsonBodyError()
         );
@@ -36,9 +36,8 @@ function request(url: string) {
 
 describe("Effect", () => {
     test("Given a promise, we can create an effect", async () => {
-        const effect = Effect.fromPromise(() => Promise.resolve(1));
-        const result = await effect.run();
-
+        const effect = Effect.of(() => Promise.resolve(1));
+        const result = await effect.execute();
         expect(result).toEqual(Result.ok(1));
     });
 
@@ -50,11 +49,11 @@ describe("Effect", () => {
                 this.message = "TestError";
             }
         }
-        const effect = Effect.fromPromise(
+        const effect = Effect.of(
             () => Promise.reject("error"),
             (e) => new TestError()
         );
-        const result = await effect.run();
+        const result = await effect.execute();
 
         if (result.isOk()) {
             throw new Error("Expected error");
@@ -64,8 +63,10 @@ describe("Effect", () => {
     });
 
     test("Given any effect, it can be mapped into another effect", async () => {
-        const effect = Effect.fromPromise(() => Promise.resolve(1));
-        const result = await effect.map((value) => Result.ok(value + 1)).run();
+        const effect = Effect.of(() => Promise.resolve(1));
+        const result = await effect
+            .flatMap(async (value) => Result.ok(value + 1))
+            .execute();
 
         expect(result).toEqual(Result.ok(2));
     });

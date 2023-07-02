@@ -54,7 +54,11 @@ export interface IResult<T, E extends Error> {
  * This is a replacement for throwing exceptions
  * and it allows for type-safe error handling.
  */
-export type Result<T, E extends Error> = OkResult<T> | ErrorResult<E>;
+export type Result<T, E extends Error | never> = [E] extends [never]
+    ? OkResult<T>
+    : OkResult<T> | ErrorResult<E>;
+
+export type SomeResult = Result<any, any>;
 
 export namespace Result {
     /**
@@ -105,8 +109,8 @@ export class ErrorResult<E extends Error> implements IResult<never, E> {
      * As this is an ErrorResult, the mapping function is not called
      * and the same ErrorResult is returned.
      */
-    map<U>(): Result<U, E> {
-        return this;
+    map<U>(fn: (value: never) => U): Result<U, E> {
+        return this as unknown as Result<U, E>;
     }
 
     /**
@@ -115,7 +119,7 @@ export class ErrorResult<E extends Error> implements IResult<never, E> {
      * and the same ErrorResult is returned.
      */
     async asyncMap<U>(): Promise<Result<U, E>> {
-        return this;
+        return this as unknown as Result<U, E>;
     }
 
     /**
@@ -124,7 +128,7 @@ export class ErrorResult<E extends Error> implements IResult<never, E> {
      * and the same ErrorResult is returned.
      */
     flatMap<U, R extends Error>(): Result<U, E | R> {
-        return this;
+        return this as unknown as Result<U, E>;
     }
 
     /**
@@ -133,7 +137,7 @@ export class ErrorResult<E extends Error> implements IResult<never, E> {
      * and the same ErrorResult is returned.
      */
     async asyncFlatMap<U, R extends Error>(): Promise<Result<U, E | R>> {
-        return this;
+        return this as unknown as Result<U, E>;
     }
 }
 

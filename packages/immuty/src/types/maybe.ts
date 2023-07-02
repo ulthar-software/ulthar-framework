@@ -1,5 +1,5 @@
 /**
- * A type that can be either `T` or `undefined`.
+ * A type that can either be `T` or `undefined`.
  * Exactly as T?
  */
-export type Maybe<T> = T | undefined;
+export type Maybe<A> = A | undefined;

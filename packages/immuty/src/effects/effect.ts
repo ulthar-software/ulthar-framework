@@ -1,143 +1,54 @@
-import {
-    ErrorPatternMatcher,
-    MatchedErrorsIn,
-    Error,
-    ErrorTag,
-    TagFromError,
-} from "../errors/index.js";
-import { Immutable } from "../immutable/index.js";
+import { Error } from "../errors/error.js";
+import { Immutable } from "../immutable/immutable.js";
 import { Result } from "../results/result.js";
-import { MaybePromise } from "../types/maybe-promise.js";
+import { MergeTypes } from "../types/merge-types.js";
+import { AsyncBinaryFn, BinaryFn } from "../types/functions.js";
+import {
+    AsyncEffectFn,
+    composeEffects,
+    liftAsyncEffect,
+} from "./effect-functions.js";
+import { EffectRetryOptions, composeEffectWithRetry } from "./retry.js";
 
 /**
  * An effect is a representation of a behavior that could have side effects, and that it could fail.
- *
- * It is technically a monad that can either succeed with a value T or fail with an error E.
  */
-export class Effect<T, E extends Error> {
-    /**
-     * Creates an effect from a promise.
-     * @param fn The function that returns a promise
-     * @param error Function to map the error of the promise to a new value.
-     * If not provided, the error will be thrown because it is not known at compile time.
-     */
-    static fromPromise<T>(fn: () => Promise<T>): Effect<T, never>;
-    static fromPromise<T, E extends Error>(
-        fn: () => Promise<T>,
-        error: (error: unknown) => E
-    ): Effect<T, E>;
-    static fromPromise<T, E extends Error>(
-        fn: () => Promise<T>,
-        error?: (error: unknown) => E
-    ): Effect<T, E> {
-        return new Effect(async () => {
-            try {
-                return Result.ok(await fn());
-            } catch (e) {
-                if (!error) throw e;
-                return Result.error(error(e));
-            }
-        });
+export class Effect<A, B, abDeps, abErr extends Error> {
+    static of<B, A = void, abDeps = void, abErr extends Error = never>(
+        f: AsyncBinaryFn<Immutable<A>, abDeps, B>,
+        e?: BinaryFn<unknown, abDeps, abErr>
+    ): Effect<A, B, abDeps, abErr> {
+        return new Effect(liftAsyncEffect(f, e));
     }
 
-    private constructor(private effectFn: () => MaybePromise<Result<T, E>>) {}
-
-    run(): MaybePromise<Result<T, E>> {
-        return this.effectFn();
+    map<C, bcDeps, bcErr extends Error = never>(
+        g: AsyncBinaryFn<Immutable<B>, bcDeps, C>,
+        e?: BinaryFn<unknown, bcDeps, bcErr>
+    ): Effect<A, C, MergeTypes<abDeps, bcDeps>, abErr | bcErr> {
+        return this.flatMap(liftAsyncEffect(g, e));
     }
 
-    /**
-     * Maps the effect into a new effect given a function that returns a Result.
-     */
-    map<U, R extends Error>(
-        newEffect: (value: Immutable<T>) => Result<U, R>
-    ): Effect<U, E | R> {
-        return new Effect(async () => (await this.run()).flatMap(newEffect));
+    flatMap<C, bcDeps, bcErr extends Error>(
+        g: AsyncEffectFn<B, bcDeps, Result<C, bcErr>>
+    ): Effect<A, C, MergeTypes<abDeps, bcDeps>, abErr | bcErr> {
+        return new Effect(composeEffects(this.f, g));
     }
 
-    /**
-     * Maps the effect into a new effect given a function that returns an Effect.
-     */
-    flatMap<U, R extends Error>(
-        effectCreator: (value: Immutable<T>) => Effect<U, R>
-    ): Effect<U, E | R> {
-        return new Effect(async () => {
-            const result = await this.run();
-            return result.asyncFlatMap(
-                async (value) => await effectCreator(value).run()
-            );
-        });
+    pipe<C, acDeps, acErr extends Error>(
+        effect: Effect<B, C, acDeps, acErr>
+    ): Effect<A, C, MergeTypes<abDeps, acDeps>, abErr | acErr> {
+        return this.flatMap(effect.f);
     }
 
-    /**
-     * Maps the effect into a new effect given a function that returns a Promise.
-     */
-    mapPromise<U, R extends Error>(
-        newEffect: (value: Immutable<T>) => Promise<U>,
-        error: (error: unknown) => R
-    ): Effect<U, E | R> {
-        return new Effect(async () => {
-            const result = await this.run();
-            return result.asyncFlatMap(async (value) => {
-                try {
-                    return Result.ok<U>(await newEffect(value));
-                } catch (e) {
-                    return Result.error(error(e));
-                }
-            });
-        });
+    execute(value: A, dependencies: abDeps): Promise<Result<B, abErr>> {
+        return this.f(value as Immutable<A>, dependencies);
     }
 
-    /**
-     * Catch the given errors of the effect and returns a new Effect that
-     * cannot fail by those errors
-     *
-     * This allows for error recovery.
-     */
-    catch<const R extends Partial<ErrorPatternMatcher<E, Result<T, E>>>>(
-        matcher: R
-    ): Effect<T, Exclude<E, MatchedErrorsIn<R>>> {
-        return new Effect(async () => {
-            const result = await this.run();
-            if (result.isOk()) return result;
-
-            const error = result.unwrapError();
-            const key = error[ErrorTag];
-            const matcherResult: Result<T, never> = (matcher as any)[key](
-                error,
-                this
-            );
-            return matcherResult as Result<T, Exclude<E, MatchedErrorsIn<R>>>;
-        });
+    retry(opts?: EffectRetryOptions<abErr>): Effect<A, B, abDeps, abErr> {
+        return new Effect(composeEffectWithRetry(this.f, opts));
     }
 
-    retry(opts?: RetryOptions<E>): Effect<T, E> {
-        const { errors, maxTimes: max = 1 } = opts ?? {};
-        return new Effect(async () => {
-            let retries = 0;
-            while (true) {
-                const result = await this.run();
-                if (result.isOk()) return result;
-
-                const error = result.unwrapError();
-                if (retries >= max) return result;
-                if (errors && !errors.includes(error[ErrorTag])) return result;
-
-                retries++;
-            }
-        });
-    }
-
-    orDie(): Effect<T, never> {
-        return new Effect(async () => {
-            const result = await this.run();
-            if (result.isOk()) return result;
-            throw result.unwrapError();
-        });
-    }
-}
-
-interface RetryOptions<E extends Error> {
-    readonly errors?: ReadonlyArray<TagFromError<E>>;
-    readonly maxTimes?: number;
+    private constructor(
+        private readonly f: AsyncEffectFn<A, abDeps, Result<B, abErr>>
+    ) {}
 }

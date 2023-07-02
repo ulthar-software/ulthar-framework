@@ -1,8 +1,8 @@
-import { Error } from "./errors/error.js";
+import { Error } from "../errors/error.js";
 import { Result } from "./result.js";
 
 class TestError implements Error {
-    readonly _name = "TestError";
+    readonly _tag = "TestError";
     readonly message: string;
     constructor() {
         this.message = "TestError";
@@ -29,7 +29,9 @@ describe("Result", () => {
     test("given an error, we cannot unwrap the value", () => {
         const result = Result.error(new TestError());
         //@ts-expect-error
-        expect(() => result.unwrap()).toThrowError("error"); //this should not compile
+        expect(() => result.unwrap()).toThrowError(
+            "result.unwrap is not a function"
+        ); //this should not compile
     });
     test("given an error, we can unwrap the error", () => {
         const result = Result.error(new TestError());
