@@ -1,4 +1,4 @@
-import { AnyFunction } from "../functions.js";
+import { SomeFunction } from "../../functions/function.js";
 import { KeysMatching } from "./keys-matching.js";
 
-export type CallableKeys<T> = KeysMatching<T, AnyFunction>;
+export type CallableKeys<T> = KeysMatching<T, SomeFunction>;

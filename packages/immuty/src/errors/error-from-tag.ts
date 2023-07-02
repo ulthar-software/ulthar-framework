@@ -1,8 +1,8 @@
-import { Error, ErrorTag } from "./error.js";
+import { Error } from "./error.js";
 
 /* prettier-ignore */
 export type ErrorFromTag <
     E extends Error, 
-    K extends E[ErrorTag]
-> = E extends { readonly [ErrorTag]: K; } ? E : 
+    K extends E["_tag"]
+> = E extends { readonly _tag: K; } ? E : 
     never;

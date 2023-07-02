@@ -1,5 +1,5 @@
 import { Error } from "../errors/index.js";
-import { Immutable } from "../immutable/index.js";
+import { Immutable } from "../immutability/index.js";
 
 /**
  * Interface for the Result type common signature.

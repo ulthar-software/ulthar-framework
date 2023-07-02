@@ -1,8 +1,8 @@
 import { Error } from "../errors/error.js";
-import { Immutable } from "../immutable/immutable.js";
+import { AsyncBinaryFn, BinaryFn } from "../functions/binary.js";
+import { Immutable } from "../immutability/immutable.js";
 import { Result } from "../results/result.js";
 import { MergeTypes } from "../types/merge-types.js";
-import { AsyncBinaryFn, BinaryFn } from "../types/functions.js";
 import {
     AsyncEffectFn,
     composeEffects,

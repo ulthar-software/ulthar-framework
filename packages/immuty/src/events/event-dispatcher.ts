@@ -1,4 +1,4 @@
-import { Immutable } from "../immutable/index.js";
+import { Immutable } from "../immutability/index.js";
 import { EventListener } from "./event-listener.js";
 
 /**

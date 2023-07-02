@@ -1,11 +1,11 @@
 import { ErrorFromTag } from "./error-from-tag.js";
-import { Error, ErrorTag } from "./error.js";
+import { Error } from "./error.js";
 
 /**
  * A pattern matcher for errors.
  */
 export type ErrorPatternMatcher<E extends Error, F> = {
-    [K in E[ErrorTag]]: (error: ErrorFromTag<E, K>) => F;
+    [K in E["_tag"]]: (error: ErrorFromTag<E, K>) => F;
 };
 
 /**

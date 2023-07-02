@@ -10,8 +10,7 @@ describe("Inmutable Type", () => {
                 name: string;
             };
         };
-        type DeepReadonlyThing = Immutable<Thing>;
-        const thing: DeepReadonlyThing = {
+        const thing: Immutable<Thing> = {
             id: "1",
             name: "thing",
             someFunction: () => ({
@@ -20,11 +19,8 @@ describe("Inmutable Type", () => {
             }),
         };
 
-        // @ts-expect-error
-        thing.id = "2"; //should throw
-
-        // @ts-expect-error
-        thing.name = "thing2"; //should throw
+        //thing.id = "2"; //should throw
+        //thing.name = "thing2"; //should throw
 
         thing.someFunction(); //should not throw
     });

@@ -2,11 +2,6 @@ import { Effect } from "./effect.js";
 import { Error } from "../errors/error.js";
 import { Result } from "../results/result.js";
 
-interface Thing {
-    id: string;
-    name: string;
-}
-
 class FetchError implements Error {
     readonly _tag = "FetchError";
     readonly message: string;

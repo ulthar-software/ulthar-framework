@@ -1,4 +1,4 @@
-import { Fn } from "../types/functions.js";
+import { Fn } from "./function.js";
 
 /**
  * Composes two functions.
