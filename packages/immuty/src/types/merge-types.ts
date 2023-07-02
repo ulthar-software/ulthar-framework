@@ -14,9 +14,3 @@ export type MergeTypes<A, B> = [A] extends [never]
     : [B] extends [never]
     ? A
     : A & B;
-
-type testA = MergeTypes<{ a: string }, { b: number }>;
-const testA: testA = { a: "a", b: 1 };
-
-type testB = MergeTypes<{ a: string }, never>;
-const testB: testB = { a: "a" };

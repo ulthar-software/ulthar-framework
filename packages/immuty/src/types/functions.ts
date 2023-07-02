@@ -19,7 +19,10 @@ export type Singleton<A> = () => A;
  */
 export type Predicate<A> = Fn<A, boolean>;
 
-export type Parser<T> = Fn<unknown, T>;
+/**
+ *  It takes an argument of type `unknown` and returns a value of type `T`.
+ */
+export type Caster<T> = Fn<unknown, T>;
 
 /**
  * An asyncFunction takes a value of type `A` and returns a value of type `B` wrapped
@@ -41,4 +44,12 @@ export type FnChain<A, B> =
  */
 export type BinaryFn<A, B, C> = (x: A, y: B) => C;
 
+/**
+ * Takes two arguments of type `A` and `B` and returns a value of type `C` wrapped in a promise.
+ */
 export type AsyncBinaryFn<A, B, C> = (x: A, y: B) => Promise<C>;
+
+/**
+ * Represents any function in javascript.
+ */
+export type AnyFunction = (...args: any[]) => any;

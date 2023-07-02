@@ -1,4 +1,3 @@
-import { milliseconds } from "@ulthar/typey";
 import { Container } from "./container";
 
 const container = new Container();

@@ -14,8 +14,5 @@
     "scripts": {
         "build": "tsc -p tsconfig.lib.json",
         "test": "jest"
-    },
-    "dependencies": {
-        "@ulthar/typey": "workspace:^"
     }
 }

@@ -23,7 +23,6 @@
         "test": "jest"
     },
     "dependencies": {
-        "@ulthar/temply": "workspace:^",
-        "@ulthar/typey": "workspace:^"
+        "@ulthar/temply": "workspace:^"
     }
 }
