@@ -1,3 +1,5 @@
+import { Fn } from "./functions.js";
+
 /**
  * A variant type is a type that can be one of a set of types.
  * It represents a pattern matchable construct in the type system.
@@ -21,8 +23,12 @@ export type TypeFromTag<A extends Variant, K extends string> = A extends {
  * that handle the specific variant.
  */
 export type PatternMatcher<A extends Variant, B> = {
-    [K in A["_tag"]]: (value: TypeFromTag<A, K>) => B;
+    [K in A["_tag"]]: Fn<TypeFromTag<A, K>, B>;
 };
+
+export type ReturnTypesOf<T> = {
+    [K in keyof T]: T[K] extends Fn<any, infer R> ? R : never;
+}[keyof T];
 
 /**
  * Match a variant value against a pattern matcher and return
@@ -32,9 +38,9 @@ export type PatternMatcher<A extends Variant, B> = {
  * @param cases The pattern matcher to match against.
  * @returns The result of the matching function.
  */
-export function match<A extends Variant, B>(
+export function match<A extends Variant, PM extends PatternMatcher<A, any>>(
     value: A,
-    cases: PatternMatcher<A, B>
-): B {
-    return cases[value._tag as A["_tag"]](value as any);
+    cases: PM
+): ReturnTypesOf<PM> {
+    return cases[value._tag as A["_tag"]](value as TypeFromTag<A, A["_tag"]>);
 }
