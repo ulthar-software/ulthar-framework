@@ -24,12 +24,12 @@ interface RequestDependencies {
 
 function request(url: string) {
     return Effect.of(
-        (_, { fetch }: RequestDependencies) => fetch(url),
+        ({ fetch }: RequestDependencies) => fetch(url),
         (e) => new FetchError()
     )
         .retry()
         .map(
-            (r) => r.json(),
+            (_, r) => r.json(),
             (e) => new JsonBodyError()
         );
 }
@@ -65,7 +65,7 @@ describe("Effect", () => {
     test("Given any effect, it can be mapped into another effect", async () => {
         const effect = Effect.of(() => Promise.resolve(1));
         const result = await effect
-            .flatMap(async (value) => Result.ok(value + 1))
+            .flatMap(async (_, value) => Result.ok(value + 1))
             .execute();
 
         expect(result).toEqual(Result.ok(2));
