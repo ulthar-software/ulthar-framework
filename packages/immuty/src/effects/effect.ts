@@ -1,72 +1,71 @@
 import { Error } from "../errors/error.js";
-import { AsyncBinaryFn, BinaryFn } from "../functions/binary.js";
-import { AsyncFn } from "../functions/unary.js";
+import { BinaryFn } from "../functions/binary.js";
+import { Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/immutable.js";
-import { Result } from "../results/result.js";
-import { MergeTypes } from "../types/merge-types.js";
 import {
-    AsyncEffectFn,
-    composeEffects,
-    foldEffect,
-    liftAsyncEffect,
-} from "./effect-functions.js";
+    Result,
+    liftFaultyAsyncBinaryFn,
+    liftFaultyAsyncFn,
+} from "../results/result.js";
+import { MergeTypes } from "../types/merge-types.js";
+import { composeEffects, foldEffect, pipeEffects } from "./effect-functions.js";
 import { EffectRetryOptions, composeEffectWithRetry } from "./retry.js";
 
 /**
  * An effect is a representation of a behavior that could have side effects, and that it could fail.
  */
-export class Effect<A, B, abDeps, abErr extends Error> {
-    static of<B, abDeps = void, abErr extends Error = never>(
-        f: AsyncFn<abDeps, B>,
-        e?: BinaryFn<abDeps, unknown, abErr>
-    ): Effect<void, B, abDeps, abErr> {
-        return new Effect(liftAsyncEffect(f, e));
+export class Effect<ADeps, A, AErr extends Error> {
+    static of<A, aDeps = void, abErr extends Error = never>(
+        f: Fn<aDeps, Promise<A>>,
+        e?: Fn<unknown, abErr>
+    ): Effect<aDeps, A, abErr> {
+        return new Effect(liftFaultyAsyncFn(f, e));
     }
 
-    static ofSync<B, A = void, abDeps = void, abErr extends Error = never>(
-        f: BinaryFn<abDeps, Immutable<A>, B>,
-        e?: BinaryFn<abDeps, unknown, abErr>
-    ): Effect<A, B, abDeps, abErr> {
+    static ofSync<A, ADeps = void, AErr extends Error = never>(
+        f: Fn<ADeps, A>,
+        e?: Fn<unknown, AErr>
+    ): Effect<ADeps, A, AErr> {
         return new Effect(
-            liftAsyncEffect((deps, a) => Promise.resolve(f(deps, a)), e)
+            liftFaultyAsyncFn((deps) => Promise.resolve(f(deps)), e)
         );
     }
 
-    map<C, bcDeps, bcErr extends Error = never>(
-        g: AsyncBinaryFn<bcDeps, Immutable<B>, C>,
-        e?: BinaryFn<bcDeps, unknown, bcErr>
-    ): Effect<A, C, MergeTypes<abDeps, bcDeps>, abErr | bcErr> {
-        return this.flatMap(liftAsyncEffect(g, e));
+    map<B, BDeps, BErr extends Error = never>(
+        g: BinaryFn<Immutable<A>, BDeps, Promise<B>>,
+        e?: Fn<unknown, BErr>
+    ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
+        return this.flatMap(liftFaultyAsyncBinaryFn(g, e));
     }
 
-    flatMap<C, bcDeps, bcErr extends Error>(
-        g: AsyncEffectFn<B, bcDeps, Result<C, bcErr>>
-    ): Effect<A, C, MergeTypes<abDeps, bcDeps>, abErr | bcErr> {
+    flatMap<B, BDeps, BErr extends Error>(
+        g: BinaryFn<Immutable<A>, BDeps, Promise<Result<B, BErr>>>
+    ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
         return new Effect(composeEffects(this.f, g));
     }
 
-    pipe<C, acDeps, acErr extends Error>(
-        effect: Effect<B, C, acDeps, acErr>
-    ): Effect<A, C, MergeTypes<abDeps, acDeps>, abErr | acErr> {
-        return this.flatMap(effect.f);
+    pipe<B, BDeps, BErr extends Error>(
+        g: Fn<Immutable<A>, Effect<BDeps, B, BErr>>
+    ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
+        return new Effect(pipeEffects(this.f, g));
     }
 
-    fold<C, bcDeps, bcErr extends Error>(
-        g: AsyncBinaryFn<bcDeps, Immutable<B>, C>,
-        e: AsyncBinaryFn<bcDeps, abErr, C>
-    ): Effect<A, C, MergeTypes<abDeps, bcDeps>, bcErr> {
+    fold<B, BDeps>(
+        g: BinaryFn<Immutable<A>, BDeps, Promise<B>>,
+        e: Fn<AErr, Promise<B>>
+    ): Effect<MergeTypes<ADeps, BDeps>, B, never> {
         return new Effect(foldEffect(this.f, g, e));
     }
 
-    retry(opts?: EffectRetryOptions<abErr>): Effect<A, B, abDeps, abErr> {
+    retry(opts?: EffectRetryOptions<AErr>): Effect<ADeps, A, AErr> {
         return new Effect(composeEffectWithRetry(this.f, opts));
     }
 
-    execute(dependencies: abDeps): Promise<Result<B, abErr>> {
-        return this.f(dependencies, undefined as Immutable<A>);
+    run(dependencies: ADeps): Promise<Result<A, AErr>> {
+        return this.f(dependencies);
     }
 
     private constructor(
-        private readonly f: AsyncEffectFn<A, abDeps, Result<B, abErr>>
+        private readonly f: Fn<ADeps, Promise<Result<A, AErr>>>
     ) {}
 }

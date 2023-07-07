@@ -1,5 +1,5 @@
 import { Error } from "../errors/error.js";
-import { AsyncFn, Fn } from "../functions/unary.js";
+import { Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/immutable.js";
 import { ErrorResult } from "./error-result.js";
 import { OkResult } from "./ok-result.js";
@@ -34,7 +34,7 @@ export interface IResult<A, Ae extends Error> {
      * Returns the new value wrapped in a Result.
      * The provided function must return a Promise.
      */
-    asyncMap<B>(f: AsyncFn<Immutable<A>, B>): Promise<Result<B, Ae>>;
+    asyncMap<B>(f: Fn<Immutable<A>, Promise<B>>): Promise<Result<B, Ae>>;
 
     /**
      * Maps the value of the Result to a new Result.
@@ -49,7 +49,7 @@ export interface IResult<A, Ae extends Error> {
      * The provided function must return a Promise that resolves to a Result.
      */
     asyncFlatMap<B, Be extends Error>(
-        f: AsyncFn<Immutable<A>, Result<B, Be>>
+        f: Fn<Immutable<A>, Promise<Result<B, Be>>>
     ): Promise<Result<B, Ae | Be>>;
 
     /**

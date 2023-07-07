@@ -1,7 +1,7 @@
 import { Error } from "../errors/error.js";
 import { TagFromError } from "../errors/tag-from-error.js";
+import { Fn } from "../functions/unary.js";
 import { Result } from "../results/result.js";
-import { AsyncEffectFn } from "./effect-functions.js";
 
 export type EffectRetryOptions<E extends Error> = {
     maxRetries?: number;
@@ -9,13 +9,13 @@ export type EffectRetryOptions<E extends Error> = {
 };
 
 export function composeEffectWithRetry<A, B, abDeps, abErr extends Error>(
-    f: AsyncEffectFn<A, abDeps, Result<B, abErr>>,
+    f: Fn<abDeps, Promise<Result<B, abErr>>>,
     options: EffectRetryOptions<abErr> = {}
-): AsyncEffectFn<A, abDeps, Result<B, abErr>> {
-    return async (value, deps) => {
+): Fn<abDeps, Promise<Result<B, abErr>>> {
+    return async (deps) => {
         const maxRetries = options.maxRetries ?? Infinity;
         let retries = 0;
-        let result = await f(value, deps);
+        let result = await f(deps);
         while (result.isError() && retries < maxRetries) {
             if (
                 options.onlyOnErrors &&
@@ -23,7 +23,7 @@ export function composeEffectWithRetry<A, B, abDeps, abErr extends Error>(
             ) {
                 break;
             }
-            result = await f(value, deps);
+            result = await f(deps);
             retries++;
         }
         return result;
