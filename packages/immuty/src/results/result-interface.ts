@@ -1,4 +1,4 @@
-import { Error } from "../errors/error.js";
+import { TaggedError } from "../errors/error.js";
 import { Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/immutable.js";
 import { ErrorResult } from "./error-result.js";
@@ -8,7 +8,7 @@ import { Result } from "./result.js";
 /**
  * Interface for the Result type common signature.
  */
-export interface IResult<A, Ae extends Error> {
+export interface IResult<A, Ae extends TaggedError> {
     /**
      * True if the Result is a success.
      */
@@ -40,7 +40,7 @@ export interface IResult<A, Ae extends Error> {
      * Maps the value of the Result to a new Result.
      * The provided function must return a Result.
      */
-    flatMap<B, Be extends Error>(
+    flatMap<B, Be extends TaggedError>(
         f: Fn<Immutable<A>, Result<B, Be>>
     ): Result<B, Ae | Be>;
 
@@ -48,7 +48,7 @@ export interface IResult<A, Ae extends Error> {
      * Maps the value of the Result to a new Result.
      * The provided function must return a Promise that resolves to a Result.
      */
-    asyncFlatMap<B, Be extends Error>(
+    asyncFlatMap<B, Be extends TaggedError>(
         f: Fn<Immutable<A>, Promise<Result<B, Be>>>
     ): Promise<Result<B, Ae | Be>>;
 
@@ -71,7 +71,7 @@ export interface IResult<A, Ae extends Error> {
     ): Promise<OkResult<B>>;
 }
 
-export interface ResultFoldParams<A, B, Ae extends Error> {
+export interface ResultFoldParams<A, B, Ae extends TaggedError> {
     onSuccess: Fn<Immutable<A>, B>;
     onFailure: Fn<Ae, B>;
 }

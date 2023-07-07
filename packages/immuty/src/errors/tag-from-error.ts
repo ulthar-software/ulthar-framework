@@ -1,7 +1,7 @@
-import { Error } from "./error.js";
+import { TaggedError } from "./error.js";
 
-export type TagFromError<E extends Error> = E["_tag"];
+export type TagFromError<E extends TaggedError> = E["_tag"];
 
-export function TagFromError<E extends Error>(error: E): TagFromError<E> {
+export function TagFromError<E extends TaggedError>(error: E): TagFromError<E> {
     return error["_tag"];
 }

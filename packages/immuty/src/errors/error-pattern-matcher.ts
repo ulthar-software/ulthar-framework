@@ -1,10 +1,10 @@
 import { ErrorFromTag } from "./error-from-tag.js";
-import { Error } from "./error.js";
+import { TaggedError } from "./error.js";
 
 /**
  * A pattern matcher for errors.
  */
-export type ErrorPatternMatcher<E extends Error, F> = {
+export type ErrorPatternMatcher<E extends TaggedError, F> = {
     [K in E["_tag"]]: (error: ErrorFromTag<E, K>) => F;
 };
 

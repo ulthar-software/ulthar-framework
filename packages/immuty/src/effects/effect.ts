@@ -1,4 +1,4 @@
-import { Error } from "../errors/error.js";
+import { TaggedError } from "../errors/error.js";
 import { BinaryFn } from "../functions/binary.js";
 import { Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/immutable.js";
@@ -14,15 +14,15 @@ import { EffectRetryOptions, composeEffectWithRetry } from "./retry.js";
 /**
  * An effect is a representation of a behavior that could have side effects, and that it could fail.
  */
-export class Effect<ADeps, A, AErr extends Error> {
-    static of<A, aDeps = void, abErr extends Error = never>(
+export class Effect<ADeps, A, AErr extends TaggedError> {
+    static fromPromise<A, aDeps = void, abErr extends TaggedError = never>(
         f: Fn<aDeps, Promise<A>>,
         e?: Fn<unknown, abErr>
     ): Effect<aDeps, A, abErr> {
         return new Effect(liftFaultyAsyncFn(f, e));
     }
 
-    static ofSync<A, ADeps = void, AErr extends Error = never>(
+    static from<A, ADeps = void, AErr extends TaggedError = never>(
         f: Fn<ADeps, A>,
         e?: Fn<unknown, AErr>
     ): Effect<ADeps, A, AErr> {
@@ -31,20 +31,20 @@ export class Effect<ADeps, A, AErr extends Error> {
         );
     }
 
-    map<B, BDeps, BErr extends Error = never>(
+    map<B, BDeps, BErr extends TaggedError = never>(
         g: BinaryFn<Immutable<A>, BDeps, Promise<B>>,
         e?: Fn<unknown, BErr>
     ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
-        return this.flatMap(liftFaultyAsyncBinaryFn(g, e));
+        return this.mapResult(liftFaultyAsyncBinaryFn(g, e));
     }
 
-    flatMap<B, BDeps, BErr extends Error>(
+    mapResult<B, BDeps, BErr extends TaggedError>(
         g: BinaryFn<Immutable<A>, BDeps, Promise<Result<B, BErr>>>
     ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
         return new Effect(composeEffects(this.f, g));
     }
 
-    pipe<B, BDeps, BErr extends Error>(
+    flatMap<B, BDeps, BErr extends TaggedError>(
         g: Fn<Immutable<A>, Effect<BDeps, B, BErr>>
     ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
         return new Effect(pipeEffects(this.f, g));

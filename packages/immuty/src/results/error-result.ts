@@ -1,4 +1,4 @@
-import { Error } from "../errors/error.js";
+import { TaggedError } from "../errors/error.js";
 import { Immutable } from "../immutability/immutable.js";
 import { OkResult } from "./ok-result.js";
 import { IResult, ResultFoldParams } from "./result-interface.js";
@@ -7,7 +7,7 @@ import { Result } from "./result.js";
 /**
  * Represents a Result failure.
  */
-export class ErrorResult<Ae extends Error> implements IResult<never, Ae> {
+export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
     constructor(private readonly error: Ae) {}
 
     /**
@@ -56,7 +56,7 @@ export class ErrorResult<Ae extends Error> implements IResult<never, Ae> {
      * As this is an ErrorResult, the mapping function is not called
      * and the same ErrorResult is returned.
      */
-    flatMap<B, Be extends Error>(): Result<B, Ae | Be> {
+    flatMap<B, Be extends TaggedError>(): Result<B, Ae | Be> {
         return this as unknown as Result<B, Ae>;
     }
 
@@ -65,7 +65,9 @@ export class ErrorResult<Ae extends Error> implements IResult<never, Ae> {
      * As this is an ErrorResult, the mapping function is not called
      * and the same ErrorResult is returned.
      */
-    async asyncFlatMap<B, Be extends Error>(): Promise<Result<B, Ae | Be>> {
+    async asyncFlatMap<B, Be extends TaggedError>(): Promise<
+        Result<B, Ae | Be>
+    > {
         return this as unknown as Result<B, Ae>;
     }
 

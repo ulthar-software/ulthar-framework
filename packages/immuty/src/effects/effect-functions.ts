@@ -1,4 +1,4 @@
-import { Error } from "../errors/error.js";
+import { TaggedError } from "../errors/error.js";
 import { BinaryFn } from "../functions/binary.js";
 import { Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/immutable.js";
@@ -11,8 +11,8 @@ export function composeEffects<
     B,
     aDeps,
     bDeps,
-    aE extends Error,
-    bE extends Error
+    aE extends TaggedError,
+    bE extends TaggedError
 >(
     f: Fn<aDeps, Promise<Result<A, aE>>>,
     g: BinaryFn<Immutable<A>, bDeps, Promise<Result<B, bE>>>
@@ -28,8 +28,8 @@ export function pipeEffects<
     B,
     aDeps,
     bDeps,
-    aE extends Error,
-    bE extends Error
+    aE extends TaggedError,
+    bE extends TaggedError
 >(
     f: Fn<aDeps, Promise<Result<A, aE>>>,
     g: Fn<Immutable<A>, Effect<bDeps, B, bE>>
@@ -42,7 +42,7 @@ export function pipeEffects<
     };
 }
 
-export function foldEffect<A, B, C, abDeps, bcDeps, abE extends Error>(
+export function foldEffect<A, B, C, abDeps, bcDeps, abE extends TaggedError>(
     f: Fn<abDeps, Promise<Result<B, abE>>>,
     g: BinaryFn<Immutable<B>, bcDeps, Promise<C>>,
     e: BinaryFn<abE, bcDeps, Promise<C>>

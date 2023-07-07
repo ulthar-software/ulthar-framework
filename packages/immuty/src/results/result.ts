@@ -1,4 +1,4 @@
-import { Error } from "../errors/index.js";
+import { TaggedError } from "../errors/index.js";
 import { BinaryFn } from "../functions/binary.js";
 import { SomeFunction } from "../functions/function.js";
 import { Fn } from "../functions/unary.js";
@@ -11,7 +11,7 @@ import { OkResult } from "./ok-result.js";
  * This is a replacement for throwing exceptions
  * and it allows for type-safe error handling.
  */
-export type Result<A, Ae extends Error | never> = 
+export type Result<A, Ae extends TaggedError | never> = 
     [Ae] extends [never] ? OkResult<A> : 
     [A] extends [never] ? ErrorResult<Ae> :
     OkResult<A> | ErrorResult<Ae>;
@@ -22,7 +22,7 @@ export namespace Result {
     /**
      * Creates a Result representing the error
      */
-    export function error<E extends Error>(error: E): ErrorResult<E> {
+    export function error<E extends TaggedError>(error: E): ErrorResult<E> {
         return new ErrorResult(error);
     }
     /**
@@ -42,7 +42,7 @@ export function liftReliableAsyncFn<A, B>(
     };
 }
 
-export function liftFaultyAsyncFn<A, B, AErr extends Error = never>(
+export function liftFaultyAsyncFn<A, B, AErr extends TaggedError = never>(
     f: Fn<A, Promise<B>>,
     onFailure?: Fn<unknown, AErr>
 ): Fn<A, Promise<Result<B, AErr>>> {
@@ -67,7 +67,12 @@ export function liftReliableAsyncBinaryFn<A, B, C>(
     };
 }
 
-export function liftFaultyAsyncBinaryFn<A, B, C, AErr extends Error = never>(
+export function liftFaultyAsyncBinaryFn<
+    A,
+    B,
+    C,
+    AErr extends TaggedError = never
+>(
     f: BinaryFn<A, B, Promise<C>>,
     onFailure?: Fn<unknown, AErr>
 ): BinaryFn<A, B, Promise<Result<C, AErr>>> {

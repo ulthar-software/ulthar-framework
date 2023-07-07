@@ -1,4 +1,4 @@
-import { Error } from "../errors/error.js";
+import { TaggedError } from "../errors/error.js";
 import { Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/immutable.js";
 import { IResult, ResultFoldParams } from "./result-interface.js";
@@ -56,7 +56,7 @@ export class OkResult<A> implements IResult<A, never> {
      * Maps the value of the Result into a new Result.
      * The mapping function must return a Result.
      */
-    flatMap<B, Be extends Error>(
+    flatMap<B, Be extends TaggedError>(
         f: Fn<Immutable<A>, Result<B, Be>>
     ): Result<B, Be> {
         return f(this.value as Immutable<A>);
@@ -66,7 +66,7 @@ export class OkResult<A> implements IResult<A, never> {
      * Maps the value of the Result into a new Result.
      * The mapping function must return a Promise of a Result.
      */
-    async asyncFlatMap<B, Be extends Error>(
+    async asyncFlatMap<B, Be extends TaggedError>(
         f: Fn<Immutable<A>, Promise<Result<B, Be>>>
     ): Promise<Result<B, Be>> {
         return f(this.value as Immutable<A>);

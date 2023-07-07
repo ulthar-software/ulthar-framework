@@ -1,14 +1,14 @@
-import { Error } from "../errors/error.js";
+import { TaggedError } from "../errors/error.js";
 import { TagFromError } from "../errors/tag-from-error.js";
 import { Fn } from "../functions/unary.js";
 import { Result } from "../results/result.js";
 
-export type EffectRetryOptions<E extends Error> = {
+export type EffectRetryOptions<E extends TaggedError> = {
     maxRetries?: number;
     onlyOnErrors?: TagFromError<E>[];
 };
 
-export function composeEffectWithRetry<A, B, abDeps, abErr extends Error>(
+export function composeEffectWithRetry<A, B, abDeps, abErr extends TaggedError>(
     f: Fn<abDeps, Promise<Result<B, abErr>>>,
     options: EffectRetryOptions<abErr> = {}
 ): Fn<abDeps, Promise<Result<B, abErr>>> {
