@@ -1,6 +1,7 @@
 import { Effect } from "./effect.js";
 import { Error } from "../errors/error.js";
 import { Result } from "../results/result.js";
+import { AsyncFn } from "../functions/unary.js";
 
 class FetchError implements Error {
     readonly _tag = "FetchError";
@@ -17,9 +18,13 @@ class JsonBodyError implements Error {
     }
 }
 
+interface RequestDependencies {
+    fetch: AsyncFn<string, Response>;
+}
+
 function request(url: string) {
     return Effect.of(
-        () => fetch(url),
+        (_, { fetch }: RequestDependencies) => fetch(url),
         (e) => new FetchError()
     )
         .retry()

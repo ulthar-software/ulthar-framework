@@ -1,4 +1,4 @@
-import { Fn } from "./function.js";
+import { Fn } from "./unary.js";
 
 /**
  * Composes two functions.

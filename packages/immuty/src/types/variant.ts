@@ -1,4 +1,4 @@
-import { Fn } from "../functions/function.js";
+import { Fn } from "../functions/unary.js";
 
 /**
  * A variant type is a type that can be one of a set of types.

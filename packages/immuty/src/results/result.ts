@@ -1,4 +1,5 @@
 import { Error } from "../errors/index.js";
+import { AsyncFn, Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/index.js";
 
 /**
@@ -23,21 +24,21 @@ export interface IResult<T, E extends Error> {
      * @param onSuccess Function to map the value of the Result to a new value.
      * @param onFailure Function to map the error of the Result to a new value.
      */
-    map<U>(fn: (value: Immutable<T>) => U): Result<U, E>;
+    map<U>(f: Fn<Immutable<T>, U>): Result<U, E>;
 
     /**
      * Maps the value of the Result to a new value.
      * Returns the new value wrapped in a Result.
      * The provided function must return a Promise.
      */
-    asyncMap<U>(fn: (value: Immutable<T>) => Promise<U>): Promise<Result<U, E>>;
+    asyncMap<U>(fn: AsyncFn<Immutable<T>, U>): Promise<Result<U, E>>;
 
     /**
      * Maps the value of the Result to a new Result.
      * The provided function must return a Result.
      */
     flatMap<U, R extends Error>(
-        fn: (value: Immutable<T>) => Result<U, R>
+        fn: Fn<Immutable<T>, Result<U, R>>
     ): Result<U, E | R>;
 
     /**
@@ -45,8 +46,15 @@ export interface IResult<T, E extends Error> {
      * The provided function must return a Promise that resolves to a Result.
      */
     asyncFlatMap<U, R extends Error>(
-        fn: (value: Immutable<T>) => Promise<Result<U, R>>
+        fn: AsyncFn<Immutable<T>, Result<U, R>>
     ): Promise<Result<U, E | R>>;
+
+    fold<U>(onSuccess: Fn<Immutable<T>, U>, onFailure: Fn<E, U>): OkResult<U>;
+
+    asyncFold<U>(
+        onSuccess: AsyncFn<Immutable<T>, U>,
+        onFailure: AsyncFn<E, U>
+    ): Promise<OkResult<U>>;
 }
 
 /**
@@ -139,6 +147,20 @@ export class ErrorResult<E extends Error> implements IResult<never, E> {
     async asyncFlatMap<U, R extends Error>(): Promise<Result<U, E | R>> {
         return this as unknown as Result<U, E>;
     }
+
+    fold<U>(
+        onSuccess: (value: never) => U,
+        onFailure: (error: E) => U
+    ): OkResult<U> {
+        return Result.ok(onFailure(this.error));
+    }
+
+    async asyncFold<U>(
+        onSuccess: (value: never) => Promise<U>,
+        onFailure: (error: E) => Promise<U>
+    ): Promise<OkResult<U>> {
+        return Result.ok(await onFailure(this.error));
+    }
 }
 
 /**
@@ -207,5 +229,15 @@ export class OkResult<T> implements IResult<T, never> {
         fn: (value: Immutable<T>) => Promise<Result<U, R>>
     ): Promise<Result<U, R>> {
         return fn(this.value as Immutable<T>);
+    }
+
+    fold<U>(onSuccess: (value: Immutable<T>) => U): OkResult<U> {
+        return Result.ok(onSuccess(this.unwrap()));
+    }
+
+    async asyncFold<U>(
+        onSuccess: (value: Immutable<T>) => Promise<U>
+    ): Promise<OkResult<U>> {
+        return Result.ok(await onSuccess(this.unwrap()));
     }
 }

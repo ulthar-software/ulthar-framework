@@ -4,20 +4,20 @@ import { Immutable } from "../immutability/immutable.js";
 import { Result, SomeResult } from "../results/result.js";
 import { MergeTypes } from "../types/merge-types.js";
 
-export type AsyncEffectMapFn<A, B, Dependencies> = BinaryFn<
+export type AsyncEffectMapFn<A, Dependencies, B> = AsyncBinaryFn<
     Immutable<A>,
     Dependencies,
-    Promise<B>
+    B
 >;
 
-export type AsyncEffectFn<A, Dependencies, B extends SomeResult> = BinaryFn<
-    Immutable<A>,
+export type AsyncEffectFn<
+    A,
     Dependencies,
-    Promise<B>
->;
+    B extends SomeResult
+> = AsyncBinaryFn<Immutable<A>, Dependencies, B>;
 
 export function liftEffectMap<A, B, abDeps>(
-    fn: AsyncEffectMapFn<A, B, abDeps>
+    fn: AsyncEffectMapFn<A, abDeps, B>
 ): AsyncEffectFn<A, abDeps, Result<B, never>> {
     return async (value, dependencies) => {
         const result = await fn(value, dependencies);
@@ -56,5 +56,19 @@ export function composeEffects<
     return async (value, dependencies) => {
         const result = await f(value, dependencies as abDeps);
         return result.asyncFlatMap((value) => g(value, dependencies as bcDeps));
+    };
+}
+
+export function foldEffect<A, B, C, abDeps, bcDeps, abE extends Error>(
+    f: AsyncEffectFn<A, abDeps, Result<B, abE>>,
+    g: AsyncBinaryFn<Immutable<B>, bcDeps, C>,
+    e: AsyncBinaryFn<abE, bcDeps, C>
+): AsyncEffectFn<A, MergeTypes<abDeps, bcDeps>, Result<C, never>> {
+    return async (a, dependencies) => {
+        const result = await f(a, dependencies as abDeps);
+        return await result.asyncFold(
+            (value) => g(value, dependencies as bcDeps),
+            (error) => e(error, dependencies as bcDeps)
+        );
     };
 }

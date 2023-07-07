@@ -1554,7 +1554,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/immuty@workspace:packages/immuty":
+"@ulthar/immuty-demo@workspace:packages/immuty-demo":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/immuty-demo@workspace:packages/immuty-demo"
+  dependencies:
+    "@types/jest": ^29.5.1
+    "@ulthar/immuty": "workspace:^"
+    jest: ^29.5.0
+    ts-jest: ^29.1.0
+    typescript: ^5.1.3
+  languageName: unknown
+  linkType: soft
+
+"@ulthar/immuty@workspace:^, @ulthar/immuty@workspace:packages/immuty":
   version: 0.0.0-use.local
   resolution: "@ulthar/immuty@workspace:packages/immuty"
   dependencies:
@@ -1571,7 +1583,7 @@ __metadata:
   resolution: "@ulthar/lib-template@workspace:templates/lib-template"
   dependencies:
     "@types/jest": ^29.5.1
-    "@ulthar/blamey": "workspace:^"
+    "@ulthar/immuty": "workspace:^"
     jest: ^29.5.0
     ts-jest: ^29.1.0
     typescript: ^5.1.3
