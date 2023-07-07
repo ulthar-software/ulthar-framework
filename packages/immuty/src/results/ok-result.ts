@@ -1,19 +1,20 @@
 import { Error } from "../errors/error.js";
+import { Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/immutable.js";
-import { IResult } from "./result-interface.js";
+import { IResult, ResultFoldParams } from "./result-interface.js";
 import { Result } from "./result.js";
 
 /**
  * Represents a Successful Result.
  */
-export class OkResult<T> implements IResult<T, never> {
-    constructor(private readonly value: T) {}
+export class OkResult<A> implements IResult<A, never> {
+    constructor(private readonly value: A) {}
 
     /**
      * Determine if this Result is a success.
      * Always returns true
      */
-    isOk(): this is OkResult<T> {
+    isOk(): this is OkResult<A> {
         return true;
     }
 
@@ -28,8 +29,8 @@ export class OkResult<T> implements IResult<T, never> {
     /**
      * Unwraps the value of the Result.
      */
-    unwrap(): Immutable<T> {
-        return this.value as Immutable<T>;
+    unwrap(): Immutable<A> {
+        return this.value as Immutable<A>;
     }
 
     /**
@@ -37,47 +38,47 @@ export class OkResult<T> implements IResult<T, never> {
      * The mapping function must return a value and that
      * value will be wrapped in a new Result.
      */
-    map<U>(fn: (value: Immutable<T>) => U): OkResult<U> {
-        return Result.ok(fn(this.value as Immutable<T>));
+    map<B>(f: Fn<Immutable<A>, B>): OkResult<B> {
+        return Result.ok(f(this.value as Immutable<A>));
     }
 
     /**
      * Maps the value of the Result into a new value.
      * The mapping function must return a Promise of a value
      */
-    async asyncMap<U>(
-        fn: (value: Immutable<T>) => Promise<U>
-    ): Promise<Result<U, never>> {
-        return Result.ok(await fn(this.value as Immutable<T>));
+    async asyncMap<B>(
+        fn: Fn<Immutable<A>, Promise<B>>
+    ): Promise<Result<B, never>> {
+        return Result.ok(await fn(this.value as Immutable<A>));
     }
 
     /**
      * Maps the value of the Result into a new Result.
      * The mapping function must return a Result.
      */
-    flatMap<U, R extends Error>(
-        fn: (value: Immutable<T>) => Result<U, R>
-    ): Result<U, R> {
-        return fn(this.value as Immutable<T>);
+    flatMap<B, Be extends Error>(
+        f: Fn<Immutable<A>, Result<B, Be>>
+    ): Result<B, Be> {
+        return f(this.value as Immutable<A>);
     }
 
     /**
      * Maps the value of the Result into a new Result.
      * The mapping function must return a Promise of a Result.
      */
-    async asyncFlatMap<U, R extends Error>(
-        fn: (value: Immutable<T>) => Promise<Result<U, R>>
-    ): Promise<Result<U, R>> {
-        return fn(this.value as Immutable<T>);
+    async asyncFlatMap<B, Be extends Error>(
+        f: Fn<Immutable<A>, Promise<Result<B, Be>>>
+    ): Promise<Result<B, Be>> {
+        return f(this.value as Immutable<A>);
     }
 
-    fold<U>(onSuccess: (value: Immutable<T>) => U): OkResult<U> {
+    fold<B>({ onSuccess }: ResultFoldParams<A, B, never>): OkResult<B> {
         return Result.ok(onSuccess(this.unwrap()));
     }
 
-    async asyncFold<U>(
-        onSuccess: (value: Immutable<T>) => Promise<U>
-    ): Promise<OkResult<U>> {
+    async asyncFold<B>({
+        onSuccess,
+    }: ResultFoldParams<A, Promise<B>, never>): Promise<OkResult<B>> {
         return Result.ok(await onSuccess(this.unwrap()));
     }
 }
