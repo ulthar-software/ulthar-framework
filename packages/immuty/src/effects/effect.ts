@@ -1,10 +1,16 @@
-import { Fn, Result, TaggedError } from "../index.js";
+import { Fn, RemainingUnmatchedErrors, Result, TaggedError } from "../index.js";
 import { MergeTypes } from "../types/merge-types.js";
 import { composeEffects } from "./compose-effects.js";
 import { effectFromPromise } from "./effect-from-promise.js";
 import { EffectConstructor, EffectFn, PipeableEffectFn } from "./effect-fn.js";
 import { ErrorWrapper } from "../errors/create-native-error-wrapper.js";
 import { pipeEffects } from "./pipe-effects.js";
+import {
+    FullEffectErrorPatternMatcher,
+    PartialEffectErrorPatternMatcher,
+    effectErrorFullMatch,
+    effectErrorPartialMatch,
+} from "./effect-error-matchers.js";
 
 /**
  * An effect is a representation of a (most-likely-asynchronous) behavior that executes
@@ -67,6 +73,52 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         g: EffectConstructor<A, B, BDeps, BErr>
     ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
         return new Effect(pipeEffects(this.f, g));
+    }
+
+    /**
+     * Creates a new effect that catches some of the errors described by `AErr` and maps them to the corresponding
+     * value of type `A`
+     * The new effect will infer the type of the remaining errors that are not matched by the matcher.
+     */
+    catchSome<PM extends PartialEffectErrorPatternMatcher<ADeps, AErr, A>>(
+        matcher: PM
+    ): Effect<ADeps, A, RemainingUnmatchedErrors<AErr, PM>> {
+        return new Effect(async (deps) => {
+            const result = await this.f(deps);
+            return effectErrorPartialMatch(deps, result, matcher);
+        });
+    }
+
+    /**
+     * Creates a new effect that catches all of the errors described by `AErr` and maps them to the corresponding
+     * value of type `A`
+     * The new effect will have no errors (i.e. `never`) because all of the errors are matched.
+     * Be aware that this does not mean that the effect will never fail, it just means that it will never fail
+     * for a **known** reason.
+     */
+    catchAll(
+        matcher: FullEffectErrorPatternMatcher<ADeps, AErr, A>
+    ): Effect<ADeps, A, never> {
+        return new Effect(async (deps) => {
+            const result = await this.f(deps);
+            return effectErrorFullMatch(deps, result, matcher);
+        });
+    }
+
+    /**
+     * Creates a new effect that throws if the result of this effect is an error.
+     * This is the only way an effect can throw.
+     * This is used to halt the program for unrecoverable errors.
+     */
+    orDie(): Effect<ADeps, A, never> {
+        return new Effect(async (deps) => {
+            const result = await this.f(deps);
+            if (result.isOk()) {
+                return result;
+            } else {
+                throw result.unwrapError().nativeError;
+            }
+        });
     }
 
     /**
