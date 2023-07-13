@@ -81,4 +81,12 @@ export class OkResult<A> implements IResult<A, never> {
     }: ResultFoldParams<A, Promise<B>, never>): Promise<OkResult<B>> {
         return Result.ok(await onSuccess(this.unwrap()));
     }
+
+    catchAll(): Result<A, never> {
+        return this;
+    }
+
+    catchSome(): OkResult<A> {
+        return this;
+    }
 }

@@ -1,5 +1,12 @@
 import { TaggedError } from "../errors/tagged-error.js";
 import { Immutable } from "../immutability/immutable.js";
+import {
+    ErrorPatternMatcher,
+    RemainingUnmatchedErrors,
+    PartialErrorPatternMatcher,
+    fullMatch,
+    partialMatch,
+} from "../index.js";
 import { OkResult } from "./ok-result.js";
 import { IResult, ResultFoldParams } from "./result-interface.js";
 import { Result } from "./result.js";
@@ -7,8 +14,10 @@ import { Result } from "./result.js";
 /**
  * Represents a Result failure.
  */
-export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
-    constructor(private readonly error: Ae) {}
+export class ErrorResult<A, AErr extends TaggedError>
+    implements IResult<A, AErr>
+{
+    constructor(private readonly error: AErr) {}
 
     /**
      * Determine if this Result is a success.
@@ -22,15 +31,15 @@ export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
      * Determine if this Result is a failure.
      * Always returns true
      */
-    isError(): this is ErrorResult<Ae> {
+    isError(): this is ErrorResult<A, AErr> {
         return true;
     }
 
     /**
      * Unwraps the error contained in this Result.
      */
-    unwrapError(): Immutable<Ae> {
-        return this.error as Immutable<Ae>;
+    unwrapError(): Immutable<AErr> {
+        return this.error as Immutable<AErr>;
     }
 
     /**
@@ -38,8 +47,8 @@ export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
      * As this is an ErrorResult, the mapping function is not called
      * and the same ErrorResult is returned.
      */
-    map(): Result<never, Ae> {
-        return this as unknown as Result<never, Ae>;
+    map(): Result<never, AErr> {
+        return this as unknown as Result<never, AErr>;
     }
 
     /**
@@ -47,8 +56,8 @@ export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
      * As this is an ErrorResult, the mapping function is not called
      * and the same ErrorResult is returned.
      */
-    async asyncMap(): Promise<Result<never, Ae>> {
-        return this as unknown as Result<never, Ae>;
+    async asyncMap(): Promise<Result<never, AErr>> {
+        return this as unknown as Result<never, AErr>;
     }
 
     /**
@@ -56,8 +65,8 @@ export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
      * As this is an ErrorResult, the mapping function is not called
      * and the same ErrorResult is returned.
      */
-    flatMap<B, Be extends TaggedError>(): Result<B, Ae | Be> {
-        return this as unknown as Result<B, Ae>;
+    flatMap<B, Be extends TaggedError>(): Result<B, AErr | Be> {
+        return this as unknown as Result<B, AErr>;
     }
 
     /**
@@ -66,9 +75,9 @@ export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
      * and the same ErrorResult is returned.
      */
     async asyncFlatMap<B, Be extends TaggedError>(): Promise<
-        Result<B, Ae | Be>
+        Result<B, AErr | Be>
     > {
-        return this as unknown as Result<B, Ae>;
+        return this as unknown as Result<B, AErr>;
     }
 
     /**
@@ -77,7 +86,7 @@ export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
      * As this is an ErrorResult, the onFailure function is called
      * and the result of that function is returned.
      */
-    fold<A>({ onFailure }: ResultFoldParams<never, A, Ae>): OkResult<A> {
+    fold<B>({ onFailure }: ResultFoldParams<never, B, AErr>): Result<B, never> {
         return Result.ok(onFailure(this.error));
     }
 
@@ -89,7 +98,25 @@ export class ErrorResult<Ae extends TaggedError> implements IResult<never, Ae> {
      */
     async asyncFold<B>({
         onFailure,
-    }: ResultFoldParams<never, Promise<B>, Ae>): Promise<OkResult<B>> {
+    }: ResultFoldParams<never, Promise<B>, AErr>): Promise<Result<B, never>> {
         return Result.ok(await onFailure(this.error));
+    }
+
+    catchAll(matcher: ErrorPatternMatcher<AErr, A>): Result<A, never> {
+        return Result.ok(fullMatch(this.error, matcher));
+    }
+
+    catchSome<PM extends PartialErrorPatternMatcher<AErr, A>>(
+        matcher: PM
+    ): Result<A, RemainingUnmatchedErrors<AErr, PM>> {
+        const x = partialMatch(this.error, matcher);
+        if (x) {
+            return Result.ok(x) as Result<
+                A,
+                RemainingUnmatchedErrors<AErr, PM>
+            >;
+        } else {
+            return this as any;
+        }
     }
 }

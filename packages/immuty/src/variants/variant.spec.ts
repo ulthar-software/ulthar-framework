@@ -1,4 +1,4 @@
-import { match } from "./match.js";
+import { fullMatch } from "./match.js";
 import { Variant } from "./variant.js";
 
 describe("Variant", () => {
@@ -12,19 +12,35 @@ describe("Variant", () => {
             readonly _tag: "Bar";
             readonly bar: number;
         }
+        interface Fez extends Variant {
+            readonly _tag: "Fez";
+            readonly fez: number;
+        }
 
-        type FooBar = Foo | Bar;
+        type FooBar = Foo | Bar | Fez;
 
-        const fooBar: FooBar = {
-            _tag: "Foo",
-            foo: "foo",
+        const matcher = {
+            Foo: (foo: Foo): string => foo.foo,
+            "*": (): number => 5,
         };
 
-        const result = match(fooBar as FooBar, {
-            Foo: (foo): string => foo.foo,
-            Bar: (bar): number => bar.bar,
-        });
-
-        expect(result).toBe("foo");
+        expect(
+            fullMatch(
+                {
+                    _tag: "Foo",
+                    foo: "foo",
+                } as FooBar,
+                matcher
+            )
+        ).toBe("foo");
+        expect(
+            fullMatch(
+                {
+                    _tag: "Bar",
+                    bar: 99,
+                } as FooBar,
+                matcher
+            )
+        ).toBe(5);
     });
 });
