@@ -66,7 +66,7 @@ describe("Effect Scheduling", () => {
                 return deps.a;
             }
         )
-            .tapErr(fn)
+            .tap(fn)
             .retry(
                 Schedule.fromDelay({
                     delay: TimeSpan.seconds(5),

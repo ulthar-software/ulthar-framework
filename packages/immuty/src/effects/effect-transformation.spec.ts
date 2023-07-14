@@ -1,4 +1,4 @@
-import { Result } from "../index.js";
+import { Result, defaultErrorWrapper } from "../index.js";
 import { Effect } from "./effect.js";
 
 describe("Effect Transformation", () => {
@@ -33,5 +33,28 @@ describe("Effect Transformation", () => {
             .run({ a: 1 });
 
         expect(result).toEqual(Result.ok(2));
+    });
+
+    it("should tap the result of an effect when the result is OK", async () => {
+        const effect = Effect.fromPromise(async (deps: { a: number }) => {
+            return deps.a;
+        });
+        const fn = jest.fn();
+        const result = await effect.tap(fn).run({ a: 1 });
+
+        expect(fn).toHaveBeenCalledWith(result);
+        expect(result).toEqual(Result.ok(1));
+    });
+    it("should tap the result of an effect even if the effect fails", async () => {
+        const effect = Effect.fromPromise(async (deps: { a: number }) => {
+            throw new Error("error");
+        });
+        const fn = jest.fn();
+        const result = await effect.tap(fn).run({ a: 1 });
+
+        expect(fn).toHaveBeenCalledWith(result);
+        expect(result).toEqual(
+            Result.error(defaultErrorWrapper(new Error("error")))
+        );
     });
 });

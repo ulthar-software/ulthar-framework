@@ -103,16 +103,15 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     }
 
     /**
-     * Creates a new effect that executes with the error of this effect,
+     * Creates a new effect that executes with the result of this effect,
      * but doesn't change the result of this effect.
+     *
      * This is useful for side-effects that don't change the result of the effect, like logging.
      */
-    tapErr(f: Fn<Immutable<AErr>, MaybePromise<void>>): Effect<ADeps, A, AErr> {
+    tap(f: Fn<Result<A, AErr>, MaybePromise<void>>): Effect<ADeps, A, AErr> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
-            if (result.isError()) {
-                await f(result.unwrapError());
-            }
+            await f(result);
             return result;
         });
     }
