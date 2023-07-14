@@ -23,4 +23,15 @@ describe("Effect Transformation", () => {
 
         expect(result).toEqual(Result.ok(2));
     });
+
+    it("should mapPromise an effect given a function that maps the result", async () => {
+        const effect = Effect.fromPromise(async (deps: { a: number }) => {
+            return deps.a;
+        });
+        const result = await effect
+            .mapPromise(async ([value]) => value + 1)
+            .run({ a: 1 });
+
+        expect(result).toEqual(Result.ok(2));
+    });
 });

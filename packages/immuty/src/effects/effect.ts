@@ -77,6 +77,22 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     }
 
     /**
+     * Creates a new effect that first runs this effect and then pipes its result into the given function.
+     * The given function gets lifted to return a Result type.
+     *
+     * @param g The function for the new effect, it must return a promise.
+     * @param e The error wrapper to handle any errors in the promise. If not provided, the effect
+     * infers that it cannot fail for a known reason. In that case, if the promise rejects, the effect
+     * will fail with the default UnexpectedError.
+     */
+    mapPromise<B, BDeps = void, BErr extends TaggedError = never>(
+        g: Fn<[Immutable<A>, BDeps], Promise<B>>,
+        e?: ErrorWrapper<BErr>
+    ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
+        return new Effect(composeEffects(this.f, liftFn(g, e)));
+    }
+
+    /**
      * Creates a new effect that first runs this effect and then pipes its result into the given effect.
      * @param g The effect constructor to call that must return an Effect.
      */
