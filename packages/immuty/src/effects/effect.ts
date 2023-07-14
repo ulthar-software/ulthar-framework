@@ -22,6 +22,7 @@ import {
 import { Schedule } from "../time/schedule.js";
 import { RetryOpts, composeEffectWithRetry } from "./effect-retry.js";
 import { MaybePromise } from "../types/maybe-promise.js";
+import { EffectStream } from "./effect-stream.js";
 
 /**
  * An effect is a representation of a (most-likely-asynchronous) behavior that executes
@@ -183,5 +184,9 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     async delayedRun(delay: TimeSpan, deps: ADeps): Promise<Result<A, AErr>> {
         await delay.sleep();
         return this.f(deps);
+    }
+
+    schedule(schedule: Schedule): EffectStream<void, ADeps, A, AErr> {
+        return EffectStream.fromSchedule(this.f, schedule);
     }
 }

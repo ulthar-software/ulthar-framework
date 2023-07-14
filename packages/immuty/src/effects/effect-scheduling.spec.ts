@@ -136,4 +136,23 @@ describe("Effect Scheduling", () => {
 
         expect(result).toEqual(Result.ok(1));
     });
+
+    it("should create an Effect stream from a schedule", async () => {
+        const fn = jest.fn();
+        const effect = Effect.fromPromise(
+            async (deps: { a: number }): Promise<number> => {
+                return fn(deps.a);
+            }
+        );
+
+        const stream = effect.schedule(
+            Schedule.every(TimeSpan.seconds(5), {
+                maxIterations: 3,
+            })
+        );
+
+        await stream.start({ a: 1 });
+
+        expect(fn).toHaveBeenCalledTimes(3);
+    });
 });
