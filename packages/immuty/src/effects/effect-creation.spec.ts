@@ -44,4 +44,13 @@ describe("Effect Creation", () => {
 
         expect(result).toEqual(Result.ok(1));
     });
+
+    it("should create an effect from an effect fn", async () => {
+        const effect = Effect.from(async (deps: { a: number }) => {
+            return Result.ok(deps.a);
+        });
+        const result = await effect.run({ a: 1 });
+
+        expect(result).toEqual(Result.ok(1));
+    });
 });

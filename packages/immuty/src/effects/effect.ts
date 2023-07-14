@@ -55,6 +55,12 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         return new Effect(effectFromPromise(f, e));
     }
 
+    static from<ADeps = void, A = void, AErr extends TaggedError = never>(
+        f: EffectFn<ADeps, A, AErr>
+    ): Effect<ADeps, A, AErr> {
+        return new Effect(f);
+    }
+
     /**
      * Creates a new effect from a function that returns a value.
      */
