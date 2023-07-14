@@ -1,4 +1,12 @@
-import { Fn, RemainingUnmatchedErrors, Result, TaggedError } from "../index.js";
+import {
+    Fn,
+    Immutable,
+    RemainingUnmatchedErrors,
+    Result,
+    TaggedError,
+    TimeSpan,
+    liftFn,
+} from "../index.js";
 import { MergeTypes } from "../types/merge-types.js";
 import { composeEffects } from "./compose-effects.js";
 import { effectFromPromise } from "./effect-from-promise.js";
@@ -11,6 +19,9 @@ import {
     effectErrorFullMatch,
     effectErrorPartialMatch,
 } from "./effect-error-matchers.js";
+import { Schedule } from "../time/schedule.js";
+import { RetryOpts, composeEffectWithRetry } from "./effect-retry.js";
+import { MaybePromise } from "../types/maybe-promise.js";
 
 /**
  * An effect is a representation of a (most-likely-asynchronous) behavior that executes
@@ -76,6 +87,21 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     }
 
     /**
+     * Creates a new effect that executes with the error of this effect,
+     * but doesn't change the result of this effect.
+     * This is useful for side-effects that don't change the result of the effect, like logging.
+     */
+    tapErr(f: Fn<Immutable<AErr>, MaybePromise<void>>): Effect<ADeps, A, AErr> {
+        return new Effect(async (deps) => {
+            const result = await this.f(deps);
+            if (result.isError()) {
+                await f(result.unwrapError());
+            }
+            return result;
+        });
+    }
+
+    /**
      * Creates a new effect that catches some of the errors described by `AErr` and maps them to the corresponding
      * value of type `A`
      * The new effect will infer the type of the remaining errors that are not matched by the matcher.
@@ -106,6 +132,17 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     }
 
     /**
+     * Creates a new effect that will retry this effect according to the given schedule.
+     * This new effect will execute one more time than what the schedule specifies.
+     *
+     * If the opts.onlyOn is specified, the effect will only retry if the error matches the given
+     * list of tags
+     */
+    retry(schedule: Schedule, opts?: RetryOpts<AErr>): Effect<ADeps, A, AErr> {
+        return new Effect(composeEffectWithRetry(this.f, schedule, opts));
+    }
+
+    /**
      * Creates a new effect that throws if the result of this effect is an error.
      * This is the only way an effect can throw.
      * This is used to halt the program for unrecoverable errors.
@@ -125,6 +162,11 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
      * Asynchronously executes the effect.
      */
     run(deps: ADeps): Promise<Result<A, AErr>> {
+        return this.f(deps);
+    }
+
+    async delayedRun(delay: TimeSpan, deps: ADeps): Promise<Result<A, AErr>> {
+        await delay.sleep();
         return this.f(deps);
     }
 }
