@@ -16,7 +16,7 @@ export function composeEffectWithRetry<ADeps, A, AErr extends TaggedError>(
         if (result.isOk()) {
             return result;
         }
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
             if (shouldRetry(result, opts)) {
                 result = await f(deps);
             } else {

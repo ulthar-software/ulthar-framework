@@ -14,7 +14,7 @@ describe("Schedule", () => {
         });
         const now = Time.now();
         const fn = jest.fn();
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
             fn();
         }
         expect(Time.now() - now).toBe(3000);
@@ -28,7 +28,7 @@ describe("Schedule", () => {
         });
         const now = Time.now();
         let i = 0;
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
             i++;
             if (i === 10) {
                 break;
@@ -44,7 +44,7 @@ describe("Schedule", () => {
         });
         const now = Time.now();
         const fn = jest.fn();
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
             fn();
         }
         expect(Time.now() - now).toBe(6000);
@@ -58,7 +58,7 @@ describe("Schedule", () => {
         });
         const now = Time.now();
         let i = 0;
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
             i++;
             if (i === 3) {
                 break;
@@ -72,7 +72,7 @@ describe("Schedule", () => {
         const schedule = Schedule.fromBackoff((i) => TimeSpan.seconds(i + 1));
         const now = Time.now();
         let i = 0;
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
             i++;
             if (i === 3) {
                 break;
@@ -86,22 +86,46 @@ describe("Schedule", () => {
         const schedule = Schedule.once(TimeSpan.seconds(1));
         const now = Time.now();
         const fn = jest.fn();
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
             fn();
         }
         expect(Time.now() - now).toBe(1000);
         expect(fn).toHaveBeenCalledTimes(1);
     });
 
-    it("'once' should run instantly if no delay is specified", async () => {
+    it("should run instantly with 'once' if no delay is specified", async () => {
         Time.useFakeTime();
         const schedule = Schedule.once();
         const now = Time.now();
         const fn = jest.fn();
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
             fn();
         }
         expect(Time.now() - now).toBe(0);
         expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it("should define a schedule for 'times'", async () => {
+        Time.useFakeTime();
+        const schedule = Schedule.times(3, TimeSpan.seconds(1));
+        const now = Time.now();
+        const fn = jest.fn();
+        for await (const _ of schedule) {
+            fn();
+        }
+        expect(Time.now() - now).toBe(3000);
+        expect(fn).toHaveBeenCalledTimes(3);
+    });
+
+    it("should run instantly with 'times' if no delay is specified", async () => {
+        Time.useFakeTime();
+        const schedule = Schedule.times(3);
+        const now = Time.now();
+        const fn = jest.fn();
+        for await (const _ of schedule) {
+            fn();
+        }
+        expect(Time.now() - now).toBe(0);
+        expect(fn).toHaveBeenCalledTimes(3);
     });
 });

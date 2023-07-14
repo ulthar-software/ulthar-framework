@@ -9,7 +9,7 @@ describe("Backoff", () => {
             maxIterations: 4,
         });
         const now = Time.now();
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
         }
         expect(Time.now() - now).toBe(600);
     });
@@ -20,7 +20,7 @@ describe("Backoff", () => {
             maxIterations: 4,
         });
         const now = Time.now();
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
         }
         expect(Time.now() - now).toBe(700);
     });
@@ -31,7 +31,7 @@ describe("Backoff", () => {
             maxIterations: 4,
         });
         const now = Time.now();
-        for await (const _ of schedule.start()) {
+        for await (const _ of schedule) {
         }
         expect(Time.now() - now).toBe(1400);
     });

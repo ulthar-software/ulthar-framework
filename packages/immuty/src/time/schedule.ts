@@ -1,14 +1,25 @@
+import { EventSource } from "../events/event-source.js";
+import { Result } from "../index.js";
 import { BackoffFn } from "./backoff.js";
 import { TimeSpan } from "./time-span.js";
 
-export class Schedule {
+export class Schedule implements EventSource<void, never> {
     static once(delay?: TimeSpan): Schedule {
         return new Schedule(async function* () {
             if (delay) {
                 await delay.sleep();
-                yield;
-            } else {
-                yield;
+            }
+            yield Result.ok(undefined);
+        });
+    }
+
+    static times(n: number, delay?: TimeSpan): Schedule {
+        return new Schedule(async function* () {
+            for (let i = 0; i < n; i++) {
+                if (delay) {
+                    await delay.sleep();
+                }
+                yield Result.ok(undefined);
             }
         });
     }
@@ -18,7 +29,7 @@ export class Schedule {
             let i = 0;
             while (!maxIterations || i < maxIterations) {
                 await delay.sleep();
-                yield;
+                yield Result.ok(undefined);
                 i++;
             }
         });
@@ -34,16 +45,16 @@ export class Schedule {
                 const delay = backoff(i);
                 if (maxDelay && delay.isGreaterThan(maxDelay)) {
                     await maxDelay.sleep();
-                    yield;
+                    yield Result.ok(undefined);
                 }
                 await delay.sleep();
-                yield;
+                yield Result.ok(undefined);
                 i++;
             }
         });
     }
 
-    start(): ScheduleSleepGenerator {
+    [Symbol.asyncIterator](): ScheduleSleepGenerator {
         return this.f();
     }
 
@@ -60,6 +71,10 @@ interface DelayOptions {
     maxIterations?: number;
 }
 
-export type ScheduleSleepGenerator = AsyncGenerator<void, void, void>;
+export type ScheduleSleepGenerator = AsyncGenerator<
+    Result<void, never>,
+    void,
+    void
+>;
 
 export type ScheduleFn = () => ScheduleSleepGenerator;
