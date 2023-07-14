@@ -3,7 +3,7 @@
         "**/.yarn": true,
         "**/.pnp.*": true
     },
-    "typescript.preferences.importModuleSpecifier": "shortest",
+    "typescript.preferences.importModuleSpecifier": "relative",
     "typescript.preferences.importModuleSpecifierEnding": "js",
     "cSpell.words": ["effectfull", "Pipeable"]
 }
