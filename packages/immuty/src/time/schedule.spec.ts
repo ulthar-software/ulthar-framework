@@ -39,8 +39,7 @@ describe("Schedule", () => {
 
     it("should define a schedule given a backoff function", async () => {
         Time.useFakeTime();
-        const schedule = Schedule.fromBackoff({
-            backoff: (i) => TimeSpan.seconds(i + 1),
+        const schedule = Schedule.fromBackoff((i) => TimeSpan.seconds(i + 1), {
             maxIterations: 3,
         });
         const now = Time.now();
@@ -54,8 +53,7 @@ describe("Schedule", () => {
 
     it("should define stop backoff if maxDelay is reached", async () => {
         Time.useFakeTime();
-        const schedule = Schedule.fromBackoff({
-            backoff: (i) => TimeSpan.seconds(i + 1),
+        const schedule = Schedule.fromBackoff((i) => TimeSpan.seconds(i + 1), {
             maxDelay: TimeSpan.seconds(2),
         });
         const now = Time.now();
@@ -67,6 +65,20 @@ describe("Schedule", () => {
             }
         }
         expect(Time.now() - now).toBe(5000);
+    });
+
+    it("should define an infinitely increasing backoff if no maxDelay or maxIterations are given", async () => {
+        Time.useFakeTime();
+        const schedule = Schedule.fromBackoff((i) => TimeSpan.seconds(i + 1));
+        const now = Time.now();
+        let i = 0;
+        for await (const _ of schedule.start()) {
+            i++;
+            if (i === 3) {
+                break;
+            }
+        }
+        expect(Time.now() - now).toBe(6000);
     });
 
     it("should define a schedule for 'once'", async () => {

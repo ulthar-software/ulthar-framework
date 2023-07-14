@@ -24,11 +24,10 @@ export class Schedule {
         });
     }
 
-    static fromBackoff({
-        backoff,
-        maxDelay,
-        maxIterations,
-    }: BackoffOptions): Schedule {
+    static fromBackoff(
+        backoff: BackoffFn,
+        { maxDelay, maxIterations }: BackoffOptions = {}
+    ): Schedule {
         return new Schedule(async function* () {
             let i = 0;
             while (!maxIterations || i < maxIterations) {
@@ -52,7 +51,6 @@ export class Schedule {
 }
 
 interface BackoffOptions {
-    backoff: BackoffFn;
     maxIterations?: number;
     maxDelay?: TimeSpan;
 }
