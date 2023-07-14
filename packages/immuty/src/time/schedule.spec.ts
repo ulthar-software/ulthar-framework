@@ -8,8 +8,7 @@ describe("Schedule", () => {
     });
     it("should define a schedule given a simple delay and a number of repetitions", async () => {
         Time.useFakeTime();
-        const schedule = Schedule.fromDelay({
-            delay: TimeSpan.seconds(1),
+        const schedule = Schedule.every(TimeSpan.seconds(1), {
             maxIterations: 3,
         });
         const now = Time.now();
@@ -23,9 +22,7 @@ describe("Schedule", () => {
 
     it("should schedule indefinitely if no maxIterations is given", async () => {
         Time.useFakeTime();
-        const schedule = Schedule.fromDelay({
-            delay: TimeSpan.seconds(1),
-        });
+        const schedule = Schedule.every(TimeSpan.seconds(1));
         const now = Time.now();
         let i = 0;
         for await (const _ of schedule) {

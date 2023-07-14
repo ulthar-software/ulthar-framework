@@ -24,7 +24,10 @@ export class Schedule implements EventSource<void, never> {
         });
     }
 
-    static fromDelay({ delay, maxIterations }: DelayOptions): Schedule {
+    static every(
+        delay: TimeSpan,
+        { maxIterations }: DelayOptions = {}
+    ): Schedule {
         return new Schedule(async function* () {
             let i = 0;
             while (!maxIterations || i < maxIterations) {
@@ -67,7 +70,6 @@ interface BackoffOptions {
 }
 
 interface DelayOptions {
-    delay: TimeSpan;
     maxIterations?: number;
 }
 

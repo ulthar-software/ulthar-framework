@@ -43,8 +43,7 @@ describe("Effect Scheduling", () => {
                 return deps.a;
             }
         ).retry(
-            Schedule.fromDelay({
-                delay: TimeSpan.seconds(5),
+            Schedule.every(TimeSpan.seconds(5), {
                 maxIterations: 3,
             })
         );
@@ -68,8 +67,7 @@ describe("Effect Scheduling", () => {
         )
             .tap(fn)
             .retry(
-                Schedule.fromDelay({
-                    delay: TimeSpan.seconds(5),
+                Schedule.every(TimeSpan.seconds(5), {
                     maxIterations: 2,
                 })
             );
@@ -108,8 +106,7 @@ describe("Effect Scheduling", () => {
                 }
             }
         ).retry(
-            Schedule.fromDelay({
-                delay: TimeSpan.seconds(5),
+            Schedule.every(TimeSpan.seconds(5), {
                 maxIterations: 3,
             }),
             { onlyOn: ["TestErrorB"] }
@@ -130,8 +127,7 @@ describe("Effect Scheduling", () => {
                 return deps.a;
             }
         ).retry(
-            Schedule.fromDelay({
-                delay: TimeSpan.seconds(5),
+            Schedule.every(TimeSpan.seconds(5), {
                 maxIterations: 3,
             })
         );
