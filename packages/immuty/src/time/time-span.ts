@@ -34,6 +34,10 @@ export class TimeSpan {
         return TimeSpan.milliseconds(this.ms + other.ms);
     }
 
+    isGreaterThan(other: TimeSpan) {
+        return this.ms > other.ms;
+    }
+
     constructor(private readonly ms: number) {}
 
     toMilliseconds() {

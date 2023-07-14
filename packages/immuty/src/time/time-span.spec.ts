@@ -3,7 +3,7 @@ import { Time } from "./time.js";
 
 describe("Time Span", () => {
     afterEach(() => {
-        Time.setSync(true);
+        Time.useRealTime();
     });
 
     it("should describe a time span", () => {
@@ -23,7 +23,7 @@ describe("Time Span", () => {
     });
 
     it("should sleep the correct amount of time", async () => {
-        Time.setSync(false);
+        Time.useFakeTime();
         const now = Time.now();
         await TimeSpan.seconds(1).sleep();
         expect(Time.now()).toEqual(now + 1000);

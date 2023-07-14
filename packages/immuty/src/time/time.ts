@@ -17,9 +17,13 @@ class TimeSingleton {
         this._now += span.toMilliseconds();
     }
 
-    setSync(sync: boolean): void {
-        this._sync = sync;
+    useRealTime(): void {
+        this._sync = true;
         this._now = Date.now();
+    }
+
+    useFakeTime(): void {
+        this._sync = false;
     }
 
     sleep(span: TimeSpan): Promise<void> {
