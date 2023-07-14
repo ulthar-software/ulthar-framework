@@ -12,14 +12,23 @@ interface DelayOptions {
 }
 
 export class Schedule {
-    constructor(private readonly f: ScheduleFn) {}
+    static once(delay?: TimeSpan): Schedule {
+        return new Schedule(async function* () {
+            if (delay) {
+                await delay.sleep();
+                yield;
+            } else {
+                yield;
+            }
+        });
+    }
 
     static fromDelay({ delay, maxIterations }: DelayOptions): Schedule {
         return new Schedule(async function* () {
             let i = 0;
             while (!maxIterations || i < maxIterations) {
                 await delay.sleep();
-                yield delay;
+                yield;
                 i++;
             }
         });
@@ -36,10 +45,10 @@ export class Schedule {
                 const delay = backoff(i);
                 if (maxDelay && delay.isGreaterThan(maxDelay)) {
                     await maxDelay.sleep();
-                    yield maxDelay;
+                    yield;
                 }
                 await delay.sleep();
-                yield delay;
+                yield;
                 i++;
             }
         });
@@ -48,6 +57,8 @@ export class Schedule {
     start(): ScheduleSleepGenerator {
         return this.f();
     }
+
+    constructor(private readonly f: ScheduleFn) {}
 }
 
 type BackoffFn = (i: number) => TimeSpan;
@@ -79,6 +90,6 @@ export namespace Backoff {
     }
 }
 
-export type ScheduleSleepGenerator = AsyncGenerator<TimeSpan, void, void>;
+export type ScheduleSleepGenerator = AsyncGenerator<void, void, void>;
 
 type ScheduleFn = () => ScheduleSleepGenerator;

@@ -13,10 +13,12 @@ describe("Schedule", () => {
             maxIterations: 3,
         });
         const now = Time.now();
-        const scheduleInstance = schedule.start();
-        for await (const _ of scheduleInstance) {
+        const fn = jest.fn();
+        for await (const _ of schedule.start()) {
+            fn();
         }
         expect(Time.now() - now).toBe(3000);
+        expect(fn).toHaveBeenCalledTimes(3);
     });
 
     it("should schedule indefinitely if no maxIterations is given", async () => {
@@ -25,9 +27,8 @@ describe("Schedule", () => {
             delay: TimeSpan.seconds(1),
         });
         const now = Time.now();
-        const scheduleInstance = schedule.start();
         let i = 0;
-        for await (const _ of scheduleInstance) {
+        for await (const _ of schedule.start()) {
             i++;
             if (i === 10) {
                 break;
@@ -43,10 +44,12 @@ describe("Schedule", () => {
             maxIterations: 3,
         });
         const now = Time.now();
-        const scheduleInstance = schedule.start();
-        for await (const _ of scheduleInstance) {
+        const fn = jest.fn();
+        for await (const _ of schedule.start()) {
+            fn();
         }
         expect(Time.now() - now).toBe(6000);
+        expect(fn).toHaveBeenCalledTimes(3);
     });
 
     it("should define stop backoff if maxDelay is reached", async () => {
@@ -56,9 +59,8 @@ describe("Schedule", () => {
             maxDelay: TimeSpan.seconds(2),
         });
         const now = Time.now();
-        const scheduleInstance = schedule.start();
         let i = 0;
-        for await (const _ of scheduleInstance) {
+        for await (const _ of schedule.start()) {
             i++;
             if (i === 3) {
                 break;
@@ -74,8 +76,7 @@ describe("Schedule", () => {
             maxIterations: 4,
         });
         const now = Time.now();
-        const scheduleInstance = schedule.start();
-        for await (const _ of scheduleInstance) {
+        for await (const _ of schedule.start()) {
         }
         expect(Time.now() - now).toBe(6000);
     });
@@ -87,8 +88,7 @@ describe("Schedule", () => {
             maxIterations: 4,
         });
         const now = Time.now();
-        const scheduleInstance = schedule.start();
-        for await (const _ of scheduleInstance) {
+        for await (const _ of schedule.start()) {
         }
         expect(Time.now() - now).toBe(7000);
     });
@@ -100,9 +100,32 @@ describe("Schedule", () => {
             maxIterations: 4,
         });
         const now = Time.now();
-        const scheduleInstance = schedule.start();
-        for await (const _ of scheduleInstance) {
+        for await (const _ of schedule.start()) {
         }
         expect(Time.now() - now).toBe(14000);
+    });
+
+    it("should define a schedule for 'once'", async () => {
+        Time.useFakeTime();
+        const schedule = Schedule.once(TimeSpan.seconds(1));
+        const now = Time.now();
+        const fn = jest.fn();
+        for await (const _ of schedule.start()) {
+            fn();
+        }
+        expect(Time.now() - now).toBe(1000);
+        expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it("'once' should run instantly if no delay is specified", async () => {
+        Time.useFakeTime();
+        const schedule = Schedule.once();
+        const now = Time.now();
+        const fn = jest.fn();
+        for await (const _ of schedule.start()) {
+            fn();
+        }
+        expect(Time.now() - now).toBe(0);
+        expect(fn).toHaveBeenCalledTimes(1);
     });
 });
