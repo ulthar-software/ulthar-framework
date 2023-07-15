@@ -1,5 +1,5 @@
-import { EventSource } from "../events/event-source.js";
-import { ErrorResult, Fn, Result, TaggedError } from "../index.js";
+import { IEventSource } from "../events/event-stream.js";
+import { Fn, Result, TaggedError } from "../index.js";
 import { Schedule } from "../time/schedule.js";
 import { MergeTypes } from "../types/merge-types.js";
 import { EffectFn, PipeableEffectFn } from "./effect-fn.js";
@@ -33,7 +33,7 @@ export class EffectStream<
 
     private constructor(
         private readonly f: Fn<[ADeps, EventResult], Promise<Result<A, AErr>>>,
-        private readonly evtSource: EventSource<EventResult, AErr>
+        private readonly evtSource: IEventSource<EventResult, AErr>
     ) {}
 
     async start(deps: ADeps): Promise<void> {

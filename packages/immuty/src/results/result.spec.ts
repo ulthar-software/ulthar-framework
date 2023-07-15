@@ -1,5 +1,4 @@
 import { TaggedError, createTaggedError } from "../errors/index.js";
-import { ErrorResult } from "./error-result.js";
 import { Result } from "./result.js";
 
 const TestError = createTaggedError("TestError");

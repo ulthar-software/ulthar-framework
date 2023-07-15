@@ -1,9 +1,9 @@
-import { EventSource } from "../events/event-source.js";
+import { IEventSource } from "../events/event-stream.js";
 import { Result } from "../index.js";
 import { BackoffFn } from "./backoff.js";
 import { TimeSpan } from "./time-span.js";
 
-export class Schedule implements EventSource<void, never> {
+export class Schedule implements IEventSource<void, never> {
     static once(delay?: TimeSpan): Schedule {
         return new Schedule(async function* () {
             if (delay) {
