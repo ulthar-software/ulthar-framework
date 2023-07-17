@@ -4,6 +4,7 @@ const config = {
     collectCoverage: true,
     coverageDirectory: "<rootDir>/coverage",
     collectCoverageFrom: ["**/*.{ts,tsx}", "!dist/**/*"],
+    passWithNoTests: true,
 };
 
 export default config;
