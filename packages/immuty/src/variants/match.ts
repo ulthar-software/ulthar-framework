@@ -1,4 +1,4 @@
-import { ReturnTypesOfMethodsInObject } from "../types/return-types.js";
+import { Fn } from "../index.js";
 import { PartialPatternMatcher, PatternMatcher } from "./pattern-matcher.js";
 import { TypeFromTag } from "./type-from-tag.js";
 import { Variant } from "./variant.js";
@@ -14,12 +14,12 @@ import { Variant } from "./variant.js";
 export function fullMatch<
     A extends Variant,
     B,
-    PM extends PatternMatcher<A, B>
+    PM extends PatternMatcher<A, B>,
 >(value: A, cases: PM): B {
     if (!cases[value._tag as keyof PM]) {
-        return cases["*" as keyof PM](value);
+        return cases["*" as keyof PM](value) as B;
     }
-    return cases[value._tag as keyof PM](value);
+    return cases[value._tag as keyof PM](value) as B;
 }
 
 /**
@@ -30,10 +30,11 @@ export function fullMatch<
 export function partialMatch<
     A extends Variant,
     B,
-    PM extends PartialPatternMatcher<A, B>
+    PM extends PartialPatternMatcher<A, B>,
 >(value: A, cases: PM): B | undefined {
-    const fn = cases[value._tag as keyof PM];
+    type EType = TypeFromTag<A, A["_tag"]>;
+    const fn = cases[value._tag as keyof PM] as Fn<EType, B> | undefined;
     if (fn !== undefined) {
-        return fn(value as any);
+        return fn(value as EType);
     }
 }

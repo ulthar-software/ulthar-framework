@@ -36,9 +36,13 @@ export namespace EventStream {
         f: HandlerFn<FromOptions<A, AErr>>
     ): IClosableEventStream<A, AErr> {
         const subject = new EventStreamSubject<A, AErr>();
-        f({
-            emit: (result) => subject.emit(result),
-            onClose: (cb) => subject.onClose(cb),
+        void f({
+            emit: (result) => {
+                subject.emit(result);
+            },
+            onClose: (cb) => {
+                subject.onClose(cb);
+            },
         });
         return subject;
     }

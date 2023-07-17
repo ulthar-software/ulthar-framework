@@ -17,76 +17,75 @@ Technically, an `Effect` is a wrapper around an async function that runs requiri
 But let's see some code first:
 
 ```typescript
-import { Effect,createTaggedError,Schedule,Backoff } from '@ulthar/immuty'
+import { Effect, createTaggedError, Schedule, Backoff } from "@ulthar/immuty";
 
 // This is the type of the dependencies that our effect will require
 type Dependencies = {
-  db: {
-    get: (id: string) => Promise<string>
-    set: (id: string, value: string) => Promise<void>
-  }
-}
+    db: {
+        get: (id: string) => Promise<string>;
+        set: (id: string, value: string) => Promise<void>;
+    };
+};
 
 // This are the errors that our effect could fail with
-const NotFoundError = createTaggedError('NotFoundError', { id: string })
-const ConnectionError = createTaggedError('ConnectionError')
+const NotFoundError = createTaggedError("NotFoundError", { id: string });
+const ConnectionError = createTaggedError("ConnectionError");
 
 // This is the type of the value that our effect will return
 type Value = {
-  id: string
-  value: string
-}
+    id: string;
+    value: string;
+};
 
 function get(id: string) {
-  return Effect.fromResult(
-    async (deps:Dependencies) => {
+    return Effect.fromResult(async (deps: Dependencies) => {
         try {
-            const value = await deps.db.get(id)
+            const value = await deps.db.get(id);
             if (value === null) {
-              return Result.error(NotFoundError({ id }))
+                return Result.error(NotFoundError({ id }));
             }
-            return Result.ok({ id, value })
-        }catch(err){
-            return Result.error(ConnectionError(err))
+            return Result.ok({ id, value });
+        } catch (err) {
+            return Result.error(ConnectionError(err));
         }
-    }
-  )
+    });
 }
 
 // This is how we create an effect
-const effect = get('some-id')
+const effect = get("some-id");
 //The type of result is inferred to be Effect<Dependencies,Value,NotFoundError|ConnectionError>
 
-effect.retry(Schedule.backoff(Backoff.exponential(TimeSpan.ms(100)),{maxDelay: TimeSpan.seconds(1)}))
+effect.retry(
+    Schedule.backoff(Backoff.exponential(TimeSpan.ms(100)), {
+        maxDelay: TimeSpan.seconds(1),
+    })
+);
 
 const catchedEffect = effect.catchSome({
-    "NotFoundError": async (err) => ({id: err.id, value: "default value"})
-})
+    NotFoundError: async (err) => ({ id: err.id, value: "default value" }),
+});
 //The type of catchedEffect is inferred to be Effect<Dependencies,Value>
 //because we are handling the known error. This doesn't mean that the effect
 // can never fail, but it cannot fail for a known reason which is really powerful
 
-
 //or you can handle the errors in the effect itself
 const foldedEffect = await effect.fold({
-  ok: ({ id, value }) => `The value of ${id} is ${value}`,
-  error: (err) => {
-    switch (err._tag) {
-      case 'NotFoundError':
-        return `The value of ${err.id} was not found`
-      default:
-        return `An unexpected error occurred`
-    }
-  }
-})
+    ok: ({ id, value }) => `The value of ${id} is ${value}`,
+    error: (err) => {
+        switch (err._tag) {
+            case "NotFoundError":
+                return `The value of ${err.id} was not found`;
+            default:
+                return `An unexpected error occurred`;
+        }
+    },
+});
 //the type of foldedEffect iss also inferred to be Effect<Dependencies, Value, never>
 //because we are handling all the possible errors
 
 //Then you can run the effect
-const result = await foldedEffect.run({ db: dbInstance })
+const result = await foldedEffect.run({ db: dbInstance });
 //The type of the required dependency is inferred from
 //the composition of the effects and their respective dependencies
 //The type of result is correctly inferred to be Result<string, never>
-
-
 ```

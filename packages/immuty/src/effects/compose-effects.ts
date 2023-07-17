@@ -14,7 +14,7 @@ export function composeEffects<
     ADeps = void,
     BDeps = void,
     AErr extends TaggedError = never,
-    BErr extends TaggedError = never
+    BErr extends TaggedError = never,
 >(
     f: EffectFn<ADeps, A, AErr>,
     g: PipeableEffectFn<BDeps, A, B, BErr>

@@ -6,5 +6,5 @@ import { Result } from "./result.js";
  */
 export type MaybePromisedResult<
     A,
-    AErr extends TaggedError
+    AErr extends TaggedError,
 > = A extends Promise<infer T> ? Promise<Result<T, AErr>> : Result<A, AErr>;

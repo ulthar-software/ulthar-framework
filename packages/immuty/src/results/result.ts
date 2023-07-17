@@ -15,7 +15,7 @@ export type Result<A, Ae extends TaggedError> =
     [A] extends [never] ? ErrorResult<A,Ae> :
     OkResult<A> | ErrorResult<A,Ae>;
 
-export type SomeResult = Result<any, any>;
+export type SomeResult = Result<unknown, TaggedError>;
 
 export namespace Result {
     /**

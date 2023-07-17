@@ -28,7 +28,7 @@ export class EventStreamSubject<A, AErr extends TaggedError>
         }
         this._current = result;
         for (const listener of this._listeners) {
-            listener(result);
+            void listener(result);
         }
     }
 
@@ -49,7 +49,7 @@ export class EventStreamSubject<A, AErr extends TaggedError>
         }
         this._listeners.add(subscriber);
         if (this._current) {
-            subscriber(this._current);
+            void subscriber(this._current);
         }
         if (onClose) {
             this._onClose.add(onClose);
@@ -69,11 +69,13 @@ export class EventStreamSubject<A, AErr extends TaggedError>
         this._listeners.clear();
         this.done = true;
 
-        this._onClose.forEach((cb) => cb());
+        this._onClose.forEach((cb) => {
+            void cb();
+        });
         this._onClose.clear();
     }
 
-    [Symbol.asyncIterator](): AsyncIterator<Result<A, AErr>, any, undefined> {
+    [Symbol.asyncIterator](): AsyncIterator<Result<A, AErr>> {
         return {
             next: async () => {
                 if (this.done) {

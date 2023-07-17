@@ -86,7 +86,7 @@ export class OkResult<A> implements IResult<A, never> {
         return this;
     }
 
-    catchSome(): OkResult<A> {
+    catchSome(): Result<A, never> {
         return this;
     }
 }

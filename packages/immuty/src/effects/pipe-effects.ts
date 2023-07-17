@@ -1,4 +1,4 @@
-import { Immutable, TaggedError } from "../index.js";
+import { TaggedError } from "../index.js";
 import { MergeTypes } from "../types/merge-types.js";
 import { EffectConstructor, EffectFn } from "./effect-fn.js";
 
@@ -8,7 +8,7 @@ export function pipeEffects<
     ADeps = void,
     BDeps = void,
     AErr extends TaggedError = never,
-    BErr extends TaggedError = never
+    BErr extends TaggedError = never,
 >(
     f: EffectFn<ADeps, A, AErr>,
     g: EffectConstructor<A, B, BDeps, BErr>

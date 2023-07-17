@@ -21,10 +21,11 @@ describe("Result", () => {
     });
     test("given an error, when trying to unwrap the value, it should not compile", () => {
         const result = Result.error(TestError());
-        //@ts-expect-error
+        //@ts-expect-error: this next line should not compile as result is not an OkResult
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
         expect(() => result.unwrap()).toThrowError(
             "result.unwrap is not a function"
-        ); //this should not compile
+        );
     });
     test("given an error, we can unwrap the error", () => {
         const result = Result.error(TestError());

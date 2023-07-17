@@ -9,6 +9,6 @@ export function createNativeErrorWrapperWith<K extends string>(
     ctr: TaggedErrorConstructor<TaggedError<K>>
 ): ErrorWrapper<TaggedError<K>> {
     return (err: unknown) => {
-        return ctr(err as any);
+        return ctr(err as Error);
     };
 }

@@ -7,7 +7,6 @@ import {
     fullMatch,
     partialMatch,
 } from "../index.js";
-import { OkResult } from "./ok-result.js";
 import { IResult, ResultFoldParams } from "./result-interface.js";
 import { Result } from "./result.js";
 
@@ -56,8 +55,8 @@ export class ErrorResult<A, AErr extends TaggedError>
      * As this is an ErrorResult, the mapping function is not called
      * and the same ErrorResult is returned.
      */
-    async asyncMap(): Promise<Result<never, AErr>> {
-        return this as unknown as Result<never, AErr>;
+    asyncMap(): Promise<Result<never, AErr>> {
+        return Promise.resolve(this as unknown as Result<never, AErr>);
     }
 
     /**
@@ -74,10 +73,8 @@ export class ErrorResult<A, AErr extends TaggedError>
      * As this is an ErrorResult, the mapping function is not called
      * and the same ErrorResult is returned.
      */
-    async asyncFlatMap<B, Be extends TaggedError>(): Promise<
-        Result<B, AErr | Be>
-    > {
-        return this as unknown as Result<B, AErr>;
+    asyncFlatMap<B, Be extends TaggedError>(): Promise<Result<B, AErr | Be>> {
+        return Promise.resolve(this as unknown as Result<never, AErr>);
     }
 
     /**
@@ -116,7 +113,10 @@ export class ErrorResult<A, AErr extends TaggedError>
                 RemainingUnmatchedErrors<AErr, PM>
             >;
         } else {
-            return this as any;
+            return this as unknown as Result<
+                A,
+                RemainingUnmatchedErrors<AErr, PM>
+            >;
         }
     }
 }

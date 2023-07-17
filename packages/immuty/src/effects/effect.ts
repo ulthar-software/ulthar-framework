@@ -47,7 +47,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     static fromPromise<
         ADeps = void,
         A = void,
-        AErr extends TaggedError = never
+        AErr extends TaggedError = never,
     >(
         f: Fn<ADeps, Promise<A>>,
         e?: ErrorWrapper<AErr>
@@ -70,7 +70,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     ): Effect<ADeps, A, AErr> {
         return new Effect(
             effectFromPromise((deps) => Promise.resolve(f(deps)), e)
-        );
+        ) as Effect<ADeps, A, AErr>;
     }
 
     /**
@@ -146,7 +146,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
      */
     catchAll(
         matcher: FullEffectErrorPatternMatcher<ADeps, AErr, A>
-    ): Effect<ADeps, A, never> {
+    ): Effect<ADeps, A> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
             return effectErrorFullMatch(deps, result, matcher);
@@ -169,13 +169,14 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
      * This is the only way an effect can throw.
      * This is used to halt the program for unrecoverable errors.
      */
-    orDie(): Effect<ADeps, A, never> {
+    orDie(): Effect<ADeps, A> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
             if (result.isOk()) {
                 return result;
             } else {
-                throw result.unwrapError().nativeError;
+                const taggedError = result.unwrapError();
+                throw taggedError.nativeError;
             }
         });
     }
@@ -192,7 +193,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         return this.f(deps);
     }
 
-    schedule(schedule: Schedule): EffectStream<void, ADeps, A, AErr> {
+    schedule(schedule: Schedule): EffectStream<void, never, ADeps, A, AErr> {
         return EffectStream.fromSchedule(this.f, schedule);
     }
 }

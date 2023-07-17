@@ -5,7 +5,7 @@ import { EffectFn } from "./effect-fn.js";
 export function effectFromPromise<
     ADeps = void,
     A = void,
-    AErr extends TaggedError = never
+    AErr extends TaggedError = never,
 >(f: Fn<ADeps, Promise<A>>, e?: ErrorWrapper<AErr>): EffectFn<ADeps, A, AErr> {
     return async (deps): Promise<Result<A, AErr>> => {
         try {

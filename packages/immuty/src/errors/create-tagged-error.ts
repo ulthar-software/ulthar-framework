@@ -9,8 +9,22 @@ export type TaggedErrorConstructor<E extends TaggedError> = Fn<
 export function createTaggedError<K extends string>(
     tag: K
 ): TaggedErrorConstructor<TaggedError<K>> {
-    return (messageOrError) => ({
-        _tag: tag,
-        nativeError: (messageOrError as Error) ?? undefined,
-    });
+    return (messageOrError) => {
+        if (messageOrError instanceof Error) {
+            return {
+                _tag: tag,
+                nativeError: messageOrError,
+            };
+        }
+        if (typeof messageOrError === "string") {
+            return {
+                _tag: tag,
+                nativeError: new Error(messageOrError),
+            };
+        }
+        return {
+            _tag: tag,
+            nativeError: new Error(),
+        };
+    };
 }

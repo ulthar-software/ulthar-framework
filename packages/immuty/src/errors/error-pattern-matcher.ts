@@ -31,7 +31,7 @@ export type PartialErrorPatternMatcher<E extends TaggedError, F> = {
  */
 export type RemainingUnmatchedErrors<
     AErr extends TaggedError,
-    MatcherType
+    MatcherType,
 > = ErrorFromTag<
     AErr,
     Exclude<TagFromError<AErr>, Exclude<keyof MatcherType, "*">>

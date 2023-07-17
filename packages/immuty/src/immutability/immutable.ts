@@ -8,5 +8,5 @@ import { SomeFunction } from "../functions/function.js";
 export type Immutable<T> = 
     T extends (infer R)[] ? ReadonlyArray<Immutable<R>> : 
     T extends SomeFunction ? T :
-    T extends Record<string,any> ? { readonly [K in keyof T]: Immutable<T[K]> } : 
+    T extends Record<string, unknown> ? { readonly [K in keyof T]: Immutable<T[K]> } : 
     T;

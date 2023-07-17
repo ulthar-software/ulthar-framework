@@ -23,6 +23,30 @@ describe("Effect Error Catching", () => {
         expect(result).toEqual(Result.ok(1));
     });
 
+    it("should fail if a key in the partial matcher is defined but has no value", async () => {
+        const TestErrorA = createTaggedError("TestErrorA");
+
+        const effect = Effect.fromPromise(
+            async (deps: { a: number }): Promise<number> => {
+                throw new Error("error");
+            },
+            (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
+                return TestErrorA(err as Error);
+            }
+        );
+
+        expect(async () => {
+            await effect
+                .catchSome({
+                    TestErrorA: async (error) => 1,
+                    TestErrorB: undefined,
+                })
+                .run({ a: 1 });
+        }).rejects.toThrowError(
+            `EffectErrorPartialMatch: matcher key 'TestErrorB' is defined but has no handler.`
+        );
+    });
+
     it("should catch some errors given a partial pattern matcher and return the original error if no match is found", async () => {
         const TestErrorA = createTaggedError("TestErrorA");
 
