@@ -34,6 +34,7 @@ module.exports = {
     },
     plugins: ["@typescript-eslint", "prettier"],
     rules: {
+        "prettier/prettier": "off",
         "linebreak-style": ["error", "unix"],
         quotes: ["error", "double"],
         semi: ["error", "always"],
