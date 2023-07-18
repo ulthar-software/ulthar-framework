@@ -115,9 +115,20 @@ describe("Next Cron Time Span", () => {
                 throw new Error("Expected cron to be valid");
             const cron = cronResult.unwrap();
 
-            const nextSpan = cronNextSpan(now, cron);
+            const nextSpan = cronNextSpan(cron, now);
 
             expect(now.add(nextSpan)).toEqual(nextDate);
         }
     );
+
+    test("given a cron expression without a date, should return the next time span from current date", () => {
+        const cronResult = parseCron("0 0 * * *");
+        if (cronResult.isError()) throw new Error("Expected cron to be valid");
+        const cron = cronResult.unwrap();
+        const now = PosixDate.now();
+
+        const nextSpan = cronNextSpan(cron);
+
+        expect(now.add(nextSpan)).toEqual(now.startOfNextDay());
+    });
 });

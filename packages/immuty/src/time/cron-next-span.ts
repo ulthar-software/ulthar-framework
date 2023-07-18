@@ -3,9 +3,12 @@ import { PosixDate } from "./posix-date.js";
 import { TimeSpan } from "./time-span.js";
 
 export function cronNextSpan(
-    now: PosixDate,
-    cronDef: CronDefinition
+    cronDef: CronDefinition,
+    now?: PosixDate
 ): TimeSpan {
+    if (!now) {
+        now = PosixDate.now();
+    }
     let targetDate = now;
 
     let difference = TimeSpan.milliseconds(0);
