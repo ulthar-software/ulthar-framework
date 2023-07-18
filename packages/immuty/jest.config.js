@@ -1,7 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 const config = {
     preset: "ts-jest/presets/default-esm", // or other ESM presets
-    collectCoverageFrom: ["src/**/*.{ts,tsx}"],
     moduleNameMapper: {
         "^(\\.{1,2}/.*)\\.js$": "$1",
     },
@@ -13,6 +12,12 @@ const config = {
             },
         ],
     },
+    collectCoverageFrom: [
+        "**/*.{ts,tsx}",
+        "!**/*.d.ts",
+        "!**/index.ts",
+        "!**/dist/**/*",
+    ],
     cache: false,
 };
 

@@ -47,5 +47,12 @@ module.exports = {
             },
         ],
         "@typescript-eslint/no-invalid-void-type": "off",
+        "no-constant-condition": "off",
+        "@typescript-eslint/no-unnecessary-condition": [
+            "error",
+            {
+                allowConstantLoopConditions: true,
+            },
+        ],
     },
 };
