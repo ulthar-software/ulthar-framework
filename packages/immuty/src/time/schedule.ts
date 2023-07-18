@@ -1,6 +1,8 @@
 import { IEventSource } from "../events/event-stream.js";
 import { Result } from "../index.js";
 import { BackoffFn } from "./backoff.js";
+import { cronNextSpan } from "./cron-next-span.js";
+import { CronDefinition } from "./parse-cron.js";
 import { TimeSpan } from "./time-span.js";
 
 export class Schedule implements IEventSource<void, never> {
@@ -53,6 +55,16 @@ export class Schedule implements IEventSource<void, never> {
                 await delay.sleep();
                 yield Result.ok(undefined);
                 i++;
+            }
+        });
+    }
+
+    static fromCron(cron: CronDefinition): Schedule {
+        return new Schedule(async function* () {
+            while (true) {
+                const nexSpan = cronNextSpan(cron);
+                await nexSpan.sleep();
+                yield Result.ok(undefined);
             }
         });
     }
