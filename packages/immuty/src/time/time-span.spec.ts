@@ -1,8 +1,12 @@
+import { PosixDate } from "./posix-date.js";
 import { TimeSpan } from "./time-span.js";
 import { Time } from "./time.js";
 
 describe("Time Span", () => {
-    afterEach(() => {
+    beforeAll(() => {
+        Time.useFakeTime();
+    });
+    afterAll(() => {
         Time.useRealTime();
     });
 
@@ -39,5 +43,50 @@ describe("Time Span", () => {
         expect(
             TimeSpan.seconds(1).add(TimeSpan.seconds(1)).toSeconds()
         ).toEqual(2);
+    });
+
+    it("should create a time span from two posix dates", async () => {
+        const start = PosixDate.now();
+        const end = PosixDate.now().add(TimeSpan.seconds(1));
+
+        expect(TimeSpan.fromDifference(start, end).toSeconds()).toEqual(1);
+    });
+
+    test("create a span from various units at the same time", () => {
+        const span1 = TimeSpan.from({
+            days: 1,
+            hours: 2,
+            minutes: 3,
+            seconds: 4,
+        });
+
+        expect(span1.toMilliseconds()).toEqual(93784000);
+
+        const span2 = TimeSpan.from({
+            days: 1,
+            hours: 2,
+            minutes: 3,
+        });
+
+        expect(span2.toMilliseconds()).toEqual(93780000);
+
+        const span3 = TimeSpan.from({
+            days: 1,
+            hours: 2,
+        });
+
+        expect(span3.toMilliseconds()).toEqual(93600000);
+
+        const span4 = TimeSpan.from({
+            days: 1,
+        });
+
+        expect(span4.toMilliseconds()).toEqual(86400000);
+
+        const span5 = TimeSpan.from({
+            hours: 2,
+        });
+
+        expect(span5.toMilliseconds()).toEqual(7200000);
     });
 });
