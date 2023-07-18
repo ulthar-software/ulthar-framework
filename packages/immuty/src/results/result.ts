@@ -21,9 +21,9 @@ export namespace Result {
     /**
      * Creates a Result representing the error
      */
-    export function error<E extends TaggedError>(
+    export function error<E extends TaggedError, A = never>(
         error: E
-    ): ErrorResult<never, E> {
+    ): ErrorResult<A, E> {
         return new ErrorResult(error);
     }
     /**
