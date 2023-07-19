@@ -23,6 +23,7 @@ import { Schedule } from "../time/schedule.js";
 import { RetryOpts, composeEffectWithRetry } from "./effect-retry.js";
 import { MaybePromise } from "../types/maybe-promise.js";
 import { EffectStream } from "./effect-stream.js";
+import { Resource } from "../resources/resource.js";
 
 /**
  * An effect is a representation of a (most-likely-asynchronous) behavior that executes
@@ -178,6 +179,31 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
                 const taggedError = result.unwrapError();
                 throw taggedError.nativeError;
             }
+        });
+    }
+
+    static withResource<
+        ResourceType,
+        ResultType = void,
+        ResAcqDepType = void,
+        EffectDepType = void,
+        ResAcqErrType extends TaggedError = never,
+        EffectErrType extends TaggedError = never,
+    >(
+        resource: Resource<ResourceType, ResAcqDepType, ResAcqErrType>,
+        effectFn: EffectConstructor<
+            ResourceType,
+            ResultType,
+            EffectDepType,
+            EffectErrType
+        >
+    ): Effect<
+        MergeTypes<ResAcqDepType, EffectDepType>,
+        ResultType,
+        ResAcqErrType | EffectErrType
+    > {
+        return new Effect(async (deps) => {
+            return await resource.useWith(deps, effectFn);
         });
     }
 

@@ -22,6 +22,7 @@ export type PipeableEffectFn<Deps, A, B, Err extends TaggedError> = Fn<
 /**
  * An effect constructor is a function that receives a value and returns an effect.
  */
-export type EffectConstructor<A, B, Deps, Err extends TaggedError> = (
-    a: Immutable<A>
-) => Effect<Deps, B, Err>;
+export type EffectConstructor<A, B, Deps, Err extends TaggedError> = Fn<
+    Immutable<A>,
+    Effect<Deps, B, Err>
+>;
