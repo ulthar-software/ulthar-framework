@@ -119,7 +119,11 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     tap(f: Fn<Result<A, AErr>, MaybePromise<void>>): Effect<ADeps, A, AErr> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
-            await f(result);
+            try {
+                await f(result);
+            } catch {
+                // ignore
+            }
             return result;
         });
     }
@@ -176,8 +180,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
             if (result.isOk()) {
                 return result;
             } else {
-                const taggedError = result.unwrapError();
-                throw taggedError.nativeError;
+                throw result.unwrapError().nativeError;
             }
         });
     }
