@@ -1,5 +1,0 @@
-export const EVENTS = {
-    OPEN_FILE: "OPEN_FILE",
-    PICK_DIRECTORY: "PICK_DIRECTORY",
-    PICK_FILE: "PICK_FILE",
-};
