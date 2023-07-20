@@ -1,9 +1,5 @@
-import { TaggedError, createTaggedError } from "../errors/error.js";
-import {
-    Result,
-    liftFaultyAsyncBinaryFn,
-    liftFaultyAsyncFn,
-} from "./result.js";
+import { TaggedError, createTaggedError } from "../errors/index.js";
+import { Result } from "./result.js";
 
 const TestError = createTaggedError("TestError");
 
@@ -20,23 +16,27 @@ describe("Result", () => {
     });
     test("given a value, when unwrapping, it should return the value", () => {
         const result = Result.ok("value");
+        if (result.isError()) throw new Error("Expected a value");
         expect(result.unwrap()).toBe("value");
     });
     test("given an error, when trying to unwrap the value, it should not compile", () => {
         const result = Result.error(TestError());
-        //@ts-expect-error
+        //@ts-expect-error: this next line should not compile as result is not an OkResult
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
         expect(() => result.unwrap()).toThrowError(
             "result.unwrap is not a function"
-        ); //this should not compile
+        );
     });
     test("given an error, we can unwrap the error", () => {
         const result = Result.error(TestError());
+        if (result.isOk()) throw new Error("Expected an error");
         expect(result.unwrapError()).toEqual(TestError());
     });
 
     test("given a value, when mapping, it should work", () => {
         const result = Result.ok("value");
         const mappedResult = result.map((value) => value.length);
+        if (mappedResult.isError()) throw new Error("Expected a value");
         expect(mappedResult.unwrap()).toBe(5);
     });
 
@@ -55,6 +55,7 @@ describe("Result", () => {
         const mappedResult = await result.asyncMap(
             async (value) => value.length
         );
+        if (mappedResult.isError()) throw new Error("Expected a value");
         expect(mappedResult.unwrap()).toBe(5);
     });
 
@@ -114,6 +115,7 @@ describe("Result", () => {
             onSuccess: (value) => value.length,
             onFailure: () => 0,
         });
+        if (foldedResult.isError()) throw new Error("Expected a value");
         expect(foldedResult.unwrap()).toBe(5);
     });
 
@@ -126,6 +128,7 @@ describe("Result", () => {
             onSuccess: (value) => value.length,
             onFailure: () => 0,
         });
+        if (foldedResult.isError()) throw new Error("Expected a value");
         expect(foldedResult.unwrap()).toBe(0);
     });
 
@@ -135,6 +138,7 @@ describe("Result", () => {
             onSuccess: async (value) => value.length,
             onFailure: async () => 0,
         });
+        if (foldedResult.isError()) throw new Error("Expected a value");
         expect(foldedResult.unwrap()).toBe(5);
     });
 
@@ -147,48 +151,96 @@ describe("Result", () => {
             onSuccess: async (value) => value.length,
             onFailure: async () => 0,
         });
+        if (foldedResult.isError()) throw new Error("Expected a value");
         expect(foldedResult.unwrap()).toBe(0);
     });
 
-    test("given a function, when lifting it, it should work", async () => {
-        // liftFaultyAsyncFn
-        const fn = async (value: string) => value.length;
-        const liftedFn = liftFaultyAsyncFn(fn);
-        const result = await liftedFn("value");
-        expect(result.unwrap()).toBe(5);
+    it("should catch some errors and correctly infer the result type", async () => {
+        const TestErrorA = createTaggedError("TestErrorA");
+        const resultA = Result.error(TestErrorA()) as Result<
+            string,
+            TaggedError<"TestErrorA"> | TaggedError<"TestErrorB">
+        >;
+
+        const foldedResult = resultA.catchSome({
+            TestErrorA: () => "default value",
+        });
+
+        // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorB">>
+        // as we have caught the TestErrorA but not the TestErrorB
+
+        if (foldedResult.isError()) throw new Error("Expected a value");
+
+        expect(foldedResult.unwrap()).toBe("default value");
     });
 
-    test("given a function, when lifting it if it fails, it should throw on unknown errors", async () => {
-        const fn = async (value: string) => {
-            throw new Error("unknown error");
-        };
-        const liftedFn = liftFaultyAsyncFn(fn);
-        expect(liftedFn("value")).rejects.toThrowError("unknown error");
+    it("should try to catch some errors but continue as an error if the error is not caught", async () => {
+        const TestErrorA = createTaggedError("TestErrorA");
+        const resultA = Result.error(TestErrorA()) as Result<
+            string,
+            TaggedError<"TestErrorA"> | TaggedError<"TestErrorB">
+        >;
+
+        const foldedResult = resultA.catchSome({
+            TestErrorB: () => "default value",
+        });
+
+        // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorA">>
+        // as we have not caught the TestErrorA
+
+        if (foldedResult.isOk()) throw new Error("Expected an error");
+
+        expect(foldedResult.unwrapError()._tag).toBe("TestErrorA");
     });
 
-    test("given a binary function, when lifting it, it should work", async () => {
-        const fn = async (value: string, value2: string) =>
-            value.length + value2.length;
-        const liftedFn = liftFaultyAsyncBinaryFn(fn);
-        const result = await liftedFn("value", "value");
-        expect(result.unwrap()).toBe(10);
+    it("should skip the catchSome if the result is ok", async () => {
+        const resultA = Result.ok("original value") as Result<
+            string,
+            TaggedError<"TestErrorA"> | TaggedError<"TestErrorB">
+        >;
+
+        const foldedResult = resultA.catchSome({
+            TestErrorA: () => "default value",
+        });
+
+        // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorB">>
+        // as we have caught TestErrorA
+
+        if (foldedResult.isError()) throw new Error("Expected a value");
+
+        expect(foldedResult.unwrap()).toBe("original value");
     });
 
-    test("given a binary function, when lifting it if it fails, it should throw on unknown errors", async () => {
-        const fn = async (value: string, value2: string) => {
-            throw new Error("unknown error");
-        };
-        const liftedFn = liftFaultyAsyncBinaryFn(fn);
-        expect(liftedFn("value", "value")).rejects.toThrowError(
-            "unknown error"
-        );
+    it("should catch all errors if there is an error", async () => {
+        const TestErrorA = createTaggedError("TestErrorA");
+        const resultA = Result.error(TestErrorA()) as Result<
+            string,
+            TaggedError<"TestErrorA"> | TaggedError<"TestErrorB">
+        >;
+
+        const foldedResult = resultA.catchAll({
+            TestErrorA: () => "default value",
+            TestErrorB: () => "default value",
+        });
+
+        if (foldedResult.isError()) throw new Error("Expected a value");
+
+        expect(foldedResult.unwrap()).toBe("default value");
     });
-    test("given a binary function, when lifting it if it fails, it should return known errors", async () => {
-        const fn = async (value: string, value2: string) => {
-            throw new Error();
-        };
-        const liftedFn = liftFaultyAsyncBinaryFn(fn, (error) => TestError());
-        const result = await liftedFn("value", "value");
-        expect(result.unwrapError()._tag).toBe("TestError");
+
+    it("should skip catchAll if the result is ok", async () => {
+        const resultA = Result.ok("original value") as Result<
+            string,
+            TaggedError<"TestErrorA"> | TaggedError<"TestErrorB">
+        >;
+
+        const foldedResult = resultA.catchAll({
+            TestErrorA: () => "default value",
+            TestErrorB: () => "default value",
+        });
+
+        if (foldedResult.isError()) throw new Error("Expected a value");
+
+        expect(foldedResult.unwrap()).toBe("original value");
     });
 });

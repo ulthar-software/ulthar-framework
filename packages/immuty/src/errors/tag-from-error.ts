@@ -1,4 +1,4 @@
-import { TaggedError } from "./error.js";
+import { TaggedError } from "./tagged-error.js";
 
 export type TagFromError<E extends TaggedError> = E["_tag"];
 

@@ -1,2 +1,2 @@
-export * from "./event-dispatcher.js";
-export * from "./event-listener.js";
+export * from "./event-stream.js";
+export * from "./event-stream-subject.js";

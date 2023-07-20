@@ -1,4 +1,4 @@
-import { TaggedError } from "../errors/error.js";
+import { TaggedError } from "../errors/tagged-error.js";
 import { Fn } from "../functions/unary.js";
 import { Immutable } from "../immutability/immutable.js";
 import { IResult, ResultFoldParams } from "./result-interface.js";
@@ -80,5 +80,13 @@ export class OkResult<A> implements IResult<A, never> {
         onSuccess,
     }: ResultFoldParams<A, Promise<B>, never>): Promise<OkResult<B>> {
         return Result.ok(await onSuccess(this.unwrap()));
+    }
+
+    catchAll(): Result<A, never> {
+        return this;
+    }
+
+    catchSome(): Result<A, never> {
+        return this;
     }
 }

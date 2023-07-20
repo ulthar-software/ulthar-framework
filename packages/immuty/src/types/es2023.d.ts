@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+//This file is a copy of unpublished types from the TypeScript repository.
+
 interface Array<T> {
     /**
      * Returns the value of the last element in the array where predicate is true, and undefined
