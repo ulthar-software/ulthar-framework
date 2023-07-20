@@ -1,0 +1,7 @@
+{
+    "*": ["yarn prettier --write"],
+    "*.ts": [
+        "yarn lint",
+        "yarn test --collectCoverage false --bail --findRelatedTests"
+    ]
+}

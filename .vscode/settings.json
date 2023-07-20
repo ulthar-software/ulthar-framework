@@ -3,21 +3,7 @@
         "**/.yarn": true,
         "**/.pnp.*": true
     },
-    "cSpell.words": [
-        "blamey",
-        "commandy",
-        "deppy",
-        "filey",
-        "Filey",
-        "immuty",
-        "Interactor",
-        "sliddy",
-        "temply",
-        "typey"
-    ],
-    "javascript.preferences.importModuleSpecifier": "shortest",
-    "javascript.preferences.importModuleSpecifierEnding": "js",
-    "typescript.preferences.importModuleSpecifier": "shortest",
+    "typescript.preferences.importModuleSpecifier": "relative",
     "typescript.preferences.importModuleSpecifierEnding": "js",
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "cSpell.words": ["effectfull", "Pipeable"]
 }
