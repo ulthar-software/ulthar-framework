@@ -4,6 +4,3 @@ dist
 coverage
 .husky
 yarn.lock
-.prettierignore
-.gitignore
-.gitattributes
