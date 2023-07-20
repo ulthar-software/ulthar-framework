@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
-import { createRange } from "../collection-utils/create-range.js";
+import { createRange } from "../collections/create-range.js";
 import { Result, createTaggedError } from "../index.js";
 
 //Cron format
