@@ -57,4 +57,30 @@ describe("Effect Transformation", () => {
             Result.error(defaultErrorWrapper(new Error("error")))
         );
     });
+
+    test("mapping a sync function should work", async () => {
+        const effect = Effect.fromPromise(async (deps: { a: number }) => {
+            return deps.a;
+        });
+        const result = await effect
+            .mapSync(([value]) => value + 1)
+            .run({ a: 1 });
+
+        expect(result).toEqual(Result.ok(2));
+    });
+
+    test("mapping a sync function that fails should work", async () => {
+        const effect = Effect.fromPromise(async (deps: { a: number }) => {
+            return deps.a;
+        });
+        const result = await effect
+            .mapSync(() => {
+                throw new Error("error");
+            })
+            .run({ a: 1 });
+
+        expect(result).toEqual(
+            Result.error(defaultErrorWrapper(new Error("error")))
+        );
+    });
 });

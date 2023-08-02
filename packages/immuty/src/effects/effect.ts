@@ -1,6 +1,5 @@
 import {
     Fn,
-    Immutable,
     RemainingUnmatchedErrors,
     Result,
     TaggedError,
@@ -74,6 +73,14 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         ) as Effect<ADeps, A, AErr>;
     }
 
+    static fromSyncResult<
+        ADeps = void,
+        A = void,
+        AErr extends TaggedError = never,
+    >(f: Fn<ADeps, Result<A, AErr>>): Effect<ADeps, A, AErr> {
+        return new Effect((deps) => Promise.resolve(f(deps)));
+    }
+
     /**
      * Creates a new effect that first runs this effect and then pipes its result into the given effect.
      * @param g The effect to pipe the result of this effect into. It must return a Result type.
@@ -94,10 +101,22 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
      * will fail with the default UnexpectedError.
      */
     mapPromise<B, BDeps = void, BErr extends TaggedError = never>(
-        g: Fn<[Immutable<A>, BDeps], Promise<B>>,
+        g: Fn<[A, BDeps], Promise<B>>,
         e?: ErrorWrapper<BErr>
     ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
         return new Effect(composeEffects(this.f, liftFn(g, e)));
+    }
+
+    mapSync<B, BDeps = void, BErr extends TaggedError = never>(
+        g: Fn<[A, BDeps], B>,
+        e?: ErrorWrapper<BErr>
+    ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
+        return new Effect(
+            composeEffects(
+                this.f,
+                liftFn((x) => Promise.resolve(g(x)), e)
+            )
+        );
     }
 
     /**
