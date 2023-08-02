@@ -12,6 +12,13 @@ const config = {
             },
         ],
     },
+    collectCoverageFrom: [
+        "**/*.{ts,tsx}",
+        "!**/*.d.ts",
+        "!**/index.ts",
+        "!**/dist/**/*",
+    ],
+    cache: false,
 };
 
 export default config;
