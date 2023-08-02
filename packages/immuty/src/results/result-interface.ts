@@ -1,6 +1,5 @@
 import { TaggedError } from "../errors/tagged-error.js";
 import { Fn } from "../functions/unary.js";
-import { Immutable } from "../immutability/immutable.js";
 import {
     ErrorPatternMatcher,
     RemainingUnmatchedErrors,
@@ -32,21 +31,21 @@ export interface IResult<A, AErr extends TaggedError> {
      * @param onSuccess Function to map the value of the Result to a new value.
      * @param onFailure Function to map the error of the Result to a new value.
      */
-    map<B>(f: Fn<Immutable<A>, B>): Result<B, AErr>;
+    map<B>(f: Fn<A, B>): Result<B, AErr>;
 
     /**
      * Maps the value of the Result to a new value.
      * Returns the new value wrapped in a Result.
      * The provided function must return a Promise.
      */
-    asyncMap<B>(f: Fn<Immutable<A>, Promise<B>>): Promise<Result<B, AErr>>;
+    asyncMap<B>(f: Fn<A, Promise<B>>): Promise<Result<B, AErr>>;
 
     /**
      * Maps the value of the Result to a new Result.
      * The provided function must return a Result.
      */
     flatMap<B, Be extends TaggedError>(
-        f: Fn<Immutable<A>, Result<B, Be>>
+        f: Fn<A, Result<B, Be>>
     ): Result<B, AErr | Be>;
 
     /**
@@ -54,7 +53,7 @@ export interface IResult<A, AErr extends TaggedError> {
      * The provided function must return a Promise that resolves to a Result.
      */
     asyncFlatMap<B, Be extends TaggedError>(
-        f: Fn<Immutable<A>, Promise<Result<B, Be>>>
+        f: Fn<A, Promise<Result<B, Be>>>
     ): Promise<Result<B, AErr | Be>>;
 
     /**
@@ -83,6 +82,6 @@ export interface IResult<A, AErr extends TaggedError> {
 }
 
 export interface ResultFoldParams<A, B, Ae extends TaggedError> {
-    onSuccess: Fn<Immutable<A>, B>;
+    onSuccess: Fn<A, B>;
     onFailure: Fn<Ae, B>;
 }

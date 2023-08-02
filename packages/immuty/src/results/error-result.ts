@@ -1,5 +1,4 @@
 import { TaggedError } from "../errors/tagged-error.js";
-import { Immutable } from "../immutability/immutable.js";
 import {
     ErrorPatternMatcher,
     RemainingUnmatchedErrors,
@@ -37,8 +36,8 @@ export class ErrorResult<A, AErr extends TaggedError>
     /**
      * Unwraps the error contained in this Result.
      */
-    unwrapError(): Immutable<AErr> {
-        return this.error as Immutable<AErr>;
+    unwrapError(): AErr {
+        return this.error;
     }
 
     /**

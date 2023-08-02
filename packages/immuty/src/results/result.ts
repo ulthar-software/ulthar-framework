@@ -11,8 +11,6 @@ import { OkResult } from "./ok-result.js";
 
 //export type Result<A, Ae extends TaggedError> = ErrorResult<Ae> | OkResult<A>;
 export type Result<A, Ae extends TaggedError> = 
-    [Ae] extends [never] ? OkResult<A> : 
-    [A] extends [never] ? ErrorResult<A,Ae> :
     OkResult<A> | ErrorResult<A,Ae>;
 
 export type SomeResult = Result<unknown, TaggedError>;

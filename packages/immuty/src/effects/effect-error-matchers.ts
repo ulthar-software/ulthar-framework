@@ -73,10 +73,9 @@ export async function effectErrorPartialMatch<
             return fn([e as EType, deps]);
         };
     }
-    const v = partialMatch(
-        result.unwrapError() as AErr,
-        resultMatcher
-    ) as Maybe<Promise<A>>;
+    const v = partialMatch(result.unwrapError(), resultMatcher) as Maybe<
+        Promise<A>
+    >;
 
     if (!v) {
         return result as Result<A, RemainingUnmatchedErrors<AErr, PM>>;
@@ -102,6 +101,6 @@ export async function effectErrorFullMatch<
             return fn([e, deps]) as Promise<A>;
         };
     }
-    const v = fullMatch(result.unwrapError() as AErr, resultMatcher);
+    const v = fullMatch(result.unwrapError(), resultMatcher);
     return Result.ok(await v) as OkResult<A>;
 }
