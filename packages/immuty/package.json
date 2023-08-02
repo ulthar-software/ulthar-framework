@@ -1,5 +1,6 @@
 {
     "name": "@ulthar/immuty",
+    "version": "0.1.0",
     "packageManager": "yarn@3.6.1",
     "type": "module",
     "main": "dist/index.js",
