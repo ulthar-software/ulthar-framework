@@ -1156,6 +1156,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ulthar/debby@workspace:packages/debby":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/debby@workspace:packages/debby"
+  dependencies:
+    "@types/jest": ^29.5.3
+    "@ulthar/immuty": "workspace:^"
+    "@ulthar/randy": "workspace:^"
+    jest: ^29.6.1
+    ts-jest: ^29.1.1
+    typescript: ^5.1.6
+  languageName: unknown
+  linkType: soft
+
 "@ulthar/framework@workspace:.":
   version: 0.0.0-use.local
   resolution: "@ulthar/framework@workspace:."
@@ -1174,11 +1187,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/immuty@workspace:packages/immuty":
+"@ulthar/immuty@workspace:^, @ulthar/immuty@workspace:packages/immuty":
   version: 0.0.0-use.local
   resolution: "@ulthar/immuty@workspace:packages/immuty"
   dependencies:
     "@types/jest": ^29.5.3
+    jest: ^29.6.1
+    ts-jest: ^29.1.1
+    typescript: ^5.1.6
+  languageName: unknown
+  linkType: soft
+
+"@ulthar/randy@workspace:^, @ulthar/randy@workspace:packages/randy":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/randy@workspace:packages/randy"
+  dependencies:
+    "@types/jest": ^29.5.3
+    "@ulthar/immuty": "workspace:^"
     jest: ^29.6.1
     ts-jest: ^29.1.1
     typescript: ^5.1.6

@@ -1,0 +1,23 @@
+{
+    "name": "@ulthar/randy",
+    "packageManager": "yarn@3.6.1",
+    "type": "module",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "files": [
+        "dist"
+    ],
+    "devDependencies": {
+        "@types/jest": "^29.5.3",
+        "jest": "^29.6.1",
+        "ts-jest": "^29.1.1",
+        "typescript": "^5.1.6"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.lib.json",
+        "test": "jest"
+    },
+    "dependencies": {
+        "@ulthar/immuty": "workspace:^"
+    }
+}
