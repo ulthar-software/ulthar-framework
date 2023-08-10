@@ -21,7 +21,7 @@
     },
     "scripts": {
         "pre-commit": "lint-staged",
-        "lint": "eslint .",
+        "lint": "eslint",
         "test": "jest",
         "postinstall": "husky install"
     }
