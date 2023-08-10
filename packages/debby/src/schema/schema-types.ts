@@ -1,4 +1,4 @@
-export const Types = {
+export const SchemaTypes = {
     UUID(): UUID {
         return {
             type: "UUID",
@@ -68,9 +68,9 @@ export type TypescriptTypeOf<T> = T extends UUID
     ? number
     : never;
 
-export type SchemaTypes<TableNames extends string> =
+export type SchemaTypes<Keys extends string> =
     | UUID
     | STRING
     | INTEGER
     | FLOAT
-    | REFERENCE<TableNames>;
+    | REFERENCE<Keys>;

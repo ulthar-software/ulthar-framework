@@ -1,6 +1,6 @@
-import { UUID } from "./types.js";
+import { UUID } from "./schema-types.js";
 
-export const TypeModifiers = {
+export const SchemaTypeModifiers = {
     PRIMARY_KEY<T extends UUID>(t: T): T & PRIMARY_KEY {
         return {
             ...t,

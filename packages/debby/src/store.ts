@@ -1,22 +1,13 @@
 import { KeyOf } from "@ulthar/immuty";
-import { InsertEffect } from "./insert-effect.js";
-import { IQueryEffect } from "./query-effect.js";
-import {
-    EntityTypeOf,
-    StoreSchema,
-    TableSchemaMap,
-} from "./schema/store-schema.js";
+import { ReadableCollection, WritableCollection } from "./collection.js";
+import { Document } from "./types/document.js";
 
-export interface IStore<Tables extends TableSchemaMap<KeyOf<Tables>>> {
-    insertInto<K extends KeyOf<Tables>>(
-        tableName: K
-    ): InsertEffect<EntityTypeOf<KeyOf<Tables>, Tables[K]>>;
+export abstract class Store<TSchemaMap extends Record<string, Document>> {
+    public abstract from<K extends KeyOf<TSchemaMap>>(
+        name: K
+    ): ReadableCollection<TSchemaMap, TSchemaMap[K], K>;
 
-    queryFrom<K extends KeyOf<Tables>>(
-        table: K
-    ): IQueryEffect<Tables, EntityTypeOf<KeyOf<Tables>, Tables[K]>>;
+    public abstract insertInto<K extends KeyOf<TSchemaMap>>(
+        name: K
+    ): WritableCollection<TSchemaMap[K]>;
 }
-
-export type createFromSchema = <Tables extends TableSchemaMap<KeyOf<Tables>>>(
-    schema: StoreSchema<Tables>
-) => IStore<Tables>;
