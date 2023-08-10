@@ -1,16 +1,16 @@
 import { KeyOf } from "../index.js";
 
-export function copyFields<T, Fields extends KeyOf<T>[]>(
+export function copyFields<T, F extends KeyOf<T>>(
     entity: T,
-    fields: Fields
-): OnlyFields<T, Fields> {
-    const result = {} as OnlyFields<T, Fields>;
+    fields: F[]
+): OnlyFields<T, F> {
+    const result = {} as OnlyFields<T, F>;
     for (const field of fields) {
         result[field] = entity[field];
     }
     return result;
 }
 
-export type OnlyFields<T, Fields extends KeyOf<T>[]> = {
-    [K in Fields[number]]: T[K];
+export type OnlyFields<T, F extends KeyOf<T>> = {
+    [K in F]: T[K];
 };
