@@ -1,11 +1,10 @@
-import { KeyOf, TaggedError } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf, TaggedError } from "@ulthar/immuty";
 import { IStore } from "./store.js";
-import { Document } from "./types/document.js";
 import { FromEffect } from "./effects/from-effect.js";
 import { InsertEffect } from "./effects/insert-effect.js";
 
 export class QueryInterface<
-    TSchemaMap extends Record<string, Document>,
+    TSchemaMap extends Record<string, DocumentRecord>,
     QueryErrors extends TaggedError,
     InsertErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
@@ -39,7 +38,7 @@ export class QueryInterface<
 }
 
 export function use<
-    TSchemaMap extends Record<string, Document>,
+    TSchemaMap extends Record<string, DocumentRecord>,
     QueryErrors extends TaggedError,
     InsertErrors extends TaggedError,
     ConnectionErrors extends TaggedError,

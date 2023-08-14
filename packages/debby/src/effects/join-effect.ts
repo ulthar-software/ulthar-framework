@@ -1,4 +1,5 @@
 import {
+    DocumentRecord,
     Effect,
     KeyOf,
     Maybe,
@@ -11,12 +12,11 @@ import {
     FieldsFromJoinResults,
     JoinResult,
 } from "../types/join-result.js";
-import { Document } from "../types/document.js";
 import { IStore } from "../store.js";
 import { JoinWrapper, SelectQueryWrapper } from "../types/select-query.js";
 
 export class JoinEffect<
-    TSchemaMap extends Record<string, Document>,
+    TSchemaMap extends Record<string, DocumentRecord>,
     QueryErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     A extends JoinResult,
@@ -70,10 +70,76 @@ export class JoinEffect<
             on: {},
         });
     }
+
+    rightJoin<
+        CName extends KeyOf<TSchemaMap>,
+        CSchema extends TSchemaMap[CName],
+        CAlias extends string = CName,
+    >(
+        name: CName,
+        opts?: JoinOptions<CAlias>
+    ): JoinableEffect<
+        TSchemaMap,
+        QueryErrors,
+        ConnectionErrors,
+        Partial<A & B>,
+        JoinResult<CAlias, CSchema>
+    > {
+        return new JoinableEffect(this.store, this.query, {
+            from: name,
+            type: "right",
+            as: opts?.as || name,
+            on: {},
+        });
+    }
+
+    innerJoin<
+        CName extends KeyOf<TSchemaMap>,
+        CSchema extends TSchemaMap[CName],
+        CAlias extends string = CName,
+    >(
+        name: CName,
+        opts?: JoinOptions<CAlias>
+    ): JoinableEffect<
+        TSchemaMap,
+        QueryErrors,
+        ConnectionErrors,
+        A & B,
+        JoinResult<CAlias, CSchema>
+    > {
+        return new JoinableEffect(this.store, this.query, {
+            from: name,
+            type: "inner",
+            as: opts?.as || name,
+            on: {},
+        });
+    }
+
+    fullJoin<
+        CName extends KeyOf<TSchemaMap>,
+        CSchema extends TSchemaMap[CName],
+        CAlias extends string = CName,
+    >(
+        name: CName,
+        opts?: JoinOptions<CAlias>
+    ): JoinableEffect<
+        TSchemaMap,
+        QueryErrors,
+        ConnectionErrors,
+        Partial<A & B>,
+        JoinResult<CAlias, Maybe<CSchema>>
+    > {
+        return new JoinableEffect(this.store, this.query, {
+            from: name,
+            type: "full",
+            as: opts?.as || name,
+            on: {},
+        });
+    }
 }
 
 export class JoinableEffect<
-    TSchemaMap extends Record<string, Document>,
+    TSchemaMap extends Record<string, DocumentRecord>,
     QueryErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     A extends JoinResult,
@@ -89,6 +155,7 @@ export class JoinableEffect<
         private query: SelectQueryWrapper<TSchemaMap>,
         private currentJoin: JoinWrapper<TSchemaMap>
     ) {}
+
     on(
         condition: OnCondition<A, B>
     ): JoinEffect<TSchemaMap, QueryErrors, ConnectionErrors, A, B> {

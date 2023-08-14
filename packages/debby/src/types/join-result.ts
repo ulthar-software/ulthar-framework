@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { KeyOf, Maybe, NonMaybe } from "@ulthar/immuty";
-import { Document } from "./document.js";
+import { DocumentRecord, KeyOf, Maybe, NonMaybe } from "@ulthar/immuty";
 
 export type JoinResult<
     TName extends string = string,
-    TSchema extends Maybe<Document> = any,
+    TSchema extends Maybe<DocumentRecord> = any,
 > = {
     [K in TName]: TSchema;
 };

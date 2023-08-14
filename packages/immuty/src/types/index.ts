@@ -1,4 +1,6 @@
+export * from "./array-type.js";
 export * from "./concat-tuple.js";
+export * from "./document-record.js";
 export * from "./keyof.js";
 export * from "./maybe-promise.js";
 export * from "./maybe.js";

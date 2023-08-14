@@ -1,6 +1,5 @@
-import { Effect, KeyOf, TaggedError } from "@ulthar/immuty";
+import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/immuty";
 import { SelectQueryWrapper } from "./types/select-query.js";
-import { Document } from "./types/document.js";
 import { DocumentWithFields } from "./types/document-modifiers.js";
 import { InsertQuery } from "./types/insert-query.js";
 import {
@@ -10,7 +9,7 @@ import {
 } from "./types/join-result.js";
 
 export interface IStore<
-    TSchemaMap extends Record<string, Document>,
+    TSchemaMap extends Record<string, DocumentRecord>,
     QueryErrors extends TaggedError = never,
     InsertErrors extends TaggedError = never,
     ConnectionErrors extends TaggedError = never,

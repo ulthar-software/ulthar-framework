@@ -1,9 +1,8 @@
-import { Effect, KeyOf, TaggedError } from "@ulthar/immuty";
+import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/immuty";
 import { IStore } from "../store.js";
-import { Document } from "../types/document.js";
 
 export class InsertEffect<
-    TSchemaMap extends Record<string, Document>,
+    TSchemaMap extends Record<string, DocumentRecord>,
     InsertErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     TSchemaName extends KeyOf<TSchemaMap>,

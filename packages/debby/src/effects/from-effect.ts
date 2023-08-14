@@ -1,12 +1,17 @@
-import { Effect, KeyOf, Maybe, TaggedError } from "@ulthar/immuty";
+import {
+    DocumentRecord,
+    Effect,
+    KeyOf,
+    Maybe,
+    TaggedError,
+} from "@ulthar/immuty";
 import { IStore } from "../store.js";
-import { Document } from "../types/document.js";
 import { DocumentWithFields } from "../types/document-modifiers.js";
 import { JoinOptions, JoinableEffect } from "./join-effect.js";
 import { JoinResult } from "../types/join-result.js";
 
 export class FromEffect<
-    TSchemaMap extends Record<string, Document>,
+    TSchemaMap extends Record<string, DocumentRecord>,
     QueryErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     TSchemaName extends KeyOf<TSchemaMap>,
@@ -57,13 +62,7 @@ export class FromEffect<
         JoinResult<TSchemaName, TSchema>,
         JoinResult<TOtherAlias, Maybe<TOther>>
     > {
-        return new JoinableEffect<
-            TSchemaMap,
-            QueryErrors,
-            ConnectionErrors,
-            JoinResult<TSchemaName, TSchema>,
-            JoinResult<TOtherAlias, Maybe<TOther>>
-        >(
+        return new JoinableEffect(
             this.store,
             {
                 from: this.name,
@@ -71,6 +70,90 @@ export class FromEffect<
             {
                 from: otherTable,
                 type: "left",
+                as: opts?.as || otherTable,
+                on: {},
+            }
+        );
+    }
+
+    rightJoin<
+        TOtherName extends KeyOf<TSchemaMap>,
+        TOther extends TSchemaMap[TOtherName],
+        TOtherAlias extends string = TOtherName,
+    >(
+        otherTable: TOtherName,
+        opts?: JoinOptions<TOtherAlias>
+    ): JoinableEffect<
+        TSchemaMap,
+        QueryErrors,
+        ConnectionErrors,
+        JoinResult<TSchemaName, Maybe<TSchema>>,
+        JoinResult<TOtherAlias, TOther>
+    > {
+        return new JoinableEffect(
+            this.store,
+            {
+                from: this.name,
+            },
+            {
+                from: otherTable,
+                type: "right",
+                as: opts?.as || otherTable,
+                on: {},
+            }
+        );
+    }
+
+    innerJoin<
+        TOtherName extends KeyOf<TSchemaMap>,
+        TOther extends TSchemaMap[TOtherName],
+        TOtherAlias extends string = TOtherName,
+    >(
+        otherTable: TOtherName,
+        opts?: JoinOptions<TOtherAlias>
+    ): JoinableEffect<
+        TSchemaMap,
+        QueryErrors,
+        ConnectionErrors,
+        JoinResult<TSchemaName, TSchema>,
+        JoinResult<TOtherAlias, TOther>
+    > {
+        return new JoinableEffect(
+            this.store,
+            {
+                from: this.name,
+            },
+            {
+                from: otherTable,
+                type: "inner",
+                as: opts?.as || otherTable,
+                on: {},
+            }
+        );
+    }
+
+    fullJoin<
+        TOtherName extends KeyOf<TSchemaMap>,
+        TOther extends TSchemaMap[TOtherName],
+        TOtherAlias extends string = TOtherName,
+    >(
+        otherTable: TOtherName,
+        opts?: JoinOptions<TOtherAlias>
+    ): JoinableEffect<
+        TSchemaMap,
+        QueryErrors,
+        ConnectionErrors,
+        JoinResult<TSchemaName, Maybe<TSchema>>,
+        JoinResult<TOtherAlias, Maybe<TOther>>
+    > {
+        return new JoinableEffect(
+            this.store,
+            {
+                from: this.name,
+            },
+            {
+                from: otherTable,
+                type: "full",
                 as: opts?.as || otherTable,
                 on: {},
             }

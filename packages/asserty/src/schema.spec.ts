@@ -18,5 +18,9 @@ describe("Schema", () => {
                 dateOfBirth: SchemaTypes.STRING(),
             },
         });
+
+        const keys = schema.getDocumentNames();
+
+        expect(keys).toEqual(["users"]);
     });
 });

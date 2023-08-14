@@ -1,7 +1,6 @@
-import { KeyOf } from "@ulthar/immuty";
-import { Document } from "./document.js";
+import { DocumentRecord, KeyOf } from "@ulthar/immuty";
 
-export type WhereClause<TSchema extends Document> = {
+export type WhereClause<TSchema extends DocumentRecord> = {
     [key in KeyOf<TSchema>]: WhereOperator<TSchema[KeyOf<TSchema>]>;
 };
 

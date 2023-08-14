@@ -1,8 +1,7 @@
-import { KeyOf } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf } from "@ulthar/immuty";
 import { DocumentSchemaMap } from "./schema/document-schema.js";
-import { Document } from "./types/document.js";
 
-export class Schema<TSchema extends Record<string, Document>> {
+export class Schema<TSchema extends Record<string, DocumentRecord>> {
     constructor(private readonly schema: DocumentSchemaMap<TSchema>) {}
 
     public getDocumentNames(): KeyOf<TSchema>[] {

@@ -1,8 +1,7 @@
-import { KeyOf } from "@ulthar/immuty";
-import { Document } from "./document.js";
+import { DocumentRecord, KeyOf } from "@ulthar/immuty";
 
 export type DocumentWithFields<
-    TSchema extends Document,
+    TSchema extends DocumentRecord,
     TFields extends KeyOf<TSchema>,
 > = {
     [key in TFields]: TSchema[key];

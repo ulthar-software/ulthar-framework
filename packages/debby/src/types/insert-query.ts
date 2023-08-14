@@ -1,8 +1,7 @@
-import { KeyOf } from "@ulthar/immuty";
-import { Document } from "./document.js";
+import { DocumentRecord, KeyOf } from "@ulthar/immuty";
 
 export interface InsertQuery<
-    TSchemaMap extends Record<string, Document>,
+    TSchemaMap extends Record<string, DocumentRecord>,
     TSchemaName extends KeyOf<TSchemaMap>,
 > {
     into: TSchemaName;
