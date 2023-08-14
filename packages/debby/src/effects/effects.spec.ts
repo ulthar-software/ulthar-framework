@@ -181,4 +181,41 @@ describe("Query Effects", () => {
             ],
         });
     });
+
+    test("Left join another model collection and select some fields", async () => {
+        const store = {
+            selectSomeWithJoins: jest.fn(),
+        } as unknown as IStore<Model>;
+
+        use(store)
+            .from("users")
+            .leftJoin("posts", { as: "posts" })
+            .on({
+                users: "id",
+                posts: "authorId",
+            })
+            .select({
+                users: ["id", "name"],
+                posts: ["id"],
+            });
+
+        expect(store.selectSomeWithJoins).toHaveBeenCalledWith({
+            from: "users",
+            joins: [
+                {
+                    from: "posts",
+                    type: "left",
+                    as: "posts",
+                    on: {
+                        users: "id",
+                        posts: "authorId",
+                    },
+                },
+            ],
+            select: {
+                users: ["id", "name"],
+                posts: ["id"],
+            },
+        });
+    });
 });

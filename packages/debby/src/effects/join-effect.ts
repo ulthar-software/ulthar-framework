@@ -1,5 +1,16 @@
-import { Effect, KeyOf, NonMaybe, OneOf, TaggedError } from "@ulthar/immuty";
-import { JoinResult } from "../types/join-result.js";
+import {
+    Effect,
+    KeyOf,
+    Maybe,
+    NonMaybe,
+    OneOf,
+    TaggedError,
+} from "@ulthar/immuty";
+import {
+    ConcatJoinResultsWithFields,
+    FieldsFromJoinResults,
+    JoinResult,
+} from "../types/join-result.js";
 import { Document } from "../types/document.js";
 import { IStore } from "../store.js";
 import { JoinWrapper, SelectQueryWrapper } from "../types/select-query.js";
@@ -25,6 +36,19 @@ export class JoinEffect<
         return this.store.selectAllWithJoins<A, B>(this.query);
     }
 
+    select<TFields extends FieldsFromJoinResults<A, B>>(
+        fields: TFields
+    ): Effect<
+        void,
+        ConcatJoinResultsWithFields<A, B, TFields>[],
+        QueryErrors | ConnectionErrors
+    > {
+        return this.store.selectSomeWithJoins<A, B, TFields>({
+            ...this.query,
+            select: fields,
+        });
+    }
+
     leftJoin<
         CName extends KeyOf<TSchemaMap>,
         CSchema extends TSchemaMap[CName],
@@ -37,7 +61,7 @@ export class JoinEffect<
         QueryErrors,
         ConnectionErrors,
         A & B,
-        JoinResult<CAlias, CSchema>
+        JoinResult<CAlias, Maybe<CSchema>>
     > {
         return new JoinableEffect(this.store, this.query, {
             from: name,

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { KeyOf, Maybe } from "@ulthar/immuty";
+import { KeyOf, Maybe, NonMaybe } from "@ulthar/immuty";
 import { Document } from "./document.js";
 
 export type JoinResult<
@@ -13,9 +13,9 @@ export type FieldsFromJoinResults<
     TAJoinResult extends JoinResult,
     TBJoinResult extends JoinResult,
 > = {
-    [K in KeyOf<TAJoinResult>]: KeyOf<TAJoinResult[K]>[];
+    [K in KeyOf<TAJoinResult>]: KeyOf<NonMaybe<TAJoinResult[K]>>[];
 } & {
-    [K in KeyOf<TBJoinResult>]: KeyOf<TAJoinResult[K]>[];
+    [K in KeyOf<TBJoinResult>]: KeyOf<NonMaybe<TBJoinResult[K]>>[];
 };
 
 export type ConcatJoinResultsWithFields<
@@ -24,10 +24,10 @@ export type ConcatJoinResultsWithFields<
     TFields extends FieldsFromJoinResults<TAJoinResult, TBJoinResult>,
 > = {
     [K in KeyOf<TAJoinResult>]: {
-        [F in TFields[K][number]]: TAJoinResult[K][F];
+        [F in TFields[K][number]]: NonMaybe<TAJoinResult[K]>[F];
     };
 } & {
     [K in KeyOf<TBJoinResult>]: {
-        [F in TFields[K][number]]: TBJoinResult[K][F];
+        [F in TFields[K][number]]: NonMaybe<TBJoinResult[K]>[F];
     };
 };
