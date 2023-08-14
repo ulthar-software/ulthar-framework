@@ -1,4 +1,4 @@
-import { Effect, KeyOf, TaggedError } from "@ulthar/immuty";
+import { Effect, KeyOf, NonMaybe, OneOf, TaggedError } from "@ulthar/immuty";
 import { JoinResult } from "../types/join-result.js";
 import { Document } from "../types/document.js";
 import { IStore } from "../store.js";
@@ -79,10 +79,10 @@ export class JoinableEffect<
     }
 }
 
-export type OnCondition<A, B> = {
-    [K in KeyOf<A>]: KeyOf<A[K]>;
-} & {
-    [K in KeyOf<B>]: KeyOf<B[K]>;
+export type OnCondition<A, B> = OneOf<{
+    [K in KeyOf<A>]: KeyOf<NonMaybe<A[K]>>;
+}> & {
+    [K in KeyOf<B>]: KeyOf<NonMaybe<B[K]>>;
 };
 
 export type JoinOptions<TName extends string = string> = { as: TName };

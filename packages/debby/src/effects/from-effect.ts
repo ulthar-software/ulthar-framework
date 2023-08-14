@@ -1,4 +1,4 @@
-import { Effect, KeyOf, TaggedError } from "@ulthar/immuty";
+import { Effect, KeyOf, Maybe, TaggedError } from "@ulthar/immuty";
 import { IStore } from "../store.js";
 import { Document } from "../types/document.js";
 import { DocumentWithFields } from "../types/document-modifiers.js";
@@ -55,14 +55,14 @@ export class FromEffect<
         QueryErrors,
         ConnectionErrors,
         JoinResult<TSchemaName, TSchema>,
-        JoinResult<TOtherAlias, TOther>
+        JoinResult<TOtherAlias, Maybe<TOther>>
     > {
         return new JoinableEffect<
             TSchemaMap,
             QueryErrors,
             ConnectionErrors,
             JoinResult<TSchemaName, TSchema>,
-            JoinResult<TOtherAlias, TOther>
+            JoinResult<TOtherAlias, Maybe<TOther>>
         >(
             this.store,
             {
