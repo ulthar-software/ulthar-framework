@@ -9,6 +9,8 @@ import { IStore } from "../store.js";
 import { DocumentWithFields } from "../types/document-modifiers.js";
 import { JoinOptions, JoinableEffect } from "./join-effect.js";
 import { JoinResult } from "../types/join-result.js";
+import { WhereClause } from "../types/where.js";
+import { WhereEffect } from "./where-effect.js";
 
 export class FromEffect<
     TSchemaMap extends Record<string, DocumentRecord>,
@@ -45,6 +47,23 @@ export class FromEffect<
             select: {
                 [this.name]: fields,
             },
+        });
+    }
+
+    where(
+        ops: WhereClause<TSchema> | WhereClause<TSchema>[]
+    ): WhereEffect<
+        TSchemaMap,
+        QueryErrors,
+        ConnectionErrors,
+        TSchemaName,
+        TSchema
+    > {
+        return new WhereEffect(this.store, {
+            from: this.name,
+            where: Array.isArray(ops)
+                ? ops.map((op) => ({ [this.name]: op }))
+                : [{ [this.name]: ops }],
         });
     }
 

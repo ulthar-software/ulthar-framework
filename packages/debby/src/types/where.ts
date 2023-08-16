@@ -1,15 +1,27 @@
 import { DocumentRecord, KeyOf } from "@ulthar/immuty";
+import { JoinResult } from "./join-result.js";
 
 export type WhereClause<TSchema extends DocumentRecord> = {
-    [key in KeyOf<TSchema>]: WhereOperator<TSchema[KeyOf<TSchema>]>;
+    [key in KeyOf<TSchema>]?: WhereOperator<TSchema[KeyOf<TSchema>]>;
+};
+
+export type JoinWhereClause<
+    A extends JoinResult = JoinResult,
+    B extends JoinResult = JoinResult,
+> = {
+    [key in KeyOf<A>]?: WhereClause<A[key]>;
+} & {
+    [key in KeyOf<B>]?: WhereClause<B[key]>;
 };
 
 export type WhereOperator<T> = T extends BasicTypes
     ? BasicWhereOperator<T>
-    : ComplexWhereOperator<T>;
+    : never;
 
 export type BasicWhereOperator<T extends BasicTypes> =
-    | T
+    | {
+          eq: T;
+      }
     | {
           in: T[];
       }
@@ -41,9 +53,5 @@ export type NumericWhereOperator<T extends number | Date> =
     | {
           notBetween: [T, T];
       };
-
-export type ComplexWhereOperator<T> = {
-    eq: T;
-};
 
 export type BasicTypes = string | number | boolean | Date | null | undefined;

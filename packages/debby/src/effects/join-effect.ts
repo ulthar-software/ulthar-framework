@@ -14,6 +14,8 @@ import {
 } from "../types/join-result.js";
 import { IStore } from "../store.js";
 import { JoinWrapper, SelectQueryWrapper } from "../types/select-query.js";
+import { JoinWhereClause } from "../types/where.js";
+import { JoinedWhereEffect } from "./where-effect.js";
 
 export class JoinEffect<
     TSchemaMap extends Record<string, DocumentRecord>,
@@ -46,6 +48,15 @@ export class JoinEffect<
         return this.store.selectSomeWithJoins<A, B, TFields>({
             ...this.query,
             select: fields,
+        });
+    }
+
+    where(
+        ops: JoinWhereClause<A, B> | JoinWhereClause<A, B>[]
+    ): JoinedWhereEffect<TSchemaMap, QueryErrors, ConnectionErrors, A, B> {
+        return new JoinedWhereEffect(this.store, {
+            ...this.query,
+            where: Array.isArray(ops) ? ops : [ops],
         });
     }
 

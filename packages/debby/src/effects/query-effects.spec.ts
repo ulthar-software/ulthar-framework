@@ -1,6 +1,7 @@
 import { IStore } from "../store.js";
 import { use } from "../query-interface.js";
 import { PosixDate } from "@ulthar/immuty";
+import { Op } from "../operators.js";
 
 describe("Query Effects", () => {
     type User = {
@@ -83,6 +84,76 @@ describe("Query Effects", () => {
                 users: ["id", "name"],
                 posts: ["id"],
             },
+        });
+    });
+
+    test("filter by a field", async () => {
+        const store = {
+            selectAll: jest.fn(),
+        } as unknown as IStore<Model>;
+
+        use(store)
+            .from("users")
+            .where({
+                name: Op.Equals("John"),
+            })
+            .selectAll();
+
+        expect(store.selectAll).toHaveBeenCalledWith({
+            from: "users",
+            where: [
+                {
+                    users: {
+                        name: {
+                            eq: "John",
+                        },
+                    },
+                },
+            ],
+        });
+    });
+
+    test("join and filter by a field", async () => {
+        const store = {
+            selectAllWithJoins: jest.fn(),
+        } as unknown as IStore<Model>;
+
+        use(store)
+            .from("users")
+            .leftJoin("posts")
+            .on({
+                users: "id",
+                posts: "authorId",
+            })
+            .where({
+                users: {
+                    name: Op.Equals("John"),
+                },
+            })
+            .selectAll();
+
+        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+            from: "users",
+            joins: [
+                {
+                    from: "posts",
+                    type: "left",
+                    as: "posts",
+                    on: {
+                        users: "id",
+                        posts: "authorId",
+                    },
+                },
+            ],
+            where: [
+                {
+                    users: {
+                        name: {
+                            eq: "John",
+                        },
+                    },
+                },
+            ],
         });
     });
 });

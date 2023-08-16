@@ -1,5 +1,5 @@
 import { DocumentRecord, KeyOf } from "@ulthar/immuty";
-import { WhereClause } from "./where.js";
+import { JoinWhereClause } from "./where.js";
 
 export type SelectQueryWrapper<
     TSchemaMap extends Record<string, DocumentRecord>,
@@ -9,7 +9,7 @@ export type SelectQueryWrapper<
     select?: {
         [K in string]?: string[];
     };
-    where?: WhereClause<DocumentRecord>[];
+    where?: JoinWhereClause[];
 };
 
 export type JoinWrapper<TSchemaMap extends Record<string, DocumentRecord>> = {
