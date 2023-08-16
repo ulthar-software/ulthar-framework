@@ -7,6 +7,7 @@ import {
     FieldsFromJoinResults,
     JoinResult,
 } from "./types/join-result.js";
+import { DocumentAggregators } from "./aggregators.js";
 
 export interface IStore<
     TSchemaMap extends Record<string, DocumentRecord>,
@@ -17,7 +18,9 @@ export interface IStore<
     selectSome<
         TSchemaName extends KeyOf<TSchemaMap>,
         TSchema extends TSchemaMap[TSchemaName],
-        TFields extends KeyOf<TSchema>,
+        TFields extends
+            | KeyOf<TSchema>
+            | DocumentAggregators<KeyOf<TSchema>, string>,
     >(
         query: SelectQueryWrapper<TSchemaMap>
     ): Effect<

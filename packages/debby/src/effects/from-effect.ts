@@ -11,6 +11,7 @@ import { JoinOptions, JoinableEffect } from "./join-effect.js";
 import { JoinResult } from "../types/join-result.js";
 import { WhereClause } from "../types/where.js";
 import { WhereEffect } from "./where-effect.js";
+import { GroupByEffect } from "./group-by-effect.js";
 
 export class FromEffect<
     TSchemaMap extends Record<string, DocumentRecord>,
@@ -64,6 +65,24 @@ export class FromEffect<
             where: Array.isArray(ops)
                 ? ops.map((op) => ({ [this.name]: op }))
                 : [{ [this.name]: ops }],
+        });
+    }
+
+    groupBy<TGroupByFields extends KeyOf<TSchema>>(
+        fields: TGroupByFields[]
+    ): GroupByEffect<
+        TSchemaMap,
+        QueryErrors,
+        ConnectionErrors,
+        TSchemaName,
+        TSchema,
+        TGroupByFields
+    > {
+        return new GroupByEffect(this.store, {
+            from: this.name,
+            groupBy: {
+                [this.name]: fields,
+            },
         });
     }
 

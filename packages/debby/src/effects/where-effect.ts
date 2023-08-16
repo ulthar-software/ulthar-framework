@@ -6,6 +6,7 @@ import {
     FieldsFromJoinResults,
     JoinResult,
 } from "../types/join-result.js";
+import { DocumentWithFields } from "../types/document-modifiers.js";
 
 export class WhereEffect<
     TSchemaMap extends Record<string, DocumentRecord>,
@@ -23,6 +24,21 @@ export class WhereEffect<
         >,
         private query: SelectQueryWrapper<TSchemaMap>
     ) {}
+
+    select<TFields extends KeyOf<TSchema>>(
+        fields: TFields[]
+    ): Effect<
+        void,
+        DocumentWithFields<TSchema, TFields>[],
+        QueryErrors | ConnectionErrors
+    > {
+        return this.store.selectSome({
+            ...this.query,
+            select: {
+                [this.query.from]: fields,
+            },
+        });
+    }
 
     selectAll(): Effect<void, TSchema[], QueryErrors | ConnectionErrors> {
         return this.store.selectAll(this.query);

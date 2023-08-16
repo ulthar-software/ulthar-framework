@@ -2,6 +2,7 @@ import { IStore } from "../store.js";
 import { use } from "../query-interface.js";
 import { PosixDate } from "@ulthar/immuty";
 import { Op } from "../operators.js";
+import { Aggregators } from "../aggregators.js";
 
 describe("Query Effects", () => {
     type User = {
@@ -154,6 +155,36 @@ describe("Query Effects", () => {
                     },
                 },
             ],
+        });
+    });
+
+    test("group by a field", async () => {
+        const store = {
+            selectSome: jest.fn(),
+        } as unknown as IStore<Model>;
+
+        use(store)
+            .from("users")
+            .groupBy(["dateOfBirth"])
+            .select([
+                Aggregators.count("id", {
+                    as: "numberOfUsers",
+                }),
+            ]);
+
+        expect(store.selectSome).toHaveBeenCalledWith({
+            from: "users",
+            groupBy: {
+                users: ["dateOfBirth"],
+            },
+            select: {
+                users: [
+                    {
+                        count: "id",
+                        as: "numberOfUsers",
+                    },
+                ],
+            },
         });
     });
 });
