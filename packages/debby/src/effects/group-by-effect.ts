@@ -31,7 +31,7 @@ export class GroupByEffect<
         fields: TFields[]
     ): Effect<
         void,
-        DocumentWithFields<TSchema, TFields & TGroupByFields>[],
+        DocumentWithFields<TSchema, TFields | TGroupByFields>[],
         QueryErrors | ConnectionErrors
     > {
         return this.store.selectSome({
