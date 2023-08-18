@@ -75,24 +75,24 @@ export class EventStreamSubject<A, AErr extends TaggedError>
         this._onClose.clear();
     }
 
+    async next(): Promise<IteratorResult<Result<A, AErr>>> {
+        if (this.done) {
+            return { done: true, value: this._current };
+        }
+        return new Promise((resolve) => {
+            const listener = (result: Result<A, AErr>) => {
+                this._listeners.delete(listener);
+                resolve({ done: false, value: result });
+            };
+            this._listeners.add(listener);
+            this._onClose.add(() => {
+                this._listeners.delete(listener);
+                resolve({ done: true, value: this._current });
+            });
+        });
+    }
+
     [Symbol.asyncIterator](): AsyncIterator<Result<A, AErr>> {
-        return {
-            next: async () => {
-                if (this.done) {
-                    return { done: true, value: this._current };
-                }
-                return new Promise((resolve) => {
-                    const listener = (result: Result<A, AErr>) => {
-                        this._listeners.delete(listener);
-                        resolve({ done: false, value: result });
-                    };
-                    this._listeners.add(listener);
-                    this._onClose.add(() => {
-                        this._listeners.delete(listener);
-                        resolve({ done: true, value: this._current });
-                    });
-                });
-            },
-        };
+        return this;
     }
 }
