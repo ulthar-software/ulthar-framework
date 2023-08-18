@@ -37,7 +37,7 @@ describe("Effect Stream", () => {
         );
 
         //start the stream
-        await mappedStream.start({ a: 5, b: 1 });
+        await mappedStream.run({ a: 5, b: 1 });
 
         expect(fn).toHaveBeenCalledTimes(3);
         expect(fn).toHaveBeenNthCalledWith(1, Result.ok(7));
@@ -66,7 +66,7 @@ describe("Effect Stream", () => {
             }
         );
 
-        await mappedStream.start({ a: 5, b: 1 });
+        await mappedStream.run({ a: 5, b: 1 });
 
         expect(successFn).not.toHaveBeenCalled();
     });

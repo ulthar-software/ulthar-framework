@@ -151,7 +151,7 @@ describe("Effect Scheduling", () => {
             })
         );
 
-        await stream.start({ a: 1 });
+        await stream.run({ a: 1 });
 
         expect(fn).toHaveBeenCalledTimes(3);
     });

@@ -83,4 +83,17 @@ describe("Effect Transformation", () => {
             Result.error(defaultErrorWrapper(new Error("error")))
         );
     });
+
+    test("spreading and mapping a function that returns an array", async () => {
+        const effect = Effect.fromSync(() => {
+            return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        });
+        const result = await effect
+            .spread()
+            .mapSync(([value]) => value + 1)
+            .collectAll()
+            .run();
+
+        expect(result).toEqual(Result.ok([2, 3, 4, 5, 6, 7, 8, 9, 10, 11]));
+    });
 });

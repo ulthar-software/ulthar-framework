@@ -1,4 +1,5 @@
 import {
+    ArrayType,
     Fn,
     RemainingUnmatchedErrors,
     Result,
@@ -227,6 +228,12 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         return new Effect(async (deps) => {
             return await resource.useWith(deps, effectFn);
         });
+    }
+
+    spread(): EffectStream<ArrayType<A>, AErr, ADeps, ArrayType<A>, AErr> {
+        return EffectStream.fromListEffect(
+            this.f as EffectFn<ADeps, ArrayType<A>[], AErr>
+        );
     }
 
     /**
