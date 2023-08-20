@@ -15,7 +15,7 @@ export interface IStore<
     InsertErrors extends TaggedError = never,
     ConnectionErrors extends TaggedError = never,
 > {
-    selectSome<
+    select<
         TSchemaName extends KeyOf<TSchemaMap>,
         TSchema extends TSchemaMap[TSchemaName],
         TFields extends
@@ -28,26 +28,20 @@ export interface IStore<
         DocumentWithFields<TSchema, TFields>[],
         QueryErrors | ConnectionErrors
     >;
-
-    selectAll<
+    select<
         TSchemaName extends KeyOf<TSchemaMap>,
         TSchema extends TSchemaMap[TSchemaName],
     >(
         query: SelectQueryWrapper<TSchemaMap>
     ): Effect<void, TSchema[], QueryErrors | ConnectionErrors>;
-
-    selectAllWithJoins<
-        TAJoinResult extends JoinResult,
-        TBJoinResult extends JoinResult,
-    >(
+    select<TAJoinResult extends JoinResult, TBJoinResult extends JoinResult>(
         query: SelectQueryWrapper<TSchemaMap>
     ): Effect<
         void,
         (TAJoinResult & TBJoinResult)[],
         QueryErrors | ConnectionErrors
     >;
-
-    selectSomeWithJoins<
+    select<
         TAJoinResult extends JoinResult,
         TBJoinResult extends JoinResult,
         TFields extends FieldsFromJoinResults<TAJoinResult, TBJoinResult>,

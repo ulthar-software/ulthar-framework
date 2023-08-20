@@ -34,7 +34,11 @@ export class GroupByEffect<
         DocumentWithFields<TSchema, TFields | TGroupByFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.selectSome({
+        return this.store.select<
+            TSchemaName,
+            TSchema,
+            TFields | TGroupByFields
+        >({
             ...this.query,
             select: {
                 [this.query.from]: fields,

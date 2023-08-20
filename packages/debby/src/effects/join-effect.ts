@@ -35,7 +35,7 @@ export class JoinEffect<
     ) {}
 
     selectAll(): Effect<void, (A & B)[], QueryErrors | ConnectionErrors> {
-        return this.store.selectAllWithJoins<A, B>(this.query);
+        return this.store.select<A, B>(this.query);
     }
 
     select<TFields extends FieldsFromJoinResults<A, B>>(
@@ -45,7 +45,7 @@ export class JoinEffect<
         ConcatJoinResultsWithFields<A, B, TFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.selectSomeWithJoins<A, B, TFields>({
+        return this.store.select<A, B, TFields>({
             ...this.query,
             select: fields,
         });

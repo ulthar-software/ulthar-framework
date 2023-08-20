@@ -24,7 +24,7 @@ describe("Query Effects", () => {
 
     test("Left join same model collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -36,7 +36,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -54,7 +54,7 @@ describe("Query Effects", () => {
 
     test("Left join another model collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -66,7 +66,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -84,7 +84,7 @@ describe("Query Effects", () => {
 
     test("Left join another model collection with a join on the joined collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -101,7 +101,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -128,7 +128,7 @@ describe("Query Effects", () => {
 
     test("Right join another model collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -140,7 +140,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -158,7 +158,7 @@ describe("Query Effects", () => {
 
     test("Inner join another model collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -170,7 +170,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -188,7 +188,7 @@ describe("Query Effects", () => {
 
     test("Full join another model collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -200,7 +200,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -218,7 +218,7 @@ describe("Query Effects", () => {
 
     test("Right join another model collection with a join on the joined collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -235,7 +235,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -262,7 +262,7 @@ describe("Query Effects", () => {
 
     test("Inner join another model collection with a join on the joined collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -279,7 +279,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -306,7 +306,7 @@ describe("Query Effects", () => {
 
     test("Full join another model collection with a join on the joined collection", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -321,10 +321,9 @@ describe("Query Effects", () => {
                 users: "id",
                 posts: "authorId",
             })
-
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {

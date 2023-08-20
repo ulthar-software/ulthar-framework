@@ -31,7 +31,7 @@ export class FromEffect<
     ) {}
 
     selectAll(): Effect<void, TSchema[], QueryErrors | ConnectionErrors> {
-        return this.store.selectAll({
+        return this.store.select<TSchemaName, TSchema>({
             from: this.name,
         });
     }
@@ -43,7 +43,7 @@ export class FromEffect<
         DocumentWithFields<TSchema, TFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.selectSome({
+        return this.store.select<TSchemaName, TSchema, TFields>({
             from: this.name,
             select: {
                 [this.name]: fields,

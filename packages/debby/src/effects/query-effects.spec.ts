@@ -26,24 +26,24 @@ describe("Query Effects", () => {
 
     test("Select all from a model collection", () => {
         const store = {
-            selectAll: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store).from("users").selectAll();
 
-        expect(store.selectAll).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
         });
     });
 
     test("Select some fields from a model collection", async () => {
         const store = {
-            selectSome: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store).from("users").select(["id", "name"]);
 
-        expect(store.selectSome).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             select: {
                 users: ["id", "name"],
@@ -53,7 +53,7 @@ describe("Query Effects", () => {
 
     test("Left join another model collection and select some fields", async () => {
         const store = {
-            selectSomeWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -68,7 +68,7 @@ describe("Query Effects", () => {
                 posts: ["id"],
             });
 
-        expect(store.selectSomeWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -90,7 +90,7 @@ describe("Query Effects", () => {
 
     test("filter by a field", async () => {
         const store = {
-            selectAll: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -100,7 +100,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAll).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             where: [
                 {
@@ -116,7 +116,7 @@ describe("Query Effects", () => {
 
     test("join and filter by a field", async () => {
         const store = {
-            selectAllWithJoins: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -133,7 +133,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.selectAllWithJoins).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -160,7 +160,7 @@ describe("Query Effects", () => {
 
     test("group by a field", async () => {
         const store = {
-            selectSome: jest.fn(),
+            select: jest.fn(),
         } as unknown as IStore<Model>;
 
         use(store)
@@ -172,7 +172,7 @@ describe("Query Effects", () => {
                 }),
             ]);
 
-        expect(store.selectSome).toHaveBeenCalledWith({
+        expect(store.select).toHaveBeenCalledWith({
             from: "users",
             groupBy: {
                 users: ["dateOfBirth"],

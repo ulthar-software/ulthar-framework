@@ -32,7 +32,7 @@ export class WhereEffect<
         DocumentWithFields<TSchema, TFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.selectSome({
+        return this.store.select<TSchemaName, TSchema, TFields>({
             ...this.query,
             select: {
                 [this.query.from]: fields,
@@ -41,7 +41,7 @@ export class WhereEffect<
     }
 
     selectAll(): Effect<void, TSchema[], QueryErrors | ConnectionErrors> {
-        return this.store.selectAll(this.query);
+        return this.store.select<TSchemaName, TSchema>(this.query);
     }
 }
 
@@ -63,7 +63,7 @@ export class JoinedWhereEffect<
     ) {}
 
     selectAll(): Effect<void, (A & B)[], QueryErrors | ConnectionErrors> {
-        return this.store.selectAllWithJoins<A, B>(this.query);
+        return this.store.select<A, B>(this.query);
     }
 
     select<TFields extends FieldsFromJoinResults<A, B>>(
@@ -73,7 +73,7 @@ export class JoinedWhereEffect<
         ConcatJoinResultsWithFields<A, B, TFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.selectSomeWithJoins<A, B, TFields>({
+        return this.store.select<A, B, TFields>({
             ...this.query,
             select: fields,
         });
