@@ -1,5 +1,5 @@
 import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/immuty";
-import { IStore } from "../store.js";
+import { Store } from "../store.js";
 
 export class InsertEffect<
     TSchemaMap extends Record<string, DocumentRecord>,
@@ -8,10 +8,12 @@ export class InsertEffect<
     TSchemaName extends KeyOf<TSchemaMap>,
 > {
     constructor(
-        private store: IStore<
+        private store: Store<
             TSchemaMap,
             TaggedError,
             InsertErrors,
+            TaggedError,
+            TaggedError,
             ConnectionErrors
         >,
         private name: TSchemaName
@@ -20,7 +22,7 @@ export class InsertEffect<
     values(
         values: TSchemaMap[TSchemaName][]
     ): Effect<void, void, InsertErrors | ConnectionErrors> {
-        return this.store.insert({
+        return this.store.getDriver().insert({
             into: this.name,
             values,
         });

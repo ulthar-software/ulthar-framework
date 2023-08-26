@@ -1,6 +1,6 @@
-import { IStore } from "../store.js";
-import { use } from "../query-interface.js";
+import { Store } from "../store.js";
 import { PosixDate } from "@ulthar/immuty";
+import { IStoreDriver } from "../store-driver.js";
 
 describe("Query Effects", () => {
     type User = {
@@ -23,11 +23,12 @@ describe("Query Effects", () => {
     };
 
     test("Left join same model collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .leftJoin("users", { as: "bff" })
             .on({
@@ -36,7 +37,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -53,11 +54,12 @@ describe("Query Effects", () => {
     });
 
     test("Left join another model collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .leftJoin("posts", { as: "posts" })
             .on({
@@ -66,7 +68,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -83,11 +85,12 @@ describe("Query Effects", () => {
     });
 
     test("Left join another model collection with a join on the joined collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .leftJoin("users", { as: "bff" })
             .on({
@@ -101,7 +104,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -127,11 +130,12 @@ describe("Query Effects", () => {
     });
 
     test("Right join another model collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .rightJoin("posts")
             .on({
@@ -140,7 +144,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -157,11 +161,12 @@ describe("Query Effects", () => {
     });
 
     test("Inner join another model collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .innerJoin("posts")
             .on({
@@ -170,7 +175,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -187,11 +192,12 @@ describe("Query Effects", () => {
     });
 
     test("Full join another model collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .fullJoin("posts")
             .on({
@@ -200,7 +206,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -217,11 +223,12 @@ describe("Query Effects", () => {
     });
 
     test("Right join another model collection with a join on the joined collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .leftJoin("users", { as: "bff" })
             .on({
@@ -235,7 +242,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -261,11 +268,12 @@ describe("Query Effects", () => {
     });
 
     test("Inner join another model collection with a join on the joined collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .leftJoin("users", { as: "bff" })
             .on({
@@ -279,7 +287,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -305,11 +313,12 @@ describe("Query Effects", () => {
     });
 
     test("Full join another model collection with a join on the joined collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .leftJoin("users", { as: "bff" })
             .on({
@@ -323,7 +332,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {

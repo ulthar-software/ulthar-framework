@@ -1,6 +1,6 @@
 import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/immuty";
-import { IStore } from "../store.js";
-import { SelectQueryWrapper } from "../types/select-query.js";
+import { Store } from "../store.js";
+import { SelectQuery } from "../types/select-query.js";
 import { DocumentWithFields } from "../types/document-modifiers.js";
 import { DocumentAggregators } from "../aggregators.js";
 
@@ -13,13 +13,15 @@ export class GroupByEffect<
     TGroupByFields extends KeyOf<TSchema>,
 > {
     constructor(
-        private store: IStore<
+        private store: Store<
             TSchemaMap,
             QueryErrors,
             TaggedError,
+            TaggedError,
+            TaggedError,
             ConnectionErrors
         >,
-        private query: SelectQueryWrapper<TSchemaMap>
+        private query: SelectQuery<TSchemaMap>
     ) {}
 
     select<
@@ -34,15 +36,25 @@ export class GroupByEffect<
         DocumentWithFields<TSchema, TFields | TGroupByFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.select<
-            TSchemaName,
-            TSchema,
-            TFields | TGroupByFields
-        >({
-            ...this.query,
-            select: {
-                [this.query.from]: fields,
-            },
-        });
+        const selectedFields = fields.filter(
+            (field) => typeof field === "string"
+        ) as string[];
+        const aggregators = fields.filter(
+            (field) => typeof field !== "string"
+        ) as DocumentAggregators<KeyOf<TSchema>, AddedKeys>[];
+
+        return this.store
+            .getDriver()
+            .select<TSchemaName, TSchema, TFields | TGroupByFields>({
+                ...this.query,
+                select: {
+                    [this.query.from]: selectedFields,
+                },
+                ...(aggregators.length > 0 && {
+                    aggregates: {
+                        [this.query.from]: aggregators,
+                    },
+                }),
+            });
     }
 }

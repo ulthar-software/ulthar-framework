@@ -1,12 +1,13 @@
 import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/immuty";
-import { SelectQueryWrapper } from "../types/select-query.js";
-import { IStore } from "../store.js";
+import { SelectQuery } from "../types/select-query.js";
+import { Store } from "../store.js";
 import {
     ConcatJoinResultsWithFields,
     FieldsFromJoinResults,
     JoinResult,
 } from "../types/join-result.js";
 import { DocumentWithFields } from "../types/document-modifiers.js";
+import { UpdateQuery } from "../index.js";
 
 export class WhereEffect<
     TSchemaMap extends Record<string, DocumentRecord>,
@@ -16,13 +17,15 @@ export class WhereEffect<
     TSchema extends TSchemaMap[TSchemaName] = TSchemaMap[TSchemaName],
 > {
     constructor(
-        private store: IStore<
+        private store: Store<
             TSchemaMap,
             QueryErrors,
             TaggedError,
+            TaggedError,
+            TaggedError,
             ConnectionErrors
         >,
-        private query: SelectQueryWrapper<TSchemaMap>
+        private query: SelectQuery<TSchemaMap>
     ) {}
 
     select<TFields extends KeyOf<TSchema>>(
@@ -32,7 +35,7 @@ export class WhereEffect<
         DocumentWithFields<TSchema, TFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.select<TSchemaName, TSchema, TFields>({
+        return this.store.getDriver().select<TSchemaName, TSchema, TFields>({
             ...this.query,
             select: {
                 [this.query.from]: fields,
@@ -41,7 +44,7 @@ export class WhereEffect<
     }
 
     selectAll(): Effect<void, TSchema[], QueryErrors | ConnectionErrors> {
-        return this.store.select<TSchemaName, TSchema>(this.query);
+        return this.store.getDriver().select<TSchemaName, TSchema>(this.query);
     }
 }
 
@@ -53,17 +56,19 @@ export class JoinedWhereEffect<
     B extends JoinResult,
 > {
     constructor(
-        private store: IStore<
+        private store: Store<
             TSchemaMap,
             QueryErrors,
             TaggedError,
+            TaggedError,
+            TaggedError,
             ConnectionErrors
         >,
-        private query: SelectQueryWrapper<TSchemaMap>
+        private query: SelectQuery<TSchemaMap>
     ) {}
 
     selectAll(): Effect<void, (A & B)[], QueryErrors | ConnectionErrors> {
-        return this.store.select<A, B>(this.query);
+        return this.store.getDriver().select<A, B>(this.query);
     }
 
     select<TFields extends FieldsFromJoinResults<A, B>>(
@@ -73,9 +78,38 @@ export class JoinedWhereEffect<
         ConcatJoinResultsWithFields<A, B, TFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.select<A, B, TFields>({
+        return this.store.getDriver().select<A, B, TFields>({
             ...this.query,
             select: fields,
+        });
+    }
+}
+
+export class UpdateWhereEffect<
+    TSchemaMap extends Record<string, DocumentRecord>,
+    UpdateErrors extends TaggedError,
+    ConnectionErrors extends TaggedError,
+    TSchemaName extends KeyOf<TSchemaMap>,
+    TSchema extends TSchemaMap[TSchemaName] = TSchemaMap[TSchemaName],
+> {
+    constructor(
+        private store: Store<
+            TSchemaMap,
+            TaggedError,
+            TaggedError,
+            UpdateErrors,
+            TaggedError,
+            ConnectionErrors
+        >,
+        private query: UpdateQuery<TSchemaMap, TSchemaName>
+    ) {}
+
+    set(
+        value: Partial<TSchema>
+    ): Effect<void, void, UpdateErrors | ConnectionErrors> {
+        return this.store.getDriver().update({
+            ...this.query,
+            set: value,
         });
     }
 }

@@ -12,8 +12,8 @@ import {
     FieldsFromJoinResults,
     JoinResult,
 } from "../types/join-result.js";
-import { IStore } from "../store.js";
-import { JoinWrapper, SelectQueryWrapper } from "../types/select-query.js";
+import { Store } from "../store.js";
+import { JoinWrapper, SelectQuery } from "../types/select-query.js";
 import { JoinWhereClause } from "../types/where.js";
 import { JoinedWhereEffect } from "./where-effect.js";
 
@@ -25,17 +25,19 @@ export class JoinEffect<
     B extends JoinResult,
 > {
     constructor(
-        private store: IStore<
+        private store: Store<
             TSchemaMap,
             QueryErrors,
             TaggedError,
+            TaggedError,
+            TaggedError,
             ConnectionErrors
         >,
-        private query: SelectQueryWrapper<TSchemaMap>
+        private query: SelectQuery<TSchemaMap>
     ) {}
 
     selectAll(): Effect<void, (A & B)[], QueryErrors | ConnectionErrors> {
-        return this.store.select<A, B>(this.query);
+        return this.store.getDriver().select<A, B>(this.query);
     }
 
     select<TFields extends FieldsFromJoinResults<A, B>>(
@@ -45,7 +47,7 @@ export class JoinEffect<
         ConcatJoinResultsWithFields<A, B, TFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.select<A, B, TFields>({
+        return this.store.getDriver().select<A, B, TFields>({
             ...this.query,
             select: fields,
         });
@@ -157,13 +159,15 @@ export class JoinableEffect<
     B extends JoinResult,
 > {
     constructor(
-        private store: IStore<
+        private store: Store<
             TSchemaMap,
             QueryErrors,
             TaggedError,
+            TaggedError,
+            TaggedError,
             ConnectionErrors
         >,
-        private query: SelectQueryWrapper<TSchemaMap>,
+        private query: SelectQuery<TSchemaMap>,
         private currentJoin: JoinWrapper<TSchemaMap>
     ) {}
 

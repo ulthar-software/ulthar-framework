@@ -5,7 +5,7 @@ import {
     Maybe,
     TaggedError,
 } from "@ulthar/immuty";
-import { IStore } from "../store.js";
+import { Store } from "../store.js";
 import { DocumentWithFields } from "../types/document-modifiers.js";
 import { JoinOptions, JoinableEffect } from "./join-effect.js";
 import { JoinResult } from "../types/join-result.js";
@@ -21,9 +21,11 @@ export class FromEffect<
     TSchema extends TSchemaMap[TSchemaName] = TSchemaMap[TSchemaName],
 > {
     constructor(
-        private store: IStore<
+        private store: Store<
             TSchemaMap,
             QueryErrors,
+            TaggedError,
+            TaggedError,
             TaggedError,
             ConnectionErrors
         >,
@@ -31,7 +33,7 @@ export class FromEffect<
     ) {}
 
     selectAll(): Effect<void, TSchema[], QueryErrors | ConnectionErrors> {
-        return this.store.select<TSchemaName, TSchema>({
+        return this.store.getDriver().select<TSchemaName, TSchema>({
             from: this.name,
         });
     }
@@ -43,7 +45,7 @@ export class FromEffect<
         DocumentWithFields<TSchema, TFields>[],
         QueryErrors | ConnectionErrors
     > {
-        return this.store.select<TSchemaName, TSchema, TFields>({
+        return this.store.getDriver().select<TSchemaName, TSchema, TFields>({
             from: this.name,
             select: {
                 [this.name]: fields,

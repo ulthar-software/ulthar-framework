@@ -1,8 +1,8 @@
-import { IStore } from "../store.js";
-import { use } from "../query-interface.js";
+import { IStoreDriver } from "../store-driver.js";
+import { Store } from "../store.js";
 import { PosixDate } from "@ulthar/immuty";
 
-describe("Query Effects", () => {
+describe("Insert Effects", () => {
     type User = {
         id: string;
         name: string;
@@ -23,22 +23,21 @@ describe("Query Effects", () => {
     };
 
     test("Insert values into a model collection", () => {
-        const store = {
+        const driver = {
             insert: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
-            .insertInto("users")
-            .values([
-                {
-                    id: "1",
-                    name: "John",
-                    dateOfBirth: PosixDate.now(),
-                    bff: "2",
-                },
-            ]);
+        store.insertInto("users").values([
+            {
+                id: "1",
+                name: "John",
+                dateOfBirth: PosixDate.now(),
+                bff: "2",
+            },
+        ]);
 
-        expect(store.insert).toHaveBeenCalledWith({
+        expect(driver.insert).toHaveBeenCalledWith({
             into: "users",
             values: [
                 {

@@ -1,8 +1,8 @@
-import { IStore } from "../store.js";
-import { use } from "../query-interface.js";
+import { Store } from "../store.js";
 import { PosixDate } from "@ulthar/immuty";
 import { Op } from "../operators.js";
 import { Aggregators } from "../aggregators.js";
+import { IStoreDriver } from "../store-driver.js";
 
 describe("Query Effects", () => {
     type User = {
@@ -25,25 +25,28 @@ describe("Query Effects", () => {
     };
 
     test("Select all from a model collection", () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        };
 
-        use(store).from("users").selectAll();
+        const store = new Store(driver as unknown as IStoreDriver<Model>);
 
-        expect(store.select).toHaveBeenCalledWith({
+        store.from("users").selectAll();
+
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
         });
     });
 
     test("Select some fields from a model collection", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store).from("users").select(["id", "name"]);
+        store.from("users").select(["id", "name"]);
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             select: {
                 users: ["id", "name"],
@@ -52,11 +55,12 @@ describe("Query Effects", () => {
     });
 
     test("Left join another model collection and select some fields", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .leftJoin("posts")
             .on({
@@ -68,7 +72,7 @@ describe("Query Effects", () => {
                 posts: ["id"],
             });
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -89,18 +93,19 @@ describe("Query Effects", () => {
     });
 
     test("filter by a field", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .where({
                 name: Op.Equals("John"),
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             where: [
                 {
@@ -115,11 +120,12 @@ describe("Query Effects", () => {
     });
 
     test("join and filter by a field", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .leftJoin("posts")
             .on({
@@ -133,7 +139,7 @@ describe("Query Effects", () => {
             })
             .selectAll();
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             joins: [
                 {
@@ -159,11 +165,12 @@ describe("Query Effects", () => {
     });
 
     test("group by a field", async () => {
-        const store = {
+        const driver = {
             select: jest.fn(),
-        } as unknown as IStore<Model>;
+        } as unknown as IStoreDriver<Model>;
+        const store = new Store(driver);
 
-        use(store)
+        store
             .from("users")
             .groupBy(["dateOfBirth"])
             .select([
@@ -172,12 +179,15 @@ describe("Query Effects", () => {
                 }),
             ]);
 
-        expect(store.select).toHaveBeenCalledWith({
+        expect(driver.select).toHaveBeenCalledWith({
             from: "users",
             groupBy: {
                 users: ["dateOfBirth"],
             },
             select: {
+                users: [],
+            },
+            aggregates: {
                 users: [
                     {
                         count: "id",
