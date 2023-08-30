@@ -42,7 +42,7 @@ describe("Effect Transformation", () => {
         const fn = jest.fn();
         const result = await effect.tap(fn).run({ a: 1 });
 
-        expect(fn).toHaveBeenCalledWith(result);
+        expect(fn).toHaveBeenCalledWith(1);
         expect(result).toEqual(Result.ok(1));
     });
     it("should tap the result of an effect even if the effect fails", async () => {
@@ -50,9 +50,11 @@ describe("Effect Transformation", () => {
             throw new Error("error");
         });
         const fn = jest.fn();
-        const result = await effect.tap(fn).run({ a: 1 });
+        const result = await effect.tapError(fn).run({ a: 1 });
 
-        expect(fn).toHaveBeenCalledWith(result);
+        expect(fn).toHaveBeenCalledWith(
+            wrapUnexpectedError(new Error("error"))
+        );
         expect(result).toEqual(
             Result.error(wrapUnexpectedError(new Error("error")))
         );

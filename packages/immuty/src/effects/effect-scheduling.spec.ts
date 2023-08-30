@@ -64,7 +64,7 @@ describe("Effect Scheduling", () => {
                 return deps.a;
             }
         )
-            .tap(fn)
+            .tapError(fn)
             .retry(
                 Schedule.every(TimeSpan.seconds(5), {
                     maxIterations: 2,

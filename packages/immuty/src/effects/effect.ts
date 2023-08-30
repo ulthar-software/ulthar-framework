@@ -136,7 +136,37 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
      *
      * This is useful for side-effects that don't change the result of the effect, like logging.
      */
-    tap(f: Fn<Result<A, AErr>, MaybePromise<void>>): Effect<ADeps, A, AErr> {
+    tap(f: Fn<A, MaybePromise<void>>): Effect<ADeps, A, AErr> {
+        return new Effect(async (deps) => {
+            const result = await this.f(deps);
+            if (result.isOk()) {
+                try {
+                    await f(result.unwrap());
+                } catch {
+                    // ignore
+                }
+            }
+            return result;
+        });
+    }
+
+    tapError(f: Fn<AErr, MaybePromise<void>>): Effect<ADeps, A, AErr> {
+        return new Effect(async (deps) => {
+            const result = await this.f(deps);
+            if (result.isError()) {
+                try {
+                    await f(result.unwrapError());
+                } catch {
+                    // ignore
+                }
+            }
+            return result;
+        });
+    }
+
+    tapResult(
+        f: Fn<Result<A, AErr>, MaybePromise<void>>
+    ): Effect<ADeps, A, AErr> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
             try {
