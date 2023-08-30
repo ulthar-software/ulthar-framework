@@ -1,4 +1,4 @@
-import { TaggedError, defaultErrorWrapper } from "../errors/index.js";
+import { TaggedError, wrapUnexpectedError } from "../errors/index.js";
 import { Fn, compose } from "../functions/index.js";
 import { MaybePromise } from "../index.js";
 import { MaybePromisedResult } from "./maybe-promised-result.js";
@@ -9,7 +9,7 @@ export function liftFn<A, B, AErr extends TaggedError = never>(
     onFailure?: Fn<unknown, MaybePromise<AErr>>
 ): Fn<A, MaybePromisedResult<B, AErr>> {
     const errorHandler = compose(
-        onFailure ?? (defaultErrorWrapper as Fn<unknown, AErr>),
+        onFailure ?? (wrapUnexpectedError as Fn<unknown, AErr>),
         Result.error
     );
     return (x: A) => {

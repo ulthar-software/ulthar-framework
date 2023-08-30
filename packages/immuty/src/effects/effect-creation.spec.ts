@@ -1,5 +1,4 @@
-import { createNativeErrorWrapperWith } from "../errors/create-native-error-wrapper.js";
-import { Result, createTaggedError, defaultErrorWrapper } from "../index.js";
+import { Result, TaggedError, wrapUnexpectedError } from "../index.js";
 import { Effect } from "./effect.js";
 
 describe("Effect Creation", () => {
@@ -19,21 +18,27 @@ describe("Effect Creation", () => {
         const result = await effect.run({ a: 1 }); //the type says that it should never fail, but it is an "unexpected error"
 
         expect(result).toEqual(
-            Result.error(defaultErrorWrapper(new Error("error")))
+            Result.error(wrapUnexpectedError(new Error("error")))
         );
     });
 
     it("should create an effect from a promise and handle errors with a custom error wrapper", async () => {
-        const TestError = createTaggedError("TestError");
-        const errorWrapper = createNativeErrorWrapperWith(TestError);
+        class TestError extends TaggedError<"TestError"> {
+            constructor(e: unknown) {
+                super("TestError", e as Error);
+            }
+        }
 
-        const effect = Effect.fromPromise(async (deps: { a: number }) => {
-            throw new Error("error");
-        }, errorWrapper);
+        const effect = Effect.fromPromise(
+            async (deps: { a: number }) => {
+                throw new Error("error");
+            },
+            (e) => new TestError(e)
+        );
 
         const result = await effect.run({ a: 1 });
 
-        expect(result).toEqual(Result.error(errorWrapper(new Error("error"))));
+        expect(result).toEqual(Result.error(new TestError(new Error("error"))));
     });
 
     it("should create an effect from a sync function", async () => {

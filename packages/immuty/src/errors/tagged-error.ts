@@ -1,6 +1,21 @@
 import { Variant } from "../variants/index.js";
 
-export interface TaggedError<K extends string = string> extends Variant {
-    readonly _tag: K;
+export class TaggedError<K extends string = string> implements Variant {
     readonly nativeError: Error;
+    constructor(
+        readonly _tag: K,
+        nativeErrorOrMessage?: Error | string
+    ) {
+        if (!nativeErrorOrMessage) {
+            this.nativeError = new Error();
+            return;
+        }
+
+        if (typeof nativeErrorOrMessage == "string") {
+            this.nativeError = new Error(nativeErrorOrMessage);
+            return;
+        }
+
+        this.nativeError = nativeErrorOrMessage;
+    }
 }

@@ -4,8 +4,7 @@ import {
     TaggedError,
     Time,
     TimeSpan,
-    createTaggedError,
-    defaultErrorWrapper,
+    wrapUnexpectedError,
 } from "../index.js";
 import { Schedule } from "../time/schedule.js";
 
@@ -77,14 +76,11 @@ describe("Effect Scheduling", () => {
         expect(fn).toHaveBeenCalledTimes(3);
 
         expect(result).toEqual(
-            Result.error(defaultErrorWrapper(new Error("error")))
+            Result.error(wrapUnexpectedError(new Error("error")))
         );
     });
 
     it("should only retry the effect given specific errors", async () => {
-        const TestErrorA = createTaggedError("TestErrorA");
-        const TestErrorB = createTaggedError("TestErrorB");
-
         let count = 0;
 
         const effect = Effect.fromPromise(
@@ -100,9 +96,9 @@ describe("Effect Scheduling", () => {
             },
             (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
                 if (err === "errorA") {
-                    return TestErrorA(err);
+                    return new TaggedError("TestErrorA", err);
                 } else {
-                    return TestErrorB(err as string);
+                    return new TaggedError("TestErrorB", err as string);
                 }
             }
         ).retry(
@@ -114,7 +110,9 @@ describe("Effect Scheduling", () => {
 
         const result = await effect.run({ a: 1 });
 
-        expect(result).toEqual(Result.error(TestErrorA("errorA")));
+        expect(result).toEqual(
+            Result.error(new TaggedError("TestErrorA", "errorA"))
+        );
 
         const result2 = await effect.run({ a: 2 });
 

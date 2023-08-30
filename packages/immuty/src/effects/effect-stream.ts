@@ -1,8 +1,8 @@
+import { ErrorWrapper } from "../errors/error-wrapper.js";
 import { IEventSource } from "../events/event-stream.js";
 import {
     ArrayType,
     Effect,
-    ErrorWrapper,
     Fn,
     MaybePromise,
     Result,

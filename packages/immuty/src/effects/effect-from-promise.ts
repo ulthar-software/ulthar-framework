@@ -1,5 +1,5 @@
-import { ErrorWrapper } from "../errors/create-native-error-wrapper.js";
-import { Fn, Result, TaggedError, defaultErrorWrapper } from "../index.js";
+import { ErrorWrapper } from "../errors/error-wrapper.js";
+import { Fn, Result, TaggedError, wrapUnexpectedError } from "../index.js";
 import { EffectFn } from "./effect-fn.js";
 
 export function effectFromPromise<
@@ -13,7 +13,7 @@ export function effectFromPromise<
             return Result.ok(result) as Result<A, AErr>;
         } catch (err) {
             if (!e) {
-                return Result.error(defaultErrorWrapper(err)) as Result<
+                return Result.error(wrapUnexpectedError(err)) as Result<
                     A,
                     AErr
                 >;

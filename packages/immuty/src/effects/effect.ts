@@ -11,7 +11,6 @@ import { MergeTypes } from "../types/merge-types.js";
 import { composeEffects } from "./compose-effects.js";
 import { effectFromPromise } from "./effect-from-promise.js";
 import { EffectConstructor, EffectFn, PipeableEffectFn } from "./effect-fn.js";
-import { ErrorWrapper } from "../errors/create-native-error-wrapper.js";
 import { pipeEffects } from "./pipe-effects.js";
 import {
     FullEffectErrorPatternMatcher,
@@ -24,6 +23,7 @@ import { RetryOpts, composeEffectWithRetry } from "./effect-retry.js";
 import { MaybePromise } from "../types/maybe-promise.js";
 import { EffectStream } from "./effect-stream.js";
 import { Resource } from "../resources/resource.js";
+import { ErrorWrapper } from "../errors/error-wrapper.js";
 
 /**
  * An effect is a representation of a (most-likely-asynchronous) behavior that executes

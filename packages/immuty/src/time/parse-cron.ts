@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-throw-literal */
 import { createRange } from "../collections/create-range.js";
-import { Result, createTaggedError } from "../index.js";
+import { Result, TaggedError } from "../index.js";
 
 //Cron format
 // *    *    *    *    *    *
@@ -22,8 +22,11 @@ export interface CronDefinition {
     dayOfWeek: number[] | "*";
 }
 
-export const InvalidCronError = createTaggedError("CronDefinitionError");
-export type InvalidCronError = ReturnType<typeof InvalidCronError>;
+export class InvalidCronError extends TaggedError<"CronDefinitionError"> {
+    constructor(msg: string) {
+        super("CronDefinitionError", msg);
+    }
+}
 
 export function parseCron(
     cron: string
@@ -32,7 +35,9 @@ export function parseCron(
 
     if (splitted.length < 5 || splitted.length > 6) {
         return Result.error(
-            InvalidCronError(`Expected 5 or 6 parts, got ${splitted.length}.`)
+            new InvalidCronError(
+                `Expected 5 or 6 parts, got ${splitted.length}.`
+            )
         );
     }
 
@@ -61,7 +66,7 @@ function parseCronPart(
     if (!part) {
         if (defaultValue !== undefined) return [defaultValue];
         else {
-            throw InvalidCronError(
+            throw new InvalidCronError(
                 `Expected a number or a wildcard, got empty string in "${name}".`
             );
         }
@@ -77,13 +82,13 @@ function parseCronPart(
         const parsedStep = parseInt(stepString);
 
         if (isNaN(parsedStep)) {
-            throw InvalidCronError(
+            throw new InvalidCronError(
                 `Expected a number in step part of "${name}", got ${stepString}.`
             );
         }
 
         if (parsedStep < 1 || parsedStep > max) {
-            throw InvalidCronError(
+            throw new InvalidCronError(
                 `Expected a number between 1 and ${max} in step part of "${name}", got ${parsedStep}.`
             );
         }
@@ -120,7 +125,7 @@ function parseCronNumberRangePart(
         const parsedEnd = parseCronNumberPart(end, { name, min, max });
 
         if (parsedStart > parsedEnd) {
-            throw InvalidCronError(
+            throw new InvalidCronError(
                 `Expected a number between ${min} and ${max} in "${name}", got ${parsedStart}-${parsedEnd}.`
             );
         }
@@ -135,13 +140,13 @@ function parseCronNumberPart(part: string, { name, min, max }: CronPartType) {
     const parsed = parseInt(part);
 
     if (isNaN(parsed)) {
-        throw InvalidCronError(
+        throw new InvalidCronError(
             `Expected a number or a wildcard, got "${part}" in "${name}".`
         );
     }
 
     if (parsed < min || parsed > max) {
-        throw InvalidCronError(
+        throw new InvalidCronError(
             `Expected a number between ${min} and ${max} in "${name}", got ${parsed}.`
         );
     }

@@ -1,5 +1,4 @@
-import { createNativeErrorWrapperWith } from "../errors/create-native-error-wrapper.js";
-import { Effect, Result, createTaggedError } from "../index.js";
+import { Effect, Result, TaggedError } from "../index.js";
 
 describe("Effect Examples", () => {
     it("should work for a readFile-like situation", async () => {
@@ -10,14 +9,16 @@ describe("Effect Examples", () => {
             return Promise.resolve("Some Content");
         }
 
-        const FileNotFoundError = createTaggedError("FileNotFoundError");
-        const readFileErrorWrapper =
-            createNativeErrorWrapperWith(FileNotFoundError);
+        class FileNotFoundError extends TaggedError<"FileNotFoundError"> {
+            constructor(e: unknown) {
+                super("FileNotFoundError", e as Error);
+            }
+        }
 
         function effectfullReadFile(path: string) {
             return Effect.fromPromise(
                 () => mockReadFile(path),
-                readFileErrorWrapper
+                (e) => new FileNotFoundError(e)
             );
         }
 
@@ -28,7 +29,7 @@ describe("Effect Examples", () => {
             "path_that_doesn't_exists"
         ).run();
         expect(errResult).toEqual(
-            Result.error(readFileErrorWrapper(new Error("file not found")))
+            Result.error(new FileNotFoundError(new Error("file not found")))
         );
     });
 });

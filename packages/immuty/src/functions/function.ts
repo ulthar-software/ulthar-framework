@@ -1,4 +1,6 @@
 /**
  * Represents any function in javascript.
  */
-export type SomeFunction<A = unknown> = (...args: unknown[]) => A;
+export type SomeFunction<A = unknown, Args extends unknown[] = unknown[]> = (
+    ...args: Args
+) => A;

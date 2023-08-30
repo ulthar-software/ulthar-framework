@@ -1,5 +1,3 @@
-export * from "./create-native-error-wrapper.js";
-export * from "./create-tagged-error.js";
 export * from "./error-from-tag.js";
 export * from "./error-pattern-matcher.js";
 export * from "./tag-from-error.js";

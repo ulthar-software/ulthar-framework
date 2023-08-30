@@ -1,4 +1,4 @@
-import { Result, defaultErrorWrapper } from "../index.js";
+import { Result, wrapUnexpectedError } from "../index.js";
 import { Effect } from "./effect.js";
 
 describe("Effect Transformation", () => {
@@ -54,7 +54,7 @@ describe("Effect Transformation", () => {
 
         expect(fn).toHaveBeenCalledWith(result);
         expect(result).toEqual(
-            Result.error(defaultErrorWrapper(new Error("error")))
+            Result.error(wrapUnexpectedError(new Error("error")))
         );
     });
 
@@ -80,7 +80,7 @@ describe("Effect Transformation", () => {
             .run({ a: 1 });
 
         expect(result).toEqual(
-            Result.error(defaultErrorWrapper(new Error("error")))
+            Result.error(wrapUnexpectedError(new Error("error")))
         );
     });
 

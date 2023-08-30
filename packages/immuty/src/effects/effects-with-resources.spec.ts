@@ -41,7 +41,7 @@ describe("Effects with resources", () => {
                 throw new Error("Something went wrong");
             }),
             onRelease: jest.fn(),
-            onError: () => UnexpectedError(),
+            onError: () => new UnexpectedError(new Error()),
         };
 
         const resourceWrapper = new Resource(resourceDef);
@@ -59,7 +59,7 @@ describe("Effects with resources", () => {
 
         expect(resourceDef.onAcquire).toHaveBeenCalledTimes(1);
         expect(resourceDef.onRelease).toHaveBeenCalledTimes(0); // Resource was never acquired
-        expect(result.unwrapError()).toEqual(UnexpectedError());
+        expect(result.unwrapError()).toEqual(new UnexpectedError(new Error()));
     });
 
     test("given a resource, and effect that fails, the resource is still released", async () => {

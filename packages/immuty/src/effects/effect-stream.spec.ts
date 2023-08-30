@@ -1,10 +1,4 @@
-import {
-    Effect,
-    Result,
-    Time,
-    TimeSpan,
-    defaultErrorWrapper,
-} from "../index.js";
+import { Effect, Result, Time, TimeSpan } from "../index.js";
 import { Schedule } from "../time/schedule.js";
 
 describe("Effect Stream", () => {

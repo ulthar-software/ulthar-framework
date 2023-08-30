@@ -91,7 +91,7 @@ describe("cron-parser", () => {
             const parsed = parseCron(cron);
 
             expect(parsed).toEqual(
-                Result.error(InvalidCronError(errorMessage))
+                Result.error(new InvalidCronError(errorMessage))
             );
         }
     );

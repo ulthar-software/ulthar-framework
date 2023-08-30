@@ -1,16 +1,19 @@
-import { Result, TaggedError, createTaggedError } from "../index.js";
+import { Result, TaggedError } from "../index.js";
 import { Effect } from "./effect.js";
 
+class TestErrorA extends TaggedError<"TestErrorA"> {
+    constructor(e: unknown) {
+        super("TestErrorA", e as Error);
+    }
+}
 describe("Effect Error Catching", () => {
     it("should catch some errors given a partial pattern matcher", async () => {
-        const TestErrorA = createTaggedError("TestErrorA");
-
         const effect = Effect.fromPromise(
             async (deps: { a: number }): Promise<number> => {
                 throw new Error("error");
             },
             (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
-                return TestErrorA(err as Error);
+                return new TestErrorA(err as Error);
             }
         );
 
@@ -24,14 +27,12 @@ describe("Effect Error Catching", () => {
     });
 
     it("should fail if a key in the partial matcher is defined but has no value", async () => {
-        const TestErrorA = createTaggedError("TestErrorA");
-
         const effect = Effect.fromPromise(
             async (deps: { a: number }): Promise<number> => {
                 throw new Error("error");
             },
             (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
-                return TestErrorA(err as Error);
+                return new TestErrorA(err as Error);
             }
         );
 
@@ -48,14 +49,12 @@ describe("Effect Error Catching", () => {
     });
 
     it("should catch some errors given a partial pattern matcher and return the original error if no match is found", async () => {
-        const TestErrorA = createTaggedError("TestErrorA");
-
         const effect = Effect.fromPromise(
             async (deps: { a: number }): Promise<number> => {
                 throw new Error("error");
             },
             (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
-                return TestErrorA(err as Error);
+                return new TestErrorA(err as Error);
             }
         );
 
@@ -65,18 +64,18 @@ describe("Effect Error Catching", () => {
             })
             .run({ a: 1 });
 
-        expect(result).toEqual(Result.error(TestErrorA(new Error("error"))));
+        expect(result).toEqual(
+            Result.error(new TestErrorA(new Error("error")))
+        );
     });
 
     it("should skip the catchSome if the effect is successful", async () => {
-        const TestErrorA = createTaggedError("TestErrorA");
-
         const effect = Effect.fromPromise(
             async (deps: { a: number }): Promise<number> => {
                 return deps.a;
             },
             (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
-                return TestErrorA(err as Error);
+                return new TestErrorA(err);
             }
         );
 
@@ -90,14 +89,12 @@ describe("Effect Error Catching", () => {
     });
 
     it("should catch all errors given a full pattern matcher", async () => {
-        const TestErrorA = createTaggedError("TestErrorA");
-
         const effect = Effect.fromPromise(
             async (deps: { a: number }): Promise<number> => {
                 throw new Error("error");
             },
             (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
-                return TestErrorA(err as Error);
+                return new TestErrorA(err);
             }
         );
 
@@ -112,14 +109,12 @@ describe("Effect Error Catching", () => {
     });
 
     it("should skip the catchAll if the effect is successful", async () => {
-        const TestErrorA = createTaggedError("TestErrorA");
-
         const effect = Effect.fromPromise(
             async (deps: { a: number }): Promise<number> => {
                 return deps.a;
             },
             (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
-                return TestErrorA(err as Error);
+                return new TestErrorA(err);
             }
         );
 
