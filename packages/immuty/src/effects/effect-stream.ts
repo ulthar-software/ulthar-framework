@@ -1,4 +1,3 @@
-import { ErrorWrapper } from "../errors/error-wrapper.js";
 import { IEventSource } from "../events/event-stream.js";
 import {
     ArrayType,
@@ -7,7 +6,6 @@ import {
     MaybePromise,
     Result,
     TaggedError,
-    liftFn,
 } from "../index.js";
 import { Schedule } from "../time/schedule.js";
 import { MergeTypes } from "../types/merge-types.js";
@@ -29,7 +27,7 @@ export class EffectStream<
         effect: EffectFn<ADeps, A, AErr>
     ): EffectStream<ArrayType<A>, AErr, ADeps, ArrayType<A>, AErr> {
         return new EffectStream(
-            ([, res]) => Promise.resolve(res),
+            (_, res) => Promise.resolve(res),
             listEffectToAsyncGenerator<A, ADeps, AErr>(effect)
         );
     }
@@ -39,29 +37,23 @@ export class EffectStream<
         schedule: Schedule
     ): EffectStream<void, never, BDeps, B, BErr> {
         return new EffectStream(
-            async ([deps]) => {
+            async (deps) => {
                 return await f(deps);
             },
             () => schedule
         );
     }
 
-    map<CDeps, C, CErr extends TaggedError>(
+    map<C, CErr extends TaggedError, CDeps = void>(
         g: PipeableEffectFn<CDeps, B, C, CErr>
     ): EffectStream<A, AErr, MergeTypes<BDeps, CDeps>, C, BErr | CErr> {
-        return new EffectStream<
-            A,
-            AErr,
-            MergeTypes<BDeps, CDeps>,
-            C,
-            BErr | CErr
-        >(
-            async ([deps, result]) => {
-                const fResult = await this.f([deps as BDeps, result]);
+        return new EffectStream(
+            async (deps, result) => {
+                const fResult = await this.f(deps as BDeps, result);
                 if (fResult.isError()) {
                     return fResult as Result<C, BErr | CErr>;
                 }
-                return await g([fResult.unwrap(), deps as CDeps]);
+                return await g(fResult.unwrap(), deps as CDeps);
             },
             this.evtSource as (
                 deps: MergeTypes<BDeps, CDeps>
@@ -70,20 +62,13 @@ export class EffectStream<
     }
 
     tap(
-        g: Fn<Result<B, AErr | BErr>, MaybePromise<void>>
+        g: Fn<[Result<B, AErr | BErr>], MaybePromise<void>>
     ): EffectStream<A, AErr, BDeps, B, BErr> {
-        return new EffectStream(async ([deps, value]) => {
-            const result = await this.f([deps, value]);
+        return new EffectStream(async (deps, value) => {
+            const result = await this.f(deps, value);
             await g(result);
             return result;
         }, this.evtSource);
-    }
-
-    mapSync<C, CDeps = void, CErr extends TaggedError = never>(
-        g: Fn<[B, CDeps], C>,
-        e?: ErrorWrapper<CErr>
-    ): EffectStream<A, AErr, MergeTypes<BDeps, CDeps>, C, BErr | CErr> {
-        return this.map(liftFn((x) => Promise.resolve(g(x)), e));
     }
 
     collectAll(): Effect<BDeps, B[], AErr | BErr> {
@@ -118,7 +103,7 @@ export class EffectStream<
 
     async run(deps: BDeps): Promise<void> {
         for await (const result of this.evtSource(deps)) {
-            await this.f([deps, result]);
+            await this.f(deps, result);
         }
     }
 }

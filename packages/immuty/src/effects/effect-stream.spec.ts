@@ -5,15 +5,17 @@ describe("Effect Stream", () => {
     beforeAll(() => {
         Time.useFakeTime();
     });
+
     afterAll(() => {
         Time.useRealTime();
     });
+
     it("should map the stream values into another effect", async () => {
         //create a stream from an effect
-        const stream = Effect.fromPromise(
-            async (deps: { a: number }): Promise<number> => {
+        const stream = Effect.from(
+            Result.wrap((deps: { a: number }) => {
                 return deps.a;
-            }
+            })
         ).schedule(
             Schedule.every(TimeSpan.seconds(5), {
                 maxIterations: 3,
@@ -23,7 +25,7 @@ describe("Effect Stream", () => {
         const fn = jest.fn();
         //map the stream values into another effect
         const mappedStream = stream.map(
-            async ([other, deps]: [number, { b: number }]) => {
+            async (other: number, deps: { b: number }) => {
                 const result = Result.ok(other + deps.b + 1);
                 fn(result);
                 return result;
@@ -40,10 +42,10 @@ describe("Effect Stream", () => {
     });
 
     it("should return the failed result when mapping over a failed effect", async () => {
-        const effect = Effect.fromPromise(
-            async (deps: { a: number }): Promise<number> => {
+        const effect = Effect.from(
+            Result.wrap((deps: { a: number }) => {
                 throw new Error("error");
-            }
+            })
         ).schedule(
             Schedule.every(TimeSpan.seconds(5), {
                 maxIterations: 3,
@@ -53,7 +55,7 @@ describe("Effect Stream", () => {
         const successFn = jest.fn();
 
         const mappedStream = effect.map(
-            async ([other, deps]: [number, { b: number }]) => {
+            async (other: number, deps: { b: number }) => {
                 const result = Result.ok(other + deps.b + 1);
                 successFn(result);
                 return result;

@@ -1,4 +1,4 @@
-import { Fn, Result, TaggedError } from "../index.js";
+import { Fn, MaybePromise, Result, TaggedError } from "../index.js";
 import { Effect } from "./effect.js";
 
 /**
@@ -6,8 +6,8 @@ import { Effect } from "./effect.js";
  * and returns a promise of a result.
  */
 export type EffectFn<Deps, A, Err extends TaggedError> = Fn<
-    Deps,
-    Promise<Result<A, Err>>
+    [Deps],
+    MaybePromise<Result<A, Err>>
 >;
 
 /**
@@ -16,13 +16,13 @@ export type EffectFn<Deps, A, Err extends TaggedError> = Fn<
  */
 export type PipeableEffectFn<Deps, A, B, Err extends TaggedError> = Fn<
     [A, Deps],
-    Promise<Result<B, Err>>
+    MaybePromise<Result<B, Err>>
 >;
 
 /**
  * An effect constructor is a function that receives a value and returns an effect.
  */
 export type EffectConstructor<A, B, Deps, Err extends TaggedError> = Fn<
-    A,
+    [A],
     Effect<Deps, B, Err>
 >;

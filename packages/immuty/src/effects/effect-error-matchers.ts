@@ -25,7 +25,7 @@ export type FullEffectErrorPatternMatcher<
     AErr extends TaggedError,
     A,
 > = {
-    [K in AErr["_tag"]]: (e: [ErrorFromTag<AErr, K>, ADeps]) => Promise<A>;
+    [K in AErr["_tag"]]: (e: ErrorFromTag<AErr, K>, deps: ADeps) => Promise<A>;
 };
 
 export type PartialEffectErrorPatternMatcher<
@@ -70,7 +70,7 @@ export async function effectErrorPartialMatch<
                 [EType, ADeps],
                 Promise<A>
             >; //we know it's defined because of the loop
-            return fn([e as EType, deps]);
+            return fn(e as EType, deps);
         };
     }
     const v = partialMatch(result.unwrapError(), resultMatcher) as Maybe<

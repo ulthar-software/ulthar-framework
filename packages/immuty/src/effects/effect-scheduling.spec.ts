@@ -8,6 +8,18 @@ import {
 } from "../index.js";
 import { Schedule } from "../time/schedule.js";
 
+class TaggedErrorA extends TaggedError<"TestErrorA"> {
+    constructor(e: unknown) {
+        super("TestErrorA", e as Error);
+    }
+}
+
+class TaggedErrorB extends TaggedError<"TestErrorB"> {
+    constructor(e: unknown) {
+        super("TestErrorB", e as Error);
+    }
+}
+
 describe("Effect Scheduling", () => {
     beforeAll(() => {
         Time.useFakeTime();
@@ -17,11 +29,9 @@ describe("Effect Scheduling", () => {
     });
 
     it("should delay the execution of the effect", async () => {
-        const effect = Effect.fromPromise(
-            async (deps: { a: number }): Promise<number> => {
-                return deps.a;
-            }
-        );
+        const effect = Effect.from(async (deps: { a: number }) => {
+            return Result.ok(deps.a);
+        });
 
         const start = Time.now();
         const result = await effect.delayedRun(TimeSpan.seconds(5), { a: 1 });
@@ -33,15 +43,13 @@ describe("Effect Scheduling", () => {
 
     it("should retry the execution of the effect", async () => {
         let count = 0;
-        const effect = Effect.fromPromise(
-            async (deps: { a: number }): Promise<number> => {
-                if (count < 3) {
-                    count++;
-                    throw new Error("error");
-                }
-                return deps.a;
+        const effect = Effect.from(async (deps: { a: number }) => {
+            if (count < 3) {
+                count++;
+                return Result.error(wrapUnexpectedError(new Error("error")));
             }
-        ).retry(
+            return Result.ok(deps.a);
+        }).retry(
             Schedule.every(TimeSpan.seconds(5), {
                 maxIterations: 3,
             })
@@ -55,15 +63,13 @@ describe("Effect Scheduling", () => {
     it("should retry the execution of the effect but fail if the schedule ends before an Ok result", async () => {
         const fn = jest.fn();
         let count = 0;
-        const effect = Effect.fromPromise(
-            async (deps: { a: number }): Promise<number> => {
-                if (count < 3) {
-                    count++;
-                    throw new Error("error");
-                }
-                return deps.a;
+        const effect = Effect.from(async (deps: { a: number }) => {
+            if (count < 3) {
+                count++;
+                return Result.error(wrapUnexpectedError(new Error("error")));
             }
-        )
+            return Result.ok(deps.a);
+        })
             .tapError(fn)
             .retry(
                 Schedule.every(TimeSpan.seconds(5), {
@@ -83,24 +89,17 @@ describe("Effect Scheduling", () => {
     it("should only retry the effect given specific errors", async () => {
         let count = 0;
 
-        const effect = Effect.fromPromise(
-            async ({ a }: { a: number }): Promise<number> => {
+        const effect = Effect.from(
+            Result.wrap(({ a }: { a: number }) => {
                 if (a === 1) {
-                    throw "errorA";
+                    return new TaggedErrorA("errorA");
                 }
                 if (a === 2 && count < 2) {
                     count++;
-                    throw "errorB";
+                    return new TaggedErrorB("errorB");
                 }
                 return a;
-            },
-            (err): TaggedError<"TestErrorA"> | TaggedError<"TestErrorB"> => {
-                if (err === "errorA") {
-                    return new TaggedError("TestErrorA", err);
-                } else {
-                    return new TaggedError("TestErrorB", err as string);
-                }
-            }
+            })
         ).retry(
             Schedule.every(TimeSpan.seconds(5), {
                 maxIterations: 3,
@@ -110,9 +109,7 @@ describe("Effect Scheduling", () => {
 
         const result = await effect.run({ a: 1 });
 
-        expect(result).toEqual(
-            Result.error(new TaggedError("TestErrorA", "errorA"))
-        );
+        expect(result).toEqual(Result.error(new TaggedErrorA("errorA")));
 
         const result2 = await effect.run({ a: 2 });
 
@@ -120,10 +117,10 @@ describe("Effect Scheduling", () => {
     });
 
     it("should skip a retry if the result is Ok", async () => {
-        const effect = Effect.fromPromise(
-            async (deps: { a: number }): Promise<number> => {
+        const effect = Effect.from(
+            Result.wrap((deps: { a: number }) => {
                 return deps.a;
-            }
+            })
         ).retry(
             Schedule.every(TimeSpan.seconds(5), {
                 maxIterations: 3,
@@ -137,10 +134,10 @@ describe("Effect Scheduling", () => {
 
     it("should create an Effect stream from a schedule", async () => {
         const fn = jest.fn();
-        const effect = Effect.fromPromise(
-            async (deps: { a: number }): Promise<number> => {
+        const effect = Effect.from(
+            Result.wrap((deps: { a: number }) => {
                 return fn(deps.a);
-            }
+            })
         );
 
         const stream = effect.schedule(

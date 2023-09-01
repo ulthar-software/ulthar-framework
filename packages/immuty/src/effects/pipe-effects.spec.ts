@@ -9,8 +9,8 @@ describe("Pipe Effects", () => {
                 return Result.ok(deps.a);
             },
             (a) => {
-                return Effect.fromPromise(async (deps: { b: number }) => {
-                    return a + deps.b;
+                return Effect.from((deps: { b: number }) => {
+                    return Result.ok(a + deps.b);
                 });
             }
         );

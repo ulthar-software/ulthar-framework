@@ -3,9 +3,9 @@ import { EventStream } from "./event-stream.js";
 
 describe("Event Source", () => {
     class DummyEventTarget<T> {
-        private listeners = new Set<Fn<T, MaybePromise<void>>>();
+        private listeners = new Set<Fn<[T], MaybePromise<void>>>();
 
-        addEventListener(callback: Fn<T, MaybePromise<void>>): void {
+        addEventListener(callback: Fn<[T], MaybePromise<void>>): void {
             if (callback) {
                 this.listeners.add(callback);
             }
@@ -16,7 +16,7 @@ describe("Event Source", () => {
             });
             return true;
         }
-        removeEventListener(callback: Fn<T, MaybePromise<void>>): void {
+        removeEventListener(callback: Fn<[T], MaybePromise<void>>): void {
             this.listeners.delete(callback);
         }
     }

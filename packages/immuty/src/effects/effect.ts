@@ -5,11 +5,9 @@ import {
     Result,
     TaggedError,
     TimeSpan,
-    liftFn,
 } from "../index.js";
 import { MergeTypes } from "../types/merge-types.js";
 import { composeEffects } from "./compose-effects.js";
-import { effectFromPromise } from "./effect-from-promise.js";
 import { EffectConstructor, EffectFn, PipeableEffectFn } from "./effect-fn.js";
 import { pipeEffects } from "./pipe-effects.js";
 import {
@@ -23,7 +21,6 @@ import { RetryOpts, composeEffectWithRetry } from "./effect-retry.js";
 import { MaybePromise } from "../types/maybe-promise.js";
 import { EffectStream } from "./effect-stream.js";
 import { Resource } from "../resources/resource.js";
-import { ErrorWrapper } from "../errors/error-wrapper.js";
 
 /**
  * An effect is a representation of a (most-likely-asynchronous) behavior that executes
@@ -42,44 +39,10 @@ import { ErrorWrapper } from "../errors/error-wrapper.js";
 export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     private constructor(private readonly f: EffectFn<ADeps, A, AErr>) {}
 
-    /**
-     * Creates a new effect from a function that returns a promise.
-     */
-    static fromPromise<
-        ADeps = void,
-        A = void,
-        AErr extends TaggedError = never,
-    >(
-        f: Fn<ADeps, Promise<A>>,
-        e?: ErrorWrapper<AErr>
-    ): Effect<ADeps, A, AErr> {
-        return new Effect(effectFromPromise(f, e));
-    }
-
     static from<ADeps = void, A = void, AErr extends TaggedError = never>(
         f: EffectFn<ADeps, A, AErr>
     ): Effect<ADeps, A, AErr> {
         return new Effect(f);
-    }
-
-    /**
-     * Creates a new effect from a function that returns a value.
-     */
-    static fromSync<ADeps = void, A = void, AErr extends TaggedError = never>(
-        f: Fn<ADeps, A>,
-        e?: ErrorWrapper<AErr>
-    ): Effect<ADeps, A, AErr> {
-        return new Effect(
-            effectFromPromise((deps) => Promise.resolve(f(deps)), e)
-        ) as Effect<ADeps, A, AErr>;
-    }
-
-    static fromSyncResult<
-        ADeps = void,
-        A = void,
-        AErr extends TaggedError = never,
-    >(f: Fn<ADeps, Result<A, AErr>>): Effect<ADeps, A, AErr> {
-        return new Effect((deps) => Promise.resolve(f(deps)));
     }
 
     /**
@@ -90,34 +53,6 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         g: PipeableEffectFn<BDeps, A, B, BErr>
     ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
         return new Effect(composeEffects(this.f, g));
-    }
-
-    /**
-     * Creates a new effect that first runs this effect and then pipes its result into the given function.
-     * The given function gets lifted to return a Result type.
-     *
-     * @param g The function for the new effect, it must return a promise.
-     * @param e The error wrapper to handle any errors in the promise. If not provided, the effect
-     * infers that it cannot fail for a known reason. In that case, if the promise rejects, the effect
-     * will fail with the default UnexpectedError.
-     */
-    mapPromise<B, BDeps = void, BErr extends TaggedError = never>(
-        g: Fn<[A, BDeps], Promise<B>>,
-        e?: ErrorWrapper<BErr>
-    ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
-        return new Effect(composeEffects(this.f, liftFn(g, e)));
-    }
-
-    mapSync<B, BDeps = void, BErr extends TaggedError = never>(
-        g: Fn<[A, BDeps], B>,
-        e?: ErrorWrapper<BErr>
-    ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
-        return new Effect(
-            composeEffects(
-                this.f,
-                liftFn((x) => Promise.resolve(g(x)), e)
-            )
-        );
     }
 
     /**
@@ -136,7 +71,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
      *
      * This is useful for side-effects that don't change the result of the effect, like logging.
      */
-    tap(f: Fn<A, MaybePromise<void>>): Effect<ADeps, A, AErr> {
+    tap(f: Fn<[A], MaybePromise<void>>): Effect<ADeps, A, AErr> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
             if (result.isOk()) {
@@ -150,7 +85,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         });
     }
 
-    tapError(f: Fn<AErr, MaybePromise<void>>): Effect<ADeps, A, AErr> {
+    tapError(f: Fn<[AErr], MaybePromise<void>>): Effect<ADeps, A, AErr> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
             if (result.isError()) {
@@ -165,7 +100,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     }
 
     tapResult(
-        f: Fn<Result<A, AErr>, MaybePromise<void>>
+        f: Fn<[Result<A, AErr>], MaybePromise<void>>
     ): Effect<ADeps, A, AErr> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
@@ -269,8 +204,8 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
     /**
      * Asynchronously executes the effect.
      */
-    run(deps: ADeps): Promise<Result<A, AErr>> {
-        return this.f(deps);
+    async run(deps: ADeps): Promise<Result<A, AErr>> {
+        return await this.f(deps);
     }
 
     async delayedRun(delay: TimeSpan, deps: ADeps): Promise<Result<A, AErr>> {

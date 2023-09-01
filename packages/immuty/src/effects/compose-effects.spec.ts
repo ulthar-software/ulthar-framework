@@ -7,7 +7,7 @@ describe("Compose Effects", () => {
             async (deps: { a: number }) => {
                 return Result.ok(deps.a);
             },
-            async ([a, deps]: [number, { b: number }]) => {
+            async (a: number, deps: { b: number }) => {
                 return Result.ok(a + deps.b);
             }
         );

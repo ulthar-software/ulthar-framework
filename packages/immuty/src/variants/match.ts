@@ -33,7 +33,7 @@ export function partialMatch<
     PM extends PartialPatternMatcher<A, B>,
 >(value: A, cases: PM): B | undefined {
     type EType = TypeFromTag<A, A["_tag"]>;
-    const fn = cases[value._tag as keyof PM] as Fn<EType, B> | undefined;
+    const fn = cases[value._tag as keyof PM] as Fn<[EType], B> | undefined;
     if (fn !== undefined) {
         return fn(value as EType);
     }

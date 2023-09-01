@@ -10,9 +10,9 @@ export class EventStreamSubject<A, AErr extends TaggedError>
     private _current: Maybe<Result<A, AErr>>;
     private done = false;
 
-    private _listeners = new Set<Fn<Result<A, AErr>, MaybePromise<void>>>();
+    private _listeners = new Set<Fn<[Result<A, AErr>], MaybePromise<void>>>();
 
-    private _onClose = new Set<Fn<void, MaybePromise<void>>>();
+    private _onClose = new Set<Fn<[void], MaybePromise<void>>>();
 
     constructor(initial?: Result<A, AErr>) {
         this._current = initial;
@@ -57,7 +57,7 @@ export class EventStreamSubject<A, AErr extends TaggedError>
         return () => this._listeners.delete(subscriber);
     }
 
-    onClose(closeCallback: Fn<void, MaybePromise<void>>) {
+    onClose(closeCallback: Fn<[void], MaybePromise<void>>) {
         this._onClose.add(closeCallback);
     }
 

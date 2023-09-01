@@ -21,6 +21,6 @@ export function composeEffects<
 ): EffectFn<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
     return async (deps) => {
         const result = await f(deps as ADeps);
-        return result.asyncFlatMap((a) => g([a, deps as BDeps]));
+        return result.asyncFlatMap(async (a) => g(a, deps as BDeps));
     };
 }

@@ -5,7 +5,6 @@ import {
     MergeTypes,
     Result,
     TaggedError,
-    liftFn,
 } from "../index.js";
 
 export class Resource<
@@ -20,7 +19,7 @@ export class Resource<
             AcquireErrorType
         >
     ) {
-        this.acquire = liftFn(opts.onAcquire, opts.onError);
+        this.acquire = opts.onAcquire;
         this.release = opts.onRelease;
     }
     acquire: (
@@ -54,7 +53,8 @@ export interface ResourceOptions<
     AcquireDependencyType = void,
     AcquireErrorType extends TaggedError = never,
 > {
-    onAcquire(deps: AcquireDependencyType): Promise<ResourceType>;
+    onAcquire(
+        deps: AcquireDependencyType
+    ): Promise<Result<ResourceType, AcquireErrorType>>;
     onRelease(): MaybePromise<void>;
-    onError?(error: unknown): MaybePromise<AcquireErrorType>;
 }

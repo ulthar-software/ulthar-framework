@@ -3,8 +3,8 @@ import { Effect } from "./effect.js";
 
 describe("Effect Creation", () => {
     it("should create an effect from a promise", async () => {
-        const effect = Effect.fromPromise(async (deps: { a: number }) => {
-            return deps.a;
+        const effect = Effect.from(async (deps: { a: number }) => {
+            return Result.ok(deps.a);
         });
         const result = await effect.run({ a: 1 });
 
@@ -12,9 +12,11 @@ describe("Effect Creation", () => {
     });
 
     it("should create an effect from a promise and handle errors by default", async () => {
-        const effect = Effect.fromPromise(async (deps: { a: number }) => {
-            throw new Error("error");
-        });
+        const effect = Effect.from(
+            Result.wrap(async (deps: { a: number }) => {
+                throw new Error("error");
+            })
+        );
         const result = await effect.run({ a: 1 }); //the type says that it should never fail, but it is an "unexpected error"
 
         expect(result).toEqual(
@@ -29,12 +31,9 @@ describe("Effect Creation", () => {
             }
         }
 
-        const effect = Effect.fromPromise(
-            async (deps: { a: number }) => {
-                throw new Error("error");
-            },
-            (e) => new TestError(e)
-        );
+        const effect = Effect.from(async (deps: { a: number }) => {
+            return Result.error(new TestError("error"));
+        });
 
         const result = await effect.run({ a: 1 });
 
@@ -42,8 +41,8 @@ describe("Effect Creation", () => {
     });
 
     it("should create an effect from a sync function", async () => {
-        const effect = Effect.fromSync((deps: { a: number }) => {
-            return deps.a;
+        const effect = Effect.from((deps: { a: number }) => {
+            return Result.ok(deps.a);
         });
         const result = await effect.run({ a: 1 });
 

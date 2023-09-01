@@ -8,7 +8,7 @@ import { Variant } from "./variant.js";
  */
 export type PatternMatcher<A extends Variant, B> =
     | {
-          [K in A["_tag"]]: Fn<TypeFromTag<A, K>, B>;
+          [K in A["_tag"]]: Fn<[TypeFromTag<A, K>], B>;
       }
     | DefaultPatternMatcher<A, B>
     | (PartialPatternMatcher<A, B> & DefaultPatternMatcher<A, B>);
@@ -18,5 +18,5 @@ export type DefaultPatternMatcher<A extends Variant, B> = {
 };
 
 export type PartialPatternMatcher<A extends Variant, B> = {
-    [K in A["_tag"]]?: Fn<TypeFromTag<A, K>, B>;
+    [K in A["_tag"]]?: Fn<[TypeFromTag<A, K>], B>;
 };

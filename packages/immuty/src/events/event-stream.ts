@@ -27,8 +27,8 @@ export interface IEventStreamSubject<A, AErr extends TaggedError>
 }
 
 export interface FromOptions<A, AErr extends TaggedError> {
-    emit: Fn<Result<A, AErr>, void>;
-    onClose: Fn<HandlerFn<void>, void>;
+    emit: Fn<[Result<A, AErr>], void>;
+    onClose: Fn<[HandlerFn<void>], void>;
 }
 
 export namespace EventStream {
