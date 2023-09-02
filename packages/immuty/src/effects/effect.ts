@@ -49,7 +49,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
      * Creates a new effect that first runs this effect and then pipes its result into the given effect.
      * @param g The effect to pipe the result of this effect into. It must return a Result type.
      */
-    map<BDeps, B, BErr extends TaggedError>(
+    map<B, BErr extends TaggedError, BDeps = void>(
         g: PipeableEffectFn<BDeps, A, B, BErr>
     ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
         return new Effect(composeEffects(this.f, g));
@@ -59,10 +59,21 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
      * Creates a new effect that first runs this effect and then pipes its result into the given effect.
      * @param g The effect constructor to call that must return an Effect.
      */
-    flatMap<BDeps, B, BErr extends TaggedError>(
+    flatMap<B, BErr extends TaggedError, BDeps = void>(
         g: EffectConstructor<A, B, BDeps, BErr>
     ): Effect<MergeTypes<ADeps, BDeps>, B, AErr | BErr> {
         return new Effect(pipeEffects(this.f, g));
+    }
+
+    include<B, BErr extends TaggedError, BDeps = void>(
+        g: PipeableEffectFn<BDeps, A, B, BErr>
+    ): Effect<MergeTypes<ADeps, BDeps>, A & B, AErr | BErr> {
+        return new Effect(
+            composeEffects(this.f, async (a: A, deps: BDeps) => {
+                const result = await g(a, deps);
+                return result.map((r) => ({ ...a, ...r }));
+            })
+        );
     }
 
     /**

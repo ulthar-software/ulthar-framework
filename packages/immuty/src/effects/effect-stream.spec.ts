@@ -43,7 +43,7 @@ describe("Effect Stream", () => {
 
     it("should return the failed result when mapping over a failed effect", async () => {
         const effect = Effect.from(
-            Result.wrap((deps: { a: number }) => {
+            Result.wrap((deps: { a: number }): number => {
                 throw new Error("error");
             })
         ).schedule(

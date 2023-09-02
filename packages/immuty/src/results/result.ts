@@ -2,6 +2,7 @@ import { TaggedError, wrapUnexpectedError } from "../errors/index.js";
 import { isTaggedError } from "../errors/is-tagged-error.js";
 import { Fn, MaybePromise } from "../index.js";
 import { ErrorResult } from "./error-result.js";
+import { isResult } from "./is-result.js";
 import { OkResult } from "./ok-result.js";
 
 /**
@@ -33,47 +34,56 @@ export namespace Result {
         return new OkResult(value);
     }
 
-    //TODO: Make this wrapper so if it wraps a function that returns a Result,
-    // it will flatten it out
-    export function wrap<TResult, TArgs extends unknown[]>(
-        fn: Fn<TArgs, MaybePromise<TResult>>
-    ): Fn<
-        TArgs,
-        MaybePromise<
-            Result<Exclude<TResult, TaggedError>, Extract<TResult, TaggedError>>
-        >
-    > {
+    export function wrap<
+        TResult extends MaybePromise<unknown>,
+        TArgs extends unknown[],
+        WrappedResult = Result<
+            Exclude<Awaited<TResult>, TaggedError>,
+            Extract<Awaited<TResult>, TaggedError>
+        >,
+    >(
+        fn: Fn<TArgs, TResult>
+    ): Fn<TArgs, DetectedPromise<TResult, WrappedResult>> {
         return (...args: TArgs) => {
             try {
                 const result = fn(...args);
+                if (isResult(result)) {
+                    return result as DetectedPromise<TResult, WrappedResult>;
+                }
                 if (result instanceof Promise) {
                     return result
                         .then((r) => {
-                            if (isTaggedError(r)) {
-                                return Result.error(
-                                    r as Extract<TResult, TaggedError>
-                                );
+                            if (isResult(r)) {
+                                return r;
                             }
-                            return Result.ok(
-                                r as Exclude<TResult, TaggedError>
-                            );
+                            if (isTaggedError(r)) {
+                                return Result.error(r);
+                            }
+                            return Result.ok(r);
                         })
                         .catch((e) =>
                             Result.error(wrapUnexpectedError(e) as never)
-                        );
+                        ) as DetectedPromise<TResult, WrappedResult>;
                 }
                 if (isTaggedError(result)) {
-                    return Result.error(
-                        result as Extract<TResult, TaggedError>
-                    );
+                    return Result.error(result) as DetectedPromise<
+                        TResult,
+                        WrappedResult
+                    >;
                 }
-                return Result.ok(result as Exclude<TResult, TaggedError>);
+                return Result.ok(result) as DetectedPromise<
+                    TResult,
+                    WrappedResult
+                >;
             } catch (error) {
-                if (isTaggedError(error)) {
-                    return Result.error(error as Extract<TResult, TaggedError>);
-                }
-                return Result.error(wrapUnexpectedError(error) as never);
+                return Result.error(
+                    wrapUnexpectedError(error) as never
+                ) as DetectedPromise<TResult, WrappedResult>;
             }
         };
     }
 }
+
+type DetectedPromise<MaybePromise, T> = MaybePromise extends Promise<unknown>
+    ? Promise<T>
+    : T;
