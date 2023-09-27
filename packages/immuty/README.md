@@ -10,9 +10,9 @@ In functional programming we want to avoid side effects as much as possible, but
 
 What if our side effects were actually immutable objects that we could pass around, compose with each other, execute, retry, repeat, schedule, cancel, and even fork to run in parallel? This is the core idea of `immuty`, inspired by libraries like `zio` in Scala
 
-So, `immuty` is a library that allows you to declare your effects, the things that make your program useful, in a type-safe way and then run them in a controlled environment.
+So, `immuty` is a library that allows you to declare your effects -the things that make your program useful- in a type-safe way and then run them in a controlled environment.
 
-Technically, an `Effect` is a wrapper around an async function that runs requiring certain dependencies of type `ADeps`, returns a value of type `A` and could possibly fail with an error of type `AErr`.
+'Technically', an `Effect` is an object wrapper around an async function that could run requiring certain dependencies of type `TDependencies`, return a value of type `TValue` and could possibly fail with an error of type `TError`.
 
 But let's see some code first:
 
