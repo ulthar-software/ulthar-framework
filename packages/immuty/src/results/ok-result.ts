@@ -1,19 +1,22 @@
 import { TaggedError } from "../errors/tagged-error.js";
 import { Fn } from "../functions/unary.js";
+import { ErrorResult } from "../index.js";
 import { IResult, ResultFoldParams } from "./result-interface.js";
 import { Result } from "./result.js";
 
 /**
  * Represents a Successful Result.
  */
-export class OkResult<A> implements IResult<A, never> {
+export class OkResult<A, AErr extends TaggedError = never>
+    implements IResult<A, AErr>
+{
     constructor(private readonly value: A) {}
 
     /**
      * Determine if this Result is a success.
      * Always returns true
      */
-    isOk(): this is OkResult<A> {
+    isOk(): this is OkResult<A, AErr> {
         return true;
     }
 
@@ -21,7 +24,7 @@ export class OkResult<A> implements IResult<A, never> {
      * Determine if this Result is an error.
      * Always returns false
      */
-    isError(): this is never {
+    isError(): this is ErrorResult<A, AErr> {
         return false;
     }
 
@@ -45,7 +48,7 @@ export class OkResult<A> implements IResult<A, never> {
      * Maps the value of the Result into a new value.
      * The mapping function must return a Promise of a value
      */
-    async asyncMap<B>(fn: Fn<[A], Promise<B>>): Promise<Result<B, never>> {
+    async asyncMap<B>(fn: Fn<[A], Promise<B>>): Promise<Result<B, AErr>> {
         return Result.ok(await fn(this.value));
     }
 
@@ -55,8 +58,8 @@ export class OkResult<A> implements IResult<A, never> {
      */
     flatMap<B, Be extends TaggedError>(
         f: Fn<[A], Result<B, Be>>
-    ): Result<B, Be> {
-        return f(this.value);
+    ): Result<B, AErr | Be> {
+        return f(this.value) as Result<B, AErr | Be>;
     }
 
     /**
@@ -65,8 +68,8 @@ export class OkResult<A> implements IResult<A, never> {
      */
     async asyncFlatMap<B, Be extends TaggedError>(
         f: Fn<[A], Promise<Result<B, Be>>>
-    ): Promise<Result<B, Be>> {
-        return f(this.value);
+    ): Promise<Result<B, AErr | Be>> {
+        return f(this.value) as Promise<Result<B, AErr | Be>>;
     }
 
     fold<B>({ onSuccess }: ResultFoldParams<A, B, never>): OkResult<B> {
@@ -79,11 +82,11 @@ export class OkResult<A> implements IResult<A, never> {
         return Result.ok(await onSuccess(this.unwrap()));
     }
 
-    catchAll(): Result<A, never> {
-        return this;
+    catchSome(): Result<A, never> {
+        return this as unknown as Result<A, never>;
     }
 
-    catchSome(): Result<A, never> {
-        return this;
+    catchAll(): Result<A, never> {
+        return this as unknown as Result<A, never>;
     }
 }

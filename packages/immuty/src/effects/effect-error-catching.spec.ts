@@ -23,7 +23,7 @@ describe("Effect Error Catching", () => {
 
         const result = await effect
             .catchSome({
-                TestErrorA: async (error) => 1,
+                TestErrorA: async (error) => Result.ok(1),
             })
             .run({ a: 1 });
 
@@ -43,7 +43,7 @@ describe("Effect Error Catching", () => {
                 return Result.error(new TestErrorA(new Error("error")));
             }
         ).catchSome({
-            TestErrorA: async (error) => 1,
+            TestErrorA: async (error) => Result.ok(1),
             TestErrorB: undefined,
         });
 
@@ -66,7 +66,7 @@ describe("Effect Error Catching", () => {
 
         const result = await effect
             .catchSome({
-                TestErrorB: async (error) => 1,
+                TestErrorB: async (error) => Result.ok(1),
             })
             .run({ a: 1 });
 
@@ -89,7 +89,7 @@ describe("Effect Error Catching", () => {
 
         const result = await effect
             .catchSome({
-                TestErrorB: async (error) => 1,
+                TestErrorB: async (error) => Result.ok(1),
             })
             .run({ a: 5 });
 
@@ -110,8 +110,8 @@ describe("Effect Error Catching", () => {
 
         const result = await effect
             .catchAll({
-                TestErrorA: async (error) => 1,
-                TestErrorB: async (error) => 2,
+                TestErrorA: async (error) => Result.ok(1),
+                TestErrorB: async (error) => Result.ok(2),
             })
             .run({ a: 5 });
 
@@ -132,8 +132,8 @@ describe("Effect Error Catching", () => {
 
         const result = await effect
             .catchAll({
-                TestErrorA: async (error) => 1,
-                TestErrorB: async (error) => 2,
+                TestErrorA: async (error) => Result.ok(1),
+                TestErrorB: async (error) => Result.ok(1),
             })
             .run({ a: 5 });
 

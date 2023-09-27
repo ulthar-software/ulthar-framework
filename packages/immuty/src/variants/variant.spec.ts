@@ -1,3 +1,4 @@
+import { Result } from "../index.js";
 import { fullMatch } from "./match.js";
 import { Variant } from "./variant.js";
 
@@ -20,8 +21,8 @@ describe("Variant", () => {
         type FooBar = Foo | Bar | Fez;
 
         const matcher = {
-            Foo: (foo: Foo): string => foo.foo,
-            "*": (): number => 5,
+            Foo: Result.wrap((foo: Foo) => foo.foo),
+            "*": Result.wrap(() => "bar or fez"),
         };
 
         expect(
@@ -32,7 +33,7 @@ describe("Variant", () => {
                 } as FooBar,
                 matcher
             )
-        ).toBe("foo");
+        ).toEqual(Result.ok("foo"));
         expect(
             fullMatch(
                 {
@@ -41,6 +42,6 @@ describe("Variant", () => {
                 } as FooBar,
                 matcher
             )
-        ).toBe(5);
+        ).toEqual(Result.ok("bar or fez"));
     });
 });

@@ -53,7 +53,10 @@ export class EffectStream<
                 if (fResult.isError()) {
                     return fResult as Result<C, BErr | CErr>;
                 }
-                return await g(fResult.unwrap(), deps as CDeps);
+                return (await g(fResult.unwrap(), deps as CDeps)) as Result<
+                    C,
+                    BErr | CErr
+                >;
             },
             this.evtSource as (
                 deps: MergeTypes<BDeps, CDeps>
@@ -66,7 +69,7 @@ export class EffectStream<
     ): EffectStream<A, AErr, BDeps, B, BErr> {
         return new EffectStream(async (deps, value) => {
             const result = await this.f(deps, value);
-            await g(result);
+            await g(result as Result<B, AErr | BErr>);
             return result;
         }, this.evtSource);
     }

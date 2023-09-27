@@ -1,6 +1,5 @@
-import { Fn } from "../index.js";
+import { Fn, KeyOf, MaybePromise, Result } from "../index.js";
 import { PartialPatternMatcher, PatternMatcher } from "./pattern-matcher.js";
-import { TypeFromTag } from "./type-from-tag.js";
 import { Variant } from "./variant.js";
 
 /**
@@ -14,27 +13,28 @@ import { Variant } from "./variant.js";
 export function fullMatch<
     A extends Variant,
     B,
-    PM extends PatternMatcher<A, B>,
->(value: A, cases: PM): B {
-    if (!cases[value._tag as keyof PM]) {
-        return cases["*" as keyof PM](value) as B;
+    PM extends PatternMatcher<A, B, MP>,
+    MP extends MaybePromise<Result<B, never>>,
+>(value: A, cases: PM): MP {
+    let fn = cases[value._tag as KeyOf<PM>] as Fn<[A], MP> | undefined;
+    if (!fn) {
+        fn = cases["*" as KeyOf<PM>] as Fn<[A], MP>;
     }
-    return cases[value._tag as keyof PM](value) as B;
+    return fn(value);
 }
 
 /**
  * Match a variant value against a pattern matcher and return
  * the value of the matching function.
  */
-
 export function partialMatch<
     A extends Variant,
     B,
-    PM extends PartialPatternMatcher<A, B>,
->(value: A, cases: PM): B | undefined {
-    type EType = TypeFromTag<A, A["_tag"]>;
-    const fn = cases[value._tag as keyof PM] as Fn<[EType], B> | undefined;
+    MP extends MaybePromise<Result<B, never>>,
+    PM extends PartialPatternMatcher<A, B, MP>,
+>(value: A, cases: PM): MP | undefined {
+    const fn = cases[value._tag as KeyOf<PM>] as Fn<[A], MP> | undefined;
     if (fn !== undefined) {
-        return fn(value as EType);
+        return fn(value);
     }
 }

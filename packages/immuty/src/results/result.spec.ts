@@ -1,4 +1,4 @@
-import { TaggedError } from "../errors/index.js";
+import { ExtractPatternMatcherResult, TaggedError } from "../errors/index.js";
 import { Result } from "./result.js";
 
 class TestError extends TaggedError<"TestError"> {
@@ -171,7 +171,7 @@ describe("Result", () => {
         >;
 
         const foldedResult = resultA.catchSome({
-            TestErrorA: () => "default value",
+            TestErrorA: Result.wrap(() => "default value"),
         });
 
         // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorB">>
@@ -194,7 +194,7 @@ describe("Result", () => {
         >;
 
         const foldedResult = resultA.catchSome({
-            TestErrorB: () => "default value",
+            TestErrorB: Result.wrap(() => "default value"),
         });
 
         // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorA">>
@@ -212,7 +212,7 @@ describe("Result", () => {
         >;
 
         const foldedResult = resultA.catchSome({
-            TestErrorA: () => "default value",
+            TestErrorA: Result.wrap(() => "default value"),
         });
 
         // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorB">>
@@ -235,8 +235,8 @@ describe("Result", () => {
         >;
 
         const foldedResult = resultA.catchAll({
-            TestErrorA: () => "default value",
-            TestErrorB: () => "default value",
+            TestErrorA: () => Result.ok("default value"),
+            TestErrorB: () => Result.ok("default value"),
         });
 
         if (foldedResult.isError()) throw new Error("Expected a value");
@@ -251,8 +251,8 @@ describe("Result", () => {
         >;
 
         const foldedResult = resultA.catchAll({
-            TestErrorA: () => "default value",
-            TestErrorB: () => "default value",
+            TestErrorA: () => Result.ok("default value"),
+            TestErrorB: () => Result.ok("default value"),
         });
 
         if (foldedResult.isError()) throw new Error("Expected a value");

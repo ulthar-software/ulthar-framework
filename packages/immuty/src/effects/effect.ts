@@ -5,6 +5,7 @@ import {
     Result,
     TaggedError,
     TimeSpan,
+    Variant,
 } from "../index.js";
 import { MergeTypes } from "../types/merge-types.js";
 import { composeEffects } from "./compose-effects.js";
@@ -21,6 +22,7 @@ import { RetryOpts, composeEffectWithRetry } from "./effect-retry.js";
 import { MaybePromise } from "../types/maybe-promise.js";
 import { EffectStream } from "./effect-stream.js";
 import { Resource } from "../resources/resource.js";
+import { isVariant } from "../variants/is-variant.js";
 
 /**
  * An effect is a representation of a (most-likely-asynchronous) behavior that executes
@@ -174,7 +176,7 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         return new Effect(async (deps) => {
             const result = await this.f(deps);
             if (result.isOk()) {
-                return result;
+                return result as unknown as Result<A, never>;
             } else {
                 throw result.unwrapError().nativeError;
             }
@@ -206,6 +208,59 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         });
     }
 
+    loopWhile<BErr extends TaggedError, BDeps = void>(
+        predicate: PipeableEffectFn<BDeps, A, boolean, BErr>
+    ): Effect<MergeTypes<ADeps, BDeps>, A, AErr | BErr> {
+        return new Effect(async (deps) => {
+            let result: Result<A, AErr | BErr>;
+            let loopResult: Result<boolean, BErr>;
+            do {
+                result = (await this.f(deps as ADeps)) as Result<
+                    A,
+                    AErr | BErr
+                >;
+                if (!result.isOk()) {
+                    return result;
+                }
+                loopResult = await predicate(result.unwrap(), deps as BDeps);
+                if (!loopResult.isOk()) {
+                    return loopResult as Result<A, AErr | BErr>;
+                }
+            } while (loopResult.unwrap());
+            return result;
+        });
+    }
+
+    whenCase<const TMatcher extends CaseMatcher<A>>(
+        matcher: TMatcher
+    ): Effect<
+        MergeTypes<ADeps, InferDependencies<InferMatcherEffects<TMatcher>>>,
+        InferResult<InferMatcherEffects<TMatcher>>,
+        AErr | InferError<InferMatcherEffects<TMatcher>>
+    > {
+        return new Effect(async (deps) => {
+            const result = await this.f(deps as ADeps);
+            if (result.isOk()) {
+                const value = result.unwrap();
+                const key = (
+                    isVariant(value) ? value._tag : value
+                ) as ValidMatcherKey<A>;
+                if (key in matcher) {
+                    return (await matcher[key](value).run(
+                        deps as InferDependencies<InferMatcherEffects<TMatcher>>
+                    )) as Result<
+                        InferResult<InferMatcherEffects<TMatcher>>,
+                        AErr | InferError<InferMatcherEffects<TMatcher>>
+                    >;
+                }
+            }
+            return result as Result<
+                InferResult<InferMatcherEffects<TMatcher>>,
+                AErr | InferError<InferMatcherEffects<TMatcher>>
+            >;
+        });
+    }
+
     spread(): EffectStream<ArrayType<A>, AErr, ADeps, ArrayType<A>, AErr> {
         return EffectStream.fromListEffect(
             this.f as EffectFn<ADeps, ArrayType<A>[], AErr>
@@ -228,3 +283,30 @@ export class Effect<ADeps = void, A = void, AErr extends TaggedError = never> {
         return EffectStream.fromSchedule(this.f, schedule);
     }
 }
+
+export type InferDependencies<A extends Effect<unknown, unknown, TaggedError>> =
+    A extends Effect<infer D, unknown> ? D : void;
+
+export type InferResult<A extends Effect<unknown, unknown, TaggedError>> =
+    A extends Effect<unknown, infer R> ? R : void;
+
+export type InferError<A extends Effect<unknown, unknown, TaggedError>> =
+    A extends Effect<unknown, unknown, infer E> ? E : never;
+
+export type ValidMatcherKey<A> = A extends Variant
+    ? A["_tag"]
+    : A extends string
+    ? A
+    : string | number | symbol;
+
+export type CaseMatcher<A> = Record<
+    ValidMatcherKey<A>,
+    (v: A) => Effect<unknown, unknown, TaggedError>
+>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type InferMatcherEffects<M extends CaseMatcher<any>> = {
+    [K in keyof M]: ReturnType<M[K]> extends Effect<infer R, infer D, infer E>
+        ? Effect<R, D, E>
+        : never;
+}[keyof M];

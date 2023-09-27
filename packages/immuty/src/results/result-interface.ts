@@ -12,16 +12,16 @@ import { Result } from "./result.js";
 /**
  * Interface for the Result type common signature.
  */
-export interface IResult<A, AErr extends TaggedError> {
+export interface IResult<TValue, TError extends TaggedError> {
     /**
      * True if the Result is a success.
      */
-    isOk(): this is OkResult<A>;
+    isOk(): this is OkResult<TValue, TError>;
 
     /**
      * True if the Result is a failure.
      */
-    isError(): this is ErrorResult<A, AErr>;
+    isError(): this is ErrorResult<TValue, TError>;
 
     /**
      * Maps the value of the Result to a new value.
@@ -31,30 +31,34 @@ export interface IResult<A, AErr extends TaggedError> {
      * @param onSuccess Function to map the value of the Result to a new value.
      * @param onFailure Function to map the error of the Result to a new value.
      */
-    map<B>(f: Fn<[A], B>): Result<B, AErr>;
+    map<TMappedValue>(
+        f: Fn<[TValue], TMappedValue>
+    ): Result<TMappedValue, TError>;
 
     /**
      * Maps the value of the Result to a new value.
      * Returns the new value wrapped in a Result.
      * The provided function must return a Promise.
      */
-    asyncMap<B>(f: Fn<[A], Promise<B>>): Promise<Result<B, AErr>>;
+    asyncMap<TMappedValue>(
+        f: Fn<[TValue], Promise<TMappedValue>>
+    ): Promise<Result<TMappedValue, TError>>;
 
     /**
      * Maps the value of the Result to a new Result.
      * The provided function must return a Result.
      */
-    flatMap<B, Be extends TaggedError>(
-        f: Fn<[A], Result<B, Be>>
-    ): Result<B, AErr | Be>;
+    flatMap<TMappedValue, TOtherError extends TaggedError>(
+        f: Fn<[TValue], Result<TMappedValue, TOtherError>>
+    ): Result<TMappedValue, TError | TOtherError>;
 
     /**
      * Maps the value of the Result to a new Result.
      * The provided function must return a Promise that resolves to a Result.
      */
-    asyncFlatMap<B, Be extends TaggedError>(
-        f: Fn<[A], Promise<Result<B, Be>>>
-    ): Promise<Result<B, AErr | Be>>;
+    asyncFlatMap<TMappedValue, TOtherError extends TaggedError>(
+        f: Fn<[TValue], Promise<Result<TMappedValue, TOtherError>>>
+    ): Promise<Result<TMappedValue, TError | TOtherError>>;
 
     /**
      * Fold the Result into a new value.
@@ -62,7 +66,9 @@ export interface IResult<A, AErr extends TaggedError> {
      * The provided functions must return a value
      * and the returned value will be wrapped in a Result.
      */
-    fold<B>(params: ResultFoldParams<A, B, AErr>): Result<B, never>;
+    fold<TMappedValue>(
+        params: ResultFoldParams<TValue, TMappedValue, TError>
+    ): Result<TMappedValue, never>;
 
     /**
      * Fold the Result into a new value.
@@ -70,15 +76,28 @@ export interface IResult<A, AErr extends TaggedError> {
      * The provided functions must return a Promise that resolves to a value
      * and the returned value will be wrapped in a Result.
      */
-    asyncFold<B>(
-        params: ResultFoldParams<A, Promise<B>, AErr>
-    ): Promise<Result<B, never>>;
+    asyncFold<TMappedValue>(
+        params: ResultFoldParams<TValue, Promise<TMappedValue>, TError>
+    ): Promise<Result<TMappedValue, never>>;
 
-    catchSome<PM extends PartialErrorPatternMatcher<AErr, A>>(
+    /**
+     * Catches some of the errors of the Result and returns a new Result that
+     * contains the remaining non catched errors;
+     *
+     */
+    catchSome<
+        PM extends PartialErrorPatternMatcher<
+            TError,
+            TValue,
+            Result<TValue, never>
+        >,
+    >(
         matcher: PM
-    ): Result<A, RemainingUnmatchedErrors<AErr, PM>>;
+    ): Result<TValue, RemainingUnmatchedErrors<TError, PM>>;
 
-    catchAll(matcher: ErrorPatternMatcher<AErr, A>): Result<A, never>;
+    catchAll(
+        matcher: ErrorPatternMatcher<TError, TValue, Result<TValue, never>>
+    ): Result<TValue, never>;
 }
 
 export interface ResultFoldParams<A, B, Ae extends TaggedError> {

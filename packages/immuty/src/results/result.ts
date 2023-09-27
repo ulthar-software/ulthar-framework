@@ -30,7 +30,9 @@ export namespace Result {
     /**
      * Creates a Result representing the value
      */
-    export function ok<A>(value: A): OkResult<A> {
+    export function ok<A, AErr extends TaggedError = never>(
+        value: A
+    ): OkResult<A, AErr> {
         return new OkResult(value);
     }
 

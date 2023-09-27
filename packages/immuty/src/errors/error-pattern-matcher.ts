@@ -1,3 +1,4 @@
+import { MaybePromise, Result } from "../index.js";
 import { ErrorFromTag } from "./error-from-tag.js";
 import { TagFromError } from "./tag-from-error.js";
 import { TaggedError } from "./tagged-error.js";
@@ -5,25 +6,38 @@ import { TaggedError } from "./tagged-error.js";
 /**
  * A default Pattern Matcher for any errors.
  */
-export type DefaultErrorPatternMatcher<E extends TaggedError, F> = {
-    "*": (error: E) => F;
+export type DefaultErrorPatternMatcher<
+    E extends TaggedError,
+    F,
+    MP extends MaybePromise<Result<F, never>>,
+> = {
+    "*": (error: E) => MP;
 };
 
 /**
  * A Pattern Matcher for errors.
  */
-export type ErrorPatternMatcher<E extends TaggedError, F> =
+export type ErrorPatternMatcher<
+    E extends TaggedError,
+    F,
+    MP extends MaybePromise<Result<F, never>>,
+> =
     | {
-          [K in E["_tag"]]: (error: ErrorFromTag<E, K>) => F;
+          [K in E["_tag"]]: (error: ErrorFromTag<E, K>) => MP;
       }
-    | (PartialErrorPatternMatcher<E, F> & DefaultErrorPatternMatcher<E, F>)
-    | DefaultErrorPatternMatcher<E, F>;
+    | (PartialErrorPatternMatcher<E, F, MP> &
+          DefaultErrorPatternMatcher<E, F, MP>)
+    | DefaultErrorPatternMatcher<E, F, MP>;
 
 /**
  * A partial Pattern Matcher for errors.
  */
-export type PartialErrorPatternMatcher<E extends TaggedError, F> = {
-    [K in E["_tag"]]?: (error: ErrorFromTag<E, K>) => F;
+export type PartialErrorPatternMatcher<
+    E extends TaggedError,
+    F,
+    MP extends MaybePromise<Result<F, never>>,
+> = {
+    [K in E["_tag"] & string]?: (error: ErrorFromTag<E, K & string>) => MP;
 };
 
 /**
@@ -36,3 +50,8 @@ export type RemainingUnmatchedErrors<
     AErr,
     Exclude<TagFromError<AErr>, Exclude<keyof MatcherType, "*">>
 >;
+
+export type ExtractPatternMatcherResult<A, PM> =
+    PM extends PartialErrorPatternMatcher<TaggedError, A, infer MP>
+        ? MP
+        : never;

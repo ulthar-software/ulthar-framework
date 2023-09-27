@@ -64,7 +64,7 @@ export class ErrorResult<A, AErr extends TaggedError>
      * and the same ErrorResult is returned.
      */
     flatMap<B, Be extends TaggedError>(): Result<B, AErr | Be> {
-        return this as unknown as Result<B, AErr>;
+        return this as unknown as Result<B, AErr | Be>;
     }
 
     /**
@@ -73,7 +73,7 @@ export class ErrorResult<A, AErr extends TaggedError>
      * and the same ErrorResult is returned.
      */
     asyncFlatMap<B, Be extends TaggedError>(): Promise<Result<B, AErr | Be>> {
-        return Promise.resolve(this as unknown as Result<never, AErr>);
+        return Promise.resolve(this as unknown as Result<never, AErr | Be>);
     }
 
     /**
@@ -98,16 +98,12 @@ export class ErrorResult<A, AErr extends TaggedError>
         return Result.ok(await onFailure(this.error));
     }
 
-    catchAll(matcher: ErrorPatternMatcher<AErr, A>): Result<A, never> {
-        return Result.ok(fullMatch(this.error, matcher));
-    }
-
-    catchSome<PM extends PartialErrorPatternMatcher<AErr, A>>(
+    catchSome<PM extends PartialErrorPatternMatcher<AErr, A, Result<A, never>>>(
         matcher: PM
     ): Result<A, RemainingUnmatchedErrors<AErr, PM>> {
         const x = partialMatch(this.error, matcher);
         if (x) {
-            return Result.ok(x) as Result<
+            return x as unknown as Result<
                 A,
                 RemainingUnmatchedErrors<AErr, PM>
             >;
@@ -117,5 +113,11 @@ export class ErrorResult<A, AErr extends TaggedError>
                 RemainingUnmatchedErrors<AErr, PM>
             >;
         }
+    }
+
+    catchAll(
+        matcher: ErrorPatternMatcher<AErr, A, Result<A, never>>
+    ): Result<A, never> {
+        return fullMatch(this.error, matcher);
     }
 }

@@ -1,23 +1,23 @@
 import {
     ErrorFromTag,
-    Fn,
-    OkResult,
+    KeyOf,
+    MaybePromise,
     PartialPatternMatcher,
     PatternMatcher,
     RemainingUnmatchedErrors,
     Result,
     TaggedError,
+    UnexpectedTaggedError,
     fullMatch,
     partialMatch,
 } from "../index.js";
-import { Maybe } from "../types/maybe.js";
 
 export type DefaultEffectErrorPatternMatcher<
     ADeps,
     AErr extends TaggedError,
     A,
 > = {
-    "*": (e: [AErr, ADeps]) => Promise<A>;
+    "*": (e: [AErr, ADeps]) => MaybePromise<Result<A, never>>;
 };
 
 export type FullEffectErrorPatternMatcher<
@@ -25,7 +25,15 @@ export type FullEffectErrorPatternMatcher<
     AErr extends TaggedError,
     A,
 > = {
-    [K in AErr["_tag"]]: (e: ErrorFromTag<AErr, K>, deps: ADeps) => Promise<A>;
+    [K in AErr["_tag"]]: (
+        e: ErrorFromTag<AErr, K>,
+        deps: ADeps
+    ) => MaybePromise<Result<A, never>>;
+} & {
+    UnexpectedError?: (
+        e: UnexpectedTaggedError,
+        deps: ADeps
+    ) => MaybePromise<Result<A, never>>;
 };
 
 export type PartialEffectErrorPatternMatcher<
@@ -54,33 +62,36 @@ export async function effectErrorPartialMatch<
     matcher: PM
 ): Promise<Result<A, RemainingUnmatchedErrors<AErr, PM>>> {
     if (result.isOk()) {
-        return result as Result<A, RemainingUnmatchedErrors<AErr, PM>>;
+        return result as unknown as Result<
+            A,
+            RemainingUnmatchedErrors<AErr, PM>
+        >;
     }
-    const resultMatcher: PartialPatternMatcher<AErr, Promise<A>> = {};
+    const resultMatcher: PartialPatternMatcher<
+        AErr,
+        A,
+        MaybePromise<Result<A, never>>
+    > = {};
+
     for (const key in matcher) {
-        if (!matcher[key as keyof PM]) {
+        const fn = matcher[key];
+
+        if (!fn) {
             throw new Error(
                 `EffectErrorPartialMatch: matcher key '${key}' is defined but has no handler.`
             );
         }
 
-        type EType = ErrorFromTag<AErr, AErr["_tag"]>;
-        resultMatcher[key] = (e: TaggedError) => {
-            const fn = matcher[key as keyof PM] as Fn<
-                [EType, ADeps],
-                Promise<A>
-            >; //we know it's defined because of the loop
-            return fn(e as EType, deps);
+        resultMatcher[key] = (e) => {
+            return fn(e as unknown as ErrorFromTag<AErr, KeyOf<PM>>, deps);
         };
     }
-    const v = partialMatch(result.unwrapError(), resultMatcher) as Maybe<
-        Promise<A>
-    >;
+    const v = await partialMatch(result.unwrapError(), resultMatcher);
 
     if (!v) {
         return result as Result<A, RemainingUnmatchedErrors<AErr, PM>>;
     }
-    return Result.ok(await v) as Result<A, RemainingUnmatchedErrors<AErr, PM>>;
+    return v as Result<A, RemainingUnmatchedErrors<AErr, PM>>;
 }
 
 export async function effectErrorFullMatch<
@@ -88,19 +99,32 @@ export async function effectErrorFullMatch<
     AErr extends TaggedError,
     A,
     PM extends EffectErrorPatternMatcher<ADeps, AErr, A>,
->(deps: ADeps, result: Result<A, AErr>, matcher: PM): Promise<OkResult<A>> {
+>(
+    deps: ADeps,
+    result: Result<A, AErr>,
+    matcher: PM
+): Promise<Result<A, never>> {
     if (result.isOk()) {
-        return result;
+        return result as unknown as Result<A, never>;
     }
-    const resultMatcher = {} as PatternMatcher<AErr, Promise<A>>;
+    const resultMatcher = {} as PatternMatcher<
+        AErr,
+        A,
+        MaybePromise<Result<A, never>>
+    >;
+
     for (const key in matcher) {
-        resultMatcher[key as keyof PatternMatcher<AErr, Promise<A>>] = (
+        const fn = matcher[key] as (
+            e: TaggedError,
+            deps: ADeps
+        ) => MaybePromise<Result<A, never>>;
+
+        resultMatcher[key as KeyOf<typeof resultMatcher>] = (
             e: TaggedError
         ) => {
-            const fn = matcher[key as keyof PM];
-            return fn([e, deps]) as Promise<A>;
+            return fn(e, deps);
         };
     }
-    const v = fullMatch(result.unwrapError(), resultMatcher);
-    return Result.ok(await v) as OkResult<A>;
+    const v = await fullMatch(result.unwrapError(), resultMatcher);
+    return v as Result<A, never>;
 }
