@@ -1178,7 +1178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ulthar/asserty@workspace:^, @ulthar/asserty@workspace:packages/asserty":
+"@ulthar/asserty@workspace:packages/asserty":
   version: 0.0.0-use.local
   resolution: "@ulthar/asserty@workspace:packages/asserty"
   dependencies:
@@ -1190,21 +1190,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/debby-mem@workspace:packages/debby-mem":
-  version: 0.0.0-use.local
-  resolution: "@ulthar/debby-mem@workspace:packages/debby-mem"
-  dependencies:
-    "@types/jest": ^29.5.5
-    "@ulthar/asserty": "workspace:^"
-    "@ulthar/debby": "workspace:^"
-    "@ulthar/immuty": "workspace:^"
-    jest: ^29.7.0
-    ts-jest: ^29.1.1
-    typescript: ^5.2.2
-  languageName: unknown
-  linkType: soft
-
-"@ulthar/debby@workspace:^, @ulthar/debby@workspace:packages/debby":
+"@ulthar/debby@workspace:packages/debby":
   version: 0.0.0-use.local
   resolution: "@ulthar/debby@workspace:packages/debby"
   dependencies:

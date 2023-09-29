@@ -1,92 +1,52 @@
-import { TaggedError } from "../errors/tagged-error.js";
-import { Fn } from "../functions/unary.js";
-import { ErrorResult } from "../index.js";
-import { IResult, ResultFoldParams } from "./result-interface.js";
-import { Result } from "./result.js";
+import { Fn, Result, TaggedError } from "../index.js";
+import { AsyncResult } from "./async-result.js";
+import { ErrorResult } from "./error-result.js";
+import { IResult } from "./result-interface.js";
 
-/**
- * Represents a Successful Result.
- */
-export class OkResult<A, AErr extends TaggedError = never>
-    implements IResult<A, AErr>
+export class OkResult<TValue, TError extends TaggedError = never>
+    implements IResult<TValue, TError>
 {
-    constructor(private readonly value: A) {}
+    constructor(private readonly value: TValue) {}
 
-    /**
-     * Determine if this Result is a success.
-     * Always returns true
-     */
-    isOk(): this is OkResult<A, AErr> {
+    isOk(): this is OkResult<TValue, TError> {
         return true;
     }
 
-    /**
-     * Determine if this Result is an error.
-     * Always returns false
-     */
-    isError(): this is ErrorResult<A, AErr> {
+    isError(): this is ErrorResult<TValue, TError> {
         return false;
     }
 
-    /**
-     * Unwraps the value of the Result.
-     */
-    unwrap(): A {
+    unwrap(): TValue {
         return this.value;
     }
 
-    /**
-     * Maps the value of the Result into a new value.
-     * The mapping function must return a value and that
-     * value will be wrapped in a new Result.
-     */
-    map<B>(f: Fn<[A], B>): OkResult<B> {
+    map<TMappedValue>(f: Fn<[TValue], TMappedValue>): OkResult<TMappedValue> {
         return Result.ok(f(this.value));
     }
 
-    /**
-     * Maps the value of the Result into a new value.
-     * The mapping function must return a Promise of a value
-     */
-    async asyncMap<B>(fn: Fn<[A], Promise<B>>): Promise<Result<B, AErr>> {
-        return Result.ok(await fn(this.value));
+    asyncMap<TMappedValue>(
+        fn: Fn<[TValue], Promise<TMappedValue>>
+    ): AsyncResult<TMappedValue, TError> {
+        return new AsyncResult(fn(this.value).then((v) => Result.ok(v)));
     }
 
-    /**
-     * Maps the value of the Result into a new Result.
-     * The mapping function must return a Result.
-     */
-    flatMap<B, Be extends TaggedError>(
-        f: Fn<[A], Result<B, Be>>
-    ): Result<B, AErr | Be> {
-        return f(this.value) as Result<B, AErr | Be>;
+    flatMap<TMappedValue, TOtherError extends TaggedError>(
+        f: Fn<[TValue], Result<TMappedValue, TOtherError>>
+    ): Result<TMappedValue, TError | TOtherError> {
+        return f(this.value);
     }
 
-    /**
-     * Maps the value of the Result into a new Result.
-     * The mapping function must return a Promise of a Result.
-     */
-    async asyncFlatMap<B, Be extends TaggedError>(
-        f: Fn<[A], Promise<Result<B, Be>>>
-    ): Promise<Result<B, AErr | Be>> {
-        return f(this.value) as Promise<Result<B, AErr | Be>>;
+    asyncFlatMap<TMappedValue, TOtherError extends TaggedError>(
+        f: Fn<[TValue], Promise<Result<TMappedValue, TOtherError>>>
+    ): AsyncResult<TMappedValue, TError | TOtherError> {
+        return new AsyncResult(f(this.value));
     }
 
-    fold<B>({ onSuccess }: ResultFoldParams<A, B, never>): OkResult<B> {
-        return Result.ok(onSuccess(this.unwrap()));
+    catchSome(): Result<TValue, never> {
+        return this as unknown as Result<TValue, never>;
     }
 
-    async asyncFold<B>({
-        onSuccess,
-    }: ResultFoldParams<A, Promise<B>, never>): Promise<OkResult<B>> {
-        return Result.ok(await onSuccess(this.unwrap()));
-    }
-
-    catchSome(): Result<A, never> {
-        return this as unknown as Result<A, never>;
-    }
-
-    catchAll(): Result<A, never> {
-        return this as unknown as Result<A, never>;
+    catchAll(): Result<TValue, never> {
+        return this as unknown as Result<TValue, never>;
     }
 }

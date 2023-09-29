@@ -1,123 +1,83 @@
-import { TaggedError } from "../errors/tagged-error.js";
 import {
     ErrorPatternMatcher,
-    RemainingUnmatchedErrors,
+    Fn,
     PartialErrorPatternMatcher,
+    RemainingUnmatchedErrors,
+    Result,
+    TaggedError,
     fullMatch,
     partialMatch,
 } from "../index.js";
-import { IResult, ResultFoldParams } from "./result-interface.js";
-import { Result } from "./result.js";
+import { AsyncResult } from "./async-result.js";
+import { OkResult } from "./ok-result.js";
+import { IResult } from "./result-interface.js";
 
-/**
- * Represents a Result failure.
- */
-export class ErrorResult<A, AErr extends TaggedError>
-    implements IResult<A, AErr>
+export class ErrorResult<TValue, TError extends TaggedError>
+    implements IResult<TValue, TError>
 {
-    constructor(private readonly error: AErr) {}
+    constructor(private readonly error: TError) {}
 
-    /**
-     * Determine if this Result is a success.
-     * Always returns false
-     */
-    isOk(): this is never {
+    isOk(): this is OkResult<TValue, TError> {
         return false;
     }
 
-    /**
-     * Determine if this Result is a failure.
-     * Always returns true
-     */
-    isError(): this is ErrorResult<A, AErr> {
+    isError(): this is ErrorResult<TValue, TError> {
         return true;
     }
 
-    /**
-     * Unwraps the error contained in this Result.
-     */
-    unwrapError(): AErr {
+    unwrapError(): TError {
         return this.error;
     }
 
-    /**
-     * Maps the value of the Result into a new value.
-     * As this is an ErrorResult, the mapping function is not called
-     * and the same ErrorResult is returned.
-     */
-    map(): Result<never, AErr> {
-        return this as unknown as Result<never, AErr>;
+    map(): Result<never, TError> {
+        return this as unknown as Result<never, TError>;
     }
 
-    /**
-     * Maps the value of the Result into a new value.
-     * As this is an ErrorResult, the mapping function is not called
-     * and the same ErrorResult is returned.
-     */
-    asyncMap(): Promise<Result<never, AErr>> {
-        return Promise.resolve(this as unknown as Result<never, AErr>);
+    asyncMap<TMappedValue>(
+        _mapFn: Fn<[TValue], Promise<TMappedValue>>
+    ): AsyncResult<TMappedValue, TError> {
+        return new AsyncResult(
+            Promise.resolve(this as unknown as Result<TMappedValue, TError>)
+        );
     }
 
-    /**
-     * Maps the value of the Result into a new Result.
-     * As this is an ErrorResult, the mapping function is not called
-     * and the same ErrorResult is returned.
-     */
-    flatMap<B, Be extends TaggedError>(): Result<B, AErr | Be> {
-        return this as unknown as Result<B, AErr | Be>;
+    flatMap<B, Be extends TaggedError>(): Result<B, TError | Be> {
+        return this as unknown as Result<B, TError | Be>;
     }
 
-    /**
-     * Maps the value of the Result into a new Result.
-     * As this is an ErrorResult, the mapping function is not called
-     * and the same ErrorResult is returned.
-     */
-    asyncFlatMap<B, Be extends TaggedError>(): Promise<Result<B, AErr | Be>> {
-        return Promise.resolve(this as unknown as Result<never, AErr | Be>);
+    asyncFlatMap<TMappedValue, TOtherError extends TaggedError>(): AsyncResult<
+        TMappedValue,
+        TError | TOtherError
+    > {
+        return new AsyncResult(
+            Promise.resolve(this as unknown as Result<TMappedValue, TError>)
+        );
     }
 
-    /**
-     * Folds the Result into a new Result.
-     * This lets you handle both the success and failure cases.
-     * As this is an ErrorResult, the onFailure function is called
-     * and the result of that function is returned.
-     */
-    fold<B>({ onFailure }: ResultFoldParams<never, B, AErr>): Result<B, never> {
-        return Result.ok(onFailure(this.error));
-    }
-
-    /**
-     * Folds the Result into a new Result.
-     * This lets you handle both the success and failure cases.
-     * As this is an ErrorResult, the onFailure function is called
-     * and the result of that function is returned.
-     */
-    async asyncFold<B>({
-        onFailure,
-    }: ResultFoldParams<never, Promise<B>, AErr>): Promise<Result<B, never>> {
-        return Result.ok(await onFailure(this.error));
-    }
-
-    catchSome<PM extends PartialErrorPatternMatcher<AErr, A, Result<A, never>>>(
-        matcher: PM
-    ): Result<A, RemainingUnmatchedErrors<AErr, PM>> {
+    catchSome<
+        PM extends PartialErrorPatternMatcher<
+            TError,
+            TValue,
+            Result<TValue, never>
+        >,
+    >(matcher: PM): Result<TValue, RemainingUnmatchedErrors<TError, PM>> {
         const x = partialMatch(this.error, matcher);
         if (x) {
             return x as unknown as Result<
-                A,
-                RemainingUnmatchedErrors<AErr, PM>
+                TValue,
+                RemainingUnmatchedErrors<TError, PM>
             >;
         } else {
             return this as unknown as Result<
-                A,
-                RemainingUnmatchedErrors<AErr, PM>
+                TValue,
+                RemainingUnmatchedErrors<TError, PM>
             >;
         }
     }
 
     catchAll(
-        matcher: ErrorPatternMatcher<AErr, A, Result<A, never>>
-    ): Result<A, never> {
+        matcher: ErrorPatternMatcher<TError, TValue, Result<TValue, never>>
+    ): Result<TValue, never> {
         return fullMatch(this.error, matcher);
     }
 }

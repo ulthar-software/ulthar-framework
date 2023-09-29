@@ -1,4 +1,4 @@
-import { Result } from "../index.js";
+import { Result, resultify } from "../index.js";
 import { fullMatch } from "./match.js";
 import { Variant } from "./variant.js";
 
@@ -21,8 +21,8 @@ describe("Variant", () => {
         type FooBar = Foo | Bar | Fez;
 
         const matcher = {
-            Foo: Result.wrap((foo: Foo) => foo.foo),
-            "*": Result.wrap(() => "bar or fez"),
+            Foo: resultify((foo: Foo) => foo.foo),
+            "*": resultify(() => "bar or fez"),
         };
 
         expect(
