@@ -1,8 +1,7 @@
-import { MaybePromise } from "../index.js";
-import { Fn } from "./unary.js";
+import { Fn, MaybePromise } from "../index.js";
 
 /**
- * Composes two functions.
+ * Composes two functions together
  */
 export function compose<A, B, C>(
     f: Fn<[A], MaybePromise<B>>,

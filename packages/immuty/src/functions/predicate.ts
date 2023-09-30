@@ -1,4 +1,4 @@
-import { Fn } from "./unary.js";
+import { Fn } from "./function.js";
 
 /**
  * A predicate is a function that takes an argument of type `A` and returns a boolean.

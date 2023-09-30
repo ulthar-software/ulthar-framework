@@ -1,5 +1,4 @@
-import { Fn } from "../functions/unary.js";
-import { MaybePromise, Result } from "../index.js";
+import { Fn, MaybePromise, Result } from "../index.js";
 import { TypeFromTag } from "./type-from-tag.js";
 import { Variant } from "./variant.js";
 
