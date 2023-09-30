@@ -1,4 +1,4 @@
-import { Fn, MaybePromise, Result, TaggedError } from "../index.js";
+import { Fn, Immutable, MaybePromise, Result, TaggedError } from "../index.js";
 
 export class AsyncResult<TValue, TError extends TaggedError> {
     constructor(private promise: Promise<Result<TValue, TError>>) {}
@@ -7,11 +7,13 @@ export class AsyncResult<TValue, TError extends TaggedError> {
         return await this.promise;
     }
 
-    asyncMap<TMappedValue>(mapFn: Fn<[TValue], MaybePromise<TMappedValue>>) {
+    asyncMap<TMappedValue>(
+        mapFn: Fn<[Immutable<TValue>], MaybePromise<TMappedValue>>
+    ): AsyncResult<TMappedValue, TError> {
         return new AsyncResult(
             this.promise.then(async (v) => {
                 if (v.isOk()) {
-                    return Result.ok(await mapFn(v.unwrap()));
+                    return Result.ok(await mapFn(v.value));
                 } else {
                     return v as unknown as Result<TMappedValue, TError>;
                 }
@@ -20,14 +22,17 @@ export class AsyncResult<TValue, TError extends TaggedError> {
     }
 
     asyncFlatMap<TMappedValue, TOtherError extends TaggedError>(
-        mapFn: Fn<[TValue], MaybePromise<Result<TMappedValue, TOtherError>>>
-    ) {
+        mapFn: Fn<
+            [Immutable<TValue>],
+            MaybePromise<Result<TMappedValue, TOtherError>>
+        >
+    ): AsyncResult<TMappedValue, TError | TOtherError> {
         return new AsyncResult(
             this.promise.then(async (v) => {
                 if (v.isOk()) {
-                    return await mapFn(v.unwrap());
+                    return await mapFn(v.value);
                 } else {
-                    return v;
+                    return v as unknown as Result<TMappedValue, TError>;
                 }
             })
         );

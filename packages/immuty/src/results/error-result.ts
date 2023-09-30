@@ -1,6 +1,7 @@
 import {
     ErrorPatternMatcher,
     Fn,
+    Immutable,
     PartialErrorPatternMatcher,
     RemainingUnmatchedErrors,
     Result,
@@ -34,15 +35,18 @@ export class ErrorResult<TValue, TError extends TaggedError>
     }
 
     asyncMap<TMappedValue>(
-        _mapFn: Fn<[TValue], Promise<TMappedValue>>
+        _mapFn: Fn<[Immutable<TValue>], Promise<TMappedValue>>
     ): AsyncResult<TMappedValue, TError> {
         return new AsyncResult(
             Promise.resolve(this as unknown as Result<TMappedValue, TError>)
         );
     }
 
-    flatMap<B, Be extends TaggedError>(): Result<B, TError | Be> {
-        return this as unknown as Result<B, TError | Be>;
+    flatMap<TMappedValue, TOtherError extends TaggedError>(): Result<
+        TMappedValue,
+        TError | TOtherError
+    > {
+        return this as unknown as Result<TMappedValue, TError | TOtherError>;
     }
 
     asyncFlatMap<TMappedValue, TOtherError extends TaggedError>(): AsyncResult<

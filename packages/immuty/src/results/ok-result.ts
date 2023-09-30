@@ -1,4 +1,5 @@
-import { Fn, Result, TaggedError } from "../index.js";
+import { shallowClone } from "../immutability/shallow-clone.js";
+import { Fn, Immutable, Result, TaggedError } from "../index.js";
 import { AsyncResult } from "./async-result.js";
 import { ErrorResult } from "./error-result.js";
 import { IResult } from "./result-interface.js";
@@ -6,7 +7,11 @@ import { IResult } from "./result-interface.js";
 export class OkResult<TValue, TError extends TaggedError = never>
     implements IResult<TValue, TError>
 {
-    constructor(private readonly value: TValue) {}
+    readonly value: Immutable<TValue>;
+
+    constructor(value: TValue) {
+        this.value = value as Immutable<TValue>;
+    }
 
     isOk(): this is OkResult<TValue, TError> {
         return true;
@@ -17,27 +22,29 @@ export class OkResult<TValue, TError extends TaggedError = never>
     }
 
     unwrap(): TValue {
-        return this.value;
+        return shallowClone(this.value);
     }
 
-    map<TMappedValue>(f: Fn<[TValue], TMappedValue>): OkResult<TMappedValue> {
+    map<TMappedValue>(
+        f: Fn<[Immutable<TValue>], TMappedValue>
+    ): OkResult<TMappedValue> {
         return Result.ok(f(this.value));
     }
 
     asyncMap<TMappedValue>(
-        fn: Fn<[TValue], Promise<TMappedValue>>
+        fn: Fn<[Immutable<TValue>], Promise<TMappedValue>>
     ): AsyncResult<TMappedValue, TError> {
         return new AsyncResult(fn(this.value).then((v) => Result.ok(v)));
     }
 
     flatMap<TMappedValue, TOtherError extends TaggedError>(
-        f: Fn<[TValue], Result<TMappedValue, TOtherError>>
+        f: Fn<[Immutable<TValue>], Result<TMappedValue, TOtherError>>
     ): Result<TMappedValue, TError | TOtherError> {
         return f(this.value);
     }
 
     asyncFlatMap<TMappedValue, TOtherError extends TaggedError>(
-        f: Fn<[TValue], Promise<Result<TMappedValue, TOtherError>>>
+        f: Fn<[Immutable<TValue>], Promise<Result<TMappedValue, TOtherError>>>
     ): AsyncResult<TMappedValue, TError | TOtherError> {
         return new AsyncResult(f(this.value));
     }

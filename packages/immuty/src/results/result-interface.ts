@@ -5,6 +5,7 @@ import {
     RemainingUnmatchedErrors,
     TaggedError,
     Result,
+    Immutable,
 } from "../index.js";
 import { AsyncResult } from "./async-result.js";
 import { ErrorResult } from "./error-result.js";
@@ -15,19 +16,19 @@ export interface IResult<TValue, TError extends TaggedError> {
     isError(): this is ErrorResult<TValue, TError>;
 
     map<TMappedValue>(
-        f: Fn<[TValue], TMappedValue>
+        f: Fn<[Immutable<TValue>], TMappedValue>
     ): Result<TMappedValue, TError>;
 
     asyncMap<TMappedValue>(
-        f: Fn<[TValue], Promise<TMappedValue>>
+        f: Fn<[Immutable<TValue>], Promise<TMappedValue>>
     ): AsyncResult<TMappedValue, TError>;
 
     flatMap<TMappedValue, TOtherError extends TaggedError>(
-        f: Fn<[TValue], Result<TMappedValue, TOtherError>>
+        f: Fn<[Immutable<TValue>], Result<TMappedValue, TOtherError>>
     ): Result<TMappedValue, TError | TOtherError>;
 
     asyncFlatMap<TMappedValue, TOtherError extends TaggedError>(
-        f: Fn<[TValue], Promise<Result<TMappedValue, TOtherError>>>
+        f: Fn<[Immutable<TValue>], Promise<Result<TMappedValue, TOtherError>>>
     ): AsyncResult<TMappedValue, TError | TOtherError>;
 
     catchSome<

@@ -76,6 +76,21 @@ describe("Result", () => {
         expect(mappedResult.unwrapError()._tag).toBe("TestError");
     });
 
+    test("Given an error, when trying multiple async maps, the original error should remain", async () => {
+        const result = Result.error(new TestError()) as Result<
+            string,
+            TaggedError<"TestError">
+        >;
+        const mappedResult = await result
+            .asyncMap(async (value) => value.length)
+            .asyncMap(async (value) => value + 1)
+            .asyncMap(async (value) => value + 1)
+            .asyncMap(async (value) => value + 1)
+            .resolve();
+        if (!mappedResult.isError()) throw new Error("Expected an error");
+        expect(mappedResult.unwrapError()._tag).toBe("TestError");
+    });
+
     test("Given a value, when flat mapping, it should work", () => {
         const result = Result.ok("value");
         const mappedResult = result.flatMap((value) => Result.ok(value.length));
@@ -109,6 +124,22 @@ describe("Result", () => {
         >;
         const mappedResult = await result
             .asyncFlatMap(async (value) => Result.ok(value.length))
+            .resolve();
+
+        if (mappedResult.isOk()) throw new Error("Expected an error");
+        expect(mappedResult.unwrapError()._tag).toBe("TestError");
+    });
+
+    test("Given an error, when trying multiple async flat maps, the original error should remain", async () => {
+        const result = Result.error(new TestError()) as Result<
+            string,
+            TaggedError<"TestError">
+        >;
+        const mappedResult = await result
+            .asyncFlatMap(async (value) => Result.ok(value.length))
+            .asyncFlatMap(async (value) => Result.ok(value + 1))
+            .asyncFlatMap(async (value) => Result.ok(value + 1))
+            .asyncFlatMap(async (value) => Result.ok(value + 1))
             .resolve();
 
         if (mappedResult.isOk()) throw new Error("Expected an error");
@@ -236,5 +267,28 @@ describe("Result", () => {
 
         if (mappedResult.isError()) throw new Error("Expected a value");
         expect(mappedResult.unwrap()).toBe("Hello5");
+    });
+
+    test("Given a result, we cannot mutate its internal value", async () => {
+        const result = Result.ok({ foo: "bar" });
+        const mappedResult = result.map((v) => {
+            // v.foo = "baz"; <- This should not compile
+            return {
+                foo: "baz",
+            };
+        });
+
+        const value = result.unwrap();
+        value.foo = "fez";
+
+        if (mappedResult.isError()) fail("Expected a value");
+        expect(mappedResult.unwrap()).toEqual({
+            foo: "baz",
+        });
+
+        if (result.isError()) throw new Error("Expected a value");
+        expect(result.unwrap()).toEqual({
+            foo: "bar",
+        });
     });
 });
