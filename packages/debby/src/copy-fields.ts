@@ -1,4 +1,4 @@
-import { KeyOf } from "../index.js";
+import { KeyOf } from "@ulthar/immuty/src/index.js";
 
 export function copyFields<T, F extends KeyOf<T>>(
     entity: T,
