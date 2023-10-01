@@ -1,4 +1,4 @@
-import { DocumentRecord, KeyOf } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf } from "@ulthar/effecty";
 import { JoinResult } from "./join-result.js";
 
 export type WhereClause<TSchema extends DocumentRecord> = {

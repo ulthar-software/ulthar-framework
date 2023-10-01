@@ -1,4 +1,4 @@
-import { DocumentRecord, KeyOf } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf } from "@ulthar/effecty";
 import { WhereClause } from "./where.js";
 
 export interface DeleteQuery<

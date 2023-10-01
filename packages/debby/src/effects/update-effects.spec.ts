@@ -1,4 +1,4 @@
-import { PosixDate } from "@ulthar/immuty";
+import { PosixDate } from "@ulthar/effecty";
 import { IStoreDriver } from "../store-driver.js";
 import { Store } from "../store.js";
 import { Op } from "../operators.js";

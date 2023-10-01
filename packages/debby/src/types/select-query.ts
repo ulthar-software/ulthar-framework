@@ -1,4 +1,4 @@
-import { DocumentRecord, KeyOf } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf } from "@ulthar/effecty";
 import { JoinWhereClause } from "./where.js";
 import { DocumentAggregators } from "../aggregators.js";
 

@@ -6,7 +6,7 @@ import {
     NonMaybe,
     OneOf,
     TaggedError,
-} from "@ulthar/immuty";
+} from "@ulthar/effecty";
 import {
     ConcatJoinResultsWithFields,
     FieldsFromJoinResults,

@@ -1,4 +1,4 @@
-import { Effect, Result } from "@ulthar/immuty";
+import { Effect, Result } from "@ulthar/effecty";
 import { Model } from "../model.js";
 import { printTasks } from "./print-tasks.js";
 

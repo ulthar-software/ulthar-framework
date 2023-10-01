@@ -1,4 +1,4 @@
-import { DocumentRecord, KeyOf } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf } from "@ulthar/effecty";
 import { DocumentSchema, DocumentSchemaMap } from "./schema/document-schema.js";
 
 export class Schema<TSchema extends Record<string, DocumentRecord>> {

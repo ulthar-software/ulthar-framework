@@ -1,4 +1,4 @@
-import { TaggedError } from "@ulthar/immuty";
+import { TaggedError } from "@ulthar/effecty";
 
 export class ParameterIsNaNError extends TaggedError<"ParameterIsNaNError"> {
     constructor(readonly param: string) {

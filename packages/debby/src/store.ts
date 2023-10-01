@@ -1,4 +1,4 @@
-import { DocumentRecord, KeyOf, TaggedError } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf, TaggedError } from "@ulthar/effecty";
 import { FromEffect, InsertEffect } from "./index.js";
 import { IStoreDriver } from "./store-driver.js";
 import { DeleteEffect } from "./effects/delete-effect.js";

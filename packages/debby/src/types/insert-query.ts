@@ -1,4 +1,4 @@
-import { DocumentRecord, KeyOf } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf } from "@ulthar/effecty";
 
 export interface InsertQuery<
     TSchemaMap extends Record<string, DocumentRecord>,

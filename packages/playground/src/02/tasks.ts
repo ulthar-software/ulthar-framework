@@ -1,4 +1,4 @@
-import { Effect, Result, TaggedError } from "@ulthar/immuty";
+import { Effect, Result, TaggedError } from "@ulthar/effecty";
 import { askQuestion } from "../ideas/readline.js";
 import { listTasks } from "./use-cases/list-tasks.js";
 import { Interface } from "readline/promises";

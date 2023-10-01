@@ -1,4 +1,4 @@
-import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/immuty";
+import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
 import { Store } from "../store.js";
 import { SelectQuery } from "../types/select-query.js";
 import { DocumentWithFields } from "../types/document-modifiers.js";

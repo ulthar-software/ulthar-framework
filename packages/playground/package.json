@@ -20,6 +20,6 @@
         "try": "yarn build && node"
     },
     "dependencies": {
-        "@ulthar/immuty": "workspace:^"
+        "@ulthar/effecty": "workspace:^"
     }
 }

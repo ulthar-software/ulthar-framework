@@ -1,4 +1,4 @@
-import { DocumentRecord, KeyOf } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf } from "@ulthar/effecty";
 import { SchemaTypes } from "./schema-types.js";
 
 export type DocumentSchemaMap<

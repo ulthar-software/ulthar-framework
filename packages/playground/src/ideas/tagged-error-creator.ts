@@ -1,4 +1,4 @@
-import { TaggedError } from "@ulthar/immuty";
+import { TaggedError } from "@ulthar/effecty";
 
 export function createTaggedError<
     TTag extends string,

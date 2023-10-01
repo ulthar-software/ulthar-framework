@@ -1,4 +1,4 @@
-import { Effect, Result } from "@ulthar/immuty";
+import { Effect, Result } from "@ulthar/effecty";
 import { Task } from "../model.js";
 
 type ConsoleDependency = {

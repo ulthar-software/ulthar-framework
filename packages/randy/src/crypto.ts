@@ -1,4 +1,4 @@
-import { Effect } from "@ulthar/immuty";
+import { Effect } from "@ulthar/effecty";
 
 export namespace Crypto {
     export function generateUUID() {

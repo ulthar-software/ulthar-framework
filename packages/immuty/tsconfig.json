@@ -1,4 +1,0 @@
-{
-    "extends": "../../tsconfig.json",
-    "include": ["src/**/*.ts", "../debby/src/copy-fields.ts"]
-}

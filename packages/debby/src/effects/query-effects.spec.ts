@@ -1,5 +1,5 @@
 import { Store } from "../store.js";
-import { PosixDate } from "@ulthar/immuty";
+import { PosixDate } from "@ulthar/effecty";
 import { Op } from "../operators.js";
 import { Aggregators } from "../aggregators.js";
 import { IStoreDriver } from "../store-driver.js";

@@ -1,6 +1,6 @@
 import { IStoreDriver } from "../store-driver.js";
 import { Store } from "../store.js";
-import { PosixDate } from "@ulthar/immuty";
+import { PosixDate } from "@ulthar/effecty";
 
 describe("Insert Effects", () => {
     type User = {

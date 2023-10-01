@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DocumentRecord, KeyOf, Maybe, NonMaybe } from "@ulthar/immuty";
+import { DocumentRecord, KeyOf, Maybe, NonMaybe } from "@ulthar/effecty";
 
 export type JoinResult<
     TName extends string = string,
