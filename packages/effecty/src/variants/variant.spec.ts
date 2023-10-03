@@ -1,6 +1,6 @@
 import { Result, resultify } from "../index.js";
 import { fullMatch } from "./match.js";
-import { TaggedVariant } from "../tagged-variant.js";
+import { TaggedVariant } from "./tagged-variant.js";
 
 describe("Variant", () => {
     test("given a variant type, we should properly match it against a pattern matcher", () => {

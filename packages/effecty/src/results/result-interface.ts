@@ -4,7 +4,7 @@ import {
     RemainingUnmatchedErrors,
 } from "../errors/error-pattern-matcher.js";
 import { TaggedError } from "../errors/tagged-error.js";
-import { Result } from "../result.js";
+import { Result } from "./result.js";
 import { Fn } from "../utils/functions/function.js";
 import { Immutable } from "../utils/immutability/immutable.js";
 import { AsyncResult } from "./async-result.js";

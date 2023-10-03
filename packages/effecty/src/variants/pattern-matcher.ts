@@ -1,8 +1,8 @@
-import { Result } from "../result.js";
+import { Result } from "../results/result.js";
 import { Fn } from "../utils/functions/function.js";
 import { MaybePromise } from "../utils/types/maybe-promise.js";
 import { TypeFromTag } from "./type-from-tag.js";
-import { TaggedVariant } from "../tagged-variant.js";
+import { TaggedVariant } from "./tagged-variant.js";
 
 /**
  * A pattern matcher is a map from variant tags to functions

@@ -1,13 +1,13 @@
-import { TaggedError } from "@ulthar/effecty";
+import { TaggedError } from "./tagged-error.js";
 
-export function createTaggedError<
+export function customTaggedError<
     TTag extends string,
     TParams extends Record<string, unknown> = Record<string, never>,
     TArgs extends unknown[] = [],
 >(
     tag: TTag,
     paramFn?: (...args: TArgs) => TParams,
-    toString?: (params: TParams) => string
+    customToString?: (params: TParams) => string
 ) {
     return class CustomTaggedError extends TaggedError<TTag> {
         public params: TParams;
@@ -16,10 +16,11 @@ export function createTaggedError<
             this.params = paramFn?.(...args) ?? ({} as TParams);
         }
         toString() {
-            return (
-                toString?.(this.params) ??
-                `${tag}: ${JSON.stringify(this.params)}`
-            );
+            if (customToString) {
+                return `[${this._tag}] ${customToString(this.params)}`;
+            }
+
+            return super.toString(this.params);
         }
     };
 }

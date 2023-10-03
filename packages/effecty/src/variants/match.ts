@@ -1,9 +1,9 @@
-import { Result } from "../result.js";
+import { Result } from "../results/result.js";
 import { Fn } from "../utils/functions/function.js";
 import { KeyOf } from "../utils/types/keyof.js";
 import { MaybePromise } from "../utils/types/maybe-promise.js";
 import { PartialPatternMatcher, PatternMatcher } from "./pattern-matcher.js";
-import { TaggedVariant } from "../tagged-variant.js";
+import { TaggedVariant } from "./tagged-variant.js";
 
 /**
  * Match a variant value against a pattern matcher and return

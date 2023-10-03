@@ -1,12 +1,9 @@
-import { TaggedError } from "../errors/tagged-error.js";
-import { Result } from "../result.js";
+import { TaggedError, customTaggedError } from "../errors/tagged-error.js";
+import { Result } from "./result.js";
 import { resultify } from "./resultify.js";
 
-class TestError extends TaggedError<"TestError"> {
-    constructor() {
-        super("TestError");
-    }
-}
+const TestErrorA = customTaggedError("TestErrorA");
+const TestErrorB = customTaggedError("TestErrorB");
 
 describe("Result", () => {
     test("Given a value, when checking isOk and isError, it should return true and false respectively", () => {
@@ -15,7 +12,7 @@ describe("Result", () => {
         expect(result.isError()).toBe(false);
     });
     test("Given an error, when checking isError and isOk, it should return true and false respectively", () => {
-        const result = Result.error(new TestError());
+        const result = Result.error(new TestErrorA());
         expect(result.isError()).toBe(true);
         expect(result.isOk()).toBe(false);
     });
@@ -25,7 +22,7 @@ describe("Result", () => {
         expect(result.unwrap()).toBe("value");
     });
     test("Given an error, when trying to unwrap the value, it should not compile", () => {
-        const result = Result.error(new TestError());
+        const result = Result.error(new TestErrorA());
         //@ts-expect-error: this next line should not compile as result is not an OkResult
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
         expect(() => result.unwrap()).toThrowError(
@@ -33,9 +30,9 @@ describe("Result", () => {
         );
     });
     test("Given an error, we can unwrap the error", () => {
-        const result = Result.error(new TestError());
+        const result = Result.error(new TestErrorA());
         if (result.isOk()) throw new Error("Expected an error");
-        expect(result.unwrapError()).toEqual(new TestError());
+        expect(result.unwrapError()).toEqual(new TestErrorA());
     });
 
     test("Given a value, when mapping, it should work", () => {
@@ -46,13 +43,13 @@ describe("Result", () => {
     });
 
     test("Given an error, when trying to map, the original error should remain", () => {
-        const result = Result.error(new TestError()) as Result<
+        const result = Result.error(new TestErrorA()) as Result<
             string,
-            TaggedError<"TestError">
+            TaggedError<"TestErrorA">
         >;
         const mappedResult = result.map((value) => value.length);
         if (mappedResult.isOk()) throw new Error("Expected an error");
-        expect(mappedResult.unwrapError()._tag).toBe("TestError");
+        expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
     });
 
     test("Given a value, when async mapping, it should work", async () => {
@@ -65,21 +62,21 @@ describe("Result", () => {
     });
 
     test("Given an error, when trying to async map, the original error should remain", async () => {
-        const result = Result.error(new TestError()) as Result<
+        const result = Result.error(new TestErrorA()) as Result<
             string,
-            TaggedError<"TestError">
+            TaggedError<"TestErrorA">
         >;
         const mappedResult = await result
             .asyncMap(async (value) => value.length)
             .resolve();
         if (!mappedResult.isError()) throw new Error("Expected an error");
-        expect(mappedResult.unwrapError()._tag).toBe("TestError");
+        expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
     });
 
     test("Given an error, when trying multiple async maps, the original error should remain", async () => {
-        const result = Result.error(new TestError()) as Result<
+        const result = Result.error(new TestErrorA()) as Result<
             string,
-            TaggedError<"TestError">
+            TaggedError<"TestErrorA">
         >;
         const mappedResult = await result
             .asyncMap(async (value) => value.length)
@@ -88,7 +85,7 @@ describe("Result", () => {
             .asyncMap(async (value) => value + 1)
             .resolve();
         if (!mappedResult.isError()) throw new Error("Expected an error");
-        expect(mappedResult.unwrapError()._tag).toBe("TestError");
+        expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
     });
 
     test("Given a value, when flat mapping, it should work", () => {
@@ -99,13 +96,13 @@ describe("Result", () => {
     });
 
     test("Given an error, when trying to flat map, the original error should remain", () => {
-        const result = Result.error(new TestError()) as Result<
+        const result = Result.error(new TestErrorA()) as Result<
             string,
-            TaggedError<"TestError">
+            TaggedError<"TestErrorA">
         >;
         const mappedResult = result.flatMap((value) => Result.ok(value.length));
         if (mappedResult.isOk()) throw new Error("Expected an error");
-        expect(mappedResult.unwrapError()._tag).toBe("TestError");
+        expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
     });
 
     test("Given a value, when async flat mapping, it should work", async () => {
@@ -118,22 +115,22 @@ describe("Result", () => {
     });
 
     test("Given an error, when trying to async flat map, the original error should remain", async () => {
-        const result = Result.error(new TestError()) as Result<
+        const result = Result.error(new TestErrorA()) as Result<
             string,
-            TaggedError<"TestError">
+            TaggedError<"TestErrorA">
         >;
         const mappedResult = await result
             .asyncFlatMap(async (value) => Result.ok(value.length))
             .resolve();
 
         if (mappedResult.isOk()) throw new Error("Expected an error");
-        expect(mappedResult.unwrapError()._tag).toBe("TestError");
+        expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
     });
 
     test("Given an error, when trying multiple async flat maps, the original error should remain", async () => {
-        const result = Result.error(new TestError()) as Result<
+        const result = Result.error(new TestErrorA()) as Result<
             string,
-            TaggedError<"TestError">
+            TaggedError<"TestErrorA">
         >;
         const mappedResult = await result
             .asyncFlatMap(async (value) => Result.ok(value.length))
@@ -143,15 +140,12 @@ describe("Result", () => {
             .resolve();
 
         if (mappedResult.isOk()) throw new Error("Expected an error");
-        expect(mappedResult.unwrapError()._tag).toBe("TestError");
+        expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
     });
 
     test("Given a result, catchSome works and correctly infers the new result type", async () => {
-        class TestErrorA extends TaggedError<"TestErrorA"> {
-            constructor() {
-                super("TestErrorA");
-            }
-        }
+        const TestErrorA = customTaggedError("TestErrorA");
+
         const resultA = Result.error(new TestErrorA()) as Result<
             string,
             TaggedError<"TestErrorA"> | TaggedError<"TestErrorB">
@@ -170,11 +164,6 @@ describe("Result", () => {
     });
 
     test("Given a result with catchSome that doesn't catch the running error it should continue unfolded", async () => {
-        class TestErrorA extends TaggedError<"TestErrorA"> {
-            constructor() {
-                super("TestErrorA");
-            }
-        }
         const resultA = Result.error(new TestErrorA()) as Result<
             string,
             TaggedError<"TestErrorA"> | TaggedError<"TestErrorB">
@@ -211,11 +200,6 @@ describe("Result", () => {
     });
 
     test("Given a result, catchAll catches all possible errors and correctly infer the new result type", async () => {
-        class TestErrorA extends TaggedError<"TestErrorA"> {
-            constructor() {
-                super("TestErrorA");
-            }
-        }
         const resultA = Result.error(new TestErrorA()) as Result<
             string,
             TaggedError<"TestErrorA"> | TaggedError<"TestErrorB">

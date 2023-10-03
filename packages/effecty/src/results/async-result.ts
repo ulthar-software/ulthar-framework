@@ -1,5 +1,5 @@
 import { TaggedError } from "../errors/tagged-error.js";
-import { Result } from "../result.js";
+import { Result } from "./result.js";
 import { Fn } from "../utils/functions/function.js";
 import { Immutable } from "../utils/immutability/immutable.js";
 import { MaybePromise } from "../utils/types/maybe-promise.js";

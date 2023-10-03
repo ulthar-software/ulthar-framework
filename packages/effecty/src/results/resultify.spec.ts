@@ -1,6 +1,6 @@
 import { TaggedError } from "../errors/tagged-error.js";
 import { wrapUnexpectedError } from "../errors/unexpected-error.js";
-import { Result } from "../result.js";
+import { Result } from "./result.js";
 import { resultify } from "./resultify.js";
 
 describe("resultify", () => {

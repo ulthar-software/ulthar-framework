@@ -1,4 +1,4 @@
-import { TaggedVariant } from "../tagged-variant.js";
+import { TaggedVariant } from "./tagged-variant.js";
 
 /**
  * TypeFromTag allows the extraction of a specific variant type

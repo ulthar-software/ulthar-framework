@@ -1,4 +1,4 @@
-import { Result } from "../result.js";
+import { Result } from "../results/result.js";
 import { MaybePromise } from "../utils/types/maybe-promise.js";
 import { ErrorFromTag } from "./error-from-tag.js";
 import { TagFromError } from "./tag-from-error.js";
