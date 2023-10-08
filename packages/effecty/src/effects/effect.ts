@@ -128,4 +128,26 @@ export class Effect<TDeps, TResultValue, TError extends TaggedError = never> {
             TError | TNewError
         >;
     }
+
+    repeatWhile(fn: (value: TResultValue) => MaybePromise<boolean>) {
+        return Effect.from(async (deps) => {
+            let result = await this.f(deps as TDeps).resolve();
+            while (result.isOk() && (await fn(result.unwrap()))) {
+                result = await this.f(deps as TDeps).resolve();
+            }
+            return result;
+        }) as Effect<TDeps, TResultValue, TError>;
+    }
+
+    retry(maxTimes: number) {
+        return Effect.from(async (deps) => {
+            let result = await this.f(deps as TDeps).resolve();
+            let i = 0;
+            while (result.isError() && i < maxTimes) {
+                result = await this.f(deps as TDeps).resolve();
+                i++;
+            }
+            return result;
+        }) as Effect<TDeps, TResultValue, TError>;
+    }
 }

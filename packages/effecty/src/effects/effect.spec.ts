@@ -141,5 +141,34 @@ describe("Effects", () => {
 
             expect(await effect.run()).toEqual(Result.ok("Some value default"));
         });
+
+        test("Given an effect, repeat while some predicate is true", async () => {
+            const fn = jest.fn();
+            const effect = Effect.from((dep: { i: number }) => dep.i++)
+                .tap((v) => fn(v))
+                .repeatWhile((value) => value !== 10);
+
+            expect(effect).toBeInstanceOf(Effect);
+
+            expect(await effect.run({ i: 1 })).toEqual(Result.ok(10));
+            expect(fn).toHaveBeenCalledTimes(10);
+        });
+
+        test("Given an effect, should retry until it succeeds", async () => {
+            const fn = jest.fn();
+            const effect = Effect.from((dep: { i: number }) => {
+                fn();
+                if (dep.i < 10) {
+                    dep.i++;
+                    return new TaggedError("Some error");
+                }
+                return dep.i;
+            }).retry(10);
+
+            expect(effect).toBeInstanceOf(Effect);
+
+            expect(await effect.run({ i: 1 })).toEqual(Result.ok(10));
+            expect(fn).toHaveBeenCalledTimes(10);
+        });
     });
 });
