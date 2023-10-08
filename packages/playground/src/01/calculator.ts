@@ -9,7 +9,7 @@ export const operations = {
     "+": resultify((a: number, b: number) => a + b),
     "-": resultify((a: number, b: number) => a - b),
     "*": resultify((a: number, b: number) => a * b),
-    "/": resultify((a: number, b: number): number | DivisionByZeroError => {
+    "/": resultify((a: number, b: number) => {
         if (b === 0) return new DivisionByZeroError(a, b);
         return a / b;
     }),
@@ -22,6 +22,10 @@ type ArgvEnv = {
     argv: string[];
 };
 
+function isOperator(op: string): op is Operator {
+    return operators.includes(op as Operator);
+}
+
 export const parseOpFromArgv = resultify(({ argv }: ArgvEnv) => {
     const [a, op, b] = argv;
 
@@ -31,20 +35,20 @@ export const parseOpFromArgv = resultify(({ argv }: ArgvEnv) => {
     const parsedB = Number.parseFloat(b);
     if (Number.isNaN(parsedB)) return new ParameterIsNaNError(b);
 
-    if (!operators.includes(op as Operator)) {
+    if (!isOperator(op)) {
         return new OperatorNotSupportedError(op);
     }
 
     return {
         a: parsedA,
-        op: op as Operator,
+        op,
         b: parsedB,
     };
 });
 
 const program = Effect.from(parseOpFromArgv)
     .map(({ a, op, b }) =>
-        operations[op](a, b).map((result) => ({ a, op, b, result }))
+        operations[op](a, b).map((result: number) => ({ a, op, b, result }))
     )
     .tap(({ a, op, b, result }) => {
         console.log(`${a} ${op} ${b} = ${result}`);

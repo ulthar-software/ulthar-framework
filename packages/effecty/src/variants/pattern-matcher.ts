@@ -34,3 +34,20 @@ export type PartialPatternMatcher<
 > = {
     [K in A["_tag"] & string]?: Fn<[TypeFromTag<A, K & string>], MP>;
 };
+
+export const DefaultVariant = Symbol("DefaultVariant");
+export type DefaultVariant = typeof DefaultVariant;
+
+export type ValidMatcherKey<TVariant> =
+    | (TVariant extends TaggedVariant
+          ? TVariant["_tag"]
+          : TVariant extends string
+          ? TVariant
+          : string | number | symbol)
+    | DefaultVariant;
+
+export type CaseMatcher<TVariant, TFn extends Fn<[TVariant], unknown>> = {
+    [K in ValidMatcherKey<TVariant>]?: TFn;
+} & {
+    [DefaultVariant]?: TFn;
+};

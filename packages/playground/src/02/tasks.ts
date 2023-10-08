@@ -23,7 +23,7 @@ const parseAction = (op: string): Action | UnknownOperation => {
 const program = listTasks()
     .flatMap(showMenu)
     .map(parseAction)
-    .whenCase({
+    .when({
         r: function (): Effect<unknown, unknown, TaggedError> {
             throw new Error("Function not implemented.");
         },

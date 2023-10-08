@@ -1,4 +1,12 @@
-import { AsyncResult, Result, TaggedError } from "../index.js";
+import {
+    AsyncResult,
+    CaseMatcher,
+    DefaultVariant,
+    KeyOf,
+    Result,
+    TaggedError,
+    isVariant,
+} from "../index.js";
 import {
     ExtractedErrors,
     ExtractedValue,
@@ -76,5 +84,48 @@ export class Effect<TDeps, TResultValue, TError extends TaggedError = never> {
                 return result as TResultValue;
             });
         });
+    }
+
+    when<
+        TNewResultValue,
+        TNewDeps = void,
+        TNewError extends TaggedError = never,
+    >(
+        matcher: CaseMatcher<
+            TResultValue,
+            Fn<[TResultValue], Effect<TNewDeps, TNewResultValue, TNewError>>
+        >
+    ): Effect<
+        MergeTypes<TDeps, TNewDeps>,
+        TNewResultValue,
+        TError | TNewError
+    > {
+        return Effect.from(async (deps) => {
+            const result = await this.f(deps as TDeps).resolve();
+            if (result.isOk()) {
+                const value = result.unwrap();
+                const key = (
+                    isVariant(value) ? value._tag : (value as string | number)
+                ) as KeyOf<typeof matcher>;
+
+                if (key in matcher && matcher[key]) {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it's not undefined
+                    return await matcher[key]!(value).run(deps as TNewDeps);
+                } else if (
+                    DefaultVariant in matcher &&
+                    matcher[DefaultVariant]
+                ) {
+                    return await matcher[DefaultVariant](value).run(
+                        deps as TNewDeps
+                    );
+                }
+                return Result.error(new TaggedError("Unmatched result"));
+            }
+            return result;
+        }) as Effect<
+            MergeTypes<TDeps, TNewDeps>,
+            TNewResultValue,
+            TError | TNewError
+        >;
     }
 }
