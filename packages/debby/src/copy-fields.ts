@@ -1,3 +1,5 @@
+import { KeyOf } from "@ulthar/effecty";
+
 export function copyFields<T, F extends KeyOf<T>>(
     entity: T,
     fields: F[]

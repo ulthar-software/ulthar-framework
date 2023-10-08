@@ -1,7 +1,7 @@
-import { DocumentRecord, KeyOf } from "@ulthar/effecty";
+import { SomeRecord, KeyOf } from "@ulthar/effecty";
 import { JoinResult } from "./join-result.js";
 
-export type WhereClause<TSchema extends DocumentRecord> = {
+export type WhereClause<TSchema extends SomeRecord> = {
     [key in KeyOf<TSchema>]?: WhereOperator<TSchema[KeyOf<TSchema>]>;
 };
 

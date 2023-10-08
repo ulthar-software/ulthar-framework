@@ -65,4 +65,16 @@ export class Effect<TDeps, TResultValue, TError extends TaggedError = never> {
             );
         });
     }
+
+    tap<TNewDeps = void>(
+        fn: Fn<[Immutable<TResultValue>, TNewDeps], MaybePromise<void>>
+    ): Effect<MergeTypes<TDeps, TNewDeps>, TResultValue, TError> {
+        return new Effect((deps) => {
+            const result = this.f(deps as TDeps);
+            return result.asyncMap(async (result) => {
+                await fn(result, deps as TNewDeps);
+                return result as TResultValue;
+            });
+        });
+    }
 }

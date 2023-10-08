@@ -29,8 +29,8 @@ export class ErrorResult<TValue, TError extends TaggedError>
         return this.error;
     }
 
-    map(): Result<never, TError> {
-        return this as unknown as Result<never, TError>;
+    map<TMappedValue>(): Result<TMappedValue, TError> {
+        return this as unknown as Result<TMappedValue, TError>;
     }
 
     asyncMap<TMappedValue>(

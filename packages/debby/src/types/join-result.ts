@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DocumentRecord, KeyOf, Maybe, NonMaybe } from "@ulthar/effecty";
+import { SomeRecord, KeyOf, Maybe, NonMaybe } from "@ulthar/effecty";
 
 export type JoinResult<
     TName extends string = string,
-    TSchema extends Maybe<DocumentRecord> = any,
+    TSchema extends Maybe<SomeRecord> = any,
 > = {
     [K in TName]: TSchema;
 };

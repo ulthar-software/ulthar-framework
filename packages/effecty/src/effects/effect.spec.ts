@@ -102,4 +102,12 @@ describe("Effects", () => {
             Result.error(new TaggedError("Some error"))
         );
     });
+
+    test("Given an effect, tap should run a function with its result but do not modify it", async () => {
+        const fn = jest.fn();
+        const effect = Effect.from(() => "Some value").tap((v) => fn(v));
+
+        expect(await effect.run()).toEqual(Result.ok("Some value"));
+        expect(fn).toHaveBeenCalledWith("Some value");
+    });
 });

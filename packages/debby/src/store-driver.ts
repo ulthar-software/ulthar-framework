@@ -1,4 +1,4 @@
-import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
+import { SomeRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
 import { DocumentAggregators } from "./aggregators.js";
 import {
     ConcatJoinResultsWithFields,
@@ -12,7 +12,7 @@ import { UpdateQuery } from "./types/update-query.js";
 import { DeleteQuery } from "./types/delete-query.js";
 
 export interface IStoreDriver<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     QueryErrors extends TaggedError = never,
     InsertErrors extends TaggedError = never,
     UpdateErrors extends TaggedError = never,

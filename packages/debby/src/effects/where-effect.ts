@@ -1,4 +1,4 @@
-import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
+import { SomeRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
 import { SelectQuery } from "../types/select-query.js";
 import { Store } from "../store.js";
 import {
@@ -10,7 +10,7 @@ import { DocumentWithFields } from "../types/document-modifiers.js";
 import { UpdateQuery } from "../index.js";
 
 export class WhereEffect<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     QueryErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     TSchemaName extends KeyOf<TSchemaMap>,
@@ -49,7 +49,7 @@ export class WhereEffect<
 }
 
 export class JoinedWhereEffect<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     QueryErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     A extends JoinResult,
@@ -86,7 +86,7 @@ export class JoinedWhereEffect<
 }
 
 export class UpdateWhereEffect<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     UpdateErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     TSchemaName extends KeyOf<TSchemaMap>,

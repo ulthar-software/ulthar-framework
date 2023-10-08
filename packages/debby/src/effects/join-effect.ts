@@ -1,5 +1,5 @@
 import {
-    DocumentRecord,
+    SomeRecord,
     Effect,
     KeyOf,
     Maybe,
@@ -18,7 +18,7 @@ import { JoinWhereClause } from "../types/where.js";
 import { JoinedWhereEffect } from "./where-effect.js";
 
 export class JoinEffect<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     QueryErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     A extends JoinResult,
@@ -152,7 +152,7 @@ export class JoinEffect<
 }
 
 export class JoinableEffect<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     QueryErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     A extends JoinResult,

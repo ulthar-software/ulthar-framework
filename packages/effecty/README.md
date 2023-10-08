@@ -21,3 +21,7 @@ So, what if our side effects were actually immutable objects that we could pass 
 - Add Scheduling features again
 - Enable Husky again after all tests are passing
 - Implement "RunningEffect" concept for parallel execution
+- Implement Effect:whenCase()
+- Implement Effect:when():do()
+- Implement Effect:loopWhileError
+- Implement Effect:loopWhileResult

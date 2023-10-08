@@ -1,8 +1,8 @@
-import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
+import { SomeRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
 import { Store } from "../store.js";
 
 export class InsertEffect<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     InsertErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     TSchemaName extends KeyOf<TSchemaMap>,

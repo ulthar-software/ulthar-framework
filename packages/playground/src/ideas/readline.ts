@@ -1,4 +1,4 @@
-import { Effect, Result } from "@ulthar/effecty";
+import { Effect } from "@ulthar/effecty";
 import { Interface } from "readline/promises";
 
 type ReadlineDependency = {
@@ -10,17 +10,13 @@ type ConsoleDependency = {
 };
 
 export function askQuestion(message: string) {
-    return Effect.from(
-        Result.wrap(({ rl }: ReadlineDependency) => {
-            return rl.question(message);
-        })
-    );
+    return Effect.from(({ rl }: ReadlineDependency) => {
+        return rl.question(message);
+    });
 }
 
 export function clearScreen() {
-    return Effect.from(
-        Result.wrap(({ console }: ConsoleDependency) => {
-            console.clear();
-        })
-    );
+    return Effect.from(({ console }: ConsoleDependency) => {
+        console.clear();
+    });
 }

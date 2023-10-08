@@ -1,9 +1,9 @@
-import { DocumentRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
+import { SomeRecord, Effect, KeyOf, TaggedError } from "@ulthar/effecty";
 import { Store } from "../store.js";
 import { UpdateWhereEffect, WhereClause } from "../index.js";
 
 export class UpdateEffect<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     UpdateErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     TSchemaName extends KeyOf<TSchemaMap>,

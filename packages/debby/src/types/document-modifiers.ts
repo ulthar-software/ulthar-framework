@@ -1,8 +1,8 @@
-import { DocumentRecord, KeyOf } from "@ulthar/effecty";
+import { SomeRecord, KeyOf } from "@ulthar/effecty";
 import { DocumentAggregators } from "../aggregators.js";
 
 export type DocumentWithFields<
-    TSchema extends DocumentRecord,
+    TSchema extends SomeRecord,
     TFields extends
         | KeyOf<TSchema>
         | DocumentAggregators<KeyOf<TSchema>, string>,
@@ -13,14 +13,14 @@ export type DocumentWithFields<
 };
 
 export type OnlyFields<
-    TSchema extends DocumentRecord,
+    TSchema extends SomeRecord,
     TFields extends
         | KeyOf<TSchema>
         | DocumentAggregators<KeyOf<TSchema>, string>,
 > = Exclude<TFields, DocumentAggregators<KeyOf<TSchema>, string>>;
 
 export type OnlyAggregators<
-    TSchema extends DocumentRecord,
+    TSchema extends SomeRecord,
     TFields extends
         | KeyOf<TSchema>
         | DocumentAggregators<KeyOf<TSchema>, string>,

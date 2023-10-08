@@ -1,10 +1,4 @@
-import {
-    DocumentRecord,
-    Effect,
-    KeyOf,
-    Maybe,
-    TaggedError,
-} from "@ulthar/effecty";
+import { SomeRecord, Effect, KeyOf, Maybe, TaggedError } from "@ulthar/effecty";
 import { Store } from "../store.js";
 import { DocumentWithFields } from "../types/document-modifiers.js";
 import { JoinOptions, JoinableEffect } from "./join-effect.js";
@@ -14,7 +8,7 @@ import { WhereEffect } from "./where-effect.js";
 import { GroupByEffect } from "./group-by-effect.js";
 
 export class FromEffect<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     QueryErrors extends TaggedError,
     ConnectionErrors extends TaggedError,
     TSchemaName extends KeyOf<TSchemaMap>,

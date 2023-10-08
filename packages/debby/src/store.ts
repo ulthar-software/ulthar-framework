@@ -1,11 +1,11 @@
-import { DocumentRecord, KeyOf, TaggedError } from "@ulthar/effecty";
+import { SomeRecord, KeyOf, TaggedError } from "@ulthar/effecty";
 import { FromEffect, InsertEffect } from "./index.js";
 import { IStoreDriver } from "./store-driver.js";
 import { DeleteEffect } from "./effects/delete-effect.js";
 import { UpdateEffect } from "./effects/update-effect.js";
 
 export class Store<
-    TSchemaMap extends Record<string, DocumentRecord>,
+    TSchemaMap extends Record<string, SomeRecord>,
     QueryErrors extends TaggedError = never,
     InsertErrors extends TaggedError = never,
     UpdateErrors extends TaggedError = never,

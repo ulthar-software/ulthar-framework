@@ -1,4 +1,4 @@
-import { Effect, Result } from "@ulthar/effecty";
+import { Effect, resultify } from "@ulthar/effecty";
 import {
     DivisionByZeroError,
     OperatorNotSupportedError,
@@ -6,10 +6,10 @@ import {
 } from "./errors.js";
 
 export const operations = {
-    "+": Result.wrap((a: number, b: number) => a + b),
-    "-": Result.wrap((a: number, b: number) => a - b),
-    "*": Result.wrap((a: number, b: number) => a * b),
-    "/": Result.wrap((a: number, b: number) => {
+    "+": resultify((a: number, b: number) => a + b),
+    "-": resultify((a: number, b: number) => a - b),
+    "*": resultify((a: number, b: number) => a * b),
+    "/": resultify((a: number, b: number): number | DivisionByZeroError => {
         if (b === 0) return new DivisionByZeroError(a, b);
         return a / b;
     }),
@@ -22,7 +22,7 @@ type ArgvEnv = {
     argv: string[];
 };
 
-export const parseOpFromArgv = Result.wrap(({ argv }: ArgvEnv) => {
+export const parseOpFromArgv = resultify(({ argv }: ArgvEnv) => {
     const [a, op, b] = argv;
 
     const parsedA = Number.parseFloat(a);
@@ -43,8 +43,8 @@ export const parseOpFromArgv = Result.wrap(({ argv }: ArgvEnv) => {
 });
 
 const program = Effect.from(parseOpFromArgv)
-    .include(({ a, op, b }) =>
-        operations[op](a, b).map((result) => ({ result }))
+    .map(({ a, op, b }) =>
+        operations[op](a, b).map((result) => ({ a, op, b, result }))
     )
     .tap(({ a, op, b, result }) => {
         console.log(`${a} ${op} ${b} = ${result}`);

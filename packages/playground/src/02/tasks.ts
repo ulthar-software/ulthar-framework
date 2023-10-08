@@ -1,4 +1,4 @@
-import { Effect, Result, TaggedError } from "@ulthar/effecty";
+import { Effect, TaggedError, resultify } from "@ulthar/effecty";
 import { askQuestion } from "../ideas/readline.js";
 import { listTasks } from "./use-cases/list-tasks.js";
 import { Interface } from "readline/promises";
@@ -13,12 +13,12 @@ function showMenu() {
 const posibleActions = ["a", "r", "l", "e"] as const;
 type Action = (typeof posibleActions)[number];
 
-const parseAction = Result.wrap((op: string): Action | UnknownOperation => {
+const parseAction = (op: string): Action | UnknownOperation => {
     if (posibleActions.includes(op as Action)) {
         return op as Action;
     }
     return new UnknownOperation(op);
-});
+};
 
 const program = listTasks()
     .flatMap(showMenu)
@@ -37,7 +37,7 @@ const program = listTasks()
             throw new Error("Function not implemented.");
         },
     })
-    .loopWhile(Result.wrap((value) => value !== "e"));
+    .loopWhile(resultify((value) => value !== "e"));
 
 await program.run({
     console: console,

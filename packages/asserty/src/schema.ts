@@ -1,8 +1,8 @@
-import { DocumentRecord, KeyOf } from "@ulthar/effecty";
-import { DocumentSchema, DocumentSchemaMap } from "./schema/document-schema.js";
+import { SomeRecord, KeyOf } from "@ulthar/effecty";
+import { RecordsSchema, RecordsSchemaMap } from "./schema/document-schema.js";
 
-export class Schema<TSchema extends Record<string, DocumentRecord>> {
-    constructor(private readonly schema: DocumentSchemaMap<TSchema>) {}
+export class Schema<TSchema extends Record<string, SomeRecord>> {
+    constructor(private readonly schema: RecordsSchemaMap<TSchema>) {}
 
     public getDocumentNames(): KeyOf<TSchema>[] {
         return Object.keys(this.schema);
@@ -10,7 +10,7 @@ export class Schema<TSchema extends Record<string, DocumentRecord>> {
 
     public getDocumentSchema<TKey extends KeyOf<TSchema>>(
         key: TKey
-    ): DocumentSchema<TSchema, TSchema[TKey]> {
+    ): RecordsSchema<TSchema, TSchema[TKey]> {
         return this.schema[key];
     }
 }
