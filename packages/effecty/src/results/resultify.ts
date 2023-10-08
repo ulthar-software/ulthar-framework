@@ -54,10 +54,10 @@ export function resultify<
     };
 }
 
-type SeparatedValue<T> = Exclude<Awaited<T>, TaggedError>;
-type SeparatedErrors<T> = Extract<Awaited<T>, TaggedError>;
+export type SeparatedValue<T> = Exclude<Awaited<T>, TaggedError>;
+export type SeparatedErrors<T> = Extract<Awaited<T>, TaggedError>;
 
-type InferredResult<T> = T extends Result<unknown, TaggedError>
+export type InferredResult<T> = T extends Result<unknown, TaggedError>
     ? T
     : T extends Promise<infer TP>
     ? TP extends Result<unknown, TaggedError>
@@ -65,9 +65,13 @@ type InferredResult<T> = T extends Result<unknown, TaggedError>
         : AsyncResult<SeparatedValue<TP>, SeparatedErrors<TP>>
     : Result<SeparatedValue<T>, SeparatedErrors<T>>;
 
-type ExtractedValue<T> = T extends Result<infer TValue, TaggedError>
+export type ExtractedValue<T> = T extends Result<infer TValue, TaggedError>
+    ? TValue
+    : T extends AsyncResult<infer TValue, TaggedError>
     ? TValue
     : never;
-type ExtractedErrors<T> = T extends Result<unknown, infer TError>
+export type ExtractedErrors<T> = T extends Result<unknown, infer TError>
+    ? TError
+    : T extends AsyncResult<unknown, infer TError>
     ? TError
     : never;

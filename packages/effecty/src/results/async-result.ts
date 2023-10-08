@@ -41,4 +41,17 @@ export class AsyncResult<TValue, TError extends TaggedError> {
             })
         );
     }
+    asyncResultMap<TMappedValue, TOtherError extends TaggedError>(
+        mapFn: Fn<[Immutable<TValue>], AsyncResult<TMappedValue, TOtherError>>
+    ): AsyncResult<TMappedValue, TError | TOtherError> {
+        return new AsyncResult(
+            this.promise.then(async (v) => {
+                if (v.isOk()) {
+                    return await mapFn(v.value).resolve();
+                } else {
+                    return v as unknown as Result<TMappedValue, TError>;
+                }
+            })
+        );
+    }
 }

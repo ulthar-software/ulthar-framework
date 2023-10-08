@@ -6,7 +6,7 @@ module.exports = {
     },
     extends: [
         "eslint:recommended",
-        "plugin:@typescript-eslint/strict-type-checked",
+        "plugin:@typescript-eslint/strict",
         "plugin:prettier/recommended",
     ],
     overrides: [

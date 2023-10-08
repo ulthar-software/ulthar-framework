@@ -1,4 +1,5 @@
-import { TaggedError, customTaggedError } from "./tagged-error.js";
+import { TaggedError } from "./tagged-error.js";
+import { customTaggedError } from "./custom-tagged-error.js";
 
 describe("Tagged Error", () => {
     test("Given a TaggedError, when toString is called, then it should return a string with the tag and the native error", () => {

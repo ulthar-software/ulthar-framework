@@ -57,6 +57,15 @@ export class ErrorResult<TValue, TError extends TaggedError>
         );
     }
 
+    asyncResultMap<
+        TMappedValue,
+        TOtherError extends TaggedError<string>,
+    >(): AsyncResult<TMappedValue, TError | TOtherError> {
+        return new AsyncResult(
+            Promise.resolve(this as unknown as Result<TMappedValue, TError>)
+        );
+    }
+
     catchSome<
         PM extends PartialErrorPatternMatcher<
             TError,

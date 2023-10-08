@@ -52,6 +52,12 @@ export class OkResult<TValue, TError extends TaggedError = never>
         return new AsyncResult(f(this.value));
     }
 
+    asyncResultMap<TMappedValue, TOtherError extends TaggedError<string>>(
+        f: Fn<[Immutable<TValue>], AsyncResult<TMappedValue, TOtherError>>
+    ): AsyncResult<TMappedValue, TError | TOtherError> {
+        return f(this.value);
+    }
+
     catchSome(): Result<TValue, never> {
         return this as unknown as Result<TValue, never>;
     }

@@ -1,4 +1,5 @@
 import { TaggedError } from "../errors/tagged-error.js";
+import { AsyncResult } from "./async-result.js";
 import { ErrorResult } from "./error-result.js";
 import { OkResult } from "./ok-result.js";
 
@@ -10,6 +11,10 @@ import { OkResult } from "./ok-result.js";
 export type Result<TValue, TError extends TaggedError> =
     | OkResult<TValue, TError>
     | ErrorResult<TValue, TError>;
+
+export type MaybeAsyncResult<TValue, TError extends TaggedError> =
+    | AsyncResult<TValue, TError>
+    | Result<TValue, TError>;
 
 export namespace Result {
     /**

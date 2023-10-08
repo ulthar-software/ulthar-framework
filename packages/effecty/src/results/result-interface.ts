@@ -31,6 +31,10 @@ export interface IResult<TValue, TError extends TaggedError> {
         f: Fn<[Immutable<TValue>], Promise<Result<TMappedValue, TOtherError>>>
     ): AsyncResult<TMappedValue, TError | TOtherError>;
 
+    asyncResultMap<TMappedValue, TOtherError extends TaggedError>(
+        f: Fn<[Immutable<TValue>], AsyncResult<TMappedValue, TOtherError>>
+    ): AsyncResult<TMappedValue, TError | TOtherError>;
+
     catchSome<
         PM extends PartialErrorPatternMatcher<
             TError,
