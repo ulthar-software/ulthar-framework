@@ -22,7 +22,7 @@ describe("Result", () => {
     describe("Unwrapping", () => {
         test("Given an okResult, when unwrapping, it should return the value", () => {
             const result = Result.ok("value");
-            if (result.isError()) throw new Error("Expected a value");
+            if (result.isError()) fail("Expected a value");
             expect(result.unwrap()).toBe("value");
         });
         test("Given an errorResult, when trying to unwrap the value, it should not compile", () => {
@@ -35,7 +35,7 @@ describe("Result", () => {
         });
         test("Given an errorResult, we can unwrap the error", () => {
             const result = Result.error(new TestErrorA());
-            if (result.isOk()) throw new Error("Expected an error");
+            if (result.isOk()) fail("Expected an error");
             expect(result.unwrapError()).toEqual(new TestErrorA());
         });
     });
@@ -44,7 +44,7 @@ describe("Result", () => {
         test("Given an okResult, when mapping, it should work", () => {
             const result = Result.ok("value");
             const mappedResult = result.map((value) => value.length);
-            if (mappedResult.isError()) throw new Error("Expected a value");
+            if (mappedResult.isError()) fail("Expected a value");
             expect(mappedResult.unwrap()).toBe(5);
         });
 
@@ -54,7 +54,7 @@ describe("Result", () => {
                 TaggedError<"TestErrorA">
             >;
             const mappedResult = result.map((value) => value.length);
-            if (mappedResult.isOk()) throw new Error("Expected an error");
+            if (mappedResult.isOk()) fail("Expected an error");
             expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
         });
 
@@ -63,7 +63,7 @@ describe("Result", () => {
             const mappedResult = await result
                 .asyncMap(async (value) => value.length)
                 .resolve();
-            if (mappedResult.isError()) throw new Error("Expected a value");
+            if (mappedResult.isError()) fail("Expected a value");
             expect(mappedResult.unwrap()).toBe(5);
         });
 
@@ -75,7 +75,7 @@ describe("Result", () => {
             const mappedResult = await result
                 .asyncMap(async (value) => value.length)
                 .resolve();
-            if (!mappedResult.isError()) throw new Error("Expected an error");
+            if (!mappedResult.isError()) fail("Expected an error");
             expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
         });
 
@@ -90,7 +90,7 @@ describe("Result", () => {
                 .asyncMap(async (value) => value + 1)
                 .asyncMap(async (value) => value + 1)
                 .resolve();
-            if (!mappedResult.isError()) throw new Error("Expected an error");
+            if (!mappedResult.isError()) fail("Expected an error");
             expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
         });
 
@@ -99,7 +99,7 @@ describe("Result", () => {
             const mappedResult = result.flatMap((value) =>
                 Result.ok(value.length)
             );
-            if (mappedResult.isError()) throw new Error("Expected a value");
+            if (mappedResult.isError()) fail("Expected a value");
             expect(mappedResult.unwrap()).toBe(5);
         });
 
@@ -111,7 +111,7 @@ describe("Result", () => {
             const mappedResult = result.flatMap((value) =>
                 Result.ok(value.length)
             );
-            if (mappedResult.isOk()) throw new Error("Expected an error");
+            if (mappedResult.isOk()) fail("Expected an error");
             expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
         });
 
@@ -120,7 +120,7 @@ describe("Result", () => {
             const mappedResult = await result
                 .asyncFlatMap(async (value) => Result.ok(value.length))
                 .resolve();
-            if (mappedResult.isError()) throw new Error("Expected a value");
+            if (mappedResult.isError()) fail("Expected a value");
             expect(mappedResult.unwrap()).toBe(5);
         });
 
@@ -133,7 +133,7 @@ describe("Result", () => {
                 .asyncFlatMap(async (value) => Result.ok(value.length))
                 .resolve();
 
-            if (mappedResult.isOk()) throw new Error("Expected an error");
+            if (mappedResult.isOk()) fail("Expected an error");
             expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
         });
 
@@ -142,7 +142,7 @@ describe("Result", () => {
             const mappedResult = await result
                 .asyncResultMap(resultify(async (value) => value.length))
                 .resolve();
-            if (mappedResult.isError()) throw new Error("Expected a value");
+            if (mappedResult.isError()) fail("Expected a value");
             expect(mappedResult.unwrap()).toBe(5);
         });
 
@@ -155,7 +155,7 @@ describe("Result", () => {
                 .asyncResultMap(resultify(async (value) => value.length))
                 .resolve();
 
-            if (mappedResult.isOk()) throw new Error("Expected an error");
+            if (mappedResult.isOk()) fail("Expected an error");
             expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
         });
     });
@@ -176,7 +176,7 @@ describe("Result", () => {
             // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorB">>
             // as we have caught the TestErrorA but not the TestErrorB
 
-            if (foldedResult.isError()) throw new Error("Expected a value");
+            if (foldedResult.isError()) fail("Expected a value");
 
             expect(foldedResult.unwrap()).toBe("default value");
         });
@@ -194,7 +194,7 @@ describe("Result", () => {
             // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorA">>
             // as we have not caught the TestErrorA
 
-            if (foldedResult.isOk()) throw new Error("Expected an error");
+            if (foldedResult.isOk()) fail("Expected an error");
 
             expect(foldedResult.unwrapError()._tag).toBe("TestErrorA");
         });
@@ -212,7 +212,7 @@ describe("Result", () => {
             // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorB">>
             // as we have caught TestErrorA
 
-            if (foldedResult.isError()) throw new Error("Expected a value");
+            if (foldedResult.isError()) fail("Expected a value");
 
             expect(foldedResult.unwrap()).toBe("original value");
         });
@@ -228,7 +228,7 @@ describe("Result", () => {
                 TestErrorB: () => Result.ok("default value"),
             });
 
-            if (foldedResult.isError()) throw new Error("Expected a value");
+            if (foldedResult.isError()) fail("Expected a value");
 
             expect(foldedResult.unwrap()).toBe("default value");
         });
@@ -244,14 +244,14 @@ describe("Result", () => {
                 TestErrorB: () => Result.ok("default value"),
             });
 
-            if (foldedResult.isError()) throw new Error("Expected a value");
+            if (foldedResult.isError()) fail("Expected a value");
 
             expect(foldedResult.unwrap()).toBe("original value");
         });
     });
 
     describe("Immutability", () => {
-        test("Given a result, we cannot mutate its internal value", async () => {
+        test("Given a result, we cannot mutate its internal value, not even after unwrapping", async () => {
             const result = Result.ok({ foo: "bar" });
             const mappedResult = result.map((v) => {
                 // v.foo = "baz"; <- This should not compile
@@ -268,7 +268,7 @@ describe("Result", () => {
                 foo: "baz",
             });
 
-            if (result.isError()) throw new Error("Expected a value");
+            if (result.isError()) fail("Expected a value");
             expect(result.unwrap()).toEqual({
                 foo: "bar",
             });

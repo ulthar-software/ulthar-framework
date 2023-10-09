@@ -12,7 +12,7 @@ describe("Async Result", () => {
             .asyncMap((v) => "Hello" + v)
             .resolve();
 
-        if (mappedResult.isError()) throw new Error("Expected a value");
+        if (mappedResult.isError()) fail("Expected a value");
         expect(mappedResult.unwrap()).toBe("Hello5");
     });
 
@@ -23,7 +23,7 @@ describe("Async Result", () => {
             .asyncFlatMap((v) => Result.ok("Hello" + v))
             .resolve();
 
-        if (mappedResult.isError()) throw new Error("Expected a value");
+        if (mappedResult.isError()) fail("Expected a value");
         expect(mappedResult.unwrap()).toBe("Hello5");
     });
 
@@ -34,7 +34,7 @@ describe("Async Result", () => {
             .asyncResultMap(resultify(async (v) => "Hello" + v))
             .resolve();
 
-        if (mappedResult.isError()) throw new Error("Expected a value");
+        if (mappedResult.isError()) fail("Expected a value");
         expect(mappedResult.unwrap()).toBe("Hello5");
     });
 
@@ -48,7 +48,7 @@ describe("Async Result", () => {
             .asyncResultMap(resultify(async (v) => "Hello" + v))
             .resolve();
 
-        if (mappedResult.isOk()) throw new Error("Expected an error");
+        if (mappedResult.isOk()) fail("Expected an error");
         expect(mappedResult.unwrapError()).toEqual(
             new TaggedError("some error")
         );
@@ -66,7 +66,7 @@ describe("Async Result", () => {
             .asyncFlatMap((value) => Result.ok(value + 1))
             .resolve();
 
-        if (mappedResult.isOk()) throw new Error("Expected an error");
+        if (mappedResult.isOk()) fail("Expected an error");
         expect(mappedResult.unwrapError()._tag).toBe("TestErrorA");
     });
 });
