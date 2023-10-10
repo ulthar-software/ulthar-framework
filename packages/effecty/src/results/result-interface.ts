@@ -35,17 +35,11 @@ export interface IResult<TValue, TError extends TaggedError> {
         f: Fn<[Immutable<TValue>], AsyncResult<TMappedValue, TOtherError>>
     ): AsyncResult<TMappedValue, TError | TOtherError>;
 
-    catchSome<
-        PM extends PartialErrorPatternMatcher<
-            TError,
-            TValue,
-            Result<TValue, never>
-        >,
-    >(
+    catchSome<PM extends PartialErrorPatternMatcher<TError, TValue>>(
         matcher: PM
     ): Result<TValue, RemainingUnmatchedErrors<TError, PM>>;
 
     catchAll(
-        matcher: ErrorPatternMatcher<TError, TValue, Result<TValue, never>>
+        matcher: ErrorPatternMatcher<TError, TValue>
     ): Result<TValue, never>;
 }

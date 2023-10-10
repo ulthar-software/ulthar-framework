@@ -66,19 +66,12 @@ export class ErrorResult<TValue, TError extends TaggedError>
         );
     }
 
-    catchSome<
-        PM extends PartialErrorPatternMatcher<
-            TError,
-            TValue,
-            Result<TValue, never>
-        >,
-    >(matcher: PM): Result<TValue, RemainingUnmatchedErrors<TError, PM>> {
+    catchSome<PM extends PartialErrorPatternMatcher<TError, TValue>>(
+        matcher: PM
+    ): Result<TValue, RemainingUnmatchedErrors<TError, PM>> {
         const x = partialMatch(this.error, matcher);
         if (x) {
-            return x as unknown as Result<
-                TValue,
-                RemainingUnmatchedErrors<TError, PM>
-            >;
+            return Result.ok(x as TValue);
         } else {
             return this as unknown as Result<
                 TValue,
@@ -88,8 +81,8 @@ export class ErrorResult<TValue, TError extends TaggedError>
     }
 
     catchAll(
-        matcher: ErrorPatternMatcher<TError, TValue, Result<TValue, never>>
+        matcher: ErrorPatternMatcher<TError, TValue>
     ): Result<TValue, never> {
-        return fullMatch(this.error, matcher);
+        return Result.ok(fullMatch(this.error, matcher));
     }
 }

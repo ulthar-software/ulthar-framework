@@ -170,7 +170,7 @@ describe("Result", () => {
             >;
 
             const foldedResult = resultA.catchSome({
-                TestErrorA: resultify(() => "default value"),
+                TestErrorA: () => "default value",
             });
 
             // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorB">>
@@ -188,7 +188,7 @@ describe("Result", () => {
             >;
 
             const foldedResult = resultA.catchSome({
-                TestErrorB: resultify(() => "default value"),
+                TestErrorB: () => "default value",
             });
 
             // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorA">>
@@ -206,7 +206,7 @@ describe("Result", () => {
             >;
 
             const foldedResult = resultA.catchSome({
-                TestErrorA: resultify(() => "default value"),
+                TestErrorA: () => "default value",
             });
 
             // foldedResult is correctly inferred as Result<string, TaggedError<"TestErrorB">>
@@ -224,8 +224,8 @@ describe("Result", () => {
             >;
 
             const foldedResult = resultA.catchAll({
-                TestErrorA: () => Result.ok("default value"),
-                TestErrorB: () => Result.ok("default value"),
+                TestErrorA: () => "default value",
+                TestErrorB: () => "default value",
             });
 
             if (foldedResult.isError()) fail("Expected a value");
@@ -240,8 +240,8 @@ describe("Result", () => {
             >;
 
             const foldedResult = resultA.catchAll({
-                TestErrorA: () => Result.ok("default value"),
-                TestErrorB: () => Result.ok("default value"),
+                TestErrorA: () => "default value",
+                TestErrorB: () => "default value",
             });
 
             if (foldedResult.isError()) fail("Expected a value");

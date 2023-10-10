@@ -1,4 +1,9 @@
-import { DefaultVariant, Result, TaggedError } from "../index.js";
+import {
+    DefaultVariant,
+    Result,
+    TaggedError,
+    TaggedVariant,
+} from "../index.js";
 import { Effect } from "./effect.js";
 
 describe("Effects", () => {
@@ -131,6 +136,49 @@ describe("Effects", () => {
             });
 
             expect(await effect.run()).toEqual(Result.ok("Some value ok"));
+        });
+        test("Given an effect that resolves a variant, 'when' should describe possible branches of execution using the tags", async () => {
+            interface TestVariant1 extends TaggedVariant {
+                _tag: "Some value";
+            }
+            interface TestVariant2 extends TaggedVariant {
+                _tag: "Some other value";
+            }
+            type TestVariant = TestVariant1 | TestVariant2;
+
+            const effect = Effect.from(
+                (): TestVariant => ({ _tag: "Some value" })
+            ).when({
+                "Some value": (value) => Effect.from(() => value._tag + " ok"),
+                "Some other value": (value) =>
+                    Effect.from(() => value._tag + " other"),
+            });
+
+            expect(await effect.run()).toEqual(Result.ok("Some value ok"));
+        });
+        test("Given an effect that fails, 'when' should not execute any branch", async () => {
+            const effect = Effect.from<
+                string | TaggedError<"Some error">,
+                void
+            >(() => {
+                return new TaggedError("Some error");
+            }).when({
+                "Some value": (value) => Effect.from(() => value + " ok"),
+                other: (value) => Effect.from(() => value + " other"),
+            });
+
+            expect(await effect.run()).toEqual(
+                Result.error(new TaggedError("Some error"))
+            );
+        });
+        test("Given an effect with a 'when' that doesn't describe all possible branches, it should fail with an error", async () => {
+            const effect = Effect.from(() => "Some value").when({
+                other: (value) => Effect.from(() => value + " other"),
+            });
+
+            expect(await effect.run()).toEqual(
+                Result.error(new TaggedError("Unmatched result in when"))
+            );
         });
         test("Given an effect, 'when' should handle default cases", async () => {
             const effect = Effect.from(() => "Some value").when({

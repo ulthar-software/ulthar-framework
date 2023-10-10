@@ -1,4 +1,4 @@
-import { Result, resultify } from "../index.js";
+import { DefaultVariant, Result, resultify } from "../index.js";
 import { fullMatch } from "./match.js";
 import { TaggedVariant } from "./tagged-variant.js";
 
@@ -21,8 +21,8 @@ describe("Variant", () => {
         type FooBar = Foo | Bar | Fez;
 
         const matcher = {
-            Foo: resultify((foo: Foo) => foo.foo),
-            "*": resultify(() => "bar or fez"),
+            Foo: (foo: Foo) => foo.foo,
+            [DefaultVariant]: () => "bar or fez",
         };
 
         expect(
@@ -33,7 +33,7 @@ describe("Variant", () => {
                 } as FooBar,
                 matcher
             )
-        ).toEqual(Result.ok("foo"));
+        ).toEqual("foo");
         expect(
             fullMatch(
                 {
@@ -42,6 +42,6 @@ describe("Variant", () => {
                 } as FooBar,
                 matcher
             )
-        ).toEqual(Result.ok("bar or fez"));
+        ).toEqual("bar or fez");
     });
 });

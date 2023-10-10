@@ -119,7 +119,9 @@ export class Effect<TDeps, TResultValue, TError extends TaggedError = never> {
                         deps as TNewDeps
                     );
                 }
-                return Result.error(new TaggedError("Unmatched result"));
+                return Result.error(
+                    new TaggedError("Unmatched result in when")
+                );
             }
             return result;
         }) as Effect<
@@ -150,4 +152,21 @@ export class Effect<TDeps, TResultValue, TError extends TaggedError = never> {
             return result;
         }) as Effect<TDeps, TResultValue, TError>;
     }
+
+    // catchSome<
+    //     PM extends PartialErrorPatternMatcher<
+    //         TError,
+    //         MaybePromise<TResultValue>
+    //     >,
+    // >();
+
+    // catchAll(matcher: ErrorPatternMatcher<TError, MaybePromise<TResultValue>>) {
+    //     return Effect.from(async (deps) => {
+    //         const result = await this.f(deps as TDeps).resolve();
+    //         if (result.isError()) {
+    //             return fullMatch(result.error, matcher);
+    //         }
+    //         return result;
+    //     }) as Effect<TDeps, TResultValue, never>;
+    // }
 }
