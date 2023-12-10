@@ -16,6 +16,7 @@ So, what if our side effects were actually immutable objects that we could pass 
 
 ## Remaining Features and Tasks
 
+- Add Effect:orExit
 - Add Resources features again
 - Add PosixTime features again
 - Add Scheduling features again

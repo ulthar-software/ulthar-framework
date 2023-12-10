@@ -13,7 +13,7 @@ const config = {
         ],
     },
     projects: ["<rootDir>/packages/*"],
-    collectCoverage: true,
+    collectCoverage: false,
     coverageDirectory: "<rootDir>/coverage",
     collectCoverageFrom: [
         "**/*.{ts,tsx}",

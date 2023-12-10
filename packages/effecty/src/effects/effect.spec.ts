@@ -116,6 +116,55 @@ describe("Effects", () => {
                 Result.error(new TaggedError("Some error"))
             );
         });
+
+        test("Listing all known errors in catchSome should reflect it on an effect result with never error type", async () => {
+            const effect = Effect.from(
+                (): string | TaggedError<"Some error"> => {
+                    return new TaggedError("Some error");
+                }
+            ).catchSome({
+                "Some error": () => Effect.from(() => "Some value"),
+            });
+
+            expect(await effect.run()).toEqual(Result.ok("Some value"));
+        });
+
+        test("Catching some errors but not all should reflect it on the effect type", async () => {
+            const effect = Effect.from(
+                ():
+                    | string
+                    | TaggedError<"Some error">
+                    | TaggedError<"Other"> => {
+                    return new TaggedError("Some error");
+                }
+            ).catchSome({
+                "Some error": () => Effect.from(() => "Some value"),
+            });
+
+            expect(await effect.run()).toEqual(Result.ok("Some value"));
+        });
+
+        test("Cathing some errors on an effect that doesn't fail should do nothing", async () => {
+            const effect = Effect.from(
+                (): string | TaggedError<"Some error"> => "Some value"
+            ).catchSome({
+                "Some error": () => Effect.from(() => "Other value"),
+            });
+
+            expect(await effect.run()).toEqual(Result.ok("Some value"));
+        });
+
+        test("Catching all errors on an effect should result in a new effect with never error type", async () => {
+            const effect = Effect.from(
+                (): string | TaggedError<"Some error"> => {
+                    return new TaggedError("Some error");
+                }
+            ).catchAll({
+                "Some error": () => Effect.from(() => "Some value"),
+            });
+
+            expect(await effect.run()).toEqual(Result.ok("Some value"));
+        });
     });
 
     describe("Value tapping", () => {

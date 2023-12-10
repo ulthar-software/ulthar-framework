@@ -1,3 +1,9 @@
+import { ErrorFromTag } from "../errors/error-from-tag.js";
+import {
+    ErrorPatternMatcher,
+    PartialErrorPatternMatcher,
+    RemainingUnmatchedErrors,
+} from "../errors/error-pattern-matcher.js";
 import {
     AsyncResult,
     CaseMatcher,
@@ -5,6 +11,7 @@ import {
     KeyOf,
     Result,
     TaggedError,
+    fullMatch,
     isVariant,
 } from "../index.js";
 import {
@@ -153,20 +160,50 @@ export class Effect<TDeps, TResultValue, TError extends TaggedError = never> {
         }) as Effect<TDeps, TResultValue, TError>;
     }
 
-    // catchSome<
-    //     PM extends PartialErrorPatternMatcher<
-    //         TError,
-    //         MaybePromise<TResultValue>
-    //     >,
-    // >();
+    catchSome<
+        PM extends PartialErrorPatternMatcher<
+            TError,
+            Effect<TNewDeps, TResultValue, never>
+        >,
+        TNewDeps = void,
+    >(errorMatcher: PM) {
+        return Effect.from(async (deps) => {
+            const result = await this.f(deps as TDeps).resolve();
+            if (result.isError()) {
+                const error = result.unwrapError();
+                const key = error._tag as KeyOf<typeof errorMatcher>;
+                if (key in errorMatcher && errorMatcher[key]) {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it's not undefined
+                    return await errorMatcher[key]!(
+                        error as ErrorFromTag<TError, string>
+                    ).run(deps as TNewDeps);
+                }
+            }
+            return result;
+        }) as unknown as Effect<
+            MergeTypes<TDeps, TNewDeps>,
+            TResultValue,
+            RemainingUnmatchedErrors<TError, PM>
+        >;
+    }
 
-    // catchAll(matcher: ErrorPatternMatcher<TError, MaybePromise<TResultValue>>) {
-    //     return Effect.from(async (deps) => {
-    //         const result = await this.f(deps as TDeps).resolve();
-    //         if (result.isError()) {
-    //             return fullMatch(result.error, matcher);
-    //         }
-    //         return result;
-    //     }) as Effect<TDeps, TResultValue, never>;
-    // }
+    catchAll<TNewDeps = void>(
+        matcher: ErrorPatternMatcher<
+            TError,
+            Effect<TNewDeps, TResultValue, never>
+        >
+    ): Effect<MergeTypes<TDeps, TNewDeps>, TResultValue, never> {
+        return Effect.from(async (deps) => {
+            const result = await this.f(deps as TDeps).resolve();
+            if (result.isError()) {
+                const effect = fullMatch(
+                    result.unwrapError(),
+                    matcher
+                ) as Effect<TNewDeps, TResultValue, never>;
+
+                return await effect.run(deps as TNewDeps);
+            }
+            return result as Result<TResultValue, never>;
+        });
+    }
 }
