@@ -1,0 +1,31 @@
+{
+  "name": "@ulthar/fabric-core",
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./domain": "./dist/domain.js",
+    "./validation": "./dist/validation.js",
+    "./validation/fields": "./dist/validation/fields/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "private": true,
+  "packageManager": "yarn@4.1.1",
+  "devDependencies": {
+    "@types/validator": "^13.12.1",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "validator": "^13.12.0"
+  }
+}

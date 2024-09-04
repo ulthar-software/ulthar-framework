@@ -703,6 +703,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/validator@npm:^13.12.1":
+  version: 13.12.1
+  resolution: "@types/validator@npm:13.12.1"
+  checksum: 10c0/473b12e287f569e08741c24d4d91663e740ec6264032eeb311c21c8f00dfa274c6fe5af9190ffe1b4b527e95a1bb31c81598682d5dbd76e1604f898bc19adc2b
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/eslint-plugin@npm:8.4.0":
   version: 8.4.0
   resolution: "@typescript-eslint/eslint-plugin@npm:8.4.0"
@@ -819,10 +826,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ulthar/fabric-core@workspace:^, @ulthar/fabric-core@workspace:packages/fabric/core":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/fabric-core@workspace:packages/fabric/core"
+  dependencies:
+    "@types/validator": "npm:^13.12.1"
+    typescript: "npm:^5.5.4"
+    validator: "npm:^13.12.0"
+    vitest: "npm:^2.0.5"
+  languageName: unknown
+  linkType: soft
+
 "@ulthar/lib-template@workspace:packages/templates/lib":
   version: 0.0.0-use.local
   resolution: "@ulthar/lib-template@workspace:packages/templates/lib"
   dependencies:
+    "@ulthar/fabric-core": "workspace:^"
     typescript: "npm:^5.5.4"
     vitest: "npm:^2.0.5"
   languageName: unknown
@@ -3121,6 +3140,13 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.0"
   checksum: 10c0/4ef57b45aa820d7ac6496e9208559986c665e49447cb072744c13b66925a362d96dd5a46c4530a6b8e203e5db5fe849369444440cb22ecfc26c679359e5dfa3c
+  languageName: node
+  linkType: hard
+
+"validator@npm:^13.12.0":
+  version: 13.12.0
+  resolution: "validator@npm:13.12.0"
+  checksum: 10c0/21d48a7947c9e8498790550f56cd7971e0e3d724c73388226b109c1bac2728f4f88caddfc2f7ed4b076f9b0d004316263ac786a17e9c4edf075741200718cd32
   languageName: node
   linkType: hard
 
