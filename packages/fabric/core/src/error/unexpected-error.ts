@@ -1,11 +1,11 @@
 import { TaggedError } from "./tagged-error.js";
 
 /**
- * `UnexpectedError` representa cualquier tipo de error inesperado.
+ * `UnexpectedError` represents any type of unexpected error.
  *
- * Este error se utiliza para representar errores que no deberían ocurrir en
- * la lógica de la aplicación, pero que siempre podrían suceder y
- * debemos estar preparados para manejarlos.
+ * This error is used to represent errors that should not occur in
+ * the application logic, but that could always happen and
+ * we must be prepared to handle.
  */
 export class UnexpectedError extends TaggedError<"UnexpectedError"> {
   constructor() {

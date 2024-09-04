@@ -1,9 +1,7 @@
 import { TaggedVariant, VariantTag } from "../variant/index.js";
 
 /**
- * Un TaggedError es un error que tiene un tag que lo identifica, lo cual
- * permite a los consumidores de la instancia de error identificar el tipo de
- * error que ocurrió.
+ * A TaggedError is a tagged variant with an error message.
  */
 export class TaggedError<Tag extends string>
   extends Error

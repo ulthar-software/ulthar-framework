@@ -3,11 +3,6 @@ import { AsyncResult } from "../../result/async-result.js";
 
 /**
  * A use case is a piece of domain logic that can be executed.
- *
- * It can be one of two types:
- *
- *  - `Query`: A use case that only reads data.
- *  - `Command`: A use case that modifies data.
  */
 export type UseCase<
   TDependencies,

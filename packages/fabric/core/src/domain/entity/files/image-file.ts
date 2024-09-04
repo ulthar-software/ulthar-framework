@@ -1,5 +1,5 @@
+import { ImageMimeType } from "../../../files/mime-type.js";
 import { DomainFile } from "./domain-file.js";
-import { ImageMimeType } from "./mime-type.js";
 
 /**
  * Represents an image file.

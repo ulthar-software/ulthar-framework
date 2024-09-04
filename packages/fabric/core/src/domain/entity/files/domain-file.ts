@@ -1,5 +1,5 @@
+import { BaseFile } from "../../../files/base-file.js";
 import { Entity } from "../entity.js";
-import { BaseFile } from "./base-file.js";
 
 /**
  * Represents a file as managed by the domain.

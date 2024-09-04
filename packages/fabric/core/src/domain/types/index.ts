@@ -1,3 +1,3 @@
 export * from "./email.js";
-export * from "./sem-ver.js";
+export * from "./semver.js";
 export * from "./uuid.js";

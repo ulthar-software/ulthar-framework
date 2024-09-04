@@ -1,4 +1,4 @@
-import { Base64String } from "../../types/base-64.js";
+import { Base64String } from "../domain/types/base-64.js";
 import { BaseFile } from "./base-file.js";
 
 /**

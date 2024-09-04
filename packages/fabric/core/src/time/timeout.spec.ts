@@ -32,7 +32,7 @@ describe("timeout", () => {
     },
   );
 
-  test("using ms we can define a timeout in milliseconds", async () => {
+  test("using timeout we can define a timeout in milliseconds", async () => {
     const start = Date.now();
     await timeout(100);
     const end = Date.now();
