@@ -1,0 +1,21 @@
+{
+  "cSpell.enabled": true,
+  "cSpell.language": "en,es",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "files.autoSave": "off",
+  "files.eol": "\n",
+  "javascript.preferences.importModuleSpecifierEnding": "js",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always",
+    "source.organizeImports": "always"
+  },
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/node_modules": true,
+    "packages/frontend/{android,ios}": true
+  },
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "cSpell.words": ["autodocs", "Syntropy"],
+  "typescript.preferences.autoImportFileExcludePatterns": ["**/chai/**"]
+}

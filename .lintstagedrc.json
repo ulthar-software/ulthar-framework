@@ -1,0 +1,4 @@
+{
+  "*": ["yarn prettier -u --write"],
+  "*.ts": ["yarn eslint --fix"]
+}

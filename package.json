@@ -1,0 +1,33 @@
+{
+  "name": "ulthar-framework",
+  "packageManager": "yarn@4.4.1",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/**/*",
+    "apps/**/*"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "@types/eslint": "^9.6.1",
+    "@types/eslint__js": "^8.42.3",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.9.1",
+    "husky": "^9.1.5",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.4.0",
+    "zx": "^8.1.5"
+  },
+  "scripts": {
+    "lint": "eslint . --fix --report-unused-disable-directives",
+    "format": "prettier --write .",
+    "test": "yarn workspaces foreach -vvpA run test --run --clearScreen false",
+    "build": "yarn workspaces foreach -vvpA --topological-dev run build",
+    "add-package": "tsx ./scripts/add-package.ts",
+    "postinstall": "husky"
+  }
+}
