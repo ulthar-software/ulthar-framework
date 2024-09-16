@@ -1,0 +1,22 @@
+{
+  "name": "@ulthar/template-domain",
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "private": true,
+  "packageManager": "yarn@4.1.1",
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  },
+  "dependencies": {
+    "@ulthar/fabric-core": "workspace:^"
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc -p tsconfig.build.json"
+  }
+}

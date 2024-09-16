@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "outDir": "dist"
+  },
+  "exclude": [
+    "src/**/*.spec.ts",
+    "dist",
+    "node_modules",
+    "coverage",
+    "vitest.config.ts"
+  ]
+}
