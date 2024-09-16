@@ -1,1 +1,1 @@
-export * from "./policy-map.js";
+export * from "./policy.js";
