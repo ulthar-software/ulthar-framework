@@ -1,5 +1,5 @@
-import { TaggedError } from "../../error/tagged-error.js";
 import { Result } from "../../result/result.js";
+import { CircularDependencyError } from "../errors/circular-dependency-error.js";
 
 export function sortByDependencies<T>(
   array: T[],
@@ -44,12 +44,4 @@ export function sortByDependencies<T>(
   return sorted.map(
     (key) => array.find((element) => keyGetter(element) === key) as T,
   );
-}
-
-export class CircularDependencyError extends TaggedError<"CircularDependencyError"> {
-  context: { key: string; dep: string };
-  constructor(key: string, dep: string) {
-    super("CircularDependencyError");
-    this.context = { key, dep };
-  }
 }

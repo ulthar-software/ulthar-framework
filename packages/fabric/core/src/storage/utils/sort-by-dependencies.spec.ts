@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from "vitest";
-import {
-  CircularDependencyError,
-  sortByDependencies,
-} from "./sort-by-dependencies.js";
+import { CircularDependencyError } from "../errors/circular-dependency-error.js";
+import { sortByDependencies } from "./sort-by-dependencies.js";
 
 describe("sortByDependencies", () => {
   it("should sort an array of objects by their dependencies", () => {

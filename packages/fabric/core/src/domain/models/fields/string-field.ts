@@ -11,7 +11,7 @@ export interface StringField
     StringFieldOptions {}
 
 export function createStringField<T extends StringFieldOptions>(
-  opts: T,
+  opts: T = {} as T,
 ): StringField & T {
   return {
     [VariantTag]: "StringField",

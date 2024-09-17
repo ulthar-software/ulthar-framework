@@ -5,11 +5,11 @@ export interface UUIDOptions extends BaseField {
   isPrimaryKey?: boolean;
 }
 
-export interface UUIDField extends TaggedVariant<"UUID_FIELD">, UUIDOptions {}
+export interface UUIDField extends TaggedVariant<"UUIDField">, UUIDOptions {}
 
 export function createUUIDField(opts: UUIDOptions): UUIDField {
   return {
-    [VariantTag]: "UUID_FIELD",
+    [VariantTag]: "UUIDField",
     ...opts,
   };
 }

@@ -1,0 +1,23 @@
+{
+  "name": "@ulthar/store-sqlite",
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "private": true,
+  "packageManager": "yarn@4.1.1",
+  "devDependencies": {
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  },
+  "dependencies": {
+    "@ulthar/fabric-core": "workspace:^",
+    "sqlite3": "^5.1.7"
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc -p tsconfig.build.json"
+  }
+}
