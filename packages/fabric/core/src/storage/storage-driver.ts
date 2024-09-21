@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ModelDefinition } from "../domain/models/create-model.js";
+import { ModelSchema } from "../domain/index.js";
 import { UnexpectedError } from "../error/unexpected-error.js";
 import { AsyncResult } from "../result/async-result.js";
 import { CircularDependencyError } from "./errors/circular-dependency-error.js";
@@ -30,7 +30,7 @@ export interface StorageDriver {
    * Sincronice the store with the schema.
    */
   sync(
-    schema: ModelDefinition[],
+    schema: ModelSchema,
   ): AsyncResult<void, StoreQueryError | CircularDependencyError>;
 
   /**

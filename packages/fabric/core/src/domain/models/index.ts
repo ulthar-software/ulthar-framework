@@ -1,4 +1,4 @@
-export * from "./create-model.js";
 export * from "./fields/index.js";
-export * from "./model-to-type.js";
-export * from "./relations/index.js";
+export * from "./model-schema.js";
+export * from "./model.js";
+export * from "./types/index.js";

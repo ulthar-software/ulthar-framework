@@ -1,9 +1,5 @@
-import {
-  ModelDefinition,
-  ModelFromName,
-  ModelName,
-} from "../../domain/models/create-model.js";
-import { ModelToType } from "../../domain/models/model-to-type.js";
+import { ModelSchema } from "../../domain/index.js";
+import { ModelToType } from "../../domain/models/types/model-to-type.js";
 import { AsyncResult } from "../../result/async-result.js";
 import { Keyof } from "../../types/index.js";
 import { StoreQueryError } from "../errors/query-error.js";
@@ -19,9 +15,9 @@ import {
 } from "./query.js";
 
 export class QueryBuilder<
-  TModels extends ModelDefinition,
-  TEntityName extends ModelName<TModels>,
-  T = ModelToType<ModelFromName<TModels, TEntityName>>,
+  TModels extends ModelSchema,
+  TEntityName extends Keyof<TModels>,
+  T = ModelToType<TModels[TEntityName]>,
 > implements StoreQuery<T>
 {
   constructor(

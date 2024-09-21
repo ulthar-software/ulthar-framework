@@ -1,16 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  ModelDefinition,
-  ModelFromName,
-  ModelName,
-} from "../domain/models/create-model.js";
-import { ModelToType } from "../domain/models/model-to-type.js";
+import { ModelSchema } from "../domain/index.js";
+import { ModelToType } from "../domain/models/types/model-to-type.js";
+import { Keyof } from "../types/keyof.js";
 import { StoreQuery } from "./query/query.js";
 
-export interface StateStore<
-  TModels extends ModelDefinition<string, Record<string, any>>,
-> {
-  from<TEntityName extends ModelName<TModels>>(
+export interface StateStore<TModels extends ModelSchema> {
+  from<TEntityName extends Keyof<TModels>>(
     entityName: TEntityName,
-  ): StoreQuery<ModelToType<ModelFromName<TModels, TEntityName>>>;
+  ): StoreQuery<ModelToType<TModels[TEntityName]>>;
 }
