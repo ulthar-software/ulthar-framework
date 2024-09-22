@@ -4,6 +4,6 @@ import { Entity } from "../entity.js";
 /**
  * Represents a file as managed by the domain.
  */
-export interface DomainFile extends BaseFile, Entity {
+export interface StoredFile extends BaseFile, Entity {
   url: string;
 }

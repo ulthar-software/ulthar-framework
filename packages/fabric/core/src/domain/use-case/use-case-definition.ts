@@ -26,11 +26,6 @@ interface BasicUseCaseDefinition<
   isAuthRequired: boolean;
 
   /**
-   * The required permissions to execute the use case.
-   **/
-  requiredPermissions?: string[];
-
-  /**
    * The use case function.
    */
   useCase: UseCase<TDependencies, TPayload, TOutput, TErrors>;

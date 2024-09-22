@@ -1,6 +1,6 @@
 import validator from "validator";
 import { isRecord } from "../record/is-record.js";
-import { InMemoryFile } from "./uploaded-file.js";
+import { InMemoryFile } from "./in-memory-file.js";
 
 const { isBase64, isMimeType } = validator;
 

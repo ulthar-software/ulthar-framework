@@ -1,9 +1,9 @@
 import { ImageMimeType } from "../../../files/mime-type.js";
-import { DomainFile } from "./domain-file.js";
+import { StoredFile } from "./stored-file.js";
 
 /**
  * Represents an image file.
  */
-export interface ImageFile extends DomainFile {
+export interface ImageFile extends StoredFile {
   mimeType: ImageMimeType;
 }
