@@ -1,1 +1,1 @@
-# @ulthar/fabric-core
+# @fabric/core

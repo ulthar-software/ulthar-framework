@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  BaseField,
-  FieldDefinition,
-  ModelDefinition,
-  VariantTag,
-} from "@ulthar/fabric-core";
+import { VariantTag } from "@fabric/core";
+import { BaseField, FieldDefinition, Model } from "@fabric/domain";
 
 type FieldMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -23,6 +19,12 @@ const FieldMap: FieldMap = {
       modifiersFromOpts(f),
     ].join(" ");
   },
+  IntegerField: function (): string {
+    throw new Error("Function not implemented.");
+  },
+  ReferenceField: function (): string {
+    throw new Error("Function not implemented.");
+  },
 };
 
 function modifiersFromOpts(options: BaseField) {
@@ -37,7 +39,7 @@ function fieldDefinitionToSQL(field: FieldDefinition) {
 }
 
 export function modelToSql(
-  model: ModelDefinition<string, Record<string, FieldDefinition>>,
+  model: Model<string, Record<string, FieldDefinition>>,
 ) {
   return Object.entries(model.fields)
     .map(([name, type]) => `${name} ${fieldDefinitionToSQL(type)}`)

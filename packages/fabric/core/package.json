@@ -1,5 +1,5 @@
 {
-  "name": "@ulthar/fabric-core",
+  "name": "@fabric/core",
   "type": "module",
   "module": "dist/index.js",
   "main": "dist/index.js",

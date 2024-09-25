@@ -1,4 +1,4 @@
-import { EnumToValues } from "@ulthar/fabric-core";
+import { EnumToType } from "@fabric/core";
 
 /**
  * A User Type is a string that represents a user type.
@@ -8,4 +8,4 @@ export const UserType = {
   // ADMIN: "ADMIN",
   // SPECIAL_USER: "SPECIAL_USER",
 };
-export type UserType = EnumToValues<typeof UserType>;
+export type UserType = EnumToType<typeof UserType>;

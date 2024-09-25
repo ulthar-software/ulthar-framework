@@ -1,4 +1,4 @@
-import { UseCaseDefinition } from "@ulthar/fabric-core";
+import { UseCaseDefinition } from "@fabric/domain";
 
 export const UseCases = [] as const satisfies UseCaseDefinition[];
 

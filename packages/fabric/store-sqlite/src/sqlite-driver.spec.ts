@@ -1,4 +1,4 @@
-import { createModel, Field, isError } from "@ulthar/fabric-core";
+import { createModel, Field, isError } from "@fabric/core";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { SQLiteStorageDriver } from "./sqlite-driver.js";
 

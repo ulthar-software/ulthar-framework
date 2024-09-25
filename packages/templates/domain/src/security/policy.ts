@@ -1,4 +1,4 @@
-import { Policy } from "@ulthar/fabric-core";
+import { Policy } from "@fabric/domain";
 import { Permission } from "./permission.js";
 import { UserType } from "./users.js";
 
