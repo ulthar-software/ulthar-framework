@@ -20,6 +20,10 @@ export function createReferenceField<T extends ReferenceFieldOptions>(
   } as const;
 }
 
+export function getTargetKey(field: ReferenceField): string {
+  return field.targetKey || "id";
+}
+
 export function validateReferenceField(
   schema: ModelSchema,
   field: ReferenceField,

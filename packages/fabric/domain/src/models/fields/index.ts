@@ -3,6 +3,7 @@ import { createReferenceField, ReferenceField } from "./reference-field.js";
 import { createStringField, StringField } from "./string-field.js";
 import { createUUIDField, UUIDField } from "./uuid-field.js";
 export * from "./base-field.js";
+export * from "./reference-field.js";
 
 export type FieldDefinition =
   | StringField
