@@ -9,22 +9,22 @@ import {
 
 describe("Validate Reference Field", () => {
   const schema = {
-    user: defineModel({
+    User: defineModel("User", {
       name: Field.string(),
       password: Field.string(),
-      phone: Field.string({ isOptional: true }),
       otherUnique: Field.integer({ isUnique: true }),
       otherNotUnique: Field.uuid(),
+      otherUser: Field.reference({
+        targetModel: "User",
+      }),
     }),
   };
 
   it("should return an error when the target model is not in the schema", () => {
     const result = validateReferenceField(
       schema,
-      "post",
-      "authorId",
       Field.reference({
-        model: "foo",
+        targetModel: "foo",
       }),
     );
 
@@ -33,33 +33,26 @@ describe("Validate Reference Field", () => {
     }
 
     expect(result).toBeInstanceOf(InvalidReferenceField);
-    expect(result.toString()).toBe(
-      "InvalidReferenceField: post.authorId. The target model 'foo' is not in the schema.",
-    );
   });
 
   it("should not return an error if the target model is in the schema", () => {
     const result = validateReferenceField(
       schema,
-      "post",
-      "authorId",
       Field.reference({
-        model: "user",
+        targetModel: "User",
       }),
     );
 
     if (isError(result)) {
-      throw result.toString();
+      throw result.reason;
     }
   });
 
   it("should return an error if the target key is not in the target model", () => {
     const result = validateReferenceField(
       schema,
-      "post",
-      "authorId",
       Field.reference({
-        model: "user",
+        targetModel: "User",
         targetKey: "foo",
       }),
     );
@@ -69,34 +62,13 @@ describe("Validate Reference Field", () => {
     }
 
     expect(result).toBeInstanceOf(InvalidReferenceField);
-    expect(result.toString()).toBe(
-      "InvalidReferenceField: post.authorId. The target key 'foo' is not in the target model 'user'.",
-    );
-  });
-
-  it("should not return an error if the target key is in the target model", () => {
-    const result = validateReferenceField(
-      schema,
-      "post",
-      "authorId",
-      Field.reference({
-        model: "user",
-        targetKey: "otherUnique",
-      }),
-    );
-
-    if (isError(result)) {
-      throw result.toString();
-    }
   });
 
   it("should return error if the target key is not unique", () => {
     const result = validateReferenceField(
       schema,
-      "post",
-      "authorId",
       Field.reference({
-        model: "user",
+        targetModel: "User",
         targetKey: "otherNotUnique",
       }),
     );
@@ -106,8 +78,19 @@ describe("Validate Reference Field", () => {
     }
 
     expect(result).toBeInstanceOf(InvalidReferenceField);
-    expect(result.toString()).toBe(
-      "InvalidReferenceField: post.authorId. The target key 'user'.'otherNotUnique' is not unique.",
+  });
+
+  it("should not return an error if the target key is in the target model and is unique", () => {
+    const result = validateReferenceField(
+      schema,
+      Field.reference({
+        targetModel: "User",
+        targetKey: "otherUnique",
+      }),
     );
+
+    if (isError(result)) {
+      throw result.toString();
+    }
   });
 });

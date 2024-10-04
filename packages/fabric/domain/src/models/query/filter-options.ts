@@ -14,9 +14,9 @@ export type SingleFilterOption<T = any> = {
 
 export type MultiFilterOption<T = any> = SingleFilterOption<T>[];
 
-export const FILTER_OPTION_TYPE_SYMBOL = Symbol("$type");
-export const FILTER_OPTION_VALUE_SYMBOL = Symbol("$value");
-export const FILTER_OPTION_OPERATOR_SYMBOL = Symbol("$operator");
+export const FILTER_OPTION_TYPE_SYMBOL = Symbol("filter_type");
+export const FILTER_OPTION_VALUE_SYMBOL = Symbol("filter_value");
+export const FILTER_OPTION_OPERATOR_SYMBOL = Symbol("filter_operator");
 
 export type LikeFilterOption<T> = T extends string
   ? {

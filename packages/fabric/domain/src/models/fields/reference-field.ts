@@ -3,7 +3,7 @@ import { ModelSchema } from "../model-schema.js";
 import { BaseField } from "./base-field.js";
 
 export interface ReferenceFieldOptions extends BaseField {
-  model: string;
+  targetModel: string;
   targetKey?: string;
 }
 
@@ -22,45 +22,32 @@ export function createReferenceField<T extends ReferenceFieldOptions>(
 
 export function validateReferenceField(
   schema: ModelSchema,
-  modelName: string,
-  fieldName: string,
   field: ReferenceField,
 ): Result<void, InvalidReferenceField> {
-  if (!schema[field.model]) {
+  if (!schema[field.targetModel]) {
     return new InvalidReferenceField(
-      modelName,
-      fieldName,
-      `The target model '${field.model}' is not in the schema.`,
+      `The target model '${field.targetModel}' is not in the schema.`,
     );
   }
 
-  if (field.targetKey && !schema[field.model][field.targetKey]) {
+  if (field.targetKey && !schema[field.targetModel].fields[field.targetKey]) {
     return new InvalidReferenceField(
-      modelName,
-      fieldName,
-      `The target key '${field.targetKey}' is not in the target model '${field.model}'.`,
+      `The target key '${field.targetKey}' is not in the target model '${field.targetModel}'.`,
     );
   }
 
-  if (field.targetKey && !schema[field.model][field.targetKey].isUnique) {
+  if (
+    field.targetKey &&
+    !schema[field.targetModel].fields[field.targetKey].isUnique
+  ) {
     return new InvalidReferenceField(
-      modelName,
-      fieldName,
-      `The target key '${field.model}'.'${field.targetKey}' is not unique.`,
+      `The target key '${field.targetModel}'.'${field.targetKey}' is not unique.`,
     );
   }
 }
 
 export class InvalidReferenceField extends TaggedError<"InvalidReferenceField"> {
-  constructor(
-    readonly modelName: string,
-    readonly fieldName: string,
-    readonly reason: string,
-  ) {
+  constructor(readonly reason: string) {
     super("InvalidReferenceField");
-  }
-
-  toString() {
-    return `InvalidReferenceField: ${this.modelName}.${this.fieldName}. ${this.reason}`;
   }
 }

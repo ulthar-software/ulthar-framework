@@ -4,7 +4,7 @@ import { AsyncResult, UnexpectedError } from "@fabric/core";
 import { CircularDependencyError } from "../errors/circular-dependency-error.js";
 import { StoreQueryError } from "../errors/query-error.js";
 import { ModelSchema } from "../models/model-schema.js";
-import { QueryDefinition } from "../query/query.js";
+import { QueryDefinition } from "../models/query/query.js";
 
 export interface StorageDriver {
   /**

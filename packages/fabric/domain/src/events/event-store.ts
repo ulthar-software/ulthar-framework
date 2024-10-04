@@ -1,7 +1,7 @@
 import { AsyncResult, MaybePromise, PosixDate } from "@fabric/core";
 import { StoreQueryError } from "../errors/query-error.js";
-import { Event, StoredEvent } from "../events/event.js";
 import { UUID } from "../types/uuid.js";
+import { Event, StoredEvent } from "./event.js";
 
 export interface EventStore<TEvent extends Event = Event> {
   getStream<TEventStreamEvent extends TEvent>(

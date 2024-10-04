@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncResult, Keyof } from "@fabric/core";
-import { StoreQueryError } from "../errors/query-error.js";
-import { AggregateOptions } from "./aggregate-options.js";
+import { StoreQueryError } from "../../errors/query-error.js";
 import { FilterOptions } from "./filter-options.js";
 import { OrderByOptions } from "./order-by-options.js";
 
@@ -9,8 +8,6 @@ export interface StoreQuery<T> {
   where(where: FilterOptions<T>): StoreSortableQuery<T>;
   orderBy(opts: OrderByOptions<T>): StoreLimitableQuery<T>;
   limit(limit: number, offset?: number): SelectableQuery<T>;
-
-  aggregate<K extends AggregateOptions<T>>(opts: K): SelectableQuery<K>;
 
   select(): AsyncResult<T[], StoreQueryError>;
   select<K extends Keyof<T>>(

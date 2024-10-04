@@ -1,9 +1,6 @@
 import { AsyncResult, Keyof } from "@fabric/core";
-import { StoreQueryError } from "../errors/query-error.js";
-import { ModelToType } from "../models/index.js";
-import { ModelSchema } from "../models/model-schema.js";
-import { StorageDriver } from "../storage/storage-driver.js";
-import { AggregateOptions } from "./aggregate-options.js";
+import { StoreQueryError } from "../../errors/query-error.js";
+import { StorageDriver } from "../../storage/storage-driver.js";
 import { FilterOptions } from "./filter-options.js";
 import { OrderByOptions } from "./order-by-options.js";
 import {
@@ -14,44 +11,32 @@ import {
   StoreSortableQuery,
 } from "./query.js";
 
-export class QueryBuilder<
-  TModels extends ModelSchema,
-  TEntityName extends Keyof<TModels>,
-  T = ModelToType<TModels[TEntityName]>,
-> implements StoreQuery<T>
-{
+export class QueryBuilder<T> implements StoreQuery<T> {
   constructor(
     private driver: StorageDriver,
-    private query: QueryDefinition<TEntityName>,
+    private query: QueryDefinition,
   ) {}
-  aggregate<K extends AggregateOptions<T>>(): SelectableQuery<K> {
-    throw new Error("Method not implemented.");
-  }
 
   where(where: FilterOptions<T>): StoreSortableQuery<T> {
-    this.query = {
+    return new QueryBuilder(this.driver, {
       ...this.query,
       where,
-    };
-    return this;
+    });
   }
 
   orderBy(opts: OrderByOptions<T>): StoreLimitableQuery<T> {
-    this.query = {
+    return new QueryBuilder(this.driver, {
       ...this.query,
       orderBy: opts,
-    };
-    return this;
+    });
   }
 
   limit(limit: number, offset?: number | undefined): SelectableQuery<T> {
-    this.query = {
+    return new QueryBuilder(this.driver, {
       ...this.query,
       limit,
       offset,
-    };
-
-    return this;
+    });
   }
 
   select<K extends Keyof<T>>(
