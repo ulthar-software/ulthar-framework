@@ -1,15 +1,14 @@
-import { createModel, Field, isError } from "@fabric/core";
+import { isError } from "@fabric/core";
+import { defineModel, Field } from "@fabric/domain";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { SQLiteStorageDriver } from "./sqlite-driver.js";
 
 describe("SQLite Store Driver", () => {
-  const model = createModel({
-    name: "test",
-    fields: {
-      id: Field.uuid({}),
+  const schema = {
+    users: defineModel("users", {
       name: Field.string(),
-    },
-  });
+    }),
+  };
 
   let store: SQLiteStorageDriver;
 
@@ -23,71 +22,115 @@ describe("SQLite Store Driver", () => {
   });
 
   test("should be able to synchronize the store and insert a record", async () => {
-    const result = await store.sync([model]);
+    const result = await store.sync(schema);
 
     if (isError(result)) throw result;
 
-    await store.insert("test", { id: "1", name: "test" });
+    await store.insert("users", {
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1,
+    });
 
-    const records = await store.select({ from: "test" });
+    const records = await store.select({ from: "users" });
 
-    expect(records).toEqual([{ id: "1", name: "test" }]);
+    expect(records).toEqual([
+      { id: "1", name: "test", streamId: "1", streamVersion: 1 },
+    ]);
   });
 
   test("should be able to update a record", async () => {
-    const result = await store.sync([model]);
+    const result = await store.sync(schema);
 
     if (isError(result)) throw result;
 
-    await store.insert("test", { id: "1", name: "test" });
+    await store.insert("users", {
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1,
+    });
 
-    await store.update("test", "1", { name: "updated" });
+    await store.update("users", "1", { name: "updated" });
 
-    const records = await store.select({ from: "test" });
+    const records = await store.select({ from: "users" });
 
-    expect(records).toEqual([{ id: "1", name: "updated" }]);
+    expect(records).toEqual([
+      { id: "1", name: "updated", streamId: "1", streamVersion: 1 },
+    ]);
   });
 
   test("should be able to delete a record", async () => {
-    const result = await store.sync([model]);
+    const result = await store.sync(schema);
 
     if (isError(result)) throw result;
 
-    await store.insert("test", { id: "1", name: "test" });
+    await store.insert("users", {
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1,
+    });
 
-    await store.delete("test", "1");
+    await store.delete("users", "1");
 
-    const records = await store.select({ from: "test" });
+    const records = await store.select({ from: "users" });
 
     expect(records).toEqual([]);
   });
 
   test("should be able to select records", async () => {
-    const result = await store.sync([model]);
+    const result = await store.sync(schema);
 
     if (isError(result)) throw result;
 
-    await store.insert("test", { id: "1", name: "test" });
-    await store.insert("test", { id: "2", name: "test" });
+    await store.insert("users", {
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1,
+    });
+    await store.insert("users", {
+      id: "2",
+      name: "test",
+      streamId: "2",
+      streamVersion: 1,
+    });
 
-    const records = await store.select({ from: "test" });
+    const records = await store.select({ from: "users" });
 
     expect(records).toEqual([
-      { id: "1", name: "test" },
-      { id: "2", name: "test" },
+      { id: "1", name: "test", streamId: "1", streamVersion: 1 },
+      { id: "2", name: "test", streamId: "2", streamVersion: 1 },
     ]);
   });
 
   test("should be able to select one record", async () => {
-    const result = await store.sync([model]);
+    const result = await store.sync(schema);
 
     if (isError(result)) throw result;
 
-    await store.insert("test", { id: "1", name: "test" });
-    await store.insert("test", { id: "2", name: "test" });
+    await store.insert("users", {
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1,
+    });
+    await store.insert("users", {
+      id: "2",
+      name: "test",
+      streamId: "2",
+      streamVersion: 1,
+    });
 
-    const record = await store.selectOne({ from: "test" });
+    const record = await store.selectOne({ from: "users" });
 
-    expect(record).toEqual({ id: "1", name: "test" });
+    expect(record).toEqual({
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1,
+    });
   });
 });

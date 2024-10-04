@@ -4,6 +4,7 @@ import { unlink } from "fs/promises";
 
 import {
   CircularDependencyError,
+  ModelSchema,
   QueryDefinition,
   StorageDriver,
   StoreQueryError,
@@ -35,6 +36,7 @@ export class SQLiteStorageDriver implements StorageDriver {
 
     // Enable Write-Ahead Logging, which is faster and more reliable.
     this.db.run("PRAGMA journal_mode= WAL;");
+    this.db.run("PRAGMA foreign_keys = ON;");
   }
 
   /**
@@ -109,13 +111,13 @@ export class SQLiteStorageDriver implements StorageDriver {
    * Sincronice the store with the schema.
    */
   async sync(
-    schema: ModelDefinition[],
+    schema: ModelSchema,
   ): AsyncResult<void, StoreQueryError | CircularDependencyError> {
     try {
       await dbRun(this.db, "BEGIN TRANSACTION;");
-      for (const model of schema) {
-        const query = `CREATE TABLE ${model.name} (${modelToSql(model)});`;
-        await dbRun(this.db, query);
+      for (const modelKey in schema) {
+        const model = schema[modelKey];
+        await dbRun(this.db, modelToSql(model));
       }
       await dbRun(this.db, "COMMIT;");
     } catch (error: any) {

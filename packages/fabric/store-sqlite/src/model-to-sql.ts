@@ -1,47 +1,60 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { VariantTag } from "@fabric/core";
-import { BaseField, FieldDefinition, Model } from "@fabric/domain";
+import { Variant, VariantTag } from "@fabric/core";
+import { FieldDefinition, getTargetKey, Model } from "@fabric/domain";
 
 type FieldMap = {
   [K in FieldDefinition[VariantTag]]: (
+    name: string,
     field: Extract<FieldDefinition, { [VariantTag]: K }>,
   ) => string;
 };
 
 const FieldMap: FieldMap = {
-  StringField: (f) => {
-    return "TEXT" + modifiersFromOpts(f);
+  StringField: (n, f) => {
+    return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
-  UUIDField: (f) => {
+  UUIDField: (n, f) => {
     return [
+      n,
       "TEXT",
       f.isPrimaryKey ? "PRIMARY KEY" : "",
       modifiersFromOpts(f),
     ].join(" ");
   },
-  IntegerField: function (): string {
-    throw new Error("Function not implemented.");
+  IntegerField: function (n, f): string {
+    return [n, "INTEGER", modifiersFromOpts(f)].join(" ");
   },
-  ReferenceField: function (): string {
-    throw new Error("Function not implemented.");
+  ReferenceField: function (n, f): string {
+    return [
+      n,
+      "TEXT",
+      modifiersFromOpts(f),
+      ",",
+      `FOREIGN KEY (${n}) REFERENCES ${f.targetModel}(${getTargetKey(f)})`,
+    ].join(" ");
   },
 };
 
-function modifiersFromOpts(options: BaseField) {
+function modifiersFromOpts(field: FieldDefinition) {
+  if (Variant.is(field, "UUIDField") && field.isPrimaryKey) {
+    return;
+  }
   return [
-    !options.isOptional ? "NOT NULL" : "",
-    options.isUnique ? "UNIQUE" : "",
+    !field.isOptional ? "NOT NULL" : "",
+    field.isUnique ? "UNIQUE" : "",
   ].join(" ");
 }
 
-function fieldDefinitionToSQL(field: FieldDefinition) {
-  return FieldMap[field[VariantTag]](field as any);
+function fieldDefinitionToSQL(name: string, field: FieldDefinition) {
+  return FieldMap[field[VariantTag]](name, field as any);
 }
 
 export function modelToSql(
   model: Model<string, Record<string, FieldDefinition>>,
 ) {
-  return Object.entries(model.fields)
-    .map(([name, type]) => `${name} ${fieldDefinitionToSQL(type)}`)
+  const fields = Object.entries(model.fields)
+    .map(([name, type]) => fieldDefinitionToSQL(name, type))
     .join(", ");
+
+  return `CREATE TABLE ${model.name} (${fields})`;
 }
