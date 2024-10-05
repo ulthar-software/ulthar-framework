@@ -419,6 +419,19 @@ __metadata:
   resolution: "@fabric/domain@workspace:packages/fabric/domain"
   dependencies:
     "@fabric/core": "workspace:^"
+    "@fabric/store-sqlite": "workspace:^"
+    typescript: "npm:^5.6.2"
+    vitest: "npm:^2.1.1"
+  languageName: unknown
+  linkType: soft
+
+"@fabric/store-sqlite@workspace:^, @fabric/store-sqlite@workspace:packages/fabric/store-sqlite":
+  version: 0.0.0-use.local
+  resolution: "@fabric/store-sqlite@workspace:packages/fabric/store-sqlite"
+  dependencies:
+    "@fabric/core": "workspace:^"
+    "@fabric/domain": "workspace:^"
+    sqlite3: "npm:^5.1.7"
     typescript: "npm:^5.6.2"
     vitest: "npm:^2.1.1"
   languageName: unknown
@@ -855,23 +868,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@ulthar/store-sqlite@workspace:packages/fabric/store-sqlite":
-  version: 0.0.0-use.local
-  resolution: "@ulthar/store-sqlite@workspace:packages/fabric/store-sqlite"
-  dependencies:
-    "@fabric/core": "workspace:^"
-    "@fabric/domain": "workspace:^"
-    sqlite3: "npm:^5.1.7"
-    typescript: "npm:^5.6.2"
-    vitest: "npm:^2.1.1"
-  languageName: unknown
-  linkType: soft
-
 "@ulthar/template-domain@workspace:packages/templates/domain":
   version: 0.0.0-use.local
   resolution: "@ulthar/template-domain@workspace:packages/templates/domain"
   dependencies:
     "@fabric/core": "workspace:^"
+    "@fabric/domain": "workspace:^"
     typescript: "npm:^5.6.2"
     vitest: "npm:^2.1.1"
   languageName: unknown

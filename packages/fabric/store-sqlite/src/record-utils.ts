@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { Model } from "@fabric/domain";
+import { fieldValueToSQL } from "./value-to-sql.js";
+
 /**
  * Unfold a record into a string of it's keys separated by commas.
  */
@@ -12,9 +15,12 @@ export function recordToKeys(record: Record<string, any>, prefix = "") {
 /**
  * Unfold a record into a string of it's keys separated by commas.
  */
-export function recordToParams(record: Record<string, any>) {
+export function recordToParams(model: Model, record: Record<string, any>) {
   return Object.keys(record).reduce(
-    (acc, key) => ({ ...acc, [`:${key}`]: record[key] }),
+    (acc, key) => ({
+      ...acc,
+      [`:${key}`]: fieldValueToSQL(model.fields[key], record[key]),
+    }),
     {},
   );
 }

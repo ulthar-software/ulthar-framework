@@ -1,5 +1,6 @@
 import { UUID } from "../../types/uuid.js";
 import { IntegerField } from "./integer.js";
+import { ReferenceField } from "./reference-field.js";
 import { StringField } from "./string-field.js";
 import { UUIDField } from "./uuid-field.js";
 
@@ -13,8 +14,12 @@ export type FieldToType<TField> = TField extends StringField
     : TField extends IntegerField
       ? TField["hasArbitraryPrecision"] extends true
         ? ToOptional<TField, bigint>
-        : ToOptional<TField, number>
-      : never;
+        : TField["hasArbitraryPrecision"] extends false
+          ? ToOptional<TField, number>
+          : ToOptional<TField, number | bigint>
+      : TField extends ReferenceField
+        ? ToOptional<TField, UUID>
+        : never;
 
 type ToOptional<TField, TType> = TField extends { isOptional: true }
   ? TType | null

@@ -4,6 +4,7 @@ import { unlink } from "fs/promises";
 
 import {
   CircularDependencyError,
+  Model,
   ModelSchema,
   QueryDefinition,
   StorageDriver,
@@ -16,6 +17,7 @@ import {
   recordToParams,
   recordToSQLSet,
 } from "./record-utils.js";
+import { transformRow } from "./sql-to-value.js";
 import {
   dbClose,
   dbRun,
@@ -35,7 +37,7 @@ export class SQLiteStorageDriver implements StorageDriver {
     this.db = new Database(path);
 
     // Enable Write-Ahead Logging, which is faster and more reliable.
-    this.db.run("PRAGMA journal_mode= WAL;");
+    this.db.run("PRAGMA journal_mode = WAL;");
     this.db.run("PRAGMA foreign_keys = ON;");
   }
 
@@ -58,17 +60,17 @@ export class SQLiteStorageDriver implements StorageDriver {
    * Insert data into the store
    */
   async insert(
-    collectionName: string,
+    model: Model,
     record: Record<string, any>,
   ): AsyncResult<void, StoreQueryError> {
     try {
-      const sql = `INSERT INTO ${collectionName} (${recordToKeys(record)}) VALUES (${recordToKeys(record, ":")})`;
+      const sql = `INSERT INTO ${model.name} (${recordToKeys(record)}) VALUES (${recordToKeys(record, ":")})`;
       const stmt = await this.getOrCreatePreparedStatement(sql);
-      return await run(stmt, recordToParams(record));
+      return await run(stmt, recordToParams(model, record));
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,
-        collectionName,
+        collectionName: model.name,
         record,
       });
     }
@@ -77,11 +79,14 @@ export class SQLiteStorageDriver implements StorageDriver {
   /**
    * Run a select query against the store.
    */
-  async select(query: QueryDefinition): AsyncResult<any[], StoreQueryError> {
+  async select(
+    model: Model,
+    query: QueryDefinition,
+  ): AsyncResult<any[], StoreQueryError> {
     try {
       const sql = `SELECT * FROM ${query.from}`;
       const stmt = await this.getOrCreatePreparedStatement(sql);
-      return await getAll(stmt);
+      return await getAll(stmt, transformRow(model));
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,
@@ -93,12 +98,15 @@ export class SQLiteStorageDriver implements StorageDriver {
   /**
    * Run a select query against the store.
    */
-  async selectOne(query: QueryDefinition): AsyncResult<any, StoreQueryError> {
+  async selectOne(
+    model: Model,
+    query: QueryDefinition,
+  ): AsyncResult<any, StoreQueryError> {
     try {
       const sql = `SELECT * FROM ${query.from}`;
       const stmt = await this.getOrCreatePreparedStatement(sql);
 
-      return await getOne(stmt);
+      return await getOne(stmt, transformRow(model));
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,
@@ -161,16 +169,16 @@ export class SQLiteStorageDriver implements StorageDriver {
    * Update a record in the store.
    */
   async update(
-    collectionName: string,
+    model: Model,
     id: string,
     record: Record<string, any>,
   ): AsyncResult<void, StoreQueryError> {
     try {
-      const sql = `UPDATE ${collectionName} SET ${recordToSQLSet(record)} WHERE id = :id`;
+      const sql = `UPDATE ${model.name} SET ${recordToSQLSet(record)} WHERE id = :id`;
       const stmt = await this.getOrCreatePreparedStatement(sql);
       return await run(
         stmt,
-        recordToParams({
+        recordToParams(model, {
           ...record,
           id,
         }),
@@ -178,7 +186,7 @@ export class SQLiteStorageDriver implements StorageDriver {
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,
-        collectionName,
+        collectionName: model.name,
         record,
       });
     }
@@ -188,18 +196,15 @@ export class SQLiteStorageDriver implements StorageDriver {
    * Delete a record from the store.
    */
 
-  async delete(
-    collectionName: string,
-    id: string,
-  ): AsyncResult<void, StoreQueryError> {
+  async delete(model: Model, id: string): AsyncResult<void, StoreQueryError> {
     try {
-      const sql = `DELETE FROM ${collectionName} WHERE id = :id`;
+      const sql = `DELETE FROM ${model.name} WHERE id = :id`;
       const stmt = await this.getOrCreatePreparedStatement(sql);
       return await run(stmt, { ":id": id });
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,
-        collectionName,
+        collectionName: model.name,
         id,
       });
     }

@@ -52,25 +52,31 @@ export function run(
   });
 }
 
-export function getAll(stmt: Statement): Promise<Record<string, any>[]> {
+export function getAll(
+  stmt: Statement,
+  transformer: (row: any) => any,
+): Promise<Record<string, any>[]> {
   return new Promise((resolve, reject) => {
     stmt.all((err: Error | null, rows: Record<string, any>[]) => {
       if (err) {
         reject(err);
       } else {
-        resolve(rows);
+        resolve(rows.map(transformer));
       }
     });
   });
 }
 
-export function getOne(stmt: Statement): Promise<Record<string, any>> {
+export function getOne(
+  stmt: Statement,
+  transformer: (row: any) => any,
+): Promise<Record<string, any>> {
   return new Promise((resolve, reject) => {
     stmt.get((err: Error | null, row: Record<string, any>) => {
       if (err) {
         reject(err);
       } else {
-        resolve(row);
+        resolve(transformer(row));
       }
     });
   });

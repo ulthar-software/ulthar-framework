@@ -1,5 +1,5 @@
 {
-  "name": "@ulthar/store-sqlite",
+  "name": "@fabric/store-sqlite",
   "type": "module",
   "module": "dist/index.js",
   "main": "dist/index.js",

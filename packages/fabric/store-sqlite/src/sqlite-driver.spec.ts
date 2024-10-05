@@ -26,17 +26,19 @@ describe("SQLite Store Driver", () => {
 
     if (isError(result)) throw result;
 
-    await store.insert("users", {
+    const insertResult = await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
-      streamVersion: 1,
+      streamVersion: 1n,
     });
 
-    const records = await store.select({ from: "users" });
+    if (isError(insertResult)) throw insertResult;
+
+    const records = await store.select(schema.users, { from: "users" });
 
     expect(records).toEqual([
-      { id: "1", name: "test", streamId: "1", streamVersion: 1 },
+      { id: "1", name: "test", streamId: "1", streamVersion: 1n },
     ]);
   });
 
@@ -45,19 +47,19 @@ describe("SQLite Store Driver", () => {
 
     if (isError(result)) throw result;
 
-    await store.insert("users", {
+    await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1,
     });
 
-    await store.update("users", "1", { name: "updated" });
+    await store.update(schema.users, "1", { name: "updated" });
 
-    const records = await store.select({ from: "users" });
+    const records = await store.select(schema.users, { from: "users" });
 
     expect(records).toEqual([
-      { id: "1", name: "updated", streamId: "1", streamVersion: 1 },
+      { id: "1", name: "updated", streamId: "1", streamVersion: 1n },
     ]);
   });
 
@@ -66,16 +68,16 @@ describe("SQLite Store Driver", () => {
 
     if (isError(result)) throw result;
 
-    await store.insert("users", {
+    await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1,
     });
 
-    await store.delete("users", "1");
+    await store.delete(schema.users, "1");
 
-    const records = await store.select({ from: "users" });
+    const records = await store.select(schema.users, { from: "users" });
 
     expect(records).toEqual([]);
   });
@@ -85,24 +87,24 @@ describe("SQLite Store Driver", () => {
 
     if (isError(result)) throw result;
 
-    await store.insert("users", {
+    await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1,
     });
-    await store.insert("users", {
+    await store.insert(schema.users, {
       id: "2",
       name: "test",
       streamId: "2",
       streamVersion: 1,
     });
 
-    const records = await store.select({ from: "users" });
+    const records = await store.select(schema.users, { from: "users" });
 
     expect(records).toEqual([
-      { id: "1", name: "test", streamId: "1", streamVersion: 1 },
-      { id: "2", name: "test", streamId: "2", streamVersion: 1 },
+      { id: "1", name: "test", streamId: "1", streamVersion: 1n },
+      { id: "2", name: "test", streamId: "2", streamVersion: 1n },
     ]);
   });
 
@@ -111,26 +113,26 @@ describe("SQLite Store Driver", () => {
 
     if (isError(result)) throw result;
 
-    await store.insert("users", {
+    await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1,
     });
-    await store.insert("users", {
+    await store.insert(schema.users, {
       id: "2",
       name: "test",
       streamId: "2",
       streamVersion: 1,
     });
 
-    const record = await store.selectOne({ from: "users" });
+    const record = await store.selectOne(schema.users, { from: "users" });
 
     expect(record).toEqual({
       id: "1",
       name: "test",
       streamId: "1",
-      streamVersion: 1,
+      streamVersion: 1n,
     });
   });
 });

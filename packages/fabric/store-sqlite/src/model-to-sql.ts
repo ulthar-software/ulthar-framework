@@ -2,14 +2,14 @@
 import { Variant, VariantTag } from "@fabric/core";
 import { FieldDefinition, getTargetKey, Model } from "@fabric/domain";
 
-type FieldMap = {
+type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
     name: string,
     field: Extract<FieldDefinition, { [VariantTag]: K }>,
   ) => string;
 };
 
-const FieldMap: FieldMap = {
+const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
   StringField: (n, f) => {
     return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
@@ -34,6 +34,9 @@ const FieldMap: FieldMap = {
     ].join(" ");
   },
 };
+function fieldDefinitionToSQL(name: string, field: FieldDefinition) {
+  return FieldSQLDefinitionMap[field[VariantTag]](name, field as any);
+}
 
 function modifiersFromOpts(field: FieldDefinition) {
   if (Variant.is(field, "UUIDField") && field.isPrimaryKey) {
@@ -43,10 +46,6 @@ function modifiersFromOpts(field: FieldDefinition) {
     !field.isOptional ? "NOT NULL" : "",
     field.isUnique ? "UNIQUE" : "",
   ].join(" ");
-}
-
-function fieldDefinitionToSQL(name: string, field: FieldDefinition) {
-  return FieldMap[field[VariantTag]](name, field as any);
 }
 
 export function modelToSql(

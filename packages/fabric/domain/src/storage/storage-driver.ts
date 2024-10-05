@@ -4,6 +4,7 @@ import { AsyncResult, UnexpectedError } from "@fabric/core";
 import { CircularDependencyError } from "../errors/circular-dependency-error.js";
 import { StoreQueryError } from "../errors/query-error.js";
 import { ModelSchema } from "../models/model-schema.js";
+import { Model } from "../models/model.js";
 import { QueryDefinition } from "../models/query/query.js";
 
 export interface StorageDriver {
@@ -11,19 +12,25 @@ export interface StorageDriver {
    * Insert data into the store
    */
   insert(
-    collectionName: string,
+    model: Model,
     record: Record<string, any>,
   ): AsyncResult<void, StoreQueryError>;
 
   /**
    * Run a select query against the store.
    */
-  select(query: QueryDefinition): AsyncResult<any[], StoreQueryError>;
+  select(
+    model: Model,
+    query: QueryDefinition,
+  ): AsyncResult<any[], StoreQueryError>;
 
   /**
    * Run a select query against the store.
    */
-  selectOne(query: QueryDefinition): AsyncResult<any, StoreQueryError>;
+  selectOne(
+    model: Model,
+    query: QueryDefinition,
+  ): AsyncResult<any, StoreQueryError>;
 
   /**
    * Sincronice the store with the schema.
@@ -46,7 +53,7 @@ export interface StorageDriver {
    * Update a record in the store.
    */
   update(
-    collectionName: string,
+    model: Model,
     id: string,
     record: Record<string, any>,
   ): AsyncResult<void, StoreQueryError>;
@@ -54,8 +61,5 @@ export interface StorageDriver {
   /**
    * Delete a record from the store.
    */
-  delete(
-    collectionName: string,
-    id: string,
-  ): AsyncResult<void, StoreQueryError>;
+  delete(model: Model, id: string): AsyncResult<void, StoreQueryError>;
 }
