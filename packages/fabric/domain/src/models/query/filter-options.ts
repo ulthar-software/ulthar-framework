@@ -4,12 +4,14 @@ export type FilterOptions<T = any> =
   | SingleFilterOption<T>
   | MultiFilterOption<T>;
 
+export type FilterValue<T = any, K extends keyof T = keyof T> =
+  | T[K]
+  | LikeFilterOption<T[K]>
+  | ComparisonFilterOption<T[K]>
+  | InFilterOption<T[K]>;
+
 export type SingleFilterOption<T = any> = {
-  [K in keyof T]?:
-    | T[K]
-    | LikeFilterOption<T[K]>
-    | ComparisonFilterOption<T[K]>
-    | InFilterOption<T[K]>;
+  [K in keyof T]?: FilterValue<T, K>;
 };
 
 export type MultiFilterOption<T = any> = SingleFilterOption<T>[];

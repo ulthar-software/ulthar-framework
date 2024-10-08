@@ -4,6 +4,14 @@ import { Field, FieldDefinition } from "./fields/index.js";
 
 export type CustomModelFields = Record<string, FieldDefinition>;
 
+export interface Collection<
+  TName extends string = string,
+  TFields extends CustomModelFields = CustomModelFields,
+> {
+  name: TName;
+  fields: TFields;
+}
+
 export const DefaultModelFields = {
   id: Field.uuid({ isPrimaryKey: true }),
   streamId: Field.uuid({ isIndexed: true }),
@@ -12,11 +20,11 @@ export const DefaultModelFields = {
     hasArbitraryPrecision: true,
   }),
 };
+
 export interface Model<
   TName extends string = string,
   TFields extends CustomModelFields = CustomModelFields,
-> {
-  name: TName;
+> extends Collection<TName, TFields> {
   fields: typeof DefaultModelFields & TFields;
 }
 
@@ -27,6 +35,16 @@ export function defineModel<
   return {
     name,
     fields: { ...DefaultModelFields, ...fields },
+  } as const;
+}
+
+export function defineCollection<
+  TName extends string,
+  TFields extends CustomModelFields,
+>(name: TName, fields: TFields): Collection<TName, TFields> {
+  return {
+    name,
+    fields,
   } as const;
 }
 

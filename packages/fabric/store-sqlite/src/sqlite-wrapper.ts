@@ -54,10 +54,11 @@ export function run(
 
 export function getAll(
   stmt: Statement,
+  params: Record<string, any>,
   transformer: (row: any) => any,
 ): Promise<Record<string, any>[]> {
   return new Promise((resolve, reject) => {
-    stmt.all((err: Error | null, rows: Record<string, any>[]) => {
+    stmt.all(params, (err: Error | null, rows: Record<string, any>[]) => {
       if (err) {
         reject(err);
       } else {
@@ -69,14 +70,15 @@ export function getAll(
 
 export function getOne(
   stmt: Statement,
+  params: Record<string, any>,
   transformer: (row: any) => any,
 ): Promise<Record<string, any>> {
   return new Promise((resolve, reject) => {
-    stmt.get((err: Error | null, row: Record<string, any>) => {
+    stmt.all(params, (err: Error | null, rows: Record<string, any>[]) => {
       if (err) {
         reject(err);
       } else {
-        resolve(transformer(row));
+        resolve(rows.map(transformer)[0]);
       }
     });
   });

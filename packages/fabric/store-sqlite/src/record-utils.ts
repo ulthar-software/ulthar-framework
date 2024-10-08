@@ -6,20 +6,28 @@ import { fieldValueToSQL } from "./value-to-sql.js";
 /**
  * Unfold a record into a string of it's keys separated by commas.
  */
-export function recordToKeys(record: Record<string, any>, prefix = "") {
+export function recordToSQLKeys(record: Record<string, any>) {
   return Object.keys(record)
-    .map((key) => `${prefix}${key}`)
+    .map((key) => key)
+    .join(", ");
+}
+/**
+ * Unfold a record into a string of it's keys separated by commas.
+ */
+export function recordToSQLKeyParams(record: Record<string, any>) {
+  return Object.keys(record)
+    .map((key) => keyToParam(key))
     .join(", ");
 }
 
 /**
  * Unfold a record into a string of it's keys separated by commas.
  */
-export function recordToParams(model: Model, record: Record<string, any>) {
+export function recordToSQLParams(model: Model, record: Record<string, any>) {
   return Object.keys(record).reduce(
     (acc, key) => ({
       ...acc,
-      [`:${key}`]: fieldValueToSQL(model.fields[key], record[key]),
+      [keyToParam(key)]: fieldValueToSQL(model.fields[key], record[key]),
     }),
     {},
   );
@@ -27,6 +35,10 @@ export function recordToParams(model: Model, record: Record<string, any>) {
 
 export function recordToSQLSet(record: Record<string, any>) {
   return Object.keys(record)
-    .map((key) => `${key} = :${key}`)
+    .map((key) => `${key} = ${keyToParam(key)}`)
     .join(", ");
+}
+
+export function keyToParam(key: string) {
+  return `$${key}`;
 }

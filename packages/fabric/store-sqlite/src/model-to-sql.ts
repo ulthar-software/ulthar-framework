@@ -21,10 +21,10 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
       modifiersFromOpts(f),
     ].join(" ");
   },
-  IntegerField: function (n, f): string {
+  IntegerField: (n, f): string => {
     return [n, "INTEGER", modifiersFromOpts(f)].join(" ");
   },
-  ReferenceField: function (n, f): string {
+  ReferenceField: (n, f): string => {
     return [
       n,
       "TEXT",
@@ -32,6 +32,12 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
       ",",
       `FOREIGN KEY (${n}) REFERENCES ${f.targetModel}(${getTargetKey(f)})`,
     ].join(" ");
+  },
+  FloatField: (n, f): string => {
+    return [n, "REAL", modifiersFromOpts(f)].join(" ");
+  },
+  DecimalField: (n, f): string => {
+    return [n, "REAL", modifiersFromOpts(f)].join(" ");
   },
 };
 function fieldDefinitionToSQL(name: string, field: FieldDefinition) {

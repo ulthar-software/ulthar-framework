@@ -18,6 +18,8 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
     return v as number;
   },
   ReferenceField: (f, v) => v,
+  FloatField: (f, v) => v,
+  DecimalField: (f, v) => v,
 };
 
 export function fieldValueToSQL(field: FieldDefinition, value: any) {

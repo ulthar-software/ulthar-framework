@@ -420,6 +420,7 @@ __metadata:
   dependencies:
     "@fabric/core": "workspace:^"
     "@fabric/store-sqlite": "workspace:^"
+    decimal.js: "npm:^10.4.3"
     typescript: "npm:^5.6.2"
     vitest: "npm:^2.1.1"
   languageName: unknown
@@ -1406,6 +1407,13 @@ __metadata:
     supports-color:
       optional: true
   checksum: 10c0/1471db19c3b06d485a622d62f65947a19a23fbd0dd73f7fd3eafb697eec5360cde447fb075919987899b1a2096e85d35d4eb5a4de09a57600ac9cf7e6c8e768b
+  languageName: node
+  linkType: hard
+
+"decimal.js@npm:^10.4.3":
+  version: 10.4.3
+  resolution: "decimal.js@npm:10.4.3"
+  checksum: 10c0/6d60206689ff0911f0ce968d40f163304a6c1bc739927758e6efc7921cfa630130388966f16bf6ef6b838cb33679fbe8e7a78a2f3c478afce841fd55ac8fb8ee
   languageName: node
   linkType: hard
 

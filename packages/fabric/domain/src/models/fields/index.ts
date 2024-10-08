@@ -1,3 +1,5 @@
+import { createDecimalField, DecimalField } from "./decimal.js";
+import { createFloatField, FloatField } from "./float.js";
 import { createIntegerField, IntegerField } from "./integer.js";
 import { createReferenceField, ReferenceField } from "./reference-field.js";
 import { createStringField, StringField } from "./string-field.js";
@@ -10,6 +12,8 @@ export type FieldDefinition =
   | StringField
   | UUIDField
   | IntegerField
+  | FloatField
+  | DecimalField
   | ReferenceField;
 
 export namespace Field {
@@ -17,4 +21,6 @@ export namespace Field {
   export const uuid = createUUIDField;
   export const integer = createIntegerField;
   export const reference = createReferenceField;
+  export const decimal = createDecimalField;
+  export const float = createFloatField;
 }

@@ -4,6 +4,7 @@ import { unlink } from "fs/promises";
 
 import {
   CircularDependencyError,
+  Collection,
   Model,
   ModelSchema,
   QueryDefinition,
@@ -11,10 +12,13 @@ import {
   StoreQueryError,
 } from "@fabric/domain";
 import { Database, Statement } from "sqlite3";
+import { filterToParams, filterToSQL } from "./filter-to-sql.js";
 import { modelToSql } from "./model-to-sql.js";
 import {
-  recordToKeys,
-  recordToParams,
+  keyToParam,
+  recordToSQLKeyParams,
+  recordToSQLKeys,
+  recordToSQLParams,
   recordToSQLSet,
 } from "./record-utils.js";
 import { transformRow } from "./sql-to-value.js";
@@ -56,6 +60,32 @@ export class SQLiteStorageDriver implements StorageDriver {
     return stmt;
   }
 
+  private async getSelectStatement(
+    collection: Collection,
+    query: QueryDefinition,
+  ): Promise<[Statement, Record<string, any>]> {
+    const selectFields = query.keys ? query.keys.join(", ") : "*";
+
+    const queryFilter = filterToSQL(query.where);
+    const limit = query.limit ? `LIMIT ${query.limit}` : "";
+    const offset = query.offset ? `OFFSET ${query.offset}` : "";
+
+    const sql = [
+      `SELECT ${selectFields}`,
+      `FROM ${query.from}`,
+      queryFilter,
+      limit,
+      offset,
+    ].join(" ");
+
+    return [
+      await this.getOrCreatePreparedStatement(sql),
+      {
+        ...filterToParams(collection, query.where),
+      },
+    ];
+  }
+
   /**
    * Insert data into the store
    */
@@ -64,9 +94,9 @@ export class SQLiteStorageDriver implements StorageDriver {
     record: Record<string, any>,
   ): AsyncResult<void, StoreQueryError> {
     try {
-      const sql = `INSERT INTO ${model.name} (${recordToKeys(record)}) VALUES (${recordToKeys(record, ":")})`;
+      const sql = `INSERT INTO ${model.name} (${recordToSQLKeys(record)}) VALUES (${recordToSQLKeyParams(record)})`;
       const stmt = await this.getOrCreatePreparedStatement(sql);
-      return await run(stmt, recordToParams(model, record));
+      return await run(stmt, recordToSQLParams(model, record));
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,
@@ -80,13 +110,12 @@ export class SQLiteStorageDriver implements StorageDriver {
    * Run a select query against the store.
    */
   async select(
-    model: Model,
+    collection: Collection,
     query: QueryDefinition,
   ): AsyncResult<any[], StoreQueryError> {
     try {
-      const sql = `SELECT * FROM ${query.from}`;
-      const stmt = await this.getOrCreatePreparedStatement(sql);
-      return await getAll(stmt, transformRow(model));
+      const [stmt, params] = await this.getSelectStatement(collection, query);
+      return await getAll(stmt, params, transformRow(collection));
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,
@@ -99,14 +128,12 @@ export class SQLiteStorageDriver implements StorageDriver {
    * Run a select query against the store.
    */
   async selectOne(
-    model: Model,
+    collection: Collection,
     query: QueryDefinition,
   ): AsyncResult<any, StoreQueryError> {
     try {
-      const sql = `SELECT * FROM ${query.from}`;
-      const stmt = await this.getOrCreatePreparedStatement(sql);
-
-      return await getOne(stmt, transformRow(model));
+      const [stmt, params] = await this.getSelectStatement(collection, query);
+      return await getOne(stmt, params, transformRow(collection));
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,
@@ -174,15 +201,13 @@ export class SQLiteStorageDriver implements StorageDriver {
     record: Record<string, any>,
   ): AsyncResult<void, StoreQueryError> {
     try {
-      const sql = `UPDATE ${model.name} SET ${recordToSQLSet(record)} WHERE id = :id`;
+      const sql = `UPDATE ${model.name} SET ${recordToSQLSet(record)} WHERE id = ${keyToParam("id")}`;
       const stmt = await this.getOrCreatePreparedStatement(sql);
-      return await run(
-        stmt,
-        recordToParams(model, {
-          ...record,
-          id,
-        }),
-      );
+      const params = recordToSQLParams(model, {
+        ...record,
+        id,
+      });
+      return await run(stmt, params);
     } catch (error: any) {
       return new StoreQueryError(error.message, {
         error,

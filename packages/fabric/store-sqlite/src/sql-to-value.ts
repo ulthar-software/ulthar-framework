@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { VariantTag } from "@fabric/core";
-import { FieldDefinition, FieldToType, Model } from "@fabric/domain";
+import { Collection, FieldDefinition, FieldToType } from "@fabric/domain";
 
-export function transformRow(model: Model) {
+export function transformRow(model: Collection) {
   return (row: Record<string, any>) => {
     const result: Record<string, any> = {};
     for (const key in row) {
@@ -34,4 +34,6 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
     return v;
   },
   ReferenceField: (f, v) => v,
+  FloatField: (f, v) => v,
+  DecimalField: (f, v) => v,
 };

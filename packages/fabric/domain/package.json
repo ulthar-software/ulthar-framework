@@ -14,7 +14,8 @@
     "vitest": "^2.1.1"
   },
   "dependencies": {
-    "@fabric/core": "workspace:^"
+    "@fabric/core": "workspace:^",
+    "decimal.js": "^10.4.3"
   },
   "scripts": {
     "test": "vitest",

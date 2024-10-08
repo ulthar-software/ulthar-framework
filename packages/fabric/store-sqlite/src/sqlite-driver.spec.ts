@@ -1,6 +1,6 @@
 import { isError } from "@fabric/core";
-import { defineModel, Field } from "@fabric/domain";
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { defineModel, Field, isLike } from "@fabric/domain";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { SQLiteStorageDriver } from "./sqlite-driver.js";
 
 describe("SQLite Store Driver", () => {
@@ -21,7 +21,7 @@ describe("SQLite Store Driver", () => {
     if (isError(result)) throw result;
   });
 
-  test("should be able to synchronize the store and insert a record", async () => {
+  it("should synchronize the store and insert a record", async () => {
     const result = await store.sync(schema);
 
     if (isError(result)) throw result;
@@ -42,19 +42,18 @@ describe("SQLite Store Driver", () => {
     ]);
   });
 
-  test("should be able to update a record", async () => {
-    const result = await store.sync(schema);
-
-    if (isError(result)) throw result;
+  it("should be update a record", async () => {
+    await store.sync(schema);
 
     await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
-      streamVersion: 1,
+      streamVersion: 1n,
     });
 
-    await store.update(schema.users, "1", { name: "updated" });
+    const err = await store.update(schema.users, "1", { name: "updated" });
+    if (isError(err)) throw err;
 
     const records = await store.select(schema.users, { from: "users" });
 
@@ -63,16 +62,14 @@ describe("SQLite Store Driver", () => {
     ]);
   });
 
-  test("should be able to delete a record", async () => {
-    const result = await store.sync(schema);
-
-    if (isError(result)) throw result;
+  it("should be able to delete a record", async () => {
+    await store.sync(schema);
 
     await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
-      streamVersion: 1,
+      streamVersion: 1n,
     });
 
     await store.delete(schema.users, "1");
@@ -82,22 +79,20 @@ describe("SQLite Store Driver", () => {
     expect(records).toEqual([]);
   });
 
-  test("should be able to select records", async () => {
-    const result = await store.sync(schema);
-
-    if (isError(result)) throw result;
+  it("should be able to select records", async () => {
+    await store.sync(schema);
 
     await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
-      streamVersion: 1,
+      streamVersion: 1n,
     });
     await store.insert(schema.users, {
       id: "2",
       name: "test",
       streamId: "2",
-      streamVersion: 1,
+      streamVersion: 1n,
     });
 
     const records = await store.select(schema.users, { from: "users" });
@@ -108,22 +103,20 @@ describe("SQLite Store Driver", () => {
     ]);
   });
 
-  test("should be able to select one record", async () => {
-    const result = await store.sync(schema);
-
-    if (isError(result)) throw result;
+  it("should be able to select one record", async () => {
+    await store.sync(schema);
 
     await store.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
-      streamVersion: 1,
+      streamVersion: 1n,
     });
     await store.insert(schema.users, {
       id: "2",
       name: "test",
       streamId: "2",
-      streamVersion: 1,
+      streamVersion: 1n,
     });
 
     const record = await store.selectOne(schema.users, { from: "users" });
@@ -134,5 +127,105 @@ describe("SQLite Store Driver", () => {
       streamId: "1",
       streamVersion: 1n,
     });
+  });
+
+  it("should select a record with a where clause", async () => {
+    await store.sync(schema);
+
+    await store.insert(schema.users, {
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1n,
+    });
+    await store.insert(schema.users, {
+      id: "2",
+      name: "jamón",
+      streamId: "2",
+      streamVersion: 1n,
+    });
+
+    const result = await store.select(schema.users, {
+      from: "users",
+      where: { name: isLike("te%") },
+    });
+
+    expect(result).toEqual([
+      {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      },
+    ]);
+  });
+
+  it("should select a record with a where clause of a specific type", async () => {
+    await store.sync(schema);
+
+    await store.insert(schema.users, {
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1n,
+    });
+    await store.insert(schema.users, {
+      id: "2",
+      name: "jamón",
+      streamId: "2",
+      streamVersion: 1n,
+    });
+
+    const result = await store.select(schema.users, {
+      from: "users",
+      where: { streamVersion: 1n },
+    });
+
+    expect(result).toEqual([
+      {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      },
+      {
+        id: "2",
+        name: "jamón",
+        streamId: "2",
+        streamVersion: 1n,
+      },
+    ]);
+  });
+
+  it("should select with a limit and offset", async () => {
+    await store.sync(schema);
+
+    await store.insert(schema.users, {
+      id: "1",
+      name: "test",
+      streamId: "1",
+      streamVersion: 1n,
+    });
+    await store.insert(schema.users, {
+      id: "2",
+      name: "jamón",
+      streamId: "2",
+      streamVersion: 1n,
+    });
+
+    const result = await store.select(schema.users, {
+      from: "users",
+      limit: 1,
+      offset: 1,
+    });
+
+    expect(result).toEqual([
+      {
+        id: "2",
+        name: "jamón",
+        streamId: "2",
+        streamVersion: 1n,
+      },
+    ]);
   });
 });

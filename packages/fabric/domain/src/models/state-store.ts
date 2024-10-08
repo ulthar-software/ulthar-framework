@@ -3,6 +3,8 @@ import { StoreQueryError } from "../errors/query-error.js";
 import { StorageDriver } from "../storage/storage-driver.js";
 import { ModelSchemaFromModels } from "./model-schema.js";
 import { Model, ModelToType } from "./model.js";
+import { QueryBuilder } from "./query/query-builder.js";
+import { StoreQuery } from "./query/query.js";
 
 export class StateStore<TModel extends Model> {
   private schema: ModelSchemaFromModels<TModel>;
@@ -27,5 +29,13 @@ export class StateStore<TModel extends Model> {
     record: ModelToType<ModelSchemaFromModels<TModel>[T]>,
   ): AsyncResult<void, StoreQueryError> {
     return this.driver.insert(this.schema[collection], record);
+  }
+
+  from<T extends keyof ModelSchemaFromModels<TModel>>(
+    collection: T,
+  ): StoreQuery<ModelToType<ModelSchemaFromModels<TModel>[T]>> {
+    return new QueryBuilder(this.driver, this.schema, {
+      from: collection,
+    }) as StoreQuery<ModelToType<ModelSchemaFromModels<TModel>[T]>>;
   }
 }

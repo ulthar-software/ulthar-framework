@@ -1,4 +1,7 @@
+import { Decimal } from "decimal.js";
 import { UUID } from "../../types/uuid.js";
+import { DecimalField } from "./decimal.js";
+import { FloatField } from "./float.js";
 import { IntegerField } from "./integer.js";
 import { ReferenceField } from "./reference-field.js";
 import { StringField } from "./string-field.js";
@@ -7,20 +10,23 @@ import { UUIDField } from "./uuid-field.js";
 /**
  * Converts a field definition to its corresponding TypeScript type.
  */
-export type FieldToType<TField> = TField extends StringField
-  ? ToOptional<TField, string>
-  : TField extends UUIDField
-    ? ToOptional<TField, UUID>
-    : TField extends IntegerField
-      ? TField["hasArbitraryPrecision"] extends true
-        ? ToOptional<TField, bigint>
-        : TField["hasArbitraryPrecision"] extends false
-          ? ToOptional<TField, number>
-          : ToOptional<TField, number | bigint>
-      : TField extends ReferenceField
-        ? ToOptional<TField, UUID>
-        : never;
+//prettier-ignore
+export type FieldToType<TField> = 
+    TField extends StringField ? MaybeOptional<TField, string>
+  : TField extends UUIDField ? MaybeOptional<TField, UUID>
+  : TField extends IntegerField ? IntegerFieldToType<TField>
+  : TField extends ReferenceField ? MaybeOptional<TField, UUID>
+  : TField extends DecimalField ? MaybeOptional<TField, Decimal>
+  : TField extends FloatField ? MaybeOptional<TField, number>
+  : never;
 
-type ToOptional<TField, TType> = TField extends { isOptional: true }
+//prettier-ignore
+type IntegerFieldToType<TField extends IntegerField> = TField["hasArbitraryPrecision"] extends true
+  ? MaybeOptional<TField, bigint>
+  : TField["hasArbitraryPrecision"] extends false
+  ? MaybeOptional<TField, number>
+  : MaybeOptional<TField, number | bigint>;
+
+type MaybeOptional<TField, TType> = TField extends { isOptional: true }
   ? TType | null
   : TType;
