@@ -1,4 +1,5 @@
 export * from "./base-64.js";
+export * from "./decimal.js";
 export * from "./email.js";
 export * from "./entity.js";
 export * from "./semver.js";
