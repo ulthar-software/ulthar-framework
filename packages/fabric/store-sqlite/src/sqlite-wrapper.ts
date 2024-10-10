@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Database, Statement } from "sqlite3";
 
-export function dbRun(db: Database, statement: string): Promise<void> {
+export function dbRun(db: Database, statement: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    db.run(statement, (err) => {
+    db.all(statement, (err, result) => {
       if (err) {
         reject(err);
       } else {
-        resolve();
+        resolve(result);
       }
     });
   });

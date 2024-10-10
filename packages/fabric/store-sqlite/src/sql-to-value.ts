@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { VariantTag } from "@fabric/core";
+import { PosixDate, VariantTag } from "@fabric/core";
 import { Collection, FieldDefinition, FieldToType } from "@fabric/domain";
 
 export function transformRow(model: Collection) {
@@ -36,4 +36,6 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   ReferenceField: (f, v) => v,
   FloatField: (f, v) => v,
   DecimalField: (f, v) => v,
+  TimestampField: (f, v) => new PosixDate(v),
+  EmbeddedField: (f, v: string) => JSON.parse(v),
 };

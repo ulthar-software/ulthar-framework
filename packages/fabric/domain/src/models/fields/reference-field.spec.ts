@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { defineModel } from "../model.js";
 import { Field } from "./index.js";
 import {
-  InvalidReferenceField,
+  InvalidReferenceFieldError,
   validateReferenceField,
 } from "./reference-field.js";
 
@@ -26,26 +26,18 @@ describe("Validate Reference Field", () => {
       Field.reference({
         targetModel: "foo",
       }),
-    );
+    ).unwrapErrorOrThrow();
 
-    if (!isError(result)) {
-      throw "Expected an error";
-    }
-
-    expect(result).toBeInstanceOf(InvalidReferenceField);
+    expect(result).toBeInstanceOf(InvalidReferenceFieldError);
   });
 
   it("should not return an error if the target model is in the schema", () => {
-    const result = validateReferenceField(
+    validateReferenceField(
       schema,
       Field.reference({
         targetModel: "User",
       }),
-    );
-
-    if (isError(result)) {
-      throw result.reason;
-    }
+    ).unwrapOrThrow();
   });
 
   it("should return an error if the target key is not in the target model", () => {
@@ -55,13 +47,9 @@ describe("Validate Reference Field", () => {
         targetModel: "User",
         targetKey: "foo",
       }),
-    );
+    ).unwrapErrorOrThrow();
 
-    if (!isError(result)) {
-      throw "Expected an error";
-    }
-
-    expect(result).toBeInstanceOf(InvalidReferenceField);
+    expect(result).toBeInstanceOf(InvalidReferenceFieldError);
   });
 
   it("should return error if the target key is not unique", () => {
@@ -71,13 +59,9 @@ describe("Validate Reference Field", () => {
         targetModel: "User",
         targetKey: "otherNotUnique",
       }),
-    );
+    ).unwrapErrorOrThrow();
 
-    if (!isError(result)) {
-      throw "Expected an error";
-    }
-
-    expect(result).toBeInstanceOf(InvalidReferenceField);
+    expect(result).toBeInstanceOf(InvalidReferenceFieldError);
   });
 
   it("should not return an error if the target key is in the target model and is unique", () => {

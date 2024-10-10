@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Variant, VariantTag } from "@fabric/core";
-import { FieldDefinition, getTargetKey, Model } from "@fabric/domain";
+import { Collection, FieldDefinition, getTargetKey } from "@fabric/domain";
+import { EmbeddedField } from "@fabric/domain/dist/models/fields/embedded.js";
+import { TimestampField } from "@fabric/domain/dist/models/fields/timestamp.js";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -19,7 +21,9 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
       "TEXT",
       f.isPrimaryKey ? "PRIMARY KEY" : "",
       modifiersFromOpts(f),
-    ].join(" ");
+    ]
+      .filter((x) => x)
+      .join(" ");
   },
   IntegerField: (n, f): string => {
     return [n, "INTEGER", modifiersFromOpts(f)].join(" ");
@@ -29,8 +33,7 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
       n,
       "TEXT",
       modifiersFromOpts(f),
-      ",",
-      `FOREIGN KEY (${n}) REFERENCES ${f.targetModel}(${getTargetKey(f)})`,
+      `REFERENCES ${f.targetModel}(${getTargetKey(f)})`,
     ].join(" ");
   },
   FloatField: (n, f): string => {
@@ -38,6 +41,12 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
   },
   DecimalField: (n, f): string => {
     return [n, "REAL", modifiersFromOpts(f)].join(" ");
+  },
+  TimestampField: (n, f: TimestampField): string => {
+    return [n, "NUMERIC", modifiersFromOpts(f)].join(" ");
+  },
+  EmbeddedField: (n, f: EmbeddedField): string => {
+    return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
 };
 function fieldDefinitionToSQL(name: string, field: FieldDefinition) {
@@ -48,17 +57,17 @@ function modifiersFromOpts(field: FieldDefinition) {
   if (Variant.is(field, "UUIDField") && field.isPrimaryKey) {
     return;
   }
-  return [
-    !field.isOptional ? "NOT NULL" : "",
-    field.isUnique ? "UNIQUE" : "",
-  ].join(" ");
+  return [!field.isOptional ? "NOT NULL" : "", field.isUnique ? "UNIQUE" : ""]
+    .filter((x) => x)
+    .join(" ");
 }
 
 export function modelToSql(
-  model: Model<string, Record<string, FieldDefinition>>,
+  model: Collection<string, Record<string, FieldDefinition>>,
 ) {
   const fields = Object.entries(model.fields)
     .map(([name, type]) => fieldDefinitionToSQL(name, type))
+    .filter((x) => x)
     .join(", ");
 
   return `CREATE TABLE ${model.name} (${fields})`;

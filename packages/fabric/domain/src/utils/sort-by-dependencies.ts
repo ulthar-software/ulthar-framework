@@ -34,14 +34,15 @@ export function sortByDependencies<T>(
     visited.add(key);
     sorted.push(key);
   };
-  try {
-    graph.forEach((deps, key) => {
-      visit(key, []);
-    });
-  } catch (e) {
-    return e as CircularDependencyError;
-  }
-  return sorted.map(
-    (key) => array.find((element) => keyGetter(element) === key) as T,
+  return Result.tryFrom(
+    () => {
+      graph.forEach((deps, key) => {
+        visit(key, []);
+      });
+      return sorted.map(
+        (key) => array.find((element) => keyGetter(element) === key) as T,
+      );
+    },
+    (e) => e as CircularDependencyError,
   );
 }

@@ -20,6 +20,8 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   ReferenceField: (f, v) => v,
   FloatField: (f, v) => v,
   DecimalField: (f, v) => v,
+  TimestampField: (f, v) => v.timestamp,
+  EmbeddedField: (f, v: string) => JSON.stringify(v),
 };
 
 export function fieldValueToSQL(field: FieldDefinition, value: any) {

@@ -27,16 +27,20 @@ export function getTargetKey(field: ReferenceField): string {
 export function validateReferenceField(
   schema: ModelSchema,
   field: ReferenceField,
-): Result<void, InvalidReferenceField> {
+): Result<void, InvalidReferenceFieldError> {
   if (!schema[field.targetModel]) {
-    return new InvalidReferenceField(
-      `The target model '${field.targetModel}' is not in the schema.`,
+    return Result.failWith(
+      new InvalidReferenceFieldError(
+        `The target model '${field.targetModel}' is not in the schema.`,
+      ),
     );
   }
 
   if (field.targetKey && !schema[field.targetModel].fields[field.targetKey]) {
-    return new InvalidReferenceField(
-      `The target key '${field.targetKey}' is not in the target model '${field.targetModel}'.`,
+    return Result.failWith(
+      new InvalidReferenceFieldError(
+        `The target key '${field.targetKey}' is not in the target model '${field.targetModel}'.`,
+      ),
     );
   }
 
@@ -44,13 +48,17 @@ export function validateReferenceField(
     field.targetKey &&
     !schema[field.targetModel].fields[field.targetKey].isUnique
   ) {
-    return new InvalidReferenceField(
-      `The target key '${field.targetModel}'.'${field.targetKey}' is not unique.`,
+    return Result.failWith(
+      new InvalidReferenceFieldError(
+        `The target key '${field.targetModel}'.'${field.targetKey}' is not unique.`,
+      ),
     );
   }
+
+  return Result.ok();
 }
 
-export class InvalidReferenceField extends TaggedError<"InvalidReferenceField"> {
+export class InvalidReferenceFieldError extends TaggedError<"InvalidReferenceField"> {
   constructor(readonly reason: string) {
     super("InvalidReferenceField");
   }

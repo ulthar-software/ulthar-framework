@@ -20,7 +20,7 @@ export interface StorageDriver {
    * Run a select query against the store.
    */
   select(
-    model: Collection,
+    model: ModelSchema,
     query: QueryDefinition,
   ): AsyncResult<any[], StoreQueryError>;
 
@@ -28,7 +28,7 @@ export interface StorageDriver {
    * Run a select query against the store.
    */
   selectOne(
-    model: Collection,
+    model: ModelSchema,
     query: QueryDefinition,
   ): AsyncResult<any, StoreQueryError>;
 

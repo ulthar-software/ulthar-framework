@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AsyncResult, Keyof } from "@fabric/core";
 import { StoreQueryError } from "../../errors/query-error.js";
 import { StorageDriver } from "../../storage/storage-driver.js";
@@ -41,19 +42,23 @@ export class QueryBuilder<T> implements StoreQuery<T> {
     });
   }
 
+  select(): AsyncResult<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
-    keys?: K[],
-  ): AsyncResult<Pick<T, K>[], StoreQueryError> {
-    return this.driver.select(this.schema[this.query.from], {
+    keys: K[],
+  ): AsyncResult<Pick<T, K>[], StoreQueryError>;
+  select<K extends Keyof<T>>(keys?: K[]): AsyncResult<any, StoreQueryError> {
+    return this.driver.select(this.schema, {
       ...this.query,
       keys,
     });
   }
 
+  selectOne(): AsyncResult<T, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
-    keys?: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError> {
-    return this.driver.selectOne(this.schema[this.query.from], {
+    keys: K,
+  ): AsyncResult<Pick<T, K>, StoreQueryError>;
+  selectOne<K extends Keyof<T>>(keys?: K[]): AsyncResult<any, StoreQueryError> {
+    return this.driver.selectOne(this.schema, {
       ...this.query,
       keys,
     });

@@ -1,4 +1,5 @@
 import { AsyncResult } from "@fabric/core";
+import { CircularDependencyError } from "../errors/circular-dependency-error.js";
 import { StoreQueryError } from "../errors/query-error.js";
 import { StorageDriver } from "../storage/storage-driver.js";
 import { ModelSchemaFromModels } from "./model-schema.js";
@@ -20,8 +21,8 @@ export class StateStore<TModel extends Model> {
     }, {} as ModelSchemaFromModels<TModel>);
   }
 
-  async migrate(): AsyncResult<void, StoreQueryError> {
-    await this.driver.sync(this.schema);
+  migrate(): AsyncResult<void, StoreQueryError | CircularDependencyError> {
+    return this.driver.sync(this.schema);
   }
 
   async insertInto<T extends keyof ModelSchemaFromModels<TModel>>(

@@ -39,10 +39,6 @@ export class SQLiteStorageDriver implements StorageDriver {
 
   constructor(private path: string) {
     this.db = new Database(path);
-
-    // Enable Write-Ahead Logging, which is faster and more reliable.
-    this.db.run("PRAGMA journal_mode = WAL;");
-    this.db.run("PRAGMA foreign_keys = ON;");
   }
 
   /**
@@ -93,53 +89,65 @@ export class SQLiteStorageDriver implements StorageDriver {
     model: Model,
     record: Record<string, any>,
   ): AsyncResult<void, StoreQueryError> {
-    try {
-      const sql = `INSERT INTO ${model.name} (${recordToSQLKeys(record)}) VALUES (${recordToSQLKeyParams(record)})`;
-      const stmt = await this.getOrCreatePreparedStatement(sql);
-      return await run(stmt, recordToSQLParams(model, record));
-    } catch (error: any) {
-      return new StoreQueryError(error.message, {
-        error,
-        collectionName: model.name,
-        record,
-      });
-    }
+    return AsyncResult.tryFrom(
+      async () => {
+        const sql = `INSERT INTO ${model.name} (${recordToSQLKeys(record)}) VALUES (${recordToSQLKeyParams(record)})`;
+        const stmt = await this.getOrCreatePreparedStatement(sql);
+        return await run(stmt, recordToSQLParams(model, record));
+      },
+      (error) =>
+        new StoreQueryError(error.message, {
+          error,
+          collectionName: model.name,
+          record,
+        }),
+    );
   }
 
   /**
    * Run a select query against the store.
    */
   async select(
-    collection: Collection,
+    schema: ModelSchema,
     query: QueryDefinition,
   ): AsyncResult<any[], StoreQueryError> {
-    try {
-      const [stmt, params] = await this.getSelectStatement(collection, query);
-      return await getAll(stmt, params, transformRow(collection));
-    } catch (error: any) {
-      return new StoreQueryError(error.message, {
-        error,
-        query,
-      });
-    }
+    return AsyncResult.tryFrom(
+      async () => {
+        const [stmt, params] = await this.getSelectStatement(
+          schema[query.from],
+          query,
+        );
+        return await getAll(stmt, params, transformRow(schema[query.from]));
+      },
+      (err) =>
+        new StoreQueryError(err.message, {
+          err,
+          query,
+        }),
+    );
   }
 
   /**
    * Run a select query against the store.
    */
   async selectOne(
-    collection: Collection,
+    schema: ModelSchema,
     query: QueryDefinition,
   ): AsyncResult<any, StoreQueryError> {
-    try {
-      const [stmt, params] = await this.getSelectStatement(collection, query);
-      return await getOne(stmt, params, transformRow(collection));
-    } catch (error: any) {
-      return new StoreQueryError(error.message, {
-        error,
-        query,
-      });
-    }
+    return AsyncResult.tryFrom(
+      async () => {
+        const [stmt, params] = await this.getSelectStatement(
+          schema[query.from],
+          query,
+        );
+        return await getOne(stmt, params, transformRow(schema[query.from]));
+      },
+      (err) =>
+        new StoreQueryError(err.message, {
+          err,
+          query,
+        }),
+    );
   }
 
   /**
@@ -148,48 +156,56 @@ export class SQLiteStorageDriver implements StorageDriver {
   async sync(
     schema: ModelSchema,
   ): AsyncResult<void, StoreQueryError | CircularDependencyError> {
-    try {
-      await dbRun(this.db, "BEGIN TRANSACTION;");
-      for (const modelKey in schema) {
-        const model = schema[modelKey];
-        await dbRun(this.db, modelToSql(model));
-      }
-      await dbRun(this.db, "COMMIT;");
-    } catch (error: any) {
-      await dbRun(this.db, "ROLLBACK;");
-      return new StoreQueryError(error.message, {
-        error,
-        schema,
-      });
-    }
+    return AsyncResult.tryFrom(
+      async () => {
+        // Enable Write-Ahead Logging, which is faster and more reliable.
+        await dbRun(this.db, "PRAGMA journal_mode = WAL;");
+
+        // Enable foreign key constraints.
+        await dbRun(this.db, "PRAGMA foreign_keys = ON;");
+
+        // Begin a transaction to create the schema.
+        await dbRun(this.db, "BEGIN TRANSACTION;");
+        for (const modelKey in schema) {
+          const model = schema[modelKey];
+          await dbRun(this.db, modelToSql(model));
+        }
+        await dbRun(this.db, "COMMIT;");
+      },
+      (error) =>
+        new StoreQueryError(error.message, {
+          error,
+          schema,
+        }),
+    );
   }
 
   /**
    * Drop the store. This is a destructive operation.
    */
   async drop(): AsyncResult<void, StoreQueryError> {
-    try {
-      if (this.path === ":memory:") {
-        return new StoreQueryError("Cannot drop in-memory database", {});
-      } else {
-        await unlink(this.path);
-      }
-    } catch (error: any) {
-      return new StoreQueryError(error.message, {
-        error,
-      });
-    }
+    return AsyncResult.tryFrom(
+      async () => {
+        if (this.path === ":memory:") {
+          throw "Cannot drop in-memory database";
+        } else {
+          await unlink(this.path);
+        }
+      },
+      (error) =>
+        new StoreQueryError(error.message, {
+          error,
+        }),
+    );
   }
 
   async close(): AsyncResult<void, UnexpectedError> {
-    try {
+    return AsyncResult.from(async () => {
       for (const stmt of this.cachedStatements.values()) {
         await finalize(stmt);
       }
       await dbClose(this.db);
-    } catch (error: any) {
-      return new UnexpectedError({ error });
-    }
+    });
   }
 
   /**
@@ -200,21 +216,23 @@ export class SQLiteStorageDriver implements StorageDriver {
     id: string,
     record: Record<string, any>,
   ): AsyncResult<void, StoreQueryError> {
-    try {
-      const sql = `UPDATE ${model.name} SET ${recordToSQLSet(record)} WHERE id = ${keyToParam("id")}`;
-      const stmt = await this.getOrCreatePreparedStatement(sql);
-      const params = recordToSQLParams(model, {
-        ...record,
-        id,
-      });
-      return await run(stmt, params);
-    } catch (error: any) {
-      return new StoreQueryError(error.message, {
-        error,
-        collectionName: model.name,
-        record,
-      });
-    }
+    return AsyncResult.tryFrom(
+      async () => {
+        const sql = `UPDATE ${model.name} SET ${recordToSQLSet(record)} WHERE id = ${keyToParam("id")}`;
+        const stmt = await this.getOrCreatePreparedStatement(sql);
+        const params = recordToSQLParams(model, {
+          ...record,
+          id,
+        });
+        return await run(stmt, params);
+      },
+      (error) =>
+        new StoreQueryError(error.message, {
+          error,
+          collectionName: model.name,
+          record,
+        }),
+    );
   }
 
   /**
@@ -222,16 +240,18 @@ export class SQLiteStorageDriver implements StorageDriver {
    */
 
   async delete(model: Model, id: string): AsyncResult<void, StoreQueryError> {
-    try {
-      const sql = `DELETE FROM ${model.name} WHERE id = :id`;
-      const stmt = await this.getOrCreatePreparedStatement(sql);
-      return await run(stmt, { ":id": id });
-    } catch (error: any) {
-      return new StoreQueryError(error.message, {
-        error,
-        collectionName: model.name,
-        id,
-      });
-    }
+    return AsyncResult.tryFrom(
+      async () => {
+        const sql = `DELETE FROM ${model.name} WHERE id = ${keyToParam("id")}`;
+        const stmt = await this.getOrCreatePreparedStatement(sql);
+        return await run(stmt, { [keyToParam("id")]: id });
+      },
+      (error) =>
+        new StoreQueryError(error.message, {
+          error,
+          collectionName: model.name,
+          id,
+        }),
+    );
   }
 }

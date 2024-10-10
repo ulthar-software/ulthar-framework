@@ -48,7 +48,7 @@ export function defineCollection<
   } as const;
 }
 
-export type ModelToType<TModel extends Model> = {
+export type ModelToType<TModel extends Collection> = {
   [K in Keyof<TModel["fields"]>]: FieldToType<TModel["fields"][K]>;
 };
 

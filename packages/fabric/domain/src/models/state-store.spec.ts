@@ -1,4 +1,4 @@
-import { isError } from "@fabric/core";
+import { isError, Run } from "@fabric/core";
 import { SQLiteStorageDriver } from "@fabric/store-sqlite";
 import {
   afterEach,
@@ -58,9 +58,7 @@ describe("State Store", () => {
 
     if (isError(insertResult)) throw insertResult;
 
-    const result = await store.from("users").select();
-
-    if (isError(result)) throw result;
+    const result = (await store.from("users").select()).unwrapOrThrow();
 
     expectTypeOf(result).toEqualTypeOf<
       {
@@ -83,34 +81,39 @@ describe("State Store", () => {
 
   it("should query with a where clause", async () => {
     const newUUID = UUIDGeneratorMock.generate();
-    await store.insertInto("users", {
-      name: "test",
-      id: newUUID,
-      streamId: newUUID,
-      streamVersion: 1n,
-    });
 
-    await store.insertInto("users", {
-      name: "anotherName",
-      id: UUIDGeneratorMock.generate(),
-      streamId: UUIDGeneratorMock.generate(),
-      streamVersion: 1n,
-    });
-    await store.insertInto("users", {
-      name: "anotherName2",
-      id: UUIDGeneratorMock.generate(),
-      streamId: UUIDGeneratorMock.generate(),
-      streamVersion: 1n,
-    });
+    await Run.seqUNSAFE(
+      () =>
+        store.insertInto("users", {
+          name: "test",
+          id: newUUID,
+          streamId: newUUID,
+          streamVersion: 1n,
+        }),
+      () =>
+        store.insertInto("users", {
+          name: "anotherName",
+          id: UUIDGeneratorMock.generate(),
+          streamId: UUIDGeneratorMock.generate(),
+          streamVersion: 1n,
+        }),
+      () =>
+        store.insertInto("users", {
+          name: "anotherName2",
+          id: UUIDGeneratorMock.generate(),
+          streamId: UUIDGeneratorMock.generate(),
+          streamVersion: 1n,
+        }),
+    );
 
-    const result = await store
-      .from("users")
-      .where({
-        name: isLike("te*"),
-      })
-      .select();
-
-    if (isError(result)) throw result;
+    const result = await Run.UNSAFE(() =>
+      store
+        .from("users")
+        .where({
+          name: isLike("te%"),
+        })
+        .select(),
+    );
 
     expectTypeOf(result).toEqualTypeOf<
       {

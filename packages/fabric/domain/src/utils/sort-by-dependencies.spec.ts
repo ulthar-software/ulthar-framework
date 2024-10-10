@@ -15,7 +15,7 @@ describe("sortByDependencies", () => {
     const result = sortByDependencies(array, {
       keyGetter: (element) => element.name,
       depGetter: (element) => element.dependencies,
-    });
+    }).unwrapOrThrow();
 
     expect(result).toEqual([
       { id: 3, name: "C", dependencies: [] },
@@ -35,7 +35,7 @@ describe("sortByDependencies", () => {
       sortByDependencies(array, {
         keyGetter: (element) => element.name,
         depGetter: (element) => element.dependencies,
-      }),
+      }).unwrapErrorOrThrow(),
     ).toBeInstanceOf(CircularDependencyError);
   });
 
@@ -45,7 +45,7 @@ describe("sortByDependencies", () => {
     const result = sortByDependencies(array, {
       keyGetter: (element) => element.name,
       depGetter: (element) => element.dependencies,
-    });
+    }).unwrapOrThrow();
 
     expect(result).toEqual([]);
   });

@@ -5,28 +5,32 @@ import { SQLiteStorageDriver } from "./sqlite-driver.js";
 
 describe("SQLite Store Driver", () => {
   const schema = {
+    demo: defineModel("demo", {
+      value: Field.float(),
+      owner: Field.reference({ targetModel: "users" }),
+    }),
     users: defineModel("users", {
       name: Field.string(),
     }),
   };
 
-  let store: SQLiteStorageDriver;
+  let driver: SQLiteStorageDriver;
 
   beforeEach(() => {
-    store = new SQLiteStorageDriver(":memory:");
+    driver = new SQLiteStorageDriver(":memory:");
   });
 
   afterEach(async () => {
-    const result = await store.close();
+    const result = await driver.close();
     if (isError(result)) throw result;
   });
 
   it("should synchronize the store and insert a record", async () => {
-    const result = await store.sync(schema);
+    const result = await driver.sync(schema);
 
     if (isError(result)) throw result;
 
-    const insertResult = await store.insert(schema.users, {
+    const insertResult = await driver.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
@@ -35,7 +39,9 @@ describe("SQLite Store Driver", () => {
 
     if (isError(insertResult)) throw insertResult;
 
-    const records = await store.select(schema.users, { from: "users" });
+    const records = (
+      await driver.select(schema, { from: "users" })
+    ).unwrapOrThrow();
 
     expect(records).toEqual([
       { id: "1", name: "test", streamId: "1", streamVersion: 1n },
@@ -43,19 +49,21 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should be update a record", async () => {
-    await store.sync(schema);
+    await driver.sync(schema);
 
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1n,
     });
 
-    const err = await store.update(schema.users, "1", { name: "updated" });
+    const err = await driver.update(schema.users, "1", { name: "updated" });
     if (isError(err)) throw err;
 
-    const records = await store.select(schema.users, { from: "users" });
+    const records = (
+      await driver.select(schema, { from: "users" })
+    ).unwrapOrThrow();
 
     expect(records).toEqual([
       { id: "1", name: "updated", streamId: "1", streamVersion: 1n },
@@ -63,39 +71,43 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should be able to delete a record", async () => {
-    await store.sync(schema);
+    await driver.sync(schema);
 
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1n,
     });
 
-    await store.delete(schema.users, "1");
+    await driver.delete(schema.users, "1");
 
-    const records = await store.select(schema.users, { from: "users" });
+    const records = (
+      await driver.select(schema, { from: "users" })
+    ).unwrapOrThrow();
 
     expect(records).toEqual([]);
   });
 
   it("should be able to select records", async () => {
-    await store.sync(schema);
+    await driver.sync(schema);
 
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1n,
     });
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "2",
       name: "test",
       streamId: "2",
       streamVersion: 1n,
     });
 
-    const records = await store.select(schema.users, { from: "users" });
+    const records = (
+      await driver.select(schema, { from: "users" })
+    ).unwrapOrThrow();
 
     expect(records).toEqual([
       { id: "1", name: "test", streamId: "1", streamVersion: 1n },
@@ -104,22 +116,24 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should be able to select one record", async () => {
-    await store.sync(schema);
+    await driver.sync(schema);
 
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1n,
     });
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "2",
       name: "test",
       streamId: "2",
       streamVersion: 1n,
     });
 
-    const record = await store.selectOne(schema.users, { from: "users" });
+    const record = (
+      await driver.selectOne(schema, { from: "users" })
+    ).unwrapOrThrow();
 
     expect(record).toEqual({
       id: "1",
@@ -130,25 +144,27 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should select a record with a where clause", async () => {
-    await store.sync(schema);
+    await driver.sync(schema);
 
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1n,
     });
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "2",
       name: "jamón",
       streamId: "2",
       streamVersion: 1n,
     });
 
-    const result = await store.select(schema.users, {
-      from: "users",
-      where: { name: isLike("te%") },
-    });
+    const result = (
+      await driver.select(schema, {
+        from: "users",
+        where: { name: isLike("te%") },
+      })
+    ).unwrapOrThrow();
 
     expect(result).toEqual([
       {
@@ -161,25 +177,27 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should select a record with a where clause of a specific type", async () => {
-    await store.sync(schema);
+    await driver.sync(schema);
 
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1n,
     });
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "2",
       name: "jamón",
       streamId: "2",
       streamVersion: 1n,
     });
 
-    const result = await store.select(schema.users, {
-      from: "users",
-      where: { streamVersion: 1n },
-    });
+    const result = (
+      await driver.select(schema, {
+        from: "users",
+        where: { streamVersion: 1n },
+      })
+    ).unwrapOrThrow();
 
     expect(result).toEqual([
       {
@@ -198,26 +216,28 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should select with a limit and offset", async () => {
-    await store.sync(schema);
+    await driver.sync(schema);
 
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "1",
       name: "test",
       streamId: "1",
       streamVersion: 1n,
     });
-    await store.insert(schema.users, {
+    await driver.insert(schema.users, {
       id: "2",
       name: "jamón",
       streamId: "2",
       streamVersion: 1n,
     });
 
-    const result = await store.select(schema.users, {
-      from: "users",
-      limit: 1,
-      offset: 1,
-    });
+    const result = (
+      await driver.select(schema, {
+        from: "users",
+        limit: 1,
+        offset: 1,
+      })
+    ).unwrapOrThrow();
 
     expect(result).toEqual([
       {
