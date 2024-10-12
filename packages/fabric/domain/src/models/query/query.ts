@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AsyncResult, Keyof } from "@fabric/core";
+import { AsyncResult, Keyof, Optional } from "@fabric/core";
 import { StoreQueryError } from "../../errors/query-error.js";
 import { FilterOptions } from "./filter-options.js";
 import { OrderByOptions } from "./order-by-options.js";
@@ -14,10 +14,10 @@ export interface StoreQuery<T> {
     keys: K[],
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
 
-  selectOne(): AsyncResult<T, StoreQueryError>;
+  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError>;
+  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
 }
 
 export interface StoreSortableQuery<T> {
@@ -29,10 +29,10 @@ export interface StoreSortableQuery<T> {
     keys: K[],
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
 
-  selectOne(): AsyncResult<T, StoreQueryError>;
+  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError>;
+  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
 }
 
 export interface StoreLimitableQuery<T> {
@@ -43,10 +43,10 @@ export interface StoreLimitableQuery<T> {
     keys: K[],
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
 
-  selectOne(): AsyncResult<T, StoreQueryError>;
+  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError>;
+  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
 }
 
 export interface SelectableQuery<T> {
@@ -55,10 +55,10 @@ export interface SelectableQuery<T> {
     keys: K[],
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
 
-  selectOne(): AsyncResult<T, StoreQueryError>;
+  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError>;
+  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
 }
 
 export interface QueryDefinition<K extends string = string> {
