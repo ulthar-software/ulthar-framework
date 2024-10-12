@@ -1,4 +1,4 @@
-import { isError } from "@fabric/core";
+import { Run } from "@fabric/core";
 import { defineModel, Field, isLike } from "@fabric/domain";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { SQLiteStorageDriver } from "./sqlite-driver.js";
@@ -21,27 +21,24 @@ describe("SQLite Store Driver", () => {
   });
 
   afterEach(async () => {
-    const result = await driver.close();
-    if (isError(result)) throw result;
+    await Run.UNSAFE(() => driver.close());
   });
 
   it("should synchronize the store and insert a record", async () => {
-    const result = await driver.sync(schema);
+    await Run.UNSAFE(() => driver.sync(schema));
 
-    if (isError(result)) throw result;
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      }),
+    );
 
-    const insertResult = await driver.insert(schema.users, {
-      id: "1",
-      name: "test",
-      streamId: "1",
-      streamVersion: 1n,
-    });
-
-    if (isError(insertResult)) throw insertResult;
-
-    const records = (
-      await driver.select(schema, { from: "users" })
-    ).unwrapOrThrow();
+    const records = await Run.UNSAFE(() =>
+      driver.select(schema, { from: "users" }),
+    );
 
     expect(records).toEqual([
       { id: "1", name: "test", streamId: "1", streamVersion: 1n },
@@ -49,21 +46,24 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should be update a record", async () => {
-    await driver.sync(schema);
+    await Run.UNSAFE(() => driver.sync(schema));
 
-    await driver.insert(schema.users, {
-      id: "1",
-      name: "test",
-      streamId: "1",
-      streamVersion: 1n,
-    });
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      }),
+    );
 
-    const err = await driver.update(schema.users, "1", { name: "updated" });
-    if (isError(err)) throw err;
+    await Run.UNSAFE(() =>
+      driver.update(schema.users, "1", { name: "updated" }),
+    );
 
-    const records = (
-      await driver.select(schema, { from: "users" })
-    ).unwrapOrThrow();
+    const records = await Run.UNSAFE(() =>
+      driver.select(schema, { from: "users" }),
+    );
 
     expect(records).toEqual([
       { id: "1", name: "updated", streamId: "1", streamVersion: 1n },
@@ -71,43 +71,49 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should be able to delete a record", async () => {
-    await driver.sync(schema);
+    await Run.UNSAFE(() => driver.sync(schema));
 
-    await driver.insert(schema.users, {
-      id: "1",
-      name: "test",
-      streamId: "1",
-      streamVersion: 1n,
-    });
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      }),
+    );
 
-    await driver.delete(schema.users, "1");
+    await Run.UNSAFE(() => driver.delete(schema.users, "1"));
 
-    const records = (
-      await driver.select(schema, { from: "users" })
-    ).unwrapOrThrow();
+    const records = await Run.UNSAFE(() =>
+      driver.select(schema, { from: "users" }),
+    );
 
     expect(records).toEqual([]);
   });
 
   it("should be able to select records", async () => {
-    await driver.sync(schema);
+    await Run.UNSAFE(() => driver.sync(schema));
 
-    await driver.insert(schema.users, {
-      id: "1",
-      name: "test",
-      streamId: "1",
-      streamVersion: 1n,
-    });
-    await driver.insert(schema.users, {
-      id: "2",
-      name: "test",
-      streamId: "2",
-      streamVersion: 1n,
-    });
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      }),
+    );
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "2",
+        name: "test",
+        streamId: "2",
+        streamVersion: 1n,
+      }),
+    );
 
-    const records = (
-      await driver.select(schema, { from: "users" })
-    ).unwrapOrThrow();
+    const records = await Run.UNSAFE(() =>
+      driver.select(schema, { from: "users" }),
+    );
 
     expect(records).toEqual([
       { id: "1", name: "test", streamId: "1", streamVersion: 1n },
@@ -116,24 +122,28 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should be able to select one record", async () => {
-    await driver.sync(schema);
+    await Run.UNSAFE(() => driver.sync(schema));
 
-    await driver.insert(schema.users, {
-      id: "1",
-      name: "test",
-      streamId: "1",
-      streamVersion: 1n,
-    });
-    await driver.insert(schema.users, {
-      id: "2",
-      name: "test",
-      streamId: "2",
-      streamVersion: 1n,
-    });
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      }),
+    );
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "2",
+        name: "test",
+        streamId: "2",
+        streamVersion: 1n,
+      }),
+    );
 
-    const record = (
-      await driver.selectOne(schema, { from: "users" })
-    ).unwrapOrThrow();
+    const record = await Run.UNSAFE(() =>
+      driver.selectOne(schema, { from: "users" }),
+    );
 
     expect(record).toEqual({
       id: "1",
@@ -144,27 +154,31 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should select a record with a where clause", async () => {
-    await driver.sync(schema);
+    await Run.UNSAFE(() => driver.sync(schema));
 
-    await driver.insert(schema.users, {
-      id: "1",
-      name: "test",
-      streamId: "1",
-      streamVersion: 1n,
-    });
-    await driver.insert(schema.users, {
-      id: "2",
-      name: "jamón",
-      streamId: "2",
-      streamVersion: 1n,
-    });
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      }),
+    );
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "2",
+        name: "jamón",
+        streamId: "2",
+        streamVersion: 1n,
+      }),
+    );
 
-    const result = (
-      await driver.select(schema, {
+    const result = await Run.UNSAFE(() =>
+      driver.select(schema, {
         from: "users",
         where: { name: isLike("te%") },
-      })
-    ).unwrapOrThrow();
+      }),
+    );
 
     expect(result).toEqual([
       {
@@ -177,27 +191,31 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should select a record with a where clause of a specific type", async () => {
-    await driver.sync(schema);
+    await Run.UNSAFE(() => driver.sync(schema));
 
-    await driver.insert(schema.users, {
-      id: "1",
-      name: "test",
-      streamId: "1",
-      streamVersion: 1n,
-    });
-    await driver.insert(schema.users, {
-      id: "2",
-      name: "jamón",
-      streamId: "2",
-      streamVersion: 1n,
-    });
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      }),
+    );
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "2",
+        name: "jamón",
+        streamId: "2",
+        streamVersion: 1n,
+      }),
+    );
 
-    const result = (
-      await driver.select(schema, {
+    const result = await Run.UNSAFE(() =>
+      driver.select(schema, {
         from: "users",
         where: { streamVersion: 1n },
-      })
-    ).unwrapOrThrow();
+      }),
+    );
 
     expect(result).toEqual([
       {
@@ -216,28 +234,32 @@ describe("SQLite Store Driver", () => {
   });
 
   it("should select with a limit and offset", async () => {
-    await driver.sync(schema);
+    await Run.UNSAFE(() => driver.sync(schema));
 
-    await driver.insert(schema.users, {
-      id: "1",
-      name: "test",
-      streamId: "1",
-      streamVersion: 1n,
-    });
-    await driver.insert(schema.users, {
-      id: "2",
-      name: "jamón",
-      streamId: "2",
-      streamVersion: 1n,
-    });
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "1",
+        name: "test",
+        streamId: "1",
+        streamVersion: 1n,
+      }),
+    );
+    await Run.UNSAFE(() =>
+      driver.insert(schema.users, {
+        id: "2",
+        name: "jamón",
+        streamId: "2",
+        streamVersion: 1n,
+      }),
+    );
 
-    const result = (
-      await driver.select(schema, {
+    const result = await Run.UNSAFE(() =>
+      driver.select(schema, {
         from: "users",
         limit: 1,
         offset: 1,
-      })
-    ).unwrapOrThrow();
+      }),
+    );
 
     expect(result).toEqual([
       {
