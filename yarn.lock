@@ -419,16 +419,16 @@ __metadata:
   resolution: "@fabric/domain@workspace:packages/fabric/domain"
   dependencies:
     "@fabric/core": "workspace:^"
-    "@fabric/store-sqlite": "workspace:^"
+    "@fabric/sqlite-store": "workspace:^"
     decimal.js: "npm:^10.4.3"
     typescript: "npm:^5.6.2"
     vitest: "npm:^2.1.1"
   languageName: unknown
   linkType: soft
 
-"@fabric/store-sqlite@workspace:^, @fabric/store-sqlite@workspace:packages/fabric/store-sqlite":
+"@fabric/sqlite-store@workspace:^, @fabric/sqlite-store@workspace:packages/fabric/store-sqlite":
   version: 0.0.0-use.local
-  resolution: "@fabric/store-sqlite@workspace:packages/fabric/store-sqlite"
+  resolution: "@fabric/sqlite-store@workspace:packages/fabric/store-sqlite"
   dependencies:
     "@fabric/core": "workspace:^"
     "@fabric/domain": "workspace:^"

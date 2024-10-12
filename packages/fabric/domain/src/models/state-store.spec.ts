@@ -1,5 +1,5 @@
 import { isError, Run } from "@fabric/core";
-import { SQLiteStorageDriver } from "@fabric/store-sqlite";
+import { SQLiteStorageDriver } from "@fabric/sqlite-store";
 import {
   afterEach,
   beforeEach,

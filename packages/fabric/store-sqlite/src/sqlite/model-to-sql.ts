@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Variant, VariantTag } from "@fabric/core";
 import { Collection, FieldDefinition, getTargetKey } from "@fabric/domain";
-import { EmbeddedField } from "@fabric/domain/dist/models/fields/embedded.js";
-import { TimestampField } from "@fabric/domain/dist/models/fields/timestamp.js";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -42,10 +40,10 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
   DecimalField: (n, f): string => {
     return [n, "REAL", modifiersFromOpts(f)].join(" ");
   },
-  TimestampField: (n, f: TimestampField): string => {
+  TimestampField: (n, f): string => {
     return [n, "NUMERIC", modifiersFromOpts(f)].join(" ");
   },
-  EmbeddedField: (n, f: EmbeddedField): string => {
+  EmbeddedField: (n, f): string => {
     return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
 };

@@ -11,16 +11,16 @@ import {
   StorageDriver,
   StoreQueryError,
 } from "@fabric/domain";
-import { filterToParams, filterToSQL } from "./filter-to-sql.js";
-import { modelToSql } from "./model-to-sql.js";
+import { filterToParams, filterToSQL } from "./sqlite/filter-to-sql.js";
+import { modelToSql } from "./sqlite/model-to-sql.js";
 import {
   keyToParam,
   recordToSQLKeyParams,
   recordToSQLKeys,
   recordToSQLParams,
   recordToSQLSet,
-} from "./record-utils.js";
-import { transformRow } from "./sql-to-value.js";
+} from "./sqlite/record-utils.js";
+import { transformRow } from "./sqlite/sql-to-value.js";
 import { SQLiteDatabase } from "./sqlite/sqlite-wrapper.js";
 
 export class SQLiteStorageDriver implements StorageDriver {
