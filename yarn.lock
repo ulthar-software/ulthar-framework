@@ -426,9 +426,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fabric/sqlite-store@workspace:^, @fabric/sqlite-store@workspace:packages/fabric/store-sqlite":
+"@fabric/sqlite-store@workspace:^, @fabric/sqlite-store@workspace:packages/fabric/sqlite-store":
   version: 0.0.0-use.local
-  resolution: "@fabric/sqlite-store@workspace:packages/fabric/store-sqlite"
+  resolution: "@fabric/sqlite-store@workspace:packages/fabric/sqlite-store"
   dependencies:
     "@fabric/core": "workspace:^"
     "@fabric/domain": "workspace:^"
