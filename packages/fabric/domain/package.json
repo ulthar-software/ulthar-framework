@@ -1,8 +1,12 @@
 {
   "name": "@fabric/domain",
   "type": "module",
-  "module": "dist/index.js",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./mocks": "./dist/mocks.js"
+  },
   "files": [
     "dist"
   ],

@@ -1,14 +1,10 @@
 {
   "name": "@fabric/core",
   "type": "module",
-  "module": "dist/index.js",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./domain": "./dist/domain.js",
-    "./validation": "./dist/validation.js",
-    "./validation/fields": "./dist/validation/fields/index.js"
+    ".": "./dist/index.js"
   },
   "files": [
     "dist"
