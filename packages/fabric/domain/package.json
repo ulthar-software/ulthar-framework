@@ -1,5 +1,7 @@
 {
   "name": "@fabric/domain",
+  "private": true,
+  "sideEffects": false,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -10,12 +12,11 @@
   "files": [
     "dist"
   ],
-  "private": true,
   "packageManager": "yarn@4.1.1",
   "devDependencies": {
-    "@fabric/sqlite-store": "workspace:^",
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.1"
+    "@vitest/coverage-v8": "^2.1.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.2"
   },
   "dependencies": {
     "@fabric/core": "workspace:^",
@@ -23,6 +24,7 @@
   },
   "scripts": {
     "test": "vitest",
+    "coverage": "vitest run --coverage",
     "build": "tsc -p tsconfig.build.json"
   }
 }
