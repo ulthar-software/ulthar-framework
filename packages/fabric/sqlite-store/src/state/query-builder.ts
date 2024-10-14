@@ -14,7 +14,7 @@ import {
 } from "@fabric/domain";
 import { filterToParams, filterToSQL } from "../sqlite/filter-to-sql.js";
 import { transformRow } from "../sqlite/sql-to-value.js";
-import { SQLiteDatabase } from "../sqlite/sqlite-wrapper.js";
+import { SQLiteDatabase } from "../sqlite/sqlite-database.js";
 
 export class QueryBuilder<T> implements StoreQuery<T> {
   constructor(

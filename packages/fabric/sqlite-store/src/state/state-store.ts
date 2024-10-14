@@ -16,7 +16,7 @@ import {
   recordToSQLParams,
   recordToSQLSet,
 } from "../sqlite/record-utils.js";
-import { SQLiteDatabase } from "../sqlite/sqlite-wrapper.js";
+import { SQLiteDatabase } from "../sqlite/sqlite-database.js";
 import { QueryBuilder } from "./query-builder.js";
 
 export class SQLiteStateStore<TModel extends Model>
@@ -26,7 +26,7 @@ export class SQLiteStateStore<TModel extends Model>
   private db: SQLiteDatabase;
 
   constructor(
-    private dbPath: string,
+    private readonly dbPath: string,
     models: TModel[],
   ) {
     this.schema = models.reduce((acc, model: TModel) => {

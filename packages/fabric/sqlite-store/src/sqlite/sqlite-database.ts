@@ -79,7 +79,11 @@ export class SQLiteDatabase {
           if (err) {
             reject(err);
           } else {
-            resolve(transformer ? rows.map(transformer) : rows);
+            try {
+              resolve(transformer ? rows.map(transformer) : rows);
+            } catch (e) {
+              reject(e);
+            }
           }
         },
       );
@@ -100,7 +104,11 @@ export class SQLiteDatabase {
           if (err) {
             reject(err);
           } else {
-            resolve(transformer ? rows.map(transformer)[0] : rows[0]);
+            try {
+              resolve(transformer ? rows.map(transformer)[0] : rows[0]);
+            } catch (e) {
+              reject(e);
+            }
           }
         },
       );
