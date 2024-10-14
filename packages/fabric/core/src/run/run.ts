@@ -21,6 +21,18 @@ export namespace Run {
     fn2: (value: T1) => AsyncResult<T2, TE2>,
     fn3: (value: T2) => AsyncResult<T3, TE3>,
   ): AsyncResult<T3, TE1 | TE2 | TE3>;
+  // prettier-ignore
+  export async function seq<
+    T1, TE1 extends TaggedError,
+    T2, TE2 extends TaggedError,
+    T3, TE3 extends TaggedError,
+    T4, TE4 extends TaggedError,
+  >(
+    fn1: () => AsyncResult<T1, TE1>,
+    fn2: (value: T1) => AsyncResult<T2, TE2>,
+    fn3: (value: T2) => AsyncResult<T3, TE3>,
+    fn4: (value: T3) => AsyncResult<T4, TE4>,
+  ): AsyncResult<T4, TE1 | TE2 | TE3 | TE4>;
   export async function seq(
     ...fns: ((...args: any[]) => AsyncResult<any, any>)[]
   ): AsyncResult<any, any> {
