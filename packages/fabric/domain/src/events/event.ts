@@ -10,3 +10,8 @@ export interface Event<TTag extends string = string, TPayload = any> {
   readonly streamId: UUID;
   readonly payload: TPayload;
 }
+
+export type EventFromKey<
+  TEvents extends Event,
+  TKey extends TEvents["type"],
+> = Extract<TEvents, { type: TKey }>;
