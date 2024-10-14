@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TaggedError } from "../error/tagged-error.js";
 import { UnexpectedError } from "../error/unexpected-error.js";
+import { MaybePromise } from "../types/maybe-promise.js";
 import { Result } from "./result.js";
 
 /**
@@ -14,7 +15,7 @@ export type AsyncResult<
 
 export namespace AsyncResult {
   export async function tryFrom<T, TError extends TaggedError>(
-    fn: () => Promise<T>,
+    fn: () => MaybePromise<T>,
     errorMapper: (error: any) => TError,
   ): AsyncResult<T, TError> {
     try {
@@ -25,8 +26,8 @@ export namespace AsyncResult {
   }
 
   export async function from<T>(
-    fn: () => Promise<T>,
-  ): AsyncResult<T, UnexpectedError> {
-    return tryFrom(fn, (error) => new UnexpectedError(error));
+    fn: () => MaybePromise<T>,
+  ): AsyncResult<T, never> {
+    return tryFrom(fn, (error) => new UnexpectedError(error) as never);
   }
 }
