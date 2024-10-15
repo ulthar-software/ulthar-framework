@@ -1,22 +1,26 @@
 {
   "name": "@ulthar/template-domain",
+  "private": true,
+  "sideEffects": false,
   "type": "module",
   "module": "dist/index.js",
   "main": "dist/index.js",
   "files": [
     "dist"
   ],
-  "private": true,
   "packageManager": "yarn@4.1.1",
   "devDependencies": {
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.1"
+    "@vitest/coverage-v8": "^2.1.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.2"
   },
   "dependencies": {
-    "@ulthar/fabric-core": "workspace:^"
+    "@fabric/core": "workspace:^",
+    "@fabric/domain": "workspace:^"
   },
   "scripts": {
     "test": "vitest",
+    "coverage": "vitest run --coverage",
     "build": "tsc -p tsconfig.build.json"
   }
 }

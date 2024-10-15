@@ -1,4 +1,4 @@
-import { EnumToValues } from "@ulthar/fabric-core";
+import { EnumToType } from "@fabric/core";
 
 /**
  * A permission is a string that represents a something that a user is allowed to do in the system. It should be in the form of: `ACTION_ENTITY`.
@@ -7,4 +7,4 @@ import { EnumToValues } from "@ulthar/fabric-core";
  */
 export const Permission = {} as const;
 
-export type Permission = EnumToValues<typeof Permission>;
+export type Permission = EnumToType<typeof Permission>;

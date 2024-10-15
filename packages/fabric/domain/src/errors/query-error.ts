@@ -1,0 +1,7 @@
+import { TaggedError } from "@fabric/core";
+
+export class StoreQueryError extends TaggedError<"StoreQueryError"> {
+  constructor(public message: string) {
+    super("StoreQueryError", message);
+  }
+}
