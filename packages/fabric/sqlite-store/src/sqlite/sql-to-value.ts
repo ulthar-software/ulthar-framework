@@ -14,6 +14,9 @@ export function transformRow(model: Collection) {
 }
 
 function valueFromSQL(field: FieldDefinition, value: any): any {
+  if (value === null) {
+    return null;
+  }
   const r = FieldSQLInsertMap[field[VariantTag]];
   return r(field as any, value);
 }

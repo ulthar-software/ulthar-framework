@@ -1,4 +1,4 @@
-import { Run } from "@fabric/core";
+import { PosixDate, Run } from "@fabric/core";
 import { defineModel, Field, isLike, UUID } from "@fabric/domain";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import {
@@ -42,6 +42,7 @@ describe("State Store", () => {
         name: "test",
         streamId: newUUID,
         streamVersion: 1n,
+        deletedAt: null,
       }),
     );
   });
@@ -55,6 +56,7 @@ describe("State Store", () => {
         id: newUUID,
         streamId: newUUID,
         streamVersion: 1n,
+        deletedAt: null,
       }),
     );
 
@@ -66,6 +68,7 @@ describe("State Store", () => {
         streamId: UUID;
         streamVersion: bigint;
         name: string;
+        deletedAt: PosixDate | null;
       }[]
     >();
 
@@ -75,6 +78,7 @@ describe("State Store", () => {
         streamId: newUUID,
         streamVersion: 1n,
         name: "test",
+        deletedAt: null,
       },
     ]);
   });
@@ -89,6 +93,7 @@ describe("State Store", () => {
           id: newUUID,
           streamId: newUUID,
           streamVersion: 1n,
+          deletedAt: null,
         }),
       () =>
         store.insertInto("users", {
@@ -96,6 +101,7 @@ describe("State Store", () => {
           id: UUIDGeneratorMock.generate(),
           streamId: UUIDGeneratorMock.generate(),
           streamVersion: 1n,
+          deletedAt: null,
         }),
       () =>
         store.insertInto("users", {
@@ -103,6 +109,7 @@ describe("State Store", () => {
           id: UUIDGeneratorMock.generate(),
           streamId: UUIDGeneratorMock.generate(),
           streamVersion: 1n,
+          deletedAt: null,
         }),
     );
 
@@ -121,6 +128,7 @@ describe("State Store", () => {
         streamId: UUID;
         streamVersion: bigint;
         name: string;
+        deletedAt: PosixDate | null;
       }[]
     >();
 
@@ -130,6 +138,7 @@ describe("State Store", () => {
         streamId: newUUID,
         streamVersion: 1n,
         name: "test",
+        deletedAt: null,
       },
     ]);
   });
@@ -143,6 +152,7 @@ describe("State Store", () => {
         id: newUUID,
         streamId: newUUID,
         streamVersion: 1n,
+        deletedAt: null,
       }),
     );
 
@@ -161,6 +171,7 @@ describe("State Store", () => {
       streamId: newUUID,
       streamVersion: 1n,
       name: "updated",
+      deletedAt: null,
     });
   });
 
@@ -173,6 +184,7 @@ describe("State Store", () => {
         id: newUUID,
         streamId: newUUID,
         streamVersion: 1n,
+        deletedAt: null,
       }),
     );
 
@@ -197,6 +209,7 @@ describe("State Store", () => {
         name: "test",
         streamId: ownerUUID,
         streamVersion: 1n,
+        deletedAt: null,
       }),
     );
 
@@ -207,6 +220,7 @@ describe("State Store", () => {
         owner: ownerUUID,
         streamId: newUUID,
         streamVersion: 1n,
+        deletedAt: null,
       }),
     );
   });

@@ -25,6 +25,9 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
 };
 
 export function fieldValueToSQL(field: FieldDefinition, value: any) {
+  if (value === null) {
+    return null;
+  }
   const r = FieldSQLInsertMap[field[VariantTag]] as any;
   return r(field as any, value);
 }
