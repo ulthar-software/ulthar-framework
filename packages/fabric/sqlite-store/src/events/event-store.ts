@@ -49,7 +49,7 @@ export class SQLiteEventStore<TEvents extends Event>
             )`,
         );
       },
-      (error) => new StoreQueryError(error.message, { error }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 
@@ -74,7 +74,7 @@ export class SQLiteEventStore<TEvents extends Event>
         );
         return events;
       },
-      (error) => new StoreQueryError(error.message, { error }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 
@@ -120,10 +120,7 @@ export class SQLiteEventStore<TEvents extends Event>
 
         return !lastVersion ? 0n : BigInt(lastVersion);
       },
-      (error) =>
-        new StoreQueryError(`Error getting last version:${error.message}`, {
-          error,
-        }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 
@@ -146,7 +143,7 @@ export class SQLiteEventStore<TEvents extends Event>
   close(): AsyncResult<void, StoreQueryError> {
     return AsyncResult.tryFrom(
       () => this.db.close(),
-      (error) => new StoreQueryError(error.message, { error }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 
@@ -176,7 +173,7 @@ export class SQLiteEventStore<TEvents extends Event>
         );
         return storedEvent;
       },
-      (error) => new StoreQueryError("Error appending event", { error }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 }

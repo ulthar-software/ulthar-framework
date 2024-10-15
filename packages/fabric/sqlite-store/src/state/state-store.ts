@@ -52,12 +52,7 @@ export class SQLiteStateStore<TModel extends Model>
           recordToSQLParams(model, record),
         );
       },
-      (error) =>
-        new StoreQueryError(error.message, {
-          error,
-          collectionName: model.name,
-          record,
-        }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 
@@ -87,12 +82,7 @@ export class SQLiteStateStore<TModel extends Model>
           params,
         );
       },
-      (error) =>
-        new StoreQueryError(error.message, {
-          error,
-          collectionName: model.name,
-          record,
-        }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 
@@ -109,12 +99,7 @@ export class SQLiteStateStore<TModel extends Model>
           { $id: id },
         );
       },
-      (error) =>
-        new StoreQueryError(error.message, {
-          error,
-          collectionName: model.name,
-          id,
-        }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 
@@ -130,11 +115,7 @@ export class SQLiteStateStore<TModel extends Model>
           }
         });
       },
-      (error) =>
-        new StoreQueryError(error.message, {
-          error,
-          schema: this.schema,
-        }),
+      (error) => new StoreQueryError(error.message),
     );
   }
 

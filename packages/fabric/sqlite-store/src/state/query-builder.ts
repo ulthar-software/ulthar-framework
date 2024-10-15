@@ -62,11 +62,7 @@ export class QueryBuilder<T> implements StoreQuery<T> {
           transformRow(this.schema[this.query.from]),
         );
       },
-      (err) =>
-        new StoreQueryError(err.message, {
-          err,
-          query: this.query,
-        }),
+      (err) => new StoreQueryError(err.message),
     );
   }
 
@@ -91,11 +87,7 @@ export class QueryBuilder<T> implements StoreQuery<T> {
           transformRow(this.schema[this.query.from]),
         );
       },
-      (err) =>
-        new StoreQueryError(err.message, {
-          err,
-          query: this.query,
-        }),
+      (err) => new StoreQueryError(err.message),
     );
   }
 }
