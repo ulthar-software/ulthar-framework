@@ -19,6 +19,7 @@ export const DefaultModelFields = {
     isUnsigned: true,
     hasArbitraryPrecision: true,
   }),
+  deletedAt: Field.timestamp({ isOptional: true }),
 };
 
 export interface Model<
