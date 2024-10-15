@@ -1,4 +1,10 @@
-import { AsyncResult, MaybePromise, PosixDate, Run } from "@fabric/core";
+import {
+  AsyncResult,
+  MaybePromise,
+  PosixDate,
+  Run,
+  VariantTag,
+} from "@fabric/core";
 import {
   Event,
   EventFromKey,
@@ -19,7 +25,7 @@ export class SQLiteEventStore<TEvents extends Event>
   private streamVersions = new Map<UUID, bigint>();
 
   private eventSubscribers = new Map<
-    TEvents["type"],
+    TEvents[VariantTag],
     EventSubscriber<TEvents>[]
   >();
 
@@ -34,7 +40,7 @@ export class SQLiteEventStore<TEvents extends Event>
         await this.db.run(
           `CREATE TABLE IF NOT EXISTS events (
               id TEXT PRIMARY KEY,
-              type TEXT NOT NULL,
+              _tag TEXT NOT NULL,
               streamId TEXT NOT NULL,
               version INTEGER NOT NULL,
               timestamp NUMERIC NOT NULL,
@@ -57,13 +63,13 @@ export class SQLiteEventStore<TEvents extends Event>
           {
             $id: streamId,
           },
-          (event) => ({
-            id: event.id,
-            streamId: event.streamId,
-            type: event.type,
-            version: BigInt(event.version),
-            timestamp: new PosixDate(event.timestamp),
-            payload: JSONUtils.parse(event.payload),
+          (e) => ({
+            id: e.id,
+            streamId: e.streamId,
+            _tag: e._tag,
+            version: BigInt(e.version),
+            timestamp: new PosixDate(e.timestamp),
+            payload: JSONUtils.parse(e.payload),
           }),
         );
         return events;
@@ -95,7 +101,7 @@ export class SQLiteEventStore<TEvents extends Event>
     event: StoredEvent<TEvents>,
   ): AsyncResult<void> {
     return AsyncResult.from(async () => {
-      const subscribers = this.eventSubscribers.get(event.type) || [];
+      const subscribers = this.eventSubscribers.get(event[VariantTag]) || [];
       await Promise.all(subscribers.map((subscriber) => subscriber(event)));
     });
   }
@@ -121,13 +127,13 @@ export class SQLiteEventStore<TEvents extends Event>
     );
   }
 
-  subscribe<TEventKey extends TEvents["type"]>(
-    events: TEventKey[],
+  subscribe<TEventKey extends TEvents[VariantTag]>(
+    eventNames: TEventKey[],
     subscriber: (
       event: StoredEvent<EventFromKey<TEvents, TEventKey>>,
     ) => MaybePromise<void>,
   ): void {
-    events.forEach((event) => {
+    eventNames.forEach((event) => {
       const subscribers = this.eventSubscribers.get(event) || [];
       const newSubscribers = [
         ...subscribers,
@@ -157,12 +163,12 @@ export class SQLiteEventStore<TEvents extends Event>
           timestamp: new PosixDate(),
         };
         await this.db.runPrepared(
-          `INSERT INTO events (id, streamId, type, version, timestamp, payload) 
-          VALUES ($id, $streamId, $type, $version, $timestamp, $payload)`,
+          `INSERT INTO events (id, streamId, _tag, version, timestamp, payload) 
+          VALUES ($id, $streamId, $_tag, $version, $timestamp, $payload)`,
           {
             $id: storedEvent.id,
             $streamId: streamId,
-            $type: storedEvent.type,
+            $_tag: storedEvent[VariantTag],
             $version: storedEvent.version.toString(),
             $timestamp: storedEvent.timestamp.timestamp,
             $payload: JSON.stringify(storedEvent.payload),

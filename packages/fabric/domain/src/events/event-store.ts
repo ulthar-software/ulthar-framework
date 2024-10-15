@@ -1,7 +1,13 @@
-import { AsyncResult, MaybePromise, PosixDate } from "@fabric/core";
+import {
+  AsyncResult,
+  MaybePromise,
+  PosixDate,
+  VariantFromTag,
+  VariantTag,
+} from "@fabric/core";
 import { StoreQueryError } from "../errors/query-error.js";
 import { UUID } from "../types/uuid.js";
-import { Event, EventFromKey } from "./event.js";
+import { Event } from "./event.js";
 import { StoredEvent } from "./stored-event.js";
 
 export interface EventStore<TEvents extends Event> {
@@ -16,9 +22,9 @@ export interface EventStore<TEvents extends Event> {
     streamId: UUID,
   ): AsyncResult<StoredEvent<TEvents>[], StoreQueryError>;
 
-  subscribe<TEventKey extends TEvents["type"]>(
+  subscribe<TEventKey extends TEvents[VariantTag]>(
     events: TEventKey[],
-    subscriber: EventSubscriber<EventFromKey<TEvents, TEventKey>>,
+    subscriber: EventSubscriber<VariantFromTag<TEvents, TEventKey>>,
   ): void;
 }
 

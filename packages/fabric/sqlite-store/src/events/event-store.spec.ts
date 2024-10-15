@@ -26,7 +26,7 @@ describe("Event Store", () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     const userCreated: UserCreated = {
-      type: "UserCreated",
+      _tag: "UserCreated",
       id: newUUID,
       streamId: newUUID,
       payload: { name: "test" },
@@ -41,7 +41,7 @@ describe("Event Store", () => {
     expect(events[0]).toEqual({
       id: newUUID,
       streamId: newUUID,
-      type: "UserCreated",
+      _tag: "UserCreated",
       version: BigInt(1),
       timestamp: expect.any(PosixDate),
       payload: { name: "test" },
@@ -52,7 +52,7 @@ describe("Event Store", () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     const userCreated: UserCreated = {
-      type: "UserCreated",
+      _tag: "UserCreated",
       id: newUUID,
       streamId: newUUID,
       payload: { name: "test" },
@@ -68,7 +68,7 @@ describe("Event Store", () => {
     expect(subscriber).toHaveBeenCalledWith({
       id: newUUID,
       streamId: newUUID,
-      type: "UserCreated",
+      _tag: "UserCreated",
       version: BigInt(1),
       timestamp: expect.any(PosixDate),
       payload: { name: "test" },
