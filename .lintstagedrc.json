@@ -1,4 +1,4 @@
 {
-  "*": ["yarn prettier -u --write"],
-  "*.ts": ["yarn eslint --fix"]
+  "*": ["deno fmt"],
+  "*.ts": ["deno lint"]
 }
