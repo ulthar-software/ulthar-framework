@@ -1,3 +1,3 @@
-export * from "./permission.js";
-export * from "./policy.js";
-export * from "./users.js";
+export * from "./permission.ts";
+export * from "./policy.ts";
+export * from "./users.ts";
