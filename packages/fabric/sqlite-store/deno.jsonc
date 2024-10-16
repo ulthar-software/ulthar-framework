@@ -1,0 +1,6 @@
+{
+  "name": "@fabric/sqlite-store",
+  "exports": {
+    ".": "./index.ts"
+  }
+}

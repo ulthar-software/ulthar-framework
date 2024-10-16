@@ -1,0 +1,7 @@
+{
+  "name": "@fabric/domain",
+  "exports": {
+    ".": "./index.ts",
+    "./mocks": "./mocks.ts"
+  }
+}

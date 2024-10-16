@@ -1,0 +1,6 @@
+{
+  "name": "@fabric/core",
+  "exports": {
+    ".": "./index.ts"
+  }
+}
