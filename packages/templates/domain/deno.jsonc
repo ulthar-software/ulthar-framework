@@ -1,0 +1,6 @@
+{
+  "name": "@fabric/domain-template",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

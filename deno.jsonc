@@ -8,7 +8,9 @@
     "packages/fabric/core",
     "packages/fabric/domain",
     "packages/fabric/sqlite-store",
-    "packages/fabric/testing"
+    "packages/fabric/testing",
+    "packages/templates/domain",
+    "packages/templates/lib"
   ],
   "imports": {
     "@db/sqlite": "jsr:@db/sqlite@^0.12.0",

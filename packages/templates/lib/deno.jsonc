@@ -1,0 +1,6 @@
+{
+  "name": "@fabric/lib-template",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

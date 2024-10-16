@@ -1,1 +1,1 @@
-# template-domain
+# domain-template
