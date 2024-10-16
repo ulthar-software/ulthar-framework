@@ -25,7 +25,7 @@ describe("Validate Reference Field", () => {
       schema,
       Field.reference({
         targetModel: "foo",
-      })
+      }),
     ).unwrapErrorOrThrow();
 
     expect(result).toBeInstanceOf(InvalidReferenceFieldError);
@@ -36,7 +36,7 @@ describe("Validate Reference Field", () => {
       schema,
       Field.reference({
         targetModel: "User",
-      })
+      }),
     ).unwrapOrThrow();
   });
 
@@ -46,7 +46,7 @@ describe("Validate Reference Field", () => {
       Field.reference({
         targetModel: "User",
         targetKey: "foo",
-      })
+      }),
     ).unwrapErrorOrThrow();
 
     expect(result).toBeInstanceOf(InvalidReferenceFieldError);
@@ -58,7 +58,7 @@ describe("Validate Reference Field", () => {
       Field.reference({
         targetModel: "User",
         targetKey: "otherNotUnique",
-      })
+      }),
     ).unwrapErrorOrThrow();
 
     expect(result).toBeInstanceOf(InvalidReferenceFieldError);
@@ -70,7 +70,7 @@ describe("Validate Reference Field", () => {
       Field.reference({
         targetModel: "User",
         targetKey: "otherUnique",
-      })
+      }),
     );
 
     if (isError(result)) {

@@ -31,5 +31,5 @@ Deno.test(
         V2: (v) => v.b,
       })
     ).toThrow("Non-exhaustive pattern match");
-  }
+  },
 );

@@ -10,13 +10,13 @@ import { Result } from "./result.ts";
  */
 export type AsyncResult<
   TValue = any,
-  TError extends TaggedError = never
+  TError extends TaggedError = never,
 > = Promise<Result<TValue, TError>>;
 
 export namespace AsyncResult {
   export async function tryFrom<T, TError extends TaggedError>(
     fn: () => MaybePromise<T>,
-    errorMapper: (error: any) => TError
+    errorMapper: (error: any) => TError,
   ): AsyncResult<T, TError> {
     try {
       return Result.succeedWith(await fn());

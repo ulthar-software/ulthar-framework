@@ -13,11 +13,10 @@ export interface ReferenceFieldOptions extends BaseField {
 }
 
 export interface ReferenceField
-  extends TaggedVariant<"ReferenceField">,
-    ReferenceFieldOptions {}
+  extends TaggedVariant<"ReferenceField">, ReferenceFieldOptions {}
 
 export function createReferenceField<T extends ReferenceFieldOptions>(
-  opts: T = {} as T
+  opts: T = {} as T,
 ): ReferenceField & T {
   return {
     [VariantTag]: "ReferenceField",
@@ -31,21 +30,21 @@ export function getTargetKey(field: ReferenceField): string {
 
 export function validateReferenceField(
   schema: ModelSchema,
-  field: ReferenceField
+  field: ReferenceField,
 ): Result<void, InvalidReferenceFieldError> {
   if (!schema[field.targetModel]) {
     return Result.failWith(
       new InvalidReferenceFieldError(
-        `The target model '${field.targetModel}' is not in the schema.`
-      )
+        `The target model '${field.targetModel}' is not in the schema.`,
+      ),
     );
   }
 
   if (field.targetKey && !schema[field.targetModel]!.fields[field.targetKey]) {
     return Result.failWith(
       new InvalidReferenceFieldError(
-        `The target key '${field.targetKey}' is not in the target model '${field.targetModel}'.`
-      )
+        `The target key '${field.targetKey}' is not in the target model '${field.targetModel}'.`,
+      ),
     );
   }
 
@@ -55,15 +54,16 @@ export function validateReferenceField(
   ) {
     return Result.failWith(
       new InvalidReferenceFieldError(
-        `The target key '${field.targetModel}'.'${field.targetKey}' is not unique.`
-      )
+        `The target key '${field.targetModel}'.'${field.targetKey}' is not unique.`,
+      ),
     );
   }
 
   return Result.ok();
 }
 
-export class InvalidReferenceFieldError extends TaggedError<"InvalidReferenceField"> {
+export class InvalidReferenceFieldError
+  extends TaggedError<"InvalidReferenceField"> {
   constructor(readonly reason: string) {
     super("InvalidReferenceField");
   }

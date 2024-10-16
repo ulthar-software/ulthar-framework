@@ -135,7 +135,7 @@ describe("SQL where clause from filter options", () => {
     const result = filterToSQL(opts);
     const params = filterToParams(col, opts);
     expect(result).toEqual(
-      "WHERE (name IN ($where_name_0_0,$where_name_0_1) AND age > $where_age_0) OR (status <> $where_status_1 AND salary > $where_salary_1) OR (rating < $where_rating_2 AND quantity >= $where_quantity_2)"
+      "WHERE (name IN ($where_name_0_0,$where_name_0_1) AND age > $where_age_0) OR (status <> $where_status_1 AND salary > $where_salary_1) OR (rating < $where_rating_2 AND quantity >= $where_quantity_2)",
     );
     expect(params).toEqual({
       $where_name_0_0: "John",

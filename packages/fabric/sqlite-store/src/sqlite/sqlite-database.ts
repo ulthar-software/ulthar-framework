@@ -44,7 +44,7 @@ export class SQLiteDatabase {
   allPrepared(
     sql: string,
     params?: Record<string, any>,
-    transformer?: (row: any) => any
+    transformer?: (row: any) => any,
   ) {
     const cachedStmt = this.getCachedStatement(sql);
 
@@ -56,7 +56,7 @@ export class SQLiteDatabase {
   onePrepared(
     sql: string,
     params?: Record<string, any>,
-    transformer?: (row: any) => any
+    transformer?: (row: any) => any,
   ) {
     const cachedStmt = this.getCachedStatement(sql);
 

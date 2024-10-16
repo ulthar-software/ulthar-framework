@@ -35,7 +35,7 @@ describe("sortByDependencies", () => {
       sortByDependencies(array, {
         keyGetter: (element) => element.name,
         depGetter: (element) => element.dependencies,
-      }).unwrapErrorOrThrow()
+      }).unwrapErrorOrThrow(),
     ).toBeInstanceOf(CircularDependencyError);
   });
 

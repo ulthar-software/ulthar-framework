@@ -10,7 +10,7 @@ describe("Run", () => {
       const result = await Run.seq(
         async () => Result.succeedWith(1),
         async (x) => Result.succeedWith(x + 1),
-        async (x) => Result.succeedWith(x * 2)
+        async (x) => Result.succeedWith(x * 2),
       );
 
       expect(result.unwrapOrThrow()).toEqual(4);
@@ -20,7 +20,7 @@ describe("Run", () => {
       const result = await Run.seq(
         async () => Result.succeedWith(1),
         async () => Result.failWith(new UnexpectedError()),
-        async (x) => Result.succeedWith(x * 2)
+        async (x) => Result.succeedWith(x * 2),
       );
 
       expect(result.isError()).toBe(true);

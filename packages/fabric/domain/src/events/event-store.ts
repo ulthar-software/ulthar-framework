@@ -15,21 +15,21 @@ export interface EventStore<TEvents extends Event> {
    * Store a new event in the event store.
    */
   append<T extends TEvents>(
-    event: T
+    event: T,
   ): AsyncResult<StoredEvent<T>, StoreQueryError>;
 
   getEventsFromStream(
-    streamId: UUID
+    streamId: UUID,
   ): AsyncResult<StoredEvent<TEvents>[], StoreQueryError>;
 
   subscribe<TEventKey extends TEvents[VariantTag]>(
     events: TEventKey[],
-    subscriber: EventSubscriber<VariantFromTag<TEvents, TEventKey>>
+    subscriber: EventSubscriber<VariantFromTag<TEvents, TEventKey>>,
   ): void;
 }
 
 export type EventSubscriber<TEvents extends Event = Event> = (
-  event: StoredEvent<TEvents>
+  event: StoredEvent<TEvents>,
 ) => MaybePromise<void>;
 
 export interface EventFilterOptions {

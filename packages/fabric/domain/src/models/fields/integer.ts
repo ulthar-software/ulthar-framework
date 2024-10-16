@@ -7,11 +7,10 @@ export interface IntegerFieldOptions extends BaseField {
 }
 
 export interface IntegerField
-  extends TaggedVariant<"IntegerField">,
-    IntegerFieldOptions {}
+  extends TaggedVariant<"IntegerField">, IntegerFieldOptions {}
 
 export function createIntegerField<T extends IntegerFieldOptions>(
-  opts: T = {} as T
+  opts: T = {} as T,
 ): IntegerField & T {
   return {
     [VariantTag]: "IntegerField",

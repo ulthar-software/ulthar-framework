@@ -16,7 +16,7 @@ describe("ModelToSQL", () => {
     const result = modelToSql(model);
 
     expect(result).toEqual(
-      `CREATE TABLE something (id TEXT PRIMARY KEY, name TEXT NOT NULL, age INTEGER NOT NULL, date NUMERIC NOT NULL, reference TEXT NOT NULL REFERENCES somethingElse(id))`
+      `CREATE TABLE something (id TEXT PRIMARY KEY, name TEXT NOT NULL, age INTEGER NOT NULL, date NUMERIC NOT NULL, reference TEXT NOT NULL REFERENCES somethingElse(id))`,
     );
   });
 });

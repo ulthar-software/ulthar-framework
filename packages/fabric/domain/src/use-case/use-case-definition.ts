@@ -6,14 +6,14 @@ export type UseCaseDefinition<
   TDependencies = any,
   TPayload = any,
   TOutput = any,
-  TErrors extends TaggedError<string> = any
+  TErrors extends TaggedError<string> = any,
 > = BasicUseCaseDefinition<TDependencies, TPayload, TOutput, TErrors>;
 
 interface BasicUseCaseDefinition<
   TDependencies,
   TPayload,
   TOutput,
-  TErrors extends TaggedError<string>
+  TErrors extends TaggedError<string>,
 > {
   /**
    * The use case name.

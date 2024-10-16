@@ -6,7 +6,7 @@ export type CustomModelFields = Record<string, FieldDefinition>;
 
 export interface Collection<
   TName extends string = string,
-  TFields extends CustomModelFields = CustomModelFields
+  TFields extends CustomModelFields = CustomModelFields,
 > {
   name: TName;
   fields: TFields;
@@ -24,14 +24,14 @@ export const DefaultModelFields = {
 
 export interface Model<
   TName extends string = string,
-  TFields extends CustomModelFields = CustomModelFields
+  TFields extends CustomModelFields = CustomModelFields,
 > extends Collection<TName, TFields> {
   fields: typeof DefaultModelFields & TFields;
 }
 
 export function defineModel<
   TName extends string,
-  TFields extends CustomModelFields
+  TFields extends CustomModelFields,
 >(name: TName, fields: TFields): Model<TName, TFields> {
   return {
     name,
@@ -41,7 +41,7 @@ export function defineModel<
 
 export function defineCollection<
   TName extends string,
-  TFields extends CustomModelFields
+  TFields extends CustomModelFields,
 >(name: TName, fields: TFields): Collection<TName, TFields> {
   return {
     name,

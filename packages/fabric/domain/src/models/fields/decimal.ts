@@ -8,11 +8,10 @@ export interface DecimalFieldOptions extends BaseField {
 }
 
 export interface DecimalField
-  extends TaggedVariant<"DecimalField">,
-    DecimalFieldOptions {}
+  extends TaggedVariant<"DecimalField">, DecimalFieldOptions {}
 
 export function createDecimalField<T extends DecimalFieldOptions>(
-  opts: T = {} as T
+  opts: T = {} as T,
 ): DecimalField & T {
   return {
     [VariantTag]: "DecimalField",

@@ -14,23 +14,24 @@ import type { UUIDField } from "./uuid-field.ts";
  * Converts a field definition to its corresponding TypeScript type.
  */
 //prettier-ignore
-export type FieldToType<TField> = 
-    TField extends StringField ? MaybeOptional<TField, string>
+export type FieldToType<TField> = TField extends StringField
+  ? MaybeOptional<TField, string>
   : TField extends UUIDField ? MaybeOptional<TField, UUID>
   : TField extends IntegerField ? IntegerFieldToType<TField>
   : TField extends ReferenceField ? MaybeOptional<TField, UUID>
   : TField extends DecimalField ? MaybeOptional<TField, Decimal>
   : TField extends FloatField ? MaybeOptional<TField, number>
   : TField extends TimestampField ? MaybeOptional<TField, PosixDate>
-  : TField extends EmbeddedField<infer TSubModel> ? MaybeOptional<TField, TSubModel>
+  : TField extends EmbeddedField<infer TSubModel>
+    ? MaybeOptional<TField, TSubModel>
   : never;
 
 //prettier-ignore
-type IntegerFieldToType<TField extends IntegerField> = TField["hasArbitraryPrecision"] extends true
-  ? MaybeOptional<TField, bigint>
-  : TField["hasArbitraryPrecision"] extends false
-  ? MaybeOptional<TField, number>
-  : MaybeOptional<TField, number | bigint>;
+type IntegerFieldToType<TField extends IntegerField> =
+  TField["hasArbitraryPrecision"] extends true ? MaybeOptional<TField, bigint>
+    : TField["hasArbitraryPrecision"] extends false
+      ? MaybeOptional<TField, number>
+    : MaybeOptional<TField, number | bigint>;
 
 type MaybeOptional<TField, TType> = TField extends { isOptional: true }
   ? TType | null

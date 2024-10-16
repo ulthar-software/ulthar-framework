@@ -11,6 +11,6 @@ export type UseCase<
 > = TPayload extends undefined
   ? (dependencies: TDependencies) => AsyncResult<TOutput, TErrors>
   : (
-      dependencies: TDependencies,
-      payload: TPayload,
-    ) => AsyncResult<TOutput, TErrors>;
+    dependencies: TDependencies,
+    payload: TPayload,
+  ) => AsyncResult<TOutput, TErrors>;

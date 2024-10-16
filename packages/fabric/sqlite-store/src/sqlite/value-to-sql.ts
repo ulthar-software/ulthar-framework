@@ -5,7 +5,7 @@ import { FieldDefinition, FieldToType } from "@fabric/domain";
 type FieldSQLInsertMap = {
   [K in FieldDefinition[VariantTag]]: (
     field: Extract<FieldDefinition, { [VariantTag]: K }>,
-    value: FieldToType<Extract<FieldDefinition, { [VariantTag]: K }>>
+    value: FieldToType<Extract<FieldDefinition, { [VariantTag]: K }>>,
   ) => any;
 };
 const FieldSQLInsertMap: FieldSQLInsertMap = {

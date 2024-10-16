@@ -7,11 +7,10 @@ export interface StringFieldOptions extends BaseField {
 }
 
 export interface StringField
-  extends TaggedVariant<"StringField">,
-    StringFieldOptions {}
+  extends TaggedVariant<"StringField">, StringFieldOptions {}
 
 export function createStringField<T extends StringFieldOptions>(
-  opts: T = {} as T
+  opts: T = {} as T,
 ): StringField & T {
   return {
     [VariantTag]: "StringField",

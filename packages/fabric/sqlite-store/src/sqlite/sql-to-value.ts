@@ -24,7 +24,7 @@ function valueFromSQL(field: FieldDefinition, value: any): any {
 type FieldSQLInsertMap = {
   [K in FieldDefinition[VariantTag]]: (
     field: Extract<FieldDefinition, { [VariantTag]: K }>,
-    value: any
+    value: any,
   ) => FieldToType<Extract<FieldDefinition, { [VariantTag]: K }>>;
 };
 const FieldSQLInsertMap: FieldSQLInsertMap = {

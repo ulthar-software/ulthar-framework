@@ -6,7 +6,7 @@ import type { StoreQuery } from "./query/query.ts";
 
 export interface ReadonlyStateStore<TModel extends Model> {
   from<T extends keyof ModelSchemaFromModels<TModel>>(
-    collection: T
+    collection: T,
   ): StoreQuery<ModelToType<ModelSchemaFromModels<TModel>[T]>>;
 }
 
@@ -14,6 +14,6 @@ export interface WritableStateStore<TModel extends Model>
   extends ReadonlyStateStore<TModel> {
   insertInto<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
-    record: ModelToType<ModelSchemaFromModels<TModel>[T]>
+    record: ModelToType<ModelSchemaFromModels<TModel>[T]>,
   ): AsyncResult<void, StoreQueryError>;
 }

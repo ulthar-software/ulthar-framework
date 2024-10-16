@@ -16,20 +16,22 @@ import { fieldValueToSQL } from "./value-to-sql.ts";
 export function filterToSQL(filterOptions?: FilterOptions) {
   if (!filterOptions) return "";
 
-  if (Array.isArray(filterOptions))
+  if (Array.isArray(filterOptions)) {
     return `WHERE ${getWhereFromMultiOption(filterOptions)}`;
+  }
 
   return `WHERE ${getWhereFromSingleOption(filterOptions)}`;
 }
 
 export function filterToParams(
   collection: Collection,
-  filterOptions?: FilterOptions
+  filterOptions?: FilterOptions,
 ) {
   if (!filterOptions) return {};
 
-  if (Array.isArray(filterOptions))
+  if (Array.isArray(filterOptions)) {
     return getParamsFromMultiFilterOption(collection, filterOptions);
+  }
 
   return getParamsFromSingleFilterOption(collection, filterOptions);
 }
@@ -38,14 +40,14 @@ function getWhereFromMultiOption(filterOptions: MultiFilterOption) {
   return filterOptions
     .map(
       (option, i) =>
-        `(${getWhereFromSingleOption(option, { postfix: `_${i}` })})`
+        `(${getWhereFromSingleOption(option, { postfix: `_${i}` })})`,
     )
     .join(" OR ");
 }
 
 function getWhereFromSingleOption(
   filterOptions: SingleFilterOption,
-  opts: { postfix?: string } = {}
+  opts: { postfix?: string } = {},
 ) {
   return Object.entries(filterOptions)
     .map(([key, value]) => getWhereFromKeyValue(key, value, opts))
@@ -61,7 +63,7 @@ function getWhereParamKey(key: string, opts: { postfix?: string } = {}) {
 function getWhereFromKeyValue(
   key: string,
   value: FilterValue,
-  opts: { postfix?: string } = {}
+  opts: { postfix?: string } = {},
 ) {
   if (value == undefined) {
     return `${key} IS NULL`;
@@ -73,19 +75,25 @@ function getWhereFromKeyValue(
     }
 
     if (value[FILTER_OPTION_TYPE_SYMBOL] === "in") {
-      return `${key} IN (${value[FILTER_OPTION_VALUE_SYMBOL].map(
-        (_v: any, i: number) =>
-          `${getWhereParamKey(key, {
-            postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
-          })}`
-      ).join(",")})`;
+      return `${key} IN (${
+        value[FILTER_OPTION_VALUE_SYMBOL].map(
+          (_v: any, i: number) =>
+            `${
+              getWhereParamKey(key, {
+                postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
+              })
+            }`,
+        ).join(",")
+      })`;
     }
 
     if (value[FILTER_OPTION_TYPE_SYMBOL] === "comparison") {
-      return `${key} ${value[FILTER_OPTION_OPERATOR_SYMBOL]} ${getWhereParamKey(
-        key,
-        opts
-      )}`;
+      return `${key} ${value[FILTER_OPTION_OPERATOR_SYMBOL]} ${
+        getWhereParamKey(
+          key,
+          opts,
+        )
+      }`;
     }
   }
   return `${key} = ${getWhereParamKey(key, opts)}`;
@@ -93,7 +101,7 @@ function getWhereFromKeyValue(
 
 function getParamsFromMultiFilterOption(
   collection: Collection,
-  filterOptions: MultiFilterOption
+  filterOptions: MultiFilterOption,
 ) {
   return filterOptions.reduce(
     (acc, filterOption, i) => ({
@@ -102,14 +110,14 @@ function getParamsFromMultiFilterOption(
         postfix: `_${i}`,
       }),
     }),
-    {}
+    {},
   );
 }
 
 function getParamsFromSingleFilterOption(
   collection: Collection,
   filterOptions: SingleFilterOption,
-  opts: { postfix?: string } = {}
+  opts: { postfix?: string } = {},
 ) {
   return Object.entries(filterOptions)
     .filter(([, value]) => {
@@ -122,10 +130,10 @@ function getParamsFromSingleFilterOption(
           collection.fields[key]!,
           key,
           value,
-          opts
+          opts,
         ),
       }),
-      {}
+      {},
     );
 }
 
@@ -147,7 +155,7 @@ function getParamsForFilterKeyValue(
   field: FieldDefinition,
   key: string,
   value: FilterValue,
-  opts: { postfix?: string } = {}
+  opts: { postfix?: string } = {},
 ) {
   if (typeof value === "object") {
     if (value[FILTER_OPTION_TYPE_SYMBOL] === "in") {
@@ -155,12 +163,14 @@ function getParamsForFilterKeyValue(
         (acc: Record<string, any>, _: any, i: number) => {
           return {
             ...acc,
-            [getWhereParamKey(key, {
-              postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
-            })]: value[FILTER_OPTION_VALUE_SYMBOL][i],
+            [
+              getWhereParamKey(key, {
+                postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
+              })
+            ]: value[FILTER_OPTION_VALUE_SYMBOL][i],
           };
         },
-        {}
+        {},
       );
     }
   }

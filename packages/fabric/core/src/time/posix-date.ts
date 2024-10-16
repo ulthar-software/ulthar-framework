@@ -22,8 +22,9 @@ export class PosixDate {
       "timestamp" in value &&
       value["type"] === "posix-date" &&
       typeof value["timestamp"] === "number"
-    )
+    ) {
       return true;
+    }
     return false;
   }
 }

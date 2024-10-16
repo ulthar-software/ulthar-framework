@@ -8,6 +8,6 @@ export interface Projection<TModel extends Model, TEvents extends Event> {
   events: TEvents[VariantTag][];
   projection: (
     event: StoredEvent<TEvents>,
-    model?: ModelToType<TModel>
+    model?: ModelToType<TModel>,
   ) => ModelToType<TModel>;
 }

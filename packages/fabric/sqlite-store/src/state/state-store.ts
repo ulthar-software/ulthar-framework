@@ -20,8 +20,7 @@ import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
 import { QueryBuilder } from "./query-builder.ts";
 
 export class SQLiteStateStore<TModel extends Model>
-  implements WritableStateStore<TModel>
-{
+  implements WritableStateStore<TModel> {
   private schema: ModelSchemaFromModels<TModel>;
   private db: SQLiteDatabase;
 
@@ -38,25 +37,27 @@ export class SQLiteStateStore<TModel extends Model>
 
   insertInto<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
-    record: ModelToType<ModelSchemaFromModels<TModel>[T]>
+    record: ModelToType<ModelSchemaFromModels<TModel>[T]>,
   ): AsyncResult<void, StoreQueryError> {
     const model = this.schema[collection];
 
     return AsyncResult.tryFrom(
       () => {
         this.db.runPrepared(
-          `INSERT INTO ${model.name} (${recordToSQLKeys(
-            record
-          )}) VALUES (${recordToSQLKeyParams(record)})`,
-          recordToSQLParams(model, record)
+          `INSERT INTO ${model.name} (${
+            recordToSQLKeys(
+              record,
+            )
+          }) VALUES (${recordToSQLKeyParams(record)})`,
+          recordToSQLParams(model, record),
         );
       },
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 
   from<T extends keyof ModelSchemaFromModels<TModel>>(
-    collection: T
+    collection: T,
   ): StoreQuery<ModelToType<ModelSchemaFromModels<TModel>[T]>> {
     return new QueryBuilder(this.db, this.schema, {
       from: collection,
@@ -66,7 +67,7 @@ export class SQLiteStateStore<TModel extends Model>
   update<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
     id: UUID,
-    record: Partial<ModelToType<ModelSchemaFromModels<TModel>[T]>>
+    record: Partial<ModelToType<ModelSchemaFromModels<TModel>[T]>>,
   ): AsyncResult<void, StoreQueryError> {
     const model = this.schema[collection];
 
@@ -77,19 +78,21 @@ export class SQLiteStateStore<TModel extends Model>
           id,
         });
         this.db.runPrepared(
-          `UPDATE ${model.name} SET ${recordToSQLSet(
-            record
-          )} WHERE id = ${keyToParam("id")}`,
-          params
+          `UPDATE ${model.name} SET ${
+            recordToSQLSet(
+              record,
+            )
+          } WHERE id = ${keyToParam("id")}`,
+          params,
         );
       },
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 
   delete<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
-    id: UUID
+    id: UUID,
   ): AsyncResult<void, StoreQueryError> {
     const model = this.schema[collection];
 
@@ -97,10 +100,10 @@ export class SQLiteStateStore<TModel extends Model>
       () => {
         this.db.runPrepared(
           `DELETE FROM ${model.name} WHERE id = ${keyToParam("id")}`,
-          { $id: id }
+          { $id: id },
         );
       },
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 
@@ -116,7 +119,7 @@ export class SQLiteStateStore<TModel extends Model>
           }
         });
       },
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 

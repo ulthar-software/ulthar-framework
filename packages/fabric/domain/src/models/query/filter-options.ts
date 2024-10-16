@@ -20,11 +20,10 @@ export const FILTER_OPTION_TYPE_SYMBOL = "_filter_type";
 export const FILTER_OPTION_VALUE_SYMBOL = "_filter_value";
 export const FILTER_OPTION_OPERATOR_SYMBOL = "_filter_operator";
 
-export type LikeFilterOption<T> = T extends string
-  ? {
-      [FILTER_OPTION_TYPE_SYMBOL]: "like";
-      [FILTER_OPTION_VALUE_SYMBOL]: string;
-    }
+export type LikeFilterOption<T> = T extends string ? {
+    [FILTER_OPTION_TYPE_SYMBOL]: "like";
+    [FILTER_OPTION_VALUE_SYMBOL]: string;
+  }
   : never;
 
 export interface InFilterOption<T> {

@@ -14,5 +14,5 @@ export interface Event<TTag extends string = string, TPayload = any> {
 
 export type EventFromKey<
   TEvents extends Event,
-  TKey extends TEvents[VariantTag]
+  TKey extends TEvents[VariantTag],
 > = Extract<TEvents, { [VariantTag]: TKey }>;

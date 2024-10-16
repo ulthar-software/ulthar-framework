@@ -5,7 +5,7 @@ import type { MimeType } from "./mime-type.ts";
  */
 export function isMimeType<T extends MimeType>(
   expectedMimeType: T,
-  actualMimeType: string
+  actualMimeType: string,
 ): actualMimeType is T {
   return actualMimeType.match("^" + expectedMimeType + "$") !== null;
 }

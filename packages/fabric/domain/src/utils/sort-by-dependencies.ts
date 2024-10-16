@@ -9,7 +9,7 @@ export function sortByDependencies<T>(
   }: {
     keyGetter: (element: T) => string;
     depGetter: (element: T) => string[];
-  }
+  },
 ): Result<T[], CircularDependencyError> {
   const graph = new Map<string, string[]>();
   const visited = new Set<string>();
@@ -40,9 +40,9 @@ export function sortByDependencies<T>(
         visit(key, []);
       });
       return sorted.map(
-        (key) => array.find((element) => keyGetter(element) === key) as T
+        (key) => array.find((element) => keyGetter(element) === key) as T,
       );
     },
-    (e) => e as CircularDependencyError
+    (e) => e as CircularDependencyError,
   );
 }

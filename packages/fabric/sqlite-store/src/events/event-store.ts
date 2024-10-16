@@ -18,8 +18,7 @@ import {
 import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
 
 export class SQLiteEventStore<TEvents extends Event>
-  implements EventStore<TEvents>
-{
+  implements EventStore<TEvents> {
   private db: SQLiteDatabase;
 
   private streamVersions = new Map<UUID, bigint>();
@@ -46,15 +45,15 @@ export class SQLiteEventStore<TEvents extends Event>
               timestamp NUMERIC NOT NULL,
               payload TEXT NOT NULL,
               UNIQUE(streamId, version)
-            )`
+            )`,
         );
       },
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 
   getEventsFromStream(
-    streamId: UUID
+    streamId: UUID,
   ): AsyncResult<StoredEvent<TEvents>[], StoreQueryError> {
     return AsyncResult.tryFrom(
       () => {
@@ -70,16 +69,16 @@ export class SQLiteEventStore<TEvents extends Event>
             version: BigInt(e.version),
             timestamp: new PosixDate(e.timestamp),
             payload: JSONUtils.parse(e.payload),
-          })
+          }),
         );
         return events;
       },
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 
   append<T extends TEvents>(
-    event: T
+    event: T,
   ): AsyncResult<StoredEvent<T>, StoreQueryError> {
     return Run.seq(
       () => this.getLastVersion(event.streamId),
@@ -93,7 +92,7 @@ export class SQLiteEventStore<TEvents extends Event>
         AsyncResult.from(async () => {
           await this.notifySubscribers(storedEvent);
           return storedEvent;
-        })
+        }),
     );
   }
 
@@ -111,20 +110,20 @@ export class SQLiteEventStore<TEvents extends Event>
           `SELECT max(version) as lastVersion FROM events WHERE streamId = $id`,
           {
             $id: streamId,
-          }
+          },
         );
 
         return !lastVersion ? 0n : BigInt(lastVersion);
       },
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 
   subscribe<TEventKey extends TEvents[VariantTag]>(
     eventNames: TEventKey[],
     subscriber: (
-      event: StoredEvent<EventFromKey<TEvents, TEventKey>>
-    ) => MaybePromise<void>
+      event: StoredEvent<EventFromKey<TEvents, TEventKey>>,
+    ) => MaybePromise<void>,
   ): void {
     eventNames.forEach((event) => {
       const subscribers = this.eventSubscribers.get(event) || [];
@@ -139,14 +138,14 @@ export class SQLiteEventStore<TEvents extends Event>
   close(): AsyncResult<void, StoreQueryError> {
     return AsyncResult.tryFrom(
       () => this.db.close(),
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 
   private storeEvent<T extends Event>(
     streamId: UUID,
     version: bigint,
-    event: T
+    event: T,
   ): AsyncResult<StoredEvent<T>, StoreQueryError> {
     return AsyncResult.tryFrom(
       () => {
@@ -165,11 +164,11 @@ export class SQLiteEventStore<TEvents extends Event>
             $version: storedEvent.version.toString(),
             $timestamp: storedEvent.timestamp.timestamp,
             $payload: JSON.stringify(storedEvent.payload),
-          }
+          },
         );
         return storedEvent;
       },
-      (error) => new StoreQueryError(error.message)
+      (error) => new StoreQueryError(error.message),
     );
   }
 }

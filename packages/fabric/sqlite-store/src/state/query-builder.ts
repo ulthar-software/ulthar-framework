@@ -20,7 +20,7 @@ export class QueryBuilder<T> implements StoreQuery<T> {
   constructor(
     private db: SQLiteDatabase,
     private schema: ModelSchema,
-    private query: QueryDefinition
+    private query: QueryDefinition,
   ) {}
 
   where(where: FilterOptions<T>): StoreSortableQuery<T> {
@@ -47,7 +47,7 @@ export class QueryBuilder<T> implements StoreQuery<T> {
 
   select(): AsyncResult<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
-    keys: K[]
+    keys: K[],
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
   select<K extends Keyof<T>>(keys?: K[]): AsyncResult<any, StoreQueryError> {
     return AsyncResult.tryFrom(
@@ -57,21 +57,21 @@ export class QueryBuilder<T> implements StoreQuery<T> {
           {
             ...this.query,
             keys: keys!,
-          }
+          },
         );
         return this.db.allPrepared(
           sql,
           params,
-          transformRow(this.schema[this.query.from]!)
+          transformRow(this.schema[this.query.from]!),
         );
       },
-      (err) => new StoreQueryError(err.message)
+      (err) => new StoreQueryError(err.message),
     );
   }
 
   selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
-    keys: K[]
+    keys: K[],
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(keys?: K[]): AsyncResult<any, StoreQueryError> {
     return AsyncResult.tryFrom(
@@ -82,22 +82,22 @@ export class QueryBuilder<T> implements StoreQuery<T> {
             ...this.query,
             keys: keys!,
             limit: 1,
-          }
+          },
         );
         return await this.db.onePrepared(
           stmt,
           params,
-          transformRow(this.schema[this.query.from]!)
+          transformRow(this.schema[this.query.from]!),
         );
       },
-      (err) => new StoreQueryError(err.message)
+      (err) => new StoreQueryError(err.message),
     );
   }
 }
 
 export function getSelectStatement(
   collection: Collection,
-  query: QueryDefinition
+  query: QueryDefinition,
 ): [string, Record<string, any>] {
   const selectFields = query.keys ? query.keys.join(", ") : "*";
 

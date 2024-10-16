@@ -110,7 +110,7 @@ describe("State Store", () => {
           streamId: UUIDGeneratorMock.generate(),
           streamVersion: 1n,
           deletedAt: null,
-        })
+        }),
     );
 
     const result = await Run.UNSAFE(() =>

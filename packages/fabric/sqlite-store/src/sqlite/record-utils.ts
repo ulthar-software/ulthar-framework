@@ -29,7 +29,7 @@ export function recordToSQLParams(model: Model, record: Record<string, any>) {
       ...acc,
       [keyToParam(key)]: fieldValueToSQL(model.fields[key]!, record[key]),
     }),
-    {}
+    {},
   );
 }
 
