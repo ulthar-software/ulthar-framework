@@ -1,5 +1,5 @@
-import { UseCaseDefinition } from "@fabric/domain";
+import { Query } from "@fabric/domain";
 
-export const UseCases = [] as const satisfies UseCaseDefinition[];
+export const UseCases = [] as const satisfies Query[];
 
 export type UseCases = typeof UseCases;
