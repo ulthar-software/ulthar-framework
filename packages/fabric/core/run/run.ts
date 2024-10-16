@@ -4,7 +4,7 @@ import type { AsyncResult } from "../result/async-result.ts";
 
 export namespace Run {
   // prettier-ignore
-  export async function seq<
+  export function seq<
     T1,
     TE1 extends TaggedError,
     T2,
@@ -14,7 +14,7 @@ export namespace Run {
     fn2: (value: T1) => AsyncResult<T2, TE2>,
   ): AsyncResult<T2, TE1 | TE2>;
   // prettier-ignore
-  export async function seq<
+  export function seq<
     T1,
     TE1 extends TaggedError,
     T2,
@@ -27,7 +27,7 @@ export namespace Run {
     fn3: (value: T2) => AsyncResult<T3, TE3>,
   ): AsyncResult<T3, TE1 | TE2 | TE3>;
   // prettier-ignore
-  export async function seq<
+  export function seq<
     T1,
     TE1 extends TaggedError,
     T2,
@@ -42,24 +42,20 @@ export namespace Run {
     fn3: (value: T2) => AsyncResult<T3, TE3>,
     fn4: (value: T3) => AsyncResult<T4, TE4>,
   ): AsyncResult<T4, TE1 | TE2 | TE3 | TE4>;
-  export async function seq(
+  export function seq(
     ...fns: ((...args: any[]) => AsyncResult<any, any>)[]
   ): AsyncResult<any, any> {
-    let result = await fns[0]!();
+    let result = fns[0]!();
 
     for (let i = 1; i < fns.length; i++) {
-      if (result.isError()) {
-        return result;
-      }
-
-      result = await fns[i]!(result.unwrapOrThrow());
+      result = result.flatMap((value) => fns[i]!(value));
     }
 
     return result;
   }
 
   // prettier-ignore
-  export async function seqUNSAFE<
+  export function seqOrThrow<
     T1,
     TE1 extends TaggedError,
     T2,
@@ -69,7 +65,7 @@ export namespace Run {
     fn2: (value: T1) => AsyncResult<T2, TE2>,
   ): Promise<T2>;
   // prettier-ignore
-  export async function seqUNSAFE<
+  export function seqOrThrow<
     T1,
     TE1 extends TaggedError,
     T2,
@@ -81,21 +77,11 @@ export namespace Run {
     fn2: (value: T1) => AsyncResult<T2, TE2>,
     fn3: (value: T2) => AsyncResult<T3, TE3>,
   ): Promise<T2>;
-  export async function seqUNSAFE(
+  export function seqOrThrow(
     ...fns: ((...args: any[]) => AsyncResult<any, any>)[]
   ): Promise<any> {
-    const result = await (seq as any)(...fns);
-
-    if (result.isError()) {
-      throw result.unwrapOrThrow();
-    }
+    const result = (seq as any)(...fns);
 
     return result.unwrapOrThrow();
-  }
-
-  export async function UNSAFE<T, TError extends TaggedError>(
-    fn: () => AsyncResult<T, TError>,
-  ): Promise<T> {
-    return (await fn()).unwrapOrThrow();
   }
 }
