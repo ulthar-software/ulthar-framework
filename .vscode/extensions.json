@@ -7,6 +7,6 @@
     "usernamehw.errorlens",
     "bourhaouta.tailwindshades",
     "austenc.tailwind-docs",
-    "vitest.explorer"
+    "denoland.vscode-deno",
   ]
 }
