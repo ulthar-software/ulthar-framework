@@ -1,4 +1,0 @@
-{
-  "*": ["deno fmt --check"],
-  "*.ts": ["deno lint --fix"]
-}
