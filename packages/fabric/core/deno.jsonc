@@ -1,6 +1,6 @@
 {
   "name": "@fabric/core",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./index.ts"
   }
 }
