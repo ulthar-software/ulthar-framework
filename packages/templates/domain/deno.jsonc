@@ -1,6 +1,7 @@
 {
   "name": "@fabric/domain-template",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./index.ts",
+    "./use-cases": "./use-cases.ts"
   }
 }
