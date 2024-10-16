@@ -1,4 +1,4 @@
-import { UUID } from "./uuid.js";
+import type { UUID } from "./uuid.ts";
 
 /**
  * An entity is a domain object that is defined by its identity.

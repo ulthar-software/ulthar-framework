@@ -7,9 +7,9 @@ import {
   describe,
   expect,
   expectTypeOf,
-  it,
-} from "vitest";
-import { SQLiteStateStore } from "./state-store.js";
+  test,
+} from "@fabric/testing";
+import { SQLiteStateStore } from "./state-store.ts";
 
 describe("State Store", () => {
   const models = [
@@ -33,7 +33,7 @@ describe("State Store", () => {
     await Run.UNSAFE(() => store.close());
   });
 
-  it("should insert a record", async () => {
+  test("should insert a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     await Run.UNSAFE(() =>
@@ -43,11 +43,11 @@ describe("State Store", () => {
         streamId: newUUID,
         streamVersion: 1n,
         deletedAt: null,
-      }),
+      })
     );
   });
 
-  it("should select all records", async () => {
+  test("should select all records", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     await Run.UNSAFE(() =>
@@ -57,7 +57,7 @@ describe("State Store", () => {
         streamId: newUUID,
         streamVersion: 1n,
         deletedAt: null,
-      }),
+      })
     );
 
     const result = await Run.UNSAFE(() => store.from("users").select());
@@ -83,7 +83,7 @@ describe("State Store", () => {
     ]);
   });
 
-  it("should select records with a filter", async () => {
+  test("should select records with a filter", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     await Run.seqUNSAFE(
@@ -110,7 +110,7 @@ describe("State Store", () => {
           streamId: UUIDGeneratorMock.generate(),
           streamVersion: 1n,
           deletedAt: null,
-        }),
+        })
     );
 
     const result = await Run.UNSAFE(() =>
@@ -119,7 +119,7 @@ describe("State Store", () => {
         .where({
           name: isLike("te%"),
         })
-        .select(),
+        .select()
     );
 
     expectTypeOf(result).toEqualTypeOf<
@@ -143,7 +143,7 @@ describe("State Store", () => {
     ]);
   });
 
-  it("should update a record", async () => {
+  test("should update a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     await Run.UNSAFE(() =>
@@ -153,17 +153,17 @@ describe("State Store", () => {
         streamId: newUUID,
         streamVersion: 1n,
         deletedAt: null,
-      }),
+      })
     );
 
     await Run.UNSAFE(() =>
       store.update("users", newUUID, {
         name: "updated",
-      }),
+      })
     );
 
     const result = await Run.UNSAFE(() =>
-      store.from("users").where({ id: newUUID }).selectOne(),
+      store.from("users").where({ id: newUUID }).selectOne()
     );
 
     expect(result).toEqual({
@@ -175,7 +175,7 @@ describe("State Store", () => {
     });
   });
 
-  it("should delete a record", async () => {
+  test("should delete a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     await Run.UNSAFE(() =>
@@ -185,13 +185,13 @@ describe("State Store", () => {
         streamId: newUUID,
         streamVersion: 1n,
         deletedAt: null,
-      }),
+      })
     );
 
     await Run.UNSAFE(() => store.delete("users", newUUID));
 
     const result = await Run.UNSAFE(() =>
-      store.from("users").where({ id: newUUID }).selectOne(),
+      store.from("users").where({ id: newUUID }).selectOne()
     );
 
     expect(result).toBeUndefined();
@@ -199,7 +199,7 @@ describe("State Store", () => {
 
   //test for inserting into a collection with a reference
 
-  it("should insert a record with a reference", async () => {
+  test("should insert a record with a reference", async () => {
     const newUUID = UUIDGeneratorMock.generate();
     const ownerUUID = UUIDGeneratorMock.generate();
 
@@ -210,7 +210,7 @@ describe("State Store", () => {
         streamId: ownerUUID,
         streamVersion: 1n,
         deletedAt: null,
-      }),
+      })
     );
 
     await Run.UNSAFE(() =>
@@ -221,7 +221,7 @@ describe("State Store", () => {
         streamId: newUUID,
         streamVersion: 1n,
         deletedAt: null,
-      }),
+      })
     );
   });
 });

@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// deno-lint-ignore-file no-explicit-any
 import { Variant, VariantTag } from "@fabric/core";
 import { Collection, FieldDefinition, getTargetKey } from "@fabric/domain";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
     name: string,
-    field: Extract<FieldDefinition, { [VariantTag]: K }>,
+    field: Extract<FieldDefinition, { [VariantTag]: K }>
   ) => string;
 };
 
@@ -61,7 +61,7 @@ function modifiersFromOpts(field: FieldDefinition) {
 }
 
 export function modelToSql(
-  model: Collection<string, Record<string, FieldDefinition>>,
+  model: Collection<string, Record<string, FieldDefinition>>
 ) {
   const fields = Object.entries(model.fields)
     .map(([name, type]) => fieldDefinitionToSQL(name, type))

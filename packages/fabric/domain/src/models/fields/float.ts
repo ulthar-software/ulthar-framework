@@ -1,7 +1,6 @@
-import { TaggedVariant, VariantTag } from "@fabric/core";
-import { BaseField } from "./base-field.js";
+import { type TaggedVariant, VariantTag } from "@fabric/core";
+import type { BaseField } from "./base-field.ts";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface FloatFieldOptions extends BaseField {}
 
 export interface FloatField
@@ -9,7 +8,7 @@ export interface FloatField
     FloatFieldOptions {}
 
 export function createFloatField<T extends FloatFieldOptions>(
-  opts: T = {} as T,
+  opts: T = {} as T
 ): FloatField & T {
   return {
     [VariantTag]: "FloatField",

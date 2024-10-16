@@ -1,5 +1,5 @@
-import { TaggedVariant, VariantTag } from "@fabric/core";
-import { BaseField } from "./base-field.js";
+import { type TaggedVariant, VariantTag } from "@fabric/core";
+import type { BaseField } from "./base-field.ts";
 
 export interface StringFieldOptions extends BaseField {
   maxLength?: number;
@@ -11,7 +11,7 @@ export interface StringField
     StringFieldOptions {}
 
 export function createStringField<T extends StringFieldOptions>(
-  opts: T = {} as T,
+  opts: T = {} as T
 ): StringField & T {
   return {
     [VariantTag]: "StringField",

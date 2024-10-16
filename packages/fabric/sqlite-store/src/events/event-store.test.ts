@@ -1,8 +1,15 @@
 import { PosixDate, Run } from "@fabric/core";
 import { Event } from "@fabric/domain";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
-import { afterEach, beforeEach, describe, expect, it, vitest } from "vitest";
-import { SQLiteEventStore } from "./event-store.js";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  fn,
+  test,
+} from "@fabric/testing";
+import { SQLiteEventStore } from "./event-store.ts";
 
 describe("Event Store", () => {
   type UserCreated = Event<"UserCreated", { name: string }>;
@@ -22,7 +29,7 @@ describe("Event Store", () => {
     await Run.UNSAFE(() => store.close());
   });
 
-  it("Should append an event", async () => {
+  test("Should append an event", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     const userCreated: UserCreated = {
@@ -48,7 +55,7 @@ describe("Event Store", () => {
     });
   });
 
-  it("should notify subscribers on append", async () => {
+  test("should notify subscribers on append", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
     const userCreated: UserCreated = {
@@ -58,7 +65,7 @@ describe("Event Store", () => {
       payload: { name: "test" },
     };
 
-    const subscriber = vitest.fn();
+    const subscriber = fn() as () => void;
 
     store.subscribe(["UserCreated"], subscriber);
 

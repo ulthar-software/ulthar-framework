@@ -1,7 +1,7 @@
+// deno-lint-ignore-file no-explicit-any
 /**
  * A function that takes an argument of type `T` and returns a value of type `R`.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Fn<T = any, R = any> = (arg: T) => R;
 
 /**

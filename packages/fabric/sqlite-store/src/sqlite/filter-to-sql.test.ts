@@ -9,8 +9,8 @@ import {
   isLike,
   isNotEqualTo,
 } from "@fabric/domain";
-import { describe, expect, it } from "vitest";
-import { filterToParams, filterToSQL } from "./filter-to-sql.js";
+import { describe, expect, test } from "@fabric/testing";
+import { filterToParams, filterToSQL } from "./filter-to-sql.ts";
 
 describe("SQL where clause from filter options", () => {
   const col = defineCollection("users", {
@@ -25,7 +25,7 @@ describe("SQL where clause from filter options", () => {
     price: Field.decimal(),
   });
 
-  it("should create a where clause from options with IN option", () => {
+  test("should create a where clause from options with IN option", () => {
     const opts = {
       name: isIn(["John", "Jane"]),
     };
@@ -37,7 +37,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({ $where_name_0: "John", $where_name_1: "Jane" });
   });
 
-  it("should create a where clause from options with LIKE option", () => {
+  test("should create a where clause from options with LIKE option", () => {
     const opts = {
       name: isLike("%John%"),
     };
@@ -47,7 +47,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({ $where_name: "%John%" });
   });
 
-  it("should create a where clause from options with EQUALS option", () => {
+  test("should create a where clause from options with EQUALS option", () => {
     const opts = {
       age: 25,
     };
@@ -57,7 +57,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({ $where_age: 25 });
   });
 
-  it("should create a where clause from options with NOT EQUALS option", () => {
+  test("should create a where clause from options with NOT EQUALS option", () => {
     const opts = {
       status: isNotEqualTo("inactive"),
     };
@@ -67,7 +67,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({ $where_status: "inactive" });
   });
 
-  it("should create a where clause from options with GREATER THAN option", () => {
+  test("should create a where clause from options with GREATER THAN option", () => {
     const opts = {
       salary: isGreaterThan(50000),
     };
@@ -77,7 +77,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({ $where_salary: 50000 });
   });
 
-  it("should create a where clause from options with LESS THAN option", () => {
+  test("should create a where clause from options with LESS THAN option", () => {
     const opts = {
       rating: isLessThan(4.5),
     };
@@ -87,7 +87,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({ $where_rating: 4.5 });
   });
 
-  it("should create a where clause from options with GREATER THAN OR EQUALS option", () => {
+  test("should create a where clause from options with GREATER THAN OR EQUALS option", () => {
     const opts = {
       quantity: isGreaterOrEqualTo(10),
     };
@@ -97,7 +97,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({ $where_quantity: 10 });
   });
 
-  it("should create a where clause from options with LESS THAN OR EQUALS option", () => {
+  test("should create a where clause from options with LESS THAN OR EQUALS option", () => {
     const opts = {
       price: isLessOrEqualTo(100),
     };
@@ -107,7 +107,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({ $where_price: 100 });
   });
 
-  it("should create a where clause from options with IS NULL option", () => {
+  test("should create a where clause from options with IS NULL option", () => {
     const opts = {
       price: undefined,
     };
@@ -117,7 +117,7 @@ describe("SQL where clause from filter options", () => {
     expect(params).toEqual({});
   });
 
-  it("should create a where clause from options with OR combination", () => {
+  test("should create a where clause from options with OR combination", () => {
     const opts = [
       {
         name: isIn(["John", "Jane"]),
@@ -135,7 +135,7 @@ describe("SQL where clause from filter options", () => {
     const result = filterToSQL(opts);
     const params = filterToParams(col, opts);
     expect(result).toEqual(
-      "WHERE (name IN ($where_name_0_0,$where_name_0_1) AND age > $where_age_0) OR (status <> $where_status_1 AND salary > $where_salary_1) OR (rating < $where_rating_2 AND quantity >= $where_quantity_2)",
+      "WHERE (name IN ($where_name_0_0,$where_name_0_1) AND age > $where_age_0) OR (status <> $where_status_1 AND salary > $where_salary_1) OR (rating < $where_rating_2 AND quantity >= $where_quantity_2)"
     );
     expect(params).toEqual({
       $where_name_0_0: "John",

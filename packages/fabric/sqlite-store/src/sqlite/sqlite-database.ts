@@ -1,118 +1,72 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// deno-lint-ignore-file no-explicit-any
 import { MaybePromise } from "@fabric/core";
-import SQLite from "sqlite3";
+import { Database, Statement } from "jsr:@db/sqlite";
 
 export class SQLiteDatabase {
-  db: SQLite.Database;
+  db: Database;
 
-  private cachedStatements = new Map<string, SQLite.Statement>();
+  private cachedStatements = new Map<string, Statement>();
 
   constructor(private readonly path: string) {
-    this.db = new SQLite.Database(path);
+    this.db = new Database(path);
   }
 
-  async init() {
-    await this.run("PRAGMA journal_mode = WAL");
-    await this.run("PRAGMA foreign_keys = ON");
+  init() {
+    this.run("PRAGMA journal_mode = WAL");
+    this.run("PRAGMA foreign_keys = ON");
   }
 
-  async close() {
-    await this.finalizeStatements();
-    await new Promise<void>((resolve, reject) => {
-      this.db.close((err: Error | null) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+  close() {
+    this.finalizeStatements();
+    this.db.close();
   }
 
   async withTransaction(fn: () => MaybePromise<void>) {
     try {
-      await this.run("BEGIN TRANSACTION");
+      this.run("BEGIN TRANSACTION");
       await fn();
-      await this.run("COMMIT");
+      this.run("COMMIT");
     } catch {
-      await this.run("ROLLBACK");
+      this.run("ROLLBACK");
     }
   }
 
   run(sql: string, params?: Record<string, any>) {
-    return new Promise<void>((resolve, reject) => {
-      this.db.run(sql, params, (err: Error | null) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+    this.db.run(sql, params);
   }
 
   runPrepared(sql: string, params?: Record<string, any>) {
     const cachedStmt = this.getCachedStatement(sql);
 
-    return new Promise<void>((resolve, reject) => {
-      cachedStmt.run(params, (err: Error | null) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+    cachedStmt.run(params);
   }
 
   allPrepared(
     sql: string,
     params?: Record<string, any>,
-    transformer?: (row: any) => any,
+    transformer?: (row: any) => any
   ) {
     const cachedStmt = this.getCachedStatement(sql);
 
-    return new Promise<any>((resolve, reject) => {
-      cachedStmt.all(
-        params,
-        (err: Error | null, rows: Record<string, any>[]) => {
-          if (err) {
-            reject(err);
-          } else {
-            try {
-              resolve(transformer ? rows.map(transformer) : rows);
-            } catch (e) {
-              reject(e);
-            }
-          }
-        },
-      );
-    });
+    const result = cachedStmt.all(params);
+
+    return transformer ? result.map(transformer) : result;
   }
 
   onePrepared(
     sql: string,
     params?: Record<string, any>,
-    transformer?: (row: any) => any,
+    transformer?: (row: any) => any
   ) {
     const cachedStmt = this.getCachedStatement(sql);
 
-    return new Promise<any>((resolve, reject) => {
-      cachedStmt.all(
-        params,
-        (err: Error | null, rows: Record<string, any>[]) => {
-          if (err) {
-            reject(err);
-          } else {
-            try {
-              resolve(transformer ? rows.map(transformer)[0] : rows[0]);
-            } catch (e) {
-              reject(e);
-            }
-          }
-        },
-      );
-    });
+    const result = cachedStmt.all(params);
+
+    if (result.length === 0) {
+      return;
+    }
+
+    return transformer ? transformer(result[0]) : result[0];
   }
 
   private getCachedStatement(sql: string) {
@@ -126,17 +80,9 @@ export class SQLiteDatabase {
     return cached;
   }
 
-  private async finalizeStatements() {
+  private finalizeStatements() {
     for (const stmt of this.cachedStatements.values()) {
-      await new Promise<void>((resolve, reject) => {
-        stmt.finalize((err: Error | null) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
+      stmt.finalize();
     }
   }
 }

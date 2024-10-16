@@ -1,4 +1,4 @@
-import { MimeType } from "./mime-type.js";
+import type { MimeType } from "./mime-type.ts";
 
 /**
  * Represents a file. Its the base type for all files.

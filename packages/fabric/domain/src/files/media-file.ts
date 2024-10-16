@@ -1,4 +1,4 @@
-import { StoredFile } from "./stored-file.js";
+import type { StoredFile } from "./stored-file.ts";
 
 /**
  * Represents a media file, either an image, a video or an audio file.

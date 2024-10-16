@@ -1,5 +1,5 @@
-import { ImageMimeType } from "./mime-type.js";
-import { StoredFile } from "./stored-file.js";
+import type { ImageMimeType } from "./mime-type.ts";
+import type { StoredFile } from "./stored-file.ts";
 
 /**
  * Represents an image file.

@@ -1,1 +1,1 @@
-export * from "./services/mocks.js";
+export * from "./services/mocks.ts";

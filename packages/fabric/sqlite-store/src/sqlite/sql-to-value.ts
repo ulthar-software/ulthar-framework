@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// deno-lint-ignore-file no-explicit-any
 import { PosixDate, VariantTag } from "@fabric/core";
 import { Collection, FieldDefinition, FieldToType } from "@fabric/domain";
 
@@ -6,7 +6,7 @@ export function transformRow(model: Collection) {
   return (row: Record<string, any>) => {
     const result: Record<string, any> = {};
     for (const key in row) {
-      const field = model.fields[key];
+      const field = model.fields[key]!;
       result[key] = valueFromSQL(field, row[key]);
     }
     return result;
@@ -24,21 +24,21 @@ function valueFromSQL(field: FieldDefinition, value: any): any {
 type FieldSQLInsertMap = {
   [K in FieldDefinition[VariantTag]]: (
     field: Extract<FieldDefinition, { [VariantTag]: K }>,
-    value: any,
+    value: any
   ) => FieldToType<Extract<FieldDefinition, { [VariantTag]: K }>>;
 };
 const FieldSQLInsertMap: FieldSQLInsertMap = {
-  StringField: (f, v) => v,
-  UUIDField: (f, v) => v,
+  StringField: (_, v) => v,
+  UUIDField: (_, v) => v,
   IntegerField: (f, v) => {
     if (f.hasArbitraryPrecision) {
       return BigInt(v);
     }
     return v;
   },
-  ReferenceField: (f, v) => v,
-  FloatField: (f, v) => v,
-  DecimalField: (f, v) => v,
-  TimestampField: (f, v) => new PosixDate(v),
-  EmbeddedField: (f, v: string) => JSON.parse(v),
+  ReferenceField: (_, v) => v,
+  FloatField: (_, v) => v,
+  DecimalField: (_, v) => v,
+  TimestampField: (_, v) => new PosixDate(v),
+  EmbeddedField: (_, v: string) => JSON.parse(v),
 };

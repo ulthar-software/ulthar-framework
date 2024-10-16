@@ -1,5 +1,5 @@
 import { isRecord } from "@fabric/core";
-import { InMemoryFile } from "./in-memory-file.js";
+import type { InMemoryFile } from "./in-memory-file.ts";
 
 export function isInMemoryFile(value: unknown): value is InMemoryFile {
   try {

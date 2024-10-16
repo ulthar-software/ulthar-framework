@@ -1,4 +1,4 @@
-import { Model } from "./model.js";
+import type { Model } from "./model.ts";
 
 export type ModelSchema = Record<string, Model>;
 

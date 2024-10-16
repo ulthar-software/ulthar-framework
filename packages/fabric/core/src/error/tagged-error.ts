@@ -1,4 +1,4 @@
-import { TaggedVariant, VariantTag } from "../variant/index.js";
+import { type TaggedVariant, VariantTag } from "../variant/index.ts";
 
 /**
  * A TaggedError is a tagged variant with an error message.

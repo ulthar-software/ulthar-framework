@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// deno-lint-ignore-file no-explicit-any
 
-import { isError } from "../error/is-error.js";
-import { TaggedError } from "../error/tagged-error.js";
+import { isError } from "../error/is-error.ts";
+import type { TaggedError } from "../error/tagged-error.ts";
 
 /**
  * A Result represents the outcome of an operation
@@ -24,7 +24,7 @@ export class Result<TValue, TError extends TaggedError = never> {
 
   static tryFrom<T, TError extends TaggedError>(
     fn: () => T,
-    errorMapper: (error: any) => TError,
+    errorMapper: (error: any) => TError
   ): Result<T, TError> {
     try {
       return Result.succeedWith(fn());
@@ -83,7 +83,7 @@ export class Result<TValue, TError extends TaggedError = never> {
    * Map a function over the value of the result.
    */
   map<TMappedValue>(
-    fn: (value: TValue) => TMappedValue,
+    fn: (value: TValue) => TMappedValue
   ): Result<TMappedValue, TError> {
     if (!isError(this.value)) {
       return Result.succeedWith(fn(this.value as TValue));
@@ -96,7 +96,7 @@ export class Result<TValue, TError extends TaggedError = never> {
    * Maps a function over the value of the result and flattens the result.
    */
   flatMap<TMappedValue, TMappedError extends TaggedError>(
-    fn: (value: TValue) => Result<TMappedValue, TMappedError>,
+    fn: (value: TValue) => Result<TMappedValue, TMappedError>
   ): Result<TMappedValue, TError | TMappedError> {
     if (!isError(this.value)) {
       return fn(this.value as TValue) as any;
@@ -111,7 +111,7 @@ export class Result<TValue, TError extends TaggedError = never> {
    */
   tryMap<TMappedValue>(
     fn: (value: TValue) => TMappedValue,
-    errMapper: (error: any) => TError,
+    errMapper: (error: any) => TError
   ): Result<TMappedValue, TError> {
     if (!isError(this.value)) {
       try {
@@ -128,7 +128,7 @@ export class Result<TValue, TError extends TaggedError = never> {
    * Map a function over the error of the result.
    */
   mapError<TMappedError extends TaggedError>(
-    fn: (error: TError) => TMappedError,
+    fn: (error: TError) => TMappedError
   ): Result<TValue, TMappedError> {
     if (isError(this.value)) {
       return Result.failWith(fn(this.value as TError));

@@ -1,3 +1,3 @@
-export * from "./event-store.js";
-export * from "./event.js";
-export * from "./stored-event.js";
+export * from "./event-store.ts";
+export * from "./event.ts";
+export * from "./stored-event.ts";

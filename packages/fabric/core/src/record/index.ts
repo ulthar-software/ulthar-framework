@@ -1,2 +1,2 @@
-export * from "./is-record-empty.js";
-export * from "./is-record.js";
+export * from "./is-record-empty.ts";
+export * from "./is-record.ts";

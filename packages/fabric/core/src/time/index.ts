@@ -1,3 +1,2 @@
-export * from "./posix-date.js";
-export * from "./time-constants.js";
-export * from "./timeout.js";
+export * from "./posix-date.ts";
+export * from "./time-constants.ts";

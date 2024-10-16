@@ -1,8 +1,8 @@
-import { describe, expect, expectTypeOf, it } from "vitest";
-import { isMimeType } from "./is-mime-type.js";
+import { describe, expect, expectTypeOf, test } from "@fabric/testing";
+import { isMimeType } from "./is-mime-type.ts";
 
 describe("isMimeType", () => {
-  it("should return true if the file type is the same as the mime type", () => {
+  test("should return true if the file type is the same as the mime type", () => {
     const fileType = "image/png" as string;
     const result = isMimeType("image/.*", fileType);
     expect(result).toBe(true);
@@ -11,7 +11,7 @@ describe("isMimeType", () => {
     }
   });
 
-  it("should return false if the file type is not the same as the mime type", () => {
+  test("should return false if the file type is not the same as the mime type", () => {
     const fileType = "image/png" as string;
     expect(isMimeType("image/jpeg", fileType)).toBe(false);
 

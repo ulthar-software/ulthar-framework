@@ -1,2 +1,2 @@
-export * from "./circular-dependency-error.js";
-export * from "./query-error.js";
+export * from "./circular-dependency-error.ts";
+export * from "./query-error.ts";

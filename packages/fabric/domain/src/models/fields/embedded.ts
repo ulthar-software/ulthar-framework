@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { TaggedVariant, VariantTag } from "@fabric/core";
-import { BaseField } from "./base-field.js";
+// deno-lint-ignore-file no-explicit-any
+import { type TaggedVariant, VariantTag } from "@fabric/core";
+import type { BaseField } from "./base-field.ts";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unused-vars
 export interface EmbeddedFieldOptions<T = any> extends BaseField {}
 
 export interface EmbeddedField<T = any>
@@ -11,7 +10,7 @@ export interface EmbeddedField<T = any>
 
 export function createEmbeddedField<
   K = any,
-  T extends EmbeddedFieldOptions<K> = EmbeddedFieldOptions<K>,
+  T extends EmbeddedFieldOptions<K> = EmbeddedFieldOptions<K>
 >(opts: T = {} as T): EmbeddedField & T {
   return {
     [VariantTag]: "EmbeddedField",

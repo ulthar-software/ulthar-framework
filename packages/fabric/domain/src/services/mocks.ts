@@ -1,1 +1,1 @@
-export * from "./uuid-generator.mock.js";
+export * from "./uuid-generator.mock.ts";

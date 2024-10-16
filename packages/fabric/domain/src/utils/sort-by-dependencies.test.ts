@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, expect, it } from "vitest";
-import { CircularDependencyError } from "../errors/circular-dependency-error.js";
-import { sortByDependencies } from "./sort-by-dependencies.js";
+import { expect } from "@std/expect";
+import { describe, it } from "@std/testing/bdd";
+import { CircularDependencyError } from "../errors/circular-dependency-error.ts";
+import { sortByDependencies } from "./sort-by-dependencies.ts";
 
 describe("sortByDependencies", () => {
   it("should sort an array of objects by their dependencies", () => {
@@ -35,11 +35,12 @@ describe("sortByDependencies", () => {
       sortByDependencies(array, {
         keyGetter: (element) => element.name,
         depGetter: (element) => element.dependencies,
-      }).unwrapErrorOrThrow(),
+      }).unwrapErrorOrThrow()
     ).toBeInstanceOf(CircularDependencyError);
   });
 
   it("should return an empty array when the input array is empty", () => {
+    // deno-lint-ignore no-explicit-any
     const array: any[] = [];
 
     const result = sortByDependencies(array, {

@@ -1,19 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { TaggedError } from "@fabric/core";
-import { UseCase } from "./use-case.js";
+// deno-lint-ignore-file no-explicit-any
+import type { TaggedError } from "@fabric/core";
+import type { UseCase } from "./use-case.ts";
 
 export type UseCaseDefinition<
   TDependencies = any,
   TPayload = any,
   TOutput = any,
-  TErrors extends TaggedError<string> = any,
+  TErrors extends TaggedError<string> = any
 > = BasicUseCaseDefinition<TDependencies, TPayload, TOutput, TErrors>;
 
 interface BasicUseCaseDefinition<
   TDependencies,
   TPayload,
   TOutput,
-  TErrors extends TaggedError<string>,
+  TErrors extends TaggedError<string>
 > {
   /**
    * The use case name.

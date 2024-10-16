@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// deno-lint-ignore-file no-explicit-any
 import {
   Collection,
   FieldDefinition,
@@ -10,8 +10,8 @@ import {
   MultiFilterOption,
   SingleFilterOption,
 } from "@fabric/domain";
-import { keyToParam } from "./record-utils.js";
-import { fieldValueToSQL } from "./value-to-sql.js";
+import { keyToParam } from "./record-utils.ts";
+import { fieldValueToSQL } from "./value-to-sql.ts";
 
 export function filterToSQL(filterOptions?: FilterOptions) {
   if (!filterOptions) return "";
@@ -24,7 +24,7 @@ export function filterToSQL(filterOptions?: FilterOptions) {
 
 export function filterToParams(
   collection: Collection,
-  filterOptions?: FilterOptions,
+  filterOptions?: FilterOptions
 ) {
   if (!filterOptions) return {};
 
@@ -38,14 +38,14 @@ function getWhereFromMultiOption(filterOptions: MultiFilterOption) {
   return filterOptions
     .map(
       (option, i) =>
-        `(${getWhereFromSingleOption(option, { postfix: `_${i}` })})`,
+        `(${getWhereFromSingleOption(option, { postfix: `_${i}` })})`
     )
     .join(" OR ");
 }
 
 function getWhereFromSingleOption(
   filterOptions: SingleFilterOption,
-  opts: { postfix?: string } = {},
+  opts: { postfix?: string } = {}
 ) {
   return Object.entries(filterOptions)
     .map(([key, value]) => getWhereFromKeyValue(key, value, opts))
@@ -61,7 +61,7 @@ function getWhereParamKey(key: string, opts: { postfix?: string } = {}) {
 function getWhereFromKeyValue(
   key: string,
   value: FilterValue,
-  opts: { postfix?: string } = {},
+  opts: { postfix?: string } = {}
 ) {
   if (value == undefined) {
     return `${key} IS NULL`;
@@ -74,17 +74,17 @@ function getWhereFromKeyValue(
 
     if (value[FILTER_OPTION_TYPE_SYMBOL] === "in") {
       return `${key} IN (${value[FILTER_OPTION_VALUE_SYMBOL].map(
-        (v: any, i: number) =>
+        (_v: any, i: number) =>
           `${getWhereParamKey(key, {
             postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
-          })}`,
+          })}`
       ).join(",")})`;
     }
 
     if (value[FILTER_OPTION_TYPE_SYMBOL] === "comparison") {
       return `${key} ${value[FILTER_OPTION_OPERATOR_SYMBOL]} ${getWhereParamKey(
         key,
-        opts,
+        opts
       )}`;
     }
   }
@@ -93,7 +93,7 @@ function getWhereFromKeyValue(
 
 function getParamsFromMultiFilterOption(
   collection: Collection,
-  filterOptions: MultiFilterOption,
+  filterOptions: MultiFilterOption
 ) {
   return filterOptions.reduce(
     (acc, filterOption, i) => ({
@@ -102,14 +102,14 @@ function getParamsFromMultiFilterOption(
         postfix: `_${i}`,
       }),
     }),
-    {},
+    {}
   );
 }
 
 function getParamsFromSingleFilterOption(
   collection: Collection,
   filterOptions: SingleFilterOption,
-  opts: { postfix?: string } = {},
+  opts: { postfix?: string } = {}
 ) {
   return Object.entries(filterOptions)
     .filter(([, value]) => {
@@ -118,9 +118,14 @@ function getParamsFromSingleFilterOption(
     .reduce(
       (acc, [key, value]) => ({
         ...acc,
-        ...getParamsForFilterKeyValue(collection.fields[key], key, value, opts),
+        ...getParamsForFilterKeyValue(
+          collection.fields[key]!,
+          key,
+          value,
+          opts
+        ),
       }),
-      {},
+      {}
     );
 }
 
@@ -142,12 +147,12 @@ function getParamsForFilterKeyValue(
   field: FieldDefinition,
   key: string,
   value: FilterValue,
-  opts: { postfix?: string } = {},
+  opts: { postfix?: string } = {}
 ) {
   if (typeof value === "object") {
     if (value[FILTER_OPTION_TYPE_SYMBOL] === "in") {
       return value[FILTER_OPTION_VALUE_SYMBOL].reduce(
-        (acc: Record<string, any>, v: any, i: number) => {
+        (acc: Record<string, any>, _: any, i: number) => {
           return {
             ...acc,
             [getWhereParamKey(key, {
@@ -155,7 +160,7 @@ function getParamsForFilterKeyValue(
             })]: value[FILTER_OPTION_VALUE_SYMBOL][i],
           };
         },
-        {},
+        {}
       );
     }
   }

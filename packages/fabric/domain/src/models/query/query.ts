@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { AsyncResult, Keyof, Optional } from "@fabric/core";
-import { StoreQueryError } from "../../errors/query-error.js";
-import { FilterOptions } from "./filter-options.js";
-import { OrderByOptions } from "./order-by-options.js";
+// deno-lint-ignore-file no-explicit-any
+import type { AsyncResult, Keyof, Optional } from "@fabric/core";
+import type { StoreQueryError } from "../../errors/query-error.ts";
+import type { FilterOptions } from "./filter-options.ts";
+import type { OrderByOptions } from "./order-by-options.ts";
 
 export interface StoreQuery<T> {
   where(where: FilterOptions<T>): StoreSortableQuery<T>;
@@ -11,12 +11,12 @@ export interface StoreQuery<T> {
 
   select(): AsyncResult<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
-    keys: K[],
+    keys: K[]
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
 
   selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
-    keys: K[],
+    keys: K[]
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
 }
 
@@ -26,12 +26,12 @@ export interface StoreSortableQuery<T> {
 
   select(): AsyncResult<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
-    keys: K[],
+    keys: K[]
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
 
   selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
-    keys: K[],
+    keys: K[]
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
 }
 
@@ -40,24 +40,24 @@ export interface StoreLimitableQuery<T> {
 
   select(): AsyncResult<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
-    keys: K[],
+    keys: K[]
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
 
   selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
-    keys: K[],
+    keys: K[]
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
 }
 
 export interface SelectableQuery<T> {
   select(): AsyncResult<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
-    keys: K[],
+    keys: K[]
   ): AsyncResult<Pick<T, K>[], StoreQueryError>;
 
   selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
-    keys: K[],
+    keys: K[]
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
 }
 

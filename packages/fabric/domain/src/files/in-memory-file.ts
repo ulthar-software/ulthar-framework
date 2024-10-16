@@ -1,5 +1,5 @@
-import { Base64String } from "../types/base-64.js";
-import { BaseFile } from "./base-file.js";
+import type { Base64String } from "../types/base-64.ts";
+import type { BaseFile } from "./base-file.ts";
 
 /**
  * Represents a file with its contents in memory.

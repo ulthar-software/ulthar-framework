@@ -1,5 +1,5 @@
-import { TaggedVariant, VariantTag } from "@fabric/core";
-import { BaseField } from "./base-field.js";
+import { type TaggedVariant, VariantTag } from "@fabric/core";
+import type { BaseField } from "./base-field.ts";
 
 export interface DecimalFieldOptions extends BaseField {
   isUnsigned?: boolean;
@@ -12,7 +12,7 @@ export interface DecimalField
     DecimalFieldOptions {}
 
 export function createDecimalField<T extends DecimalFieldOptions>(
-  opts: T = {} as T,
+  opts: T = {} as T
 ): DecimalField & T {
   return {
     [VariantTag]: "DecimalField",

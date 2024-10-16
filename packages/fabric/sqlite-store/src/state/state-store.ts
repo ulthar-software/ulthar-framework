@@ -8,16 +8,16 @@ import {
   UUID,
   WritableStateStore,
 } from "@fabric/domain";
-import { modelToSql } from "../sqlite/model-to-sql.js";
+import { modelToSql } from "../sqlite/model-to-sql.ts";
 import {
   keyToParam,
   recordToSQLKeyParams,
   recordToSQLKeys,
   recordToSQLParams,
   recordToSQLSet,
-} from "../sqlite/record-utils.js";
-import { SQLiteDatabase } from "../sqlite/sqlite-database.js";
-import { QueryBuilder } from "./query-builder.js";
+} from "../sqlite/record-utils.ts";
+import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
+import { QueryBuilder } from "./query-builder.ts";
 
 export class SQLiteStateStore<TModel extends Model>
   implements WritableStateStore<TModel>
@@ -25,10 +25,7 @@ export class SQLiteStateStore<TModel extends Model>
   private schema: ModelSchemaFromModels<TModel>;
   private db: SQLiteDatabase;
 
-  constructor(
-    private readonly dbPath: string,
-    models: TModel[],
-  ) {
+  constructor(private readonly dbPath: string, models: TModel[]) {
     this.schema = models.reduce((acc, model: TModel) => {
       return {
         ...acc,
@@ -39,25 +36,27 @@ export class SQLiteStateStore<TModel extends Model>
     this.db = new SQLiteDatabase(dbPath);
   }
 
-  async insertInto<T extends keyof ModelSchemaFromModels<TModel>>(
+  insertInto<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
-    record: ModelToType<ModelSchemaFromModels<TModel>[T]>,
+    record: ModelToType<ModelSchemaFromModels<TModel>[T]>
   ): AsyncResult<void, StoreQueryError> {
     const model = this.schema[collection];
 
     return AsyncResult.tryFrom(
-      async () => {
-        await this.db.runPrepared(
-          `INSERT INTO ${model.name} (${recordToSQLKeys(record)}) VALUES (${recordToSQLKeyParams(record)})`,
-          recordToSQLParams(model, record),
+      () => {
+        this.db.runPrepared(
+          `INSERT INTO ${model.name} (${recordToSQLKeys(
+            record
+          )}) VALUES (${recordToSQLKeyParams(record)})`,
+          recordToSQLParams(model, record)
         );
       },
-      (error) => new StoreQueryError(error.message),
+      (error) => new StoreQueryError(error.message)
     );
   }
 
   from<T extends keyof ModelSchemaFromModels<TModel>>(
-    collection: T,
+    collection: T
   ): StoreQuery<ModelToType<ModelSchemaFromModels<TModel>[T]>> {
     return new QueryBuilder(this.db, this.schema, {
       from: collection,
@@ -67,39 +66,41 @@ export class SQLiteStateStore<TModel extends Model>
   update<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
     id: UUID,
-    record: Partial<ModelToType<ModelSchemaFromModels<TModel>[T]>>,
+    record: Partial<ModelToType<ModelSchemaFromModels<TModel>[T]>>
   ): AsyncResult<void, StoreQueryError> {
     const model = this.schema[collection];
 
     return AsyncResult.tryFrom(
-      async () => {
+      () => {
         const params = recordToSQLParams(model, {
           ...record,
           id,
         });
-        await this.db.runPrepared(
-          `UPDATE ${model.name} SET ${recordToSQLSet(record)} WHERE id = ${keyToParam("id")}`,
-          params,
+        this.db.runPrepared(
+          `UPDATE ${model.name} SET ${recordToSQLSet(
+            record
+          )} WHERE id = ${keyToParam("id")}`,
+          params
         );
       },
-      (error) => new StoreQueryError(error.message),
+      (error) => new StoreQueryError(error.message)
     );
   }
 
   delete<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
-    id: UUID,
+    id: UUID
   ): AsyncResult<void, StoreQueryError> {
     const model = this.schema[collection];
 
     return AsyncResult.tryFrom(
-      async () => {
-        await this.db.runPrepared(
+      () => {
+        this.db.runPrepared(
           `DELETE FROM ${model.name} WHERE id = ${keyToParam("id")}`,
-          { $id: id },
+          { $id: id }
         );
       },
-      (error) => new StoreQueryError(error.message),
+      (error) => new StoreQueryError(error.message)
     );
   }
 
@@ -107,19 +108,19 @@ export class SQLiteStateStore<TModel extends Model>
     return AsyncResult.tryFrom(
       async () => {
         await this.db.init();
-        await this.db.withTransaction(async () => {
+        await this.db.withTransaction(() => {
           for (const modelKey in this.schema) {
             const model =
               this.schema[modelKey as keyof ModelSchemaFromModels<TModel>];
-            await this.db.runPrepared(modelToSql(model));
+            this.db.runPrepared(modelToSql(model));
           }
         });
       },
-      (error) => new StoreQueryError(error.message),
+      (error) => new StoreQueryError(error.message)
     );
   }
 
-  async close(): AsyncResult<void, UnexpectedError> {
+  close(): AsyncResult<void, UnexpectedError> {
     return AsyncResult.from(() => this.db.close());
   }
 }

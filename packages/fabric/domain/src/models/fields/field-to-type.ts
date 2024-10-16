@@ -1,14 +1,14 @@
-import { PosixDate } from "@fabric/core";
-import { Decimal } from "decimal.js";
-import { UUID } from "../../types/uuid.js";
-import { DecimalField } from "./decimal.js";
-import { EmbeddedField } from "./embedded.js";
-import { FloatField } from "./float.js";
-import { IntegerField } from "./integer.js";
-import { ReferenceField } from "./reference-field.js";
-import { StringField } from "./string-field.js";
-import { TimestampField } from "./timestamp.js";
-import { UUIDField } from "./uuid-field.js";
+import type { PosixDate } from "@fabric/core";
+import type Decimal from "jsr:@quentinadam/decimal";
+import type { UUID } from "../../types/uuid.ts";
+import type { DecimalField } from "./decimal.ts";
+import type { EmbeddedField } from "./embedded.ts";
+import type { FloatField } from "./float.ts";
+import type { IntegerField } from "./integer.ts";
+import type { ReferenceField } from "./reference-field.ts";
+import type { StringField } from "./string-field.ts";
+import type { TimestampField } from "./timestamp.ts";
+import type { UUIDField } from "./uuid-field.ts";
 
 /**
  * Converts a field definition to its corresponding TypeScript type.

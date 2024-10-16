@@ -1,23 +1,23 @@
-import { describe, expect, it } from "vitest";
-import { isRecord } from "./is-record.js";
+import { describe, expect, test } from "@fabric/testing";
+import { isRecord } from "./is-record.ts";
 
 describe("isRecord", () => {
-  it("should return true for an object", () => {
+  test("Given an empty object, it should return true", () => {
     const obj = { name: "John", age: 30 };
     expect(isRecord(obj)).toBe(true);
   });
 
-  it("should return false for an array", () => {
+  test("Given an array, it should return false", () => {
     const arr = [1, 2, 3];
     expect(isRecord(arr)).toBe(false);
   });
 
-  it("should return false for null", () => {
+  test("Given a number, it should return false", () => {
     const value = null;
     expect(isRecord(value)).toBe(false);
   });
 
-  it("should return false for a string", () => {
+  test("Given a string, it should return false", () => {
     const value = "Hello";
     expect(isRecord(value)).toBe(false);
   });

@@ -1,14 +1,17 @@
-import { createDecimalField, DecimalField } from "./decimal.js";
-import { createEmbeddedField, EmbeddedField } from "./embedded.js";
-import { createFloatField, FloatField } from "./float.js";
-import { createIntegerField, IntegerField } from "./integer.js";
-import { createReferenceField, ReferenceField } from "./reference-field.js";
-import { createStringField, StringField } from "./string-field.js";
-import { createTimestampField, TimestampField } from "./timestamp.js";
-import { createUUIDField, UUIDField } from "./uuid-field.js";
-export * from "./base-field.js";
-export * from "./field-to-type.js";
-export * from "./reference-field.js";
+import { createDecimalField, type DecimalField } from "./decimal.ts";
+import { createEmbeddedField, type EmbeddedField } from "./embedded.ts";
+import { createFloatField, type FloatField } from "./float.ts";
+import { createIntegerField, type IntegerField } from "./integer.ts";
+import {
+  createReferenceField,
+  type ReferenceField,
+} from "./reference-field.ts";
+import { createStringField, type StringField } from "./string-field.ts";
+import { createTimestampField, type TimestampField } from "./timestamp.ts";
+import { createUUIDField, type UUIDField } from "./uuid-field.ts";
+export * from "./base-field.ts";
+export * from "./field-to-type.ts";
+export * from "./reference-field.ts";
 
 export type FieldDefinition =
   | StringField

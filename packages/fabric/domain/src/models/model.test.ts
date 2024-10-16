@@ -1,10 +1,11 @@
-import { describe, expectTypeOf, it } from "vitest";
-import { UUID } from "../types/uuid.js";
-import { Field } from "./fields/index.js";
-import { defineModel, ModelToType } from "./model.js";
+import type { PosixDate } from "@fabric/core";
+import { describe, expectTypeOf, test } from "@fabric/testing";
+import type { UUID } from "../types/uuid.ts";
+import { Field } from "./fields/index.ts";
+import { defineModel, type ModelToType } from "./model.ts";
 
 describe("CreateModel", () => {
-  it("should create a model and it's interface type", () => {
+  test("should create a model and it's interface type", () => {
     const User = defineModel("User", {
       name: Field.string(),
       password: Field.string(),
@@ -19,6 +20,7 @@ describe("CreateModel", () => {
       name: string;
       password: string;
       phone: string | null;
+      deletedAt: PosixDate | null;
     }>();
   });
 });

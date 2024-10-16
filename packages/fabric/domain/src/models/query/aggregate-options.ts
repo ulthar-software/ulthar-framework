@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { Keyof, TaggedVariant } from "@fabric/core";
+// deno-lint-ignore-file no-explicit-any
+import type { Keyof, TaggedVariant } from "@fabric/core";
 
 export type AggregateOptions<T = any> = Record<string, AggregateFn<T>>;
 

@@ -1,1 +1,1 @@
-export * from "./array-element.js";
+export * from "./array-element.ts";

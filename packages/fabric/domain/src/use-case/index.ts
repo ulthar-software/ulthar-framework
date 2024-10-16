@@ -1,2 +1,2 @@
-export * from "./use-case-definition.js";
-export * from "./use-case.js";
+export * from "./use-case-definition.ts";
+export * from "./use-case.ts";

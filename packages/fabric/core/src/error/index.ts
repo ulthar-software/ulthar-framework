@@ -1,3 +1,3 @@
-export * from "./is-error.js";
-export * from "./tagged-error.js";
-export * from "./unexpected-error.js";
+export * from "./is-error.ts";
+export * from "./tagged-error.ts";
+export * from "./unexpected-error.ts";

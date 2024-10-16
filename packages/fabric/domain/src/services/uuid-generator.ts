@@ -1,4 +1,4 @@
-import { UUID } from "../types/uuid.js";
+import type { UUID } from "../types/uuid.ts";
 
 export interface UUIDGenerator {
   generate(): UUID;

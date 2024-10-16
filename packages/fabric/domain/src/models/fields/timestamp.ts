@@ -1,7 +1,6 @@
-import { TaggedVariant, VariantTag } from "@fabric/core";
-import { BaseField } from "./base-field.js";
+import { type TaggedVariant, VariantTag } from "@fabric/core";
+import type { BaseField } from "./base-field.ts";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface TimestampFieldOptions extends BaseField {}
 
 export interface TimestampField
@@ -9,7 +8,7 @@ export interface TimestampField
     TimestampFieldOptions {}
 
 export function createTimestampField<T extends TimestampFieldOptions>(
-  opts: T = {} as T,
+  opts: T = {} as T
 ): TimestampField & T {
   return {
     [VariantTag]: "TimestampField",

@@ -1,5 +1,5 @@
-import { isRecord } from "../record/is-record.js";
-import { TaggedVariant } from "../variant/variant.js";
+import { isRecord } from "../record/is-record.ts";
+import type { TaggedVariant } from "../variant/variant.ts";
 
 export class PosixDate {
   constructor(public readonly timestamp: number = Date.now()) {}

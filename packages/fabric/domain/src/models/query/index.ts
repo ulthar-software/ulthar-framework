@@ -1,3 +1,3 @@
-export * from "./filter-options.js";
-export * from "./order-by-options.js";
-export * from "./query.js";
+export * from "./filter-options.ts";
+export * from "./order-by-options.ts";
+export * from "./query.ts";

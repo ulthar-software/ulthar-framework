@@ -1,4 +1,4 @@
-import { TaggedError } from "./tagged-error.js";
+import { TaggedError } from "./tagged-error.ts";
 
 /**
  * Indicates if a value is an error.

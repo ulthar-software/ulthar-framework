@@ -1,10 +1,10 @@
-import { describe, expect, expectTypeOf, it, vitest } from "vitest";
-import { UnexpectedError } from "../error/unexpected-error.js";
-import { Result } from "./result.js";
+import { describe, expect, expectTypeOf, fn, test } from "@fabric/testing";
+import { UnexpectedError } from "../error/unexpected-error.ts";
+import { Result } from "./result.ts";
 
 describe("Result", () => {
   describe("isOk", () => {
-    it("should return true if the result is ok", () => {
+    test("should return true if the result is ok", () => {
       const result = Result.succeedWith(1) as Result<number, UnexpectedError>;
 
       expect(result.isOk()).toBe(true);
@@ -18,7 +18,7 @@ describe("Result", () => {
   });
 
   describe("isError", () => {
-    it("should return true if the result is an error", () => {
+    test("should return true if the result is an error", () => {
       const result = Result.failWith(new UnexpectedError()) as Result<
         number,
         UnexpectedError
@@ -35,7 +35,7 @@ describe("Result", () => {
   });
 
   describe("Map", () => {
-    it("should return the result of the last function", () => {
+    test("should return the result of the last function", () => {
       const x = 0;
 
       const result = Result.succeedWith(x + 1).map((x) => x * 2);
@@ -45,13 +45,13 @@ describe("Result", () => {
       expectTypeOf(result).toEqualTypeOf<Result<number, never>>();
     });
 
-    it("should not execute the function if the result is an error", () => {
-      const fn = vitest.fn();
-      const result = Result.failWith(new UnexpectedError()).map(fn);
+    test("should not execute the function if the result is an error", () => {
+      const mock = fn() as () => number;
+      const result = Result.failWith(new UnexpectedError()).map(mock);
 
       expect(result.isError()).toBe(true);
 
-      expect(fn).not.toHaveBeenCalled();
+      expect(mock).not.toHaveBeenCalled();
     });
   });
 });

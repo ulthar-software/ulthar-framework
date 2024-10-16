@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { TaggedError } from "../error/tagged-error.js";
-import { AsyncResult } from "../result/async-result.js";
+// deno-lint-ignore-file no-namespace no-explicit-any
+import type { TaggedError } from "../error/tagged-error.ts";
+import type { AsyncResult } from "../result/async-result.ts";
 
 export namespace Run {
   // prettier-ignore
@@ -36,14 +36,14 @@ export namespace Run {
   export async function seq(
     ...fns: ((...args: any[]) => AsyncResult<any, any>)[]
   ): AsyncResult<any, any> {
-    let result = await fns[0]();
+    let result = await fns[0]!();
 
     for (let i = 1; i < fns.length; i++) {
       if (result.isError()) {
         return result;
       }
 
-      result = await fns[i](result.unwrapOrThrow());
+      result = await fns[i]!(result.unwrapOrThrow());
     }
 
     return result;
@@ -80,7 +80,7 @@ export namespace Run {
   }
 
   export async function UNSAFE<T, TError extends TaggedError>(
-    fn: () => AsyncResult<T, TError>,
+    fn: () => AsyncResult<T, TError>
   ): Promise<T> {
     return (await fn()).unwrapOrThrow();
   }

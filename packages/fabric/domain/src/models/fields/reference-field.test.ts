@@ -1,11 +1,11 @@
 import { isError } from "@fabric/core";
-import { describe, expect, it } from "vitest";
-import { defineModel } from "../model.js";
-import { Field } from "./index.js";
+import { describe, expect, test } from "@fabric/testing";
+import { defineModel } from "../model.ts";
+import { Field } from "./index.ts";
 import {
   InvalidReferenceFieldError,
   validateReferenceField,
-} from "./reference-field.js";
+} from "./reference-field.ts";
 
 describe("Validate Reference Field", () => {
   const schema = {
@@ -20,57 +20,57 @@ describe("Validate Reference Field", () => {
     }),
   };
 
-  it("should return an error when the target model is not in the schema", () => {
+  test("should return an error when the target model is not in the schema", () => {
     const result = validateReferenceField(
       schema,
       Field.reference({
         targetModel: "foo",
-      }),
+      })
     ).unwrapErrorOrThrow();
 
     expect(result).toBeInstanceOf(InvalidReferenceFieldError);
   });
 
-  it("should not return an error if the target model is in the schema", () => {
+  test("should not return an error if the target model is in the schema", () => {
     validateReferenceField(
       schema,
       Field.reference({
         targetModel: "User",
-      }),
+      })
     ).unwrapOrThrow();
   });
 
-  it("should return an error if the target key is not in the target model", () => {
+  test("should return an error if the target key is not in the target model", () => {
     const result = validateReferenceField(
       schema,
       Field.reference({
         targetModel: "User",
         targetKey: "foo",
-      }),
+      })
     ).unwrapErrorOrThrow();
 
     expect(result).toBeInstanceOf(InvalidReferenceFieldError);
   });
 
-  it("should return error if the target key is not unique", () => {
+  test("should return error if the target key is not unique", () => {
     const result = validateReferenceField(
       schema,
       Field.reference({
         targetModel: "User",
         targetKey: "otherNotUnique",
-      }),
+      })
     ).unwrapErrorOrThrow();
 
     expect(result).toBeInstanceOf(InvalidReferenceFieldError);
   });
 
-  it("should not return an error if the target key is in the target model and is unique", () => {
+  test("should not return an error if the target key is in the target model and is unique", () => {
     const result = validateReferenceField(
       schema,
       Field.reference({
         targetModel: "User",
         targetKey: "otherUnique",
-      }),
+      })
     );
 
     if (isError(result)) {

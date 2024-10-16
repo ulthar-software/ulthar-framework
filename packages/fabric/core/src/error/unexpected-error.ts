@@ -1,4 +1,4 @@
-import { TaggedError } from "./tagged-error.js";
+import { TaggedError } from "./tagged-error.ts";
 
 /**
  * `UnexpectedError` represents any type of unexpected error.

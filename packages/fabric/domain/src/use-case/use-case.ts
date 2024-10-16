@@ -1,4 +1,4 @@
-import { AsyncResult, TaggedError } from "@fabric/core";
+import type { AsyncResult, TaggedError } from "@fabric/core";
 
 /**
  * A use case is a piece of domain logic that can be executed.

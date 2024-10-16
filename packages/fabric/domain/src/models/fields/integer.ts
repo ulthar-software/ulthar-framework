@@ -1,5 +1,5 @@
-import { TaggedVariant, VariantTag } from "@fabric/core";
-import { BaseField } from "./base-field.js";
+import { type TaggedVariant, VariantTag } from "@fabric/core";
+import type { BaseField } from "./base-field.ts";
 
 export interface IntegerFieldOptions extends BaseField {
   isUnsigned?: boolean;
@@ -11,7 +11,7 @@ export interface IntegerField
     IntegerFieldOptions {}
 
 export function createIntegerField<T extends IntegerFieldOptions>(
-  opts: T = {} as T,
+  opts: T = {} as T
 ): IntegerField & T {
   return {
     [VariantTag]: "IntegerField",

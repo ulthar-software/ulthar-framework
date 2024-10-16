@@ -12,14 +12,14 @@
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.2",
     "typescript": "^5.6.3",
-    "vitest": "^2.1.2"
+    "@fabric/testing": "^2.1.2"
   },
   "dependencies": {
     "@fabric/core": "workspace:^",
     "@fabric/domain": "workspace:^"
   },
   "scripts": {
-    "test": "vitest",
+    "test": "@fabric/testing",
     "coverage": "vitest run --coverage",
     "build": "tsc -p tsconfig.build.json"
   }

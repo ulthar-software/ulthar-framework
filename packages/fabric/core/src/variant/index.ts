@@ -1,2 +1,2 @@
-export * from "./match.js";
-export * from "./variant.js";
+export * from "./match.ts";
+export * from "./variant.ts";

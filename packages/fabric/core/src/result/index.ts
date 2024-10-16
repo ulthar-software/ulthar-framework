@@ -1,2 +1,2 @@
-export * from "./async-result.js";
-export * from "./result.js";
+export * from "./async-result.ts";
+export * from "./result.ts";
