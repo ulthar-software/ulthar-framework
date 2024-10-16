@@ -1,5 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
-import type { AsyncResult, Keyof, Optional } from "@fabric/core";
+import {
+  type AsyncResult,
+  type Keyof,
+  type Optional,
+  TaggedError,
+} from "@fabric/core";
 import type { StoreQueryError } from "../../errors/query-error.ts";
 import type { FilterOptions } from "./filter-options.ts";
 import type { OrderByOptions } from "./order-by-options.ts";
@@ -18,6 +23,11 @@ export interface StoreQuery<T> {
   selectOne<K extends Keyof<T>>(
     keys: K[],
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
+
+  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail<K extends Keyof<T>>(
+    keys: K[],
+  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
 }
 
 export interface StoreSortableQuery<T> {
@@ -33,6 +43,11 @@ export interface StoreSortableQuery<T> {
   selectOne<K extends Keyof<T>>(
     keys: K[],
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
+
+  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail<K extends Keyof<T>>(
+    keys: K[],
+  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
 }
 
 export interface StoreLimitableQuery<T> {
@@ -47,6 +62,11 @@ export interface StoreLimitableQuery<T> {
   selectOne<K extends Keyof<T>>(
     keys: K[],
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
+
+  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail<K extends Keyof<T>>(
+    keys: K[],
+  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
 }
 
 export interface SelectableQuery<T> {
@@ -59,13 +79,24 @@ export interface SelectableQuery<T> {
   selectOne<K extends Keyof<T>>(
     keys: K[],
   ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
+
+  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail<K extends Keyof<T>>(
+    keys: K[],
+  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
 }
 
-export interface QueryDefinition<K extends string = string> {
+export interface StoreQueryDefinition<K extends string = string> {
   from: K;
   where?: FilterOptions<any>;
   orderBy?: OrderByOptions<any>;
   limit?: number;
   offset?: number;
   keys?: string[];
+}
+
+export class NotFoundError extends TaggedError<"NotFoundError"> {
+  constructor() {
+    super("NotFoundError");
+  }
 }

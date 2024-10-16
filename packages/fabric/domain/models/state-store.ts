@@ -2,7 +2,7 @@ import type { AsyncResult } from "@fabric/core";
 import type { StoreQueryError } from "../errors/query-error.ts";
 import type { ModelSchemaFromModels } from "./model-schema.ts";
 import type { Model, ModelToType } from "./model.ts";
-import type { StoreQuery } from "./query/query.ts";
+import type { StoreQuery } from "./store-query/store-query.ts";
 
 export interface ReadonlyStateStore<TModel extends Model> {
   from<T extends keyof ModelSchemaFromModels<TModel>>(
