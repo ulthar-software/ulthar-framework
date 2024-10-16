@@ -1,2 +1,3 @@
-export * from "./use-case-definition.ts";
+export * from "./command.ts";
+export * from "./query.ts";
 export * from "./use-case.ts";
