@@ -5,13 +5,14 @@ import {
   FilterOptions,
   ModelSchema,
   OrderByOptions,
-  QueryDefinition,
   SelectableQuery,
   StoreLimitableQuery,
   StoreQuery,
+  StoreQueryDefinition,
   StoreQueryError,
   StoreSortableQuery,
 } from "@fabric/domain";
+import { NotFoundError } from "../../domain/models/store-query/store-query.ts";
 import { filterToParams, filterToSQL } from "../sqlite/filter-to-sql.ts";
 import { transformRow } from "../sqlite/sql-to-value.ts";
 import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
@@ -20,7 +21,7 @@ export class QueryBuilder<T> implements StoreQuery<T> {
   constructor(
     private db: SQLiteDatabase,
     private schema: ModelSchema,
-    private query: QueryDefinition,
+    private query: StoreQueryDefinition,
   ) {}
 
   where(where: FilterOptions<T>): StoreSortableQuery<T> {
@@ -93,11 +94,42 @@ export class QueryBuilder<T> implements StoreQuery<T> {
       (err) => new StoreQueryError(err.message),
     );
   }
+
+  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail<K extends Extract<keyof T, string>>(
+    keys: K[],
+  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+  selectOneOrFail<K extends Extract<keyof T, string>>(
+    keys?: K[],
+  ): AsyncResult<any, StoreQueryError | NotFoundError> {
+    return AsyncResult.tryFrom(
+      async () => {
+        const [stmt, params] = getSelectStatement(
+          this.schema[this.query.from]!,
+          {
+            ...this.query,
+            keys: keys!,
+            limit: 1,
+          },
+        );
+        const result = await this.db.onePrepared(
+          stmt,
+          params,
+          transformRow(this.schema[this.query.from]!),
+        );
+        if (!result) {
+          throw new NotFoundError();
+        }
+        return result;
+      },
+      (err) => new StoreQueryError(err.message),
+    );
+  }
 }
 
 export function getSelectStatement(
   collection: Collection,
-  query: QueryDefinition,
+  query: StoreQueryDefinition,
 ): [string, Record<string, any>] {
   const selectFields = query.keys ? query.keys.join(", ") : "*";
 

@@ -1,4 +1,4 @@
-import { PosixDate, Run } from "@fabric/core";
+import { PosixDate } from "@fabric/core";
 import { Event } from "@fabric/domain";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import {
@@ -22,11 +22,11 @@ describe("Event Store", () => {
 
   beforeEach(async () => {
     store = new SQLiteEventStore(":memory:");
-    await Run.UNSAFE(() => store.migrate());
+    await store.migrate().orThrow();
   });
 
   afterEach(async () => {
-    await Run.UNSAFE(() => store.close());
+    await store.close().orThrow();
   });
 
   test("Should append an event", async () => {
@@ -39,9 +39,9 @@ describe("Event Store", () => {
       payload: { name: "test" },
     };
 
-    await Run.UNSAFE(() => store.append(userCreated));
+    await store.append(userCreated).orThrow();
 
-    const events = await Run.UNSAFE(() => store.getEventsFromStream(newUUID));
+    const events = await store.getEventsFromStream(newUUID).unwrapOrThrow();
 
     expect(events).toHaveLength(1);
 
@@ -69,7 +69,7 @@ describe("Event Store", () => {
 
     store.subscribe(["UserCreated"], subscriber);
 
-    await Run.UNSAFE(() => store.append(userCreated));
+    await store.append(userCreated).orThrow();
 
     expect(subscriber).toHaveBeenCalledTimes(1);
     expect(subscriber).toHaveBeenCalledWith({

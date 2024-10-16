@@ -89,10 +89,7 @@ export class SQLiteEventStore<TEvents extends Event>
         }),
       (version) => this.storeEvent(event.streamId, version + 1n, event),
       (storedEvent) =>
-        AsyncResult.from(async () => {
-          await this.notifySubscribers(storedEvent);
-          return storedEvent;
-        }),
+        this.notifySubscribers(storedEvent).map(() => storedEvent),
     );
   }
 

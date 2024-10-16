@@ -26,41 +26,37 @@ describe("State Store", () => {
 
   beforeEach(async () => {
     store = new SQLiteStateStore(":memory:", models);
-    await Run.UNSAFE(() => store.migrate());
+    await store.migrate().orThrow();
   });
 
   afterEach(async () => {
-    await Run.UNSAFE(() => store.close());
+    await store.close().orThrow();
   });
 
   test("should insert a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await Run.UNSAFE(() =>
-      store.insertInto("users", {
-        id: newUUID,
-        name: "test",
-        streamId: newUUID,
-        streamVersion: 1n,
-        deletedAt: null,
-      })
-    );
+    await store.insertInto("users", {
+      id: newUUID,
+      name: "test",
+      streamId: newUUID,
+      streamVersion: 1n,
+      deletedAt: null,
+    }).orThrow();
   });
 
   test("should select all records", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await Run.UNSAFE(() =>
-      store.insertInto("users", {
-        name: "test",
-        id: newUUID,
-        streamId: newUUID,
-        streamVersion: 1n,
-        deletedAt: null,
-      })
-    );
+    await store.insertInto("users", {
+      name: "test",
+      id: newUUID,
+      streamId: newUUID,
+      streamVersion: 1n,
+      deletedAt: null,
+    }).orThrow();
 
-    const result = await Run.UNSAFE(() => store.from("users").select());
+    const result = await store.from("users").select().unwrapOrThrow();
 
     expectTypeOf(result).toEqualTypeOf<
       {
@@ -86,7 +82,7 @@ describe("State Store", () => {
   test("should select records with a filter", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await Run.seqUNSAFE(
+    await Run.seqOrThrow(
       () =>
         store.insertInto("users", {
           name: "test",
@@ -113,14 +109,12 @@ describe("State Store", () => {
         }),
     );
 
-    const result = await Run.UNSAFE(() =>
-      store
-        .from("users")
-        .where({
-          name: isLike("te%"),
-        })
-        .select()
-    );
+    const result = await store
+      .from("users")
+      .where({
+        name: isLike("te%"),
+      })
+      .select().unwrapOrThrow();
 
     expectTypeOf(result).toEqualTypeOf<
       {
@@ -146,25 +140,20 @@ describe("State Store", () => {
   test("should update a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await Run.UNSAFE(() =>
-      store.insertInto("users", {
-        name: "test",
-        id: newUUID,
-        streamId: newUUID,
-        streamVersion: 1n,
-        deletedAt: null,
-      })
-    );
+    await store.insertInto("users", {
+      name: "test",
+      id: newUUID,
+      streamId: newUUID,
+      streamVersion: 1n,
+      deletedAt: null,
+    }).orThrow();
 
-    await Run.UNSAFE(() =>
-      store.update("users", newUUID, {
-        name: "updated",
-      })
-    );
+    await store.update("users", newUUID, {
+      name: "updated",
+    }).orThrow();
 
-    const result = await Run.UNSAFE(() =>
-      store.from("users").where({ id: newUUID }).selectOne()
-    );
+    const result = await store.from("users").where({ id: newUUID }).selectOne()
+      .unwrapOrThrow();
 
     expect(result).toEqual({
       id: newUUID,
@@ -178,21 +167,18 @@ describe("State Store", () => {
   test("should delete a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await Run.UNSAFE(() =>
-      store.insertInto("users", {
-        name: "test",
-        id: newUUID,
-        streamId: newUUID,
-        streamVersion: 1n,
-        deletedAt: null,
-      })
-    );
+    await store.insertInto("users", {
+      name: "test",
+      id: newUUID,
+      streamId: newUUID,
+      streamVersion: 1n,
+      deletedAt: null,
+    }).orThrow();
 
-    await Run.UNSAFE(() => store.delete("users", newUUID));
+    await store.delete("users", newUUID).orThrow();
 
-    const result = await Run.UNSAFE(() =>
-      store.from("users").where({ id: newUUID }).selectOne()
-    );
+    const result = await store.from("users").where({ id: newUUID }).selectOne()
+      .unwrapOrThrow();
 
     expect(result).toBeUndefined();
   });
@@ -203,25 +189,21 @@ describe("State Store", () => {
     const newUUID = UUIDGeneratorMock.generate();
     const ownerUUID = UUIDGeneratorMock.generate();
 
-    await Run.UNSAFE(() =>
-      store.insertInto("users", {
-        id: ownerUUID,
-        name: "test",
-        streamId: ownerUUID,
-        streamVersion: 1n,
-        deletedAt: null,
-      })
-    );
+    await store.insertInto("users", {
+      id: ownerUUID,
+      name: "test",
+      streamId: ownerUUID,
+      streamVersion: 1n,
+      deletedAt: null,
+    }).orThrow();
 
-    await Run.UNSAFE(() =>
-      store.insertInto("demo", {
-        id: newUUID,
-        value: 1.0,
-        owner: ownerUUID,
-        streamId: newUUID,
-        streamVersion: 1n,
-        deletedAt: null,
-      })
-    );
+    await store.insertInto("demo", {
+      id: newUUID,
+      value: 1.0,
+      owner: ownerUUID,
+      streamId: newUUID,
+      streamVersion: 1n,
+      deletedAt: null,
+    }).orThrow();
   });
 });
