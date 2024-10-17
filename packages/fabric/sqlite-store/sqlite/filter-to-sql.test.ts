@@ -1,5 +1,5 @@
 import {
-  defineCollection,
+  defineModel,
   Field,
   isGreaterOrEqualTo,
   isGreaterThan,
@@ -13,7 +13,7 @@ import { describe, expect, test } from "@fabric/testing";
 import { filterToParams, filterToSQL } from "./filter-to-sql.ts";
 
 describe("SQL where clause from filter options", () => {
-  const col = defineCollection("users", {
+  const col = defineModel("users", {
     name: Field.string(),
     age: Field.integer(),
     status: Field.string(),

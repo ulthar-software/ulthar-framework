@@ -23,7 +23,10 @@ export function recordToSQLKeyParams(record: Record<string, any>) {
 /**
  * Unfold a record into a string of it's keys separated by commas.
  */
-export function recordToSQLParams(model: Model, record: Record<string, any>) {
+export function recordToSQLParams(
+  model: Model,
+  record: Record<string, any>,
+) {
   return Object.keys(record).reduce(
     (acc, key) => ({
       ...acc,

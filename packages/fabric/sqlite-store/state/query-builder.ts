@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 import { AsyncResult, Keyof, Optional } from "@fabric/core";
 import {
-  Collection,
   FilterOptions,
+  Model,
   ModelSchema,
   OrderByOptions,
   SelectableQuery,
@@ -128,7 +128,7 @@ export class QueryBuilder<T> implements StoreQuery<T> {
 }
 
 export function getSelectStatement(
-  collection: Collection,
+  collection: Model,
   query: StoreQueryDefinition,
 ): [string, Record<string, any>] {
   const selectFields = query.keys ? query.keys.join(", ") : "*";

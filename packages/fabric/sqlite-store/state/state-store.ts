@@ -1,6 +1,6 @@
 import { AsyncResult, UnexpectedError } from "@fabric/core";
 import {
-  Model,
+  type Model,
   ModelSchemaFromModels,
   ModelToType,
   StoreQuery,

@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 import { PosixDate, VariantTag } from "@fabric/core";
-import { Collection, FieldDefinition, FieldToType } from "@fabric/domain";
+import { FieldDefinition, FieldToType, Model } from "@fabric/domain";
 
-export function transformRow(model: Collection) {
+export function transformRow(model: Model) {
   return (row: Record<string, any>) => {
     const result: Record<string, any> = {};
     for (const key in row) {

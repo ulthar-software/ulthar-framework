@@ -1,12 +1,12 @@
 // deno-lint-ignore-file no-explicit-any
 import {
-  Collection,
   FieldDefinition,
   FILTER_OPTION_OPERATOR_SYMBOL,
   FILTER_OPTION_TYPE_SYMBOL,
   FILTER_OPTION_VALUE_SYMBOL,
   FilterOptions,
   FilterValue,
+  Model,
   MultiFilterOption,
   SingleFilterOption,
 } from "@fabric/domain";
@@ -24,7 +24,7 @@ export function filterToSQL(filterOptions?: FilterOptions) {
 }
 
 export function filterToParams(
-  collection: Collection,
+  collection: Model,
   filterOptions?: FilterOptions,
 ) {
   if (!filterOptions) return {};
@@ -100,7 +100,7 @@ function getWhereFromKeyValue(
 }
 
 function getParamsFromMultiFilterOption(
-  collection: Collection,
+  collection: Model,
   filterOptions: MultiFilterOption,
 ) {
   return filterOptions.reduce(
@@ -115,7 +115,7 @@ function getParamsFromMultiFilterOption(
 }
 
 function getParamsFromSingleFilterOption(
-  collection: Collection,
+  collection: Model,
   filterOptions: SingleFilterOption,
   opts: { postfix?: string } = {},
 ) {

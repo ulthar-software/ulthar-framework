@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { Variant, VariantTag } from "@fabric/core";
-import { Collection, FieldDefinition, getTargetKey } from "@fabric/domain";
+import { FieldDefinition, getTargetKey, Model } from "@fabric/domain";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -61,7 +61,7 @@ function modifiersFromOpts(field: FieldDefinition) {
 }
 
 export function modelToSql(
-  model: Collection<string, Record<string, FieldDefinition>>,
+  model: Model<string, Record<string, FieldDefinition>>,
 ) {
   const fields = Object.entries(model.fields)
     .map(([name, type]) => fieldDefinitionToSQL(name, type))

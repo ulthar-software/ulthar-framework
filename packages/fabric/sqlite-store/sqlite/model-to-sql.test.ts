@@ -1,9 +1,9 @@
-import { defineCollection, Field } from "@fabric/domain";
+import { defineModel, Field } from "@fabric/domain";
 import { describe, expect, test } from "@fabric/testing";
 import { modelToSql } from "./model-to-sql.ts";
 
 describe("ModelToSQL", () => {
-  const model = defineCollection("something", {
+  const model = defineModel("something", {
     id: Field.uuid({ isPrimaryKey: true }),
     name: Field.string(),
     age: Field.integer(),

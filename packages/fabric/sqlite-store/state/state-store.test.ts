@@ -1,5 +1,5 @@
 import { PosixDate, Run } from "@fabric/core";
-import { defineModel, Field, isLike, UUID } from "@fabric/domain";
+import { defineAggregateModel, Field, isLike, UUID } from "@fabric/domain";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import {
   afterEach,
@@ -13,11 +13,11 @@ import { SQLiteStateStore } from "./state-store.ts";
 
 describe("State Store", () => {
   const models = [
-    defineModel("demo", {
+    defineAggregateModel("demo", {
       value: Field.float(),
       owner: Field.reference({ targetModel: "users" }),
     }),
-    defineModel("users", {
+    defineAggregateModel("users", {
       name: Field.string(),
     }),
   ];
