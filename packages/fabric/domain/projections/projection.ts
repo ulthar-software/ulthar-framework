@@ -1,9 +1,13 @@
 import type { VariantTag } from "@fabric/core";
 import type { Event } from "../events/event.ts";
 import type { StoredEvent } from "../events/stored-event.ts";
-import type { Model, ModelToType } from "../models/model.ts";
+import type { AggregateModel } from "../models/aggregate-model.ts";
+import type { ModelToType } from "../models/model.ts";
 
-export interface Projection<TModel extends Model, TEvents extends Event> {
+export interface Projection<
+  TModel extends AggregateModel,
+  TEvents extends Event,
+> {
   model: TModel;
   events: TEvents[VariantTag][];
   projection: (

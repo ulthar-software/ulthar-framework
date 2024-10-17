@@ -1,6 +1,6 @@
 import { isError } from "@fabric/core";
 import { describe, expect, test } from "@fabric/testing";
-import { defineModel } from "../model.ts";
+import { defineAggregateModel } from "../aggregate-model.ts";
 import { Field } from "./index.ts";
 import {
   InvalidReferenceFieldError,
@@ -9,7 +9,7 @@ import {
 
 describe("Validate Reference Field", () => {
   const schema = {
-    User: defineModel("User", {
+    User: defineAggregateModel("User", {
       name: Field.string(),
       password: Field.string(),
       otherUnique: Field.integer({ isUnique: true }),
