@@ -1,8 +1,8 @@
 import { describe, expect, test } from "@fabric/testing";
-import { parseAndSanitizeString } from "./sanitize-string.ts";
+import { parseAndSanitizeString } from "../string/sanitize-string.ts";
 
 describe("Sanitize String", () => {
-  test("Given a string with low characters it should sanitize it", () => {
+  test("Given a string with low (control) characters it should sanitize it", () => {
     const sanitized = parseAndSanitizeString("John\x00");
 
     expect(sanitized).toBe("John");
@@ -26,13 +26,13 @@ describe("Sanitize String", () => {
     expect(sanitized).toBe("true");
   });
 
-  test("Given a null value it should convert it to an empty string", () => {
+  test("Given a null value it should return null", () => {
     const sanitized = parseAndSanitizeString(null);
 
-    expect(sanitized).toBe("null");
+    expect(sanitized).toBe(undefined);
   });
 
-  test("Given an undefined value it should convert it to an empty string", () => {
+  test("Given an undefined value it should return undefined", () => {
     const sanitized = parseAndSanitizeString(undefined);
 
     expect(sanitized).toBe(undefined);

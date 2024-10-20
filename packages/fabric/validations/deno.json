@@ -1,0 +1,9 @@
+{
+  "name": "@fabric/validations",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "imports": {
+    "@fabric/core": "jsr:@fabric/core"
+  }
+}
