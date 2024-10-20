@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 
 import { isRecordEmpty, Result, TaggedError } from "@fabric/core";
-import type { FieldDefinition, Model, ModelToType } from "../models/index.ts";
+import type { FieldDefinition, Model, ModelToType } from "../index.ts";
 import { fieldParsers, type FieldParsingError } from "./field-parsers.ts";
 
 export function parseFromModel<
