@@ -1,5 +1,5 @@
-import { PosixDate, Run } from "@fabric/core";
-import { defineAggregateModel, Field, isLike, UUID } from "@fabric/domain";
+import { PosixDate, Run, UUID } from "@fabric/core";
+import { defineAggregateModel, Field, isLike } from "@fabric/domain";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import {
   afterEach,

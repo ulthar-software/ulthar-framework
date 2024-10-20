@@ -1,10 +1,9 @@
-import { expect } from "@std/expect";
-import { describe, it } from "@std/testing/bdd";
+import { describe, expect, test } from "@fabric/testing";
 import { CircularDependencyError } from "../errors/circular-dependency-error.ts";
 import { sortByDependencies } from "./sort-by-dependencies.ts";
 
 describe("sortByDependencies", () => {
-  it("should sort an array of objects by their dependencies", () => {
+  test("should sort an array of objects by their dependencies", () => {
     const array = [
       { id: 1, name: "A", dependencies: ["C", "D"] },
       { id: 2, name: "B", dependencies: ["A", "D"] },
@@ -25,7 +24,7 @@ describe("sortByDependencies", () => {
     ]);
   });
 
-  it("should throw a CircularDependencyError when circular dependencies are detected", () => {
+  test("should throw a CircularDependencyError when circular dependencies are detected", () => {
     const array = [
       { id: 1, name: "A", dependencies: ["B"] },
       { id: 2, name: "B", dependencies: ["A"] },
@@ -39,7 +38,7 @@ describe("sortByDependencies", () => {
     ).toBeInstanceOf(CircularDependencyError);
   });
 
-  it("should return an empty array when the input array is empty", () => {
+  test("should return an empty array when the input array is empty", () => {
     // deno-lint-ignore no-explicit-any
     const array: any[] = [];
 

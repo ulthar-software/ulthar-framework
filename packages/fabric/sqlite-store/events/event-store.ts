@@ -3,6 +3,7 @@ import {
   MaybePromise,
   PosixDate,
   Run,
+  UUID,
   VariantTag,
 } from "@fabric/core";
 import {
@@ -13,7 +14,6 @@ import {
   JSONUtils,
   StoredEvent,
   StoreQueryError,
-  UUID,
 } from "@fabric/domain";
 import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
 

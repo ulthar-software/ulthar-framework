@@ -22,6 +22,7 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   DecimalField: (_, v) => v,
   TimestampField: (_, v) => v.timestamp,
   EmbeddedField: (_, v: string) => JSON.stringify(v),
+  BooleanField: (_, v) => v,
 };
 
 export function fieldValueToSQL(field: FieldDefinition, value: any) {

@@ -1,6 +1,9 @@
 import { Result } from "@fabric/core";
 import { CircularDependencyError } from "../errors/circular-dependency-error.ts";
 
+/**
+ * Sorts an array of elements based on their dependencies.
+ */
 export function sortByDependencies<T>(
   array: T[],
   {

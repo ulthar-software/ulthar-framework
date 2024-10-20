@@ -2,11 +2,11 @@ import type {
   AsyncResult,
   MaybePromise,
   PosixDate,
+  UUID,
   VariantFromTag,
   VariantTag,
 } from "@fabric/core";
 import type { StoreQueryError } from "../errors/query-error.ts";
-import type { UUID } from "../types/uuid.ts";
 import type { Event } from "./event.ts";
 import type { StoredEvent } from "./stored-event.ts";
 

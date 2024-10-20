@@ -46,6 +46,9 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
   EmbeddedField: (n, f): string => {
     return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
+  BooleanField: (n, f): string => {
+    return [n, "BOOLEAN", modifiersFromOpts(f)].join(" ");
+  },
 };
 function fieldDefinitionToSQL(name: string, field: FieldDefinition) {
   return FieldSQLDefinitionMap[field[VariantTag]](name, field as any);

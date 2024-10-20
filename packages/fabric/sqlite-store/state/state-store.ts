@@ -1,11 +1,10 @@
-import { AsyncResult, UnexpectedError } from "@fabric/core";
+import { AsyncResult, UnexpectedError, UUID } from "@fabric/core";
 import {
-  type Model,
+  type AggregateModel,
   ModelSchemaFromModels,
   ModelToType,
   StoreQuery,
   StoreQueryError,
-  UUID,
   WritableStateStore,
 } from "@fabric/domain";
 import { modelToSql } from "../sqlite/model-to-sql.ts";
@@ -19,7 +18,7 @@ import {
 import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
 import { QueryBuilder } from "./query-builder.ts";
 
-export class SQLiteStateStore<TModel extends Model>
+export class SQLiteStateStore<TModel extends AggregateModel>
   implements WritableStateStore<TModel> {
   private schema: ModelSchemaFromModels<TModel>;
   private db: SQLiteDatabase;

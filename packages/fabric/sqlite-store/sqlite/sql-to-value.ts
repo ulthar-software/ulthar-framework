@@ -41,4 +41,5 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   DecimalField: (_, v) => v,
   TimestampField: (_, v) => new PosixDate(v),
   EmbeddedField: (_, v: string) => JSON.parse(v),
+  BooleanField: (_, v) => v,
 };

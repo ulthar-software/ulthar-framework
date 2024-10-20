@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import type { VariantTag } from "@fabric/core";
-import type { UUID } from "../types/uuid.ts";
+import type { UUID } from "../../core/types/uuid.ts";
 
 /**
  * An event is a tagged variant with a payload and a timestamp.
