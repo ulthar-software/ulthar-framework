@@ -1,6 +1,7 @@
 import type { PosixDate } from "@fabric/core";
-import type Decimal from "jsr:@quentinadam/decimal";
-import type { UUID } from "../../types/uuid.ts";
+import type Decimal from "decimal";
+import type { UUID } from "../../../core/types/uuid.ts";
+import type { BooleanField } from "./boolean-field.ts";
 import type { DecimalField } from "./decimal.ts";
 import type { EmbeddedField } from "./embedded.ts";
 import type { FloatField } from "./float.ts";
@@ -22,6 +23,7 @@ export type FieldToType<TField> = TField extends StringField
   : TField extends DecimalField ? MaybeOptional<TField, Decimal>
   : TField extends FloatField ? MaybeOptional<TField, number>
   : TField extends TimestampField ? MaybeOptional<TField, PosixDate>
+  : TField extends BooleanField ? MaybeOptional<TField, boolean>
   : TField extends EmbeddedField<infer TSubModel>
     ? MaybeOptional<TField, TSubModel>
   : never;

@@ -1,3 +1,4 @@
+import { type BooleanField, createBooleanField } from "./boolean-field.ts";
 import { createDecimalField, type DecimalField } from "./decimal.ts";
 import { createEmbeddedField, type EmbeddedField } from "./embedded.ts";
 import { createFloatField, type FloatField } from "./float.ts";
@@ -12,6 +13,7 @@ import { createUUIDField, type UUIDField } from "./uuid-field.ts";
 export * from "./base-field.ts";
 export * from "./field-to-type.ts";
 export * from "./reference-field.ts";
+export * from "./uuid-field.ts";
 
 export type FieldDefinition =
   | StringField
@@ -21,7 +23,8 @@ export type FieldDefinition =
   | DecimalField
   | ReferenceField
   | TimestampField
-  | EmbeddedField;
+  | EmbeddedField
+  | BooleanField;
 
 export namespace Field {
   export const string = createStringField;
@@ -32,4 +35,5 @@ export namespace Field {
   export const float = createFloatField;
   export const timestamp = createTimestampField;
   export const embedded = createEmbeddedField;
+  export const boolean = createBooleanField;
 }

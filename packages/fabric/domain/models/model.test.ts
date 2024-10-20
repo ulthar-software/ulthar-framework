@@ -1,6 +1,6 @@
+import type { UUID } from "@fabric/core";
 import { describe, expectTypeOf, test } from "@fabric/testing";
 import type { PosixDate } from "../../core/index.ts";
-import type { UUID } from "../types/uuid.ts";
 import { defineAggregateModel } from "./aggregate-model.ts";
 import { Field } from "./fields/index.ts";
 import type { ModelToType } from "./model.ts";
