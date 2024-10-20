@@ -1,0 +1,12 @@
+{
+  "name": "@fabric/domain",
+  "exports": {
+    ".": "./index.ts",
+    "./mocks": "./mocks.ts"
+  },
+  "imports": {
+    "@fabric/core": "jsr:@fabric/core",
+    "@fabric/validations": "jsr:@fabric/validations",
+    "decimal": "jsr:@quentinadam/decimal@^0.1.6"
+  }
+}

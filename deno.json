@@ -1,8 +1,6 @@
 {
   "tasks": {
-    "test": "deno test --allow-all --unstable-ffi",
-    "test:dev": "deno test --allow-all --unstable-ffi --watch",
-    "check": "deno fmt && deno lint --fix && deno check **/*.ts && deno task test",
+    "check": "deno fmt && deno lint --fix && deno check **/*.ts && deno test -A",
     "hook": "deno run --allow-read --allow-run --allow-write https://deno.land/x/deno_hooks@0.1.1/mod.ts"
   },
   "workspace": [
@@ -10,16 +8,11 @@
     "packages/fabric/domain",
     "packages/fabric/sqlite-store",
     "packages/fabric/testing",
+    "packages/fabric/validations",
     "packages/templates/domain",
-    "packages/templates/lib"
+    "packages/templates/lib",
+    "apps/syntropy/domain"
   ],
-  "imports": {
-    "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
-    "@quentinadam/decimal": "jsr:@quentinadam/decimal@^0.1.6",
-    "@std/expect": "jsr:@std/expect@^1.0.5",
-    "@std/testing": "jsr:@std/testing@^1.0.3",
-    "expect-type": "npm:expect-type@^1.1.0"
-  },
   "compilerOptions": {
     "strict": true,
     "exactOptionalPropertyTypes": true,
@@ -27,8 +20,8 @@
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true
   },
+  "unstable": ["ffi"],
   "lint": {
-    "include": ["src/"],
     "rules": {
       "tags": ["recommended"],
       "exclude": ["no-namespace"]

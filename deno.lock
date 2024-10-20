@@ -5,7 +5,6 @@
     "jsr:@db/sqlite@0.12": "0.12.0",
     "jsr:@denosaurs/plug@1": "1.0.6",
     "jsr:@quentinadam/assert@~0.1.7": "0.1.7",
-    "jsr:@quentinadam/decimal@*": "0.1.6",
     "jsr:@quentinadam/decimal@~0.1.6": "0.1.6",
     "jsr:@std/assert@0.217": "0.217.0",
     "jsr:@std/assert@0.221": "0.221.0",
@@ -127,12 +126,32 @@
     }
   },
   "workspace": {
-    "dependencies": [
-      "jsr:@db/sqlite@0.12",
-      "jsr:@quentinadam/decimal@~0.1.6",
-      "jsr:@std/expect@^1.0.5",
-      "jsr:@std/testing@^1.0.3",
-      "npm:expect-type@^1.1.0"
-    ]
+    "members": {
+      "packages/fabric/domain": {
+        "dependencies": [
+          "jsr:@fabric/core@*",
+          "jsr:@fabric/validations@*",
+          "jsr:@quentinadam/decimal@~0.1.6"
+        ]
+      },
+      "packages/fabric/sqlite-store": {
+        "dependencies": [
+          "jsr:@db/sqlite@0.12",
+          "jsr:@fabric/domain@*"
+        ]
+      },
+      "packages/fabric/testing": {
+        "dependencies": [
+          "jsr:@std/expect@^1.0.5",
+          "jsr:@std/testing@^1.0.3",
+          "npm:expect-type@^1.1.0"
+        ]
+      },
+      "packages/fabric/validations": {
+        "dependencies": [
+          "jsr:@fabric/core@*"
+        ]
+      }
+    }
   }
 }

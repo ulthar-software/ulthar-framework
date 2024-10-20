@@ -1,0 +1,11 @@
+{
+  "name": "@fabric/testing",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "imports": {
+    "expect-type": "npm:expect-type@^1.1.0",
+    "@std/expect": "jsr:@std/expect@^1.0.5",
+    "@std/testing": "jsr:@std/testing@^1.0.3"
+  }
+}
