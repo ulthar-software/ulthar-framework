@@ -10,7 +10,7 @@ import {
   MultiFilterOption,
   SingleFilterOption,
 } from "@fabric/domain";
-import { keyToParam } from "./record-utils.ts";
+import { keyToParamKey } from "./record-utils.ts";
 import { fieldValueToSQL } from "./value-to-sql.ts";
 
 export function filterToSQL(filterOptions?: FilterOptions) {
@@ -57,7 +57,7 @@ function getWhereFromSingleOption(
 const WHERE_KEY_PREFIX = "where_";
 
 function getWhereParamKey(key: string, opts: { postfix?: string } = {}) {
-  return keyToParam(`${WHERE_KEY_PREFIX}${key}${opts.postfix ?? ""}`);
+  return keyToParamKey(`${WHERE_KEY_PREFIX}${key}${opts.postfix ?? ""}`);
 }
 
 function getWhereFromKeyValue(

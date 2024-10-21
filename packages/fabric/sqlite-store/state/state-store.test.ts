@@ -1,5 +1,5 @@
-import { PosixDate, Run, UUID } from "@fabric/core";
-import { defineAggregateModel, Field, isLike } from "@fabric/domain";
+import { Run, UUID } from "@fabric/core";
+import { Field, isLike, Model } from "@fabric/domain";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import {
   afterEach,
@@ -13,11 +13,11 @@ import { SQLiteStateStore } from "./state-store.ts";
 
 describe("State Store", () => {
   const models = [
-    defineAggregateModel("demo", {
+    Model.entityFrom("demo", {
       value: Field.float(),
       owner: Field.reference({ targetModel: "users" }),
     }),
-    defineAggregateModel("users", {
+    Model.entityFrom("users", {
       name: Field.string(),
     }),
   ];
@@ -39,9 +39,6 @@ describe("State Store", () => {
     await store.insertInto("users", {
       id: newUUID,
       name: "test",
-      streamId: newUUID,
-      streamVersion: 1n,
-      deletedAt: null,
     }).orThrow();
   });
 
@@ -51,9 +48,6 @@ describe("State Store", () => {
     await store.insertInto("users", {
       name: "test",
       id: newUUID,
-      streamId: newUUID,
-      streamVersion: 1n,
-      deletedAt: null,
     }).orThrow();
 
     const result = await store.from("users").select().unwrapOrThrow();
@@ -61,20 +55,14 @@ describe("State Store", () => {
     expectTypeOf(result).toEqualTypeOf<
       {
         id: UUID;
-        streamId: UUID;
-        streamVersion: bigint;
         name: string;
-        deletedAt: PosixDate | null;
       }[]
     >();
 
     expect(result).toEqual([
       {
         id: newUUID,
-        streamId: newUUID,
-        streamVersion: 1n,
         name: "test",
-        deletedAt: null,
       },
     ]);
   });
@@ -87,25 +75,16 @@ describe("State Store", () => {
         store.insertInto("users", {
           name: "test",
           id: newUUID,
-          streamId: newUUID,
-          streamVersion: 1n,
-          deletedAt: null,
         }),
       () =>
         store.insertInto("users", {
           name: "anotherName",
           id: UUIDGeneratorMock.generate(),
-          streamId: UUIDGeneratorMock.generate(),
-          streamVersion: 1n,
-          deletedAt: null,
         }),
       () =>
         store.insertInto("users", {
           name: "anotherName2",
           id: UUIDGeneratorMock.generate(),
-          streamId: UUIDGeneratorMock.generate(),
-          streamVersion: 1n,
-          deletedAt: null,
         }),
     );
 
@@ -119,20 +98,14 @@ describe("State Store", () => {
     expectTypeOf(result).toEqualTypeOf<
       {
         id: UUID;
-        streamId: UUID;
-        streamVersion: bigint;
         name: string;
-        deletedAt: PosixDate | null;
       }[]
     >();
 
     expect(result).toEqual([
       {
         id: newUUID,
-        streamId: newUUID,
-        streamVersion: 1n,
         name: "test",
-        deletedAt: null,
       },
     ]);
   });
@@ -143,9 +116,6 @@ describe("State Store", () => {
     await store.insertInto("users", {
       name: "test",
       id: newUUID,
-      streamId: newUUID,
-      streamVersion: 1n,
-      deletedAt: null,
     }).orThrow();
 
     await store.update("users", newUUID, {
@@ -157,10 +127,7 @@ describe("State Store", () => {
 
     expect(result).toEqual({
       id: newUUID,
-      streamId: newUUID,
-      streamVersion: 1n,
       name: "updated",
-      deletedAt: null,
     });
   });
 
@@ -170,9 +137,6 @@ describe("State Store", () => {
     await store.insertInto("users", {
       name: "test",
       id: newUUID,
-      streamId: newUUID,
-      streamVersion: 1n,
-      deletedAt: null,
     }).orThrow();
 
     await store.delete("users", newUUID).orThrow();
@@ -192,18 +156,12 @@ describe("State Store", () => {
     await store.insertInto("users", {
       id: ownerUUID,
       name: "test",
-      streamId: ownerUUID,
-      streamVersion: 1n,
-      deletedAt: null,
     }).orThrow();
 
     await store.insertInto("demo", {
       id: newUUID,
       value: 1.0,
       owner: ownerUUID,
-      streamId: newUUID,
-      streamVersion: 1n,
-      deletedAt: null,
     }).orThrow();
   });
 });
