@@ -26,8 +26,9 @@ export class SQLiteDatabase {
       this.run("BEGIN TRANSACTION");
       await fn();
       this.run("COMMIT");
-    } catch {
+    } catch (e) {
       this.run("ROLLBACK");
+      throw e;
     }
   }
 

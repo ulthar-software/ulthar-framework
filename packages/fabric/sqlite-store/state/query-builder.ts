@@ -3,7 +3,8 @@ import { AsyncResult, Keyof, Optional } from "@fabric/core";
 import {
   FilterOptions,
   Model,
-  ModelSchema,
+  type ModelSchema,
+  NotFoundError,
   OrderByOptions,
   SelectableQuery,
   StoreLimitableQuery,
@@ -12,7 +13,6 @@ import {
   StoreQueryError,
   StoreSortableQuery,
 } from "@fabric/domain";
-import { NotFoundError } from "../../domain/models/store-query/store-query.ts";
 import { filterToParams, filterToSQL } from "../sqlite/filter-to-sql.ts";
 import { transformRow } from "../sqlite/sql-to-value.ts";
 import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";

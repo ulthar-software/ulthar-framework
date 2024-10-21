@@ -14,23 +14,23 @@ export function recordToSQLKeys(record: Record<string, any>) {
 /**
  * Unfold a record into a string of it's keys separated by commas.
  */
-export function recordToSQLKeyParams(record: Record<string, any>) {
+export function recordToSQLParamKeys(record: Record<string, any>) {
   return Object.keys(record)
-    .map((key) => keyToParam(key))
+    .map((key) => keyToParamKey(key))
     .join(", ");
 }
 
 /**
  * Unfold a record into a string of it's keys separated by commas.
  */
-export function recordToSQLParams(
+export function recordToSQLParamRecord(
   model: Model,
   record: Record<string, any>,
 ) {
   return Object.keys(record).reduce(
     (acc, key) => ({
       ...acc,
-      [keyToParam(key)]: fieldValueToSQL(model.fields[key]!, record[key]),
+      [keyToParamKey(key)]: fieldValueToSQL(model.fields[key]!, record[key]),
     }),
     {},
   );
@@ -38,10 +38,10 @@ export function recordToSQLParams(
 
 export function recordToSQLSet(record: Record<string, any>) {
   return Object.keys(record)
-    .map((key) => `${key} = ${keyToParam(key)}`)
+    .map((key) => `${key} = ${keyToParamKey(key)}`)
     .join(", ");
 }
 
-export function keyToParam(key: string) {
+export function keyToParamKey(key: string) {
   return `$${key}`;
 }

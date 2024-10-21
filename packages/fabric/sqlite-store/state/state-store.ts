@@ -1,6 +1,6 @@
 import { AsyncResult, UnexpectedError, UUID } from "@fabric/core";
 import {
-  type AggregateModel,
+  Model,
   ModelSchemaFromModels,
   ModelToType,
   StoreQuery,
@@ -9,16 +9,16 @@ import {
 } from "@fabric/domain";
 import { modelToSql } from "../sqlite/model-to-sql.ts";
 import {
-  keyToParam,
-  recordToSQLKeyParams,
+  keyToParamKey,
   recordToSQLKeys,
-  recordToSQLParams,
+  recordToSQLParamKeys,
+  recordToSQLParamRecord,
   recordToSQLSet,
 } from "../sqlite/record-utils.ts";
 import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
 import { QueryBuilder } from "./query-builder.ts";
 
-export class SQLiteStateStore<TModel extends AggregateModel>
+export class SQLiteStateStore<TModel extends Model>
   implements WritableStateStore<TModel> {
   private schema: ModelSchemaFromModels<TModel>;
   private db: SQLiteDatabase;
@@ -47,8 +47,8 @@ export class SQLiteStateStore<TModel extends AggregateModel>
             recordToSQLKeys(
               record,
             )
-          }) VALUES (${recordToSQLKeyParams(record)})`,
-          recordToSQLParams(model, record),
+          }) VALUES (${recordToSQLParamKeys(record)})`,
+          recordToSQLParamRecord(model, record),
         );
       },
       (error) => new StoreQueryError(error.message),
@@ -72,7 +72,7 @@ export class SQLiteStateStore<TModel extends AggregateModel>
 
     return AsyncResult.tryFrom(
       () => {
-        const params = recordToSQLParams(model, {
+        const params = recordToSQLParamRecord(model, {
           ...record,
           id,
         });
@@ -81,7 +81,7 @@ export class SQLiteStateStore<TModel extends AggregateModel>
             recordToSQLSet(
               record,
             )
-          } WHERE id = ${keyToParam("id")}`,
+          } WHERE id = ${keyToParamKey("id")}`,
           params,
         );
       },
@@ -98,8 +98,10 @@ export class SQLiteStateStore<TModel extends AggregateModel>
     return AsyncResult.tryFrom(
       () => {
         this.db.runPrepared(
-          `DELETE FROM ${model.name} WHERE id = ${keyToParam("id")}`,
-          { $id: id },
+          `DELETE FROM ${model.name} WHERE id = ${keyToParamKey("id")}`,
+          {
+            [keyToParamKey("id")]: id,
+          },
         );
       },
       (error) => new StoreQueryError(error.message),
@@ -109,7 +111,7 @@ export class SQLiteStateStore<TModel extends AggregateModel>
   migrate(): AsyncResult<void, StoreQueryError> {
     return AsyncResult.tryFrom(
       async () => {
-        await this.db.init();
+        this.db.init();
         await this.db.withTransaction(() => {
           for (const modelKey in this.schema) {
             const model =
