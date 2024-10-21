@@ -110,21 +110,35 @@ export class AsyncResult<
   /**
    * Map a function over the error of the result.
    */
-  mapError<TMappedError extends TaggedError>(
+  errorMap<TMappedError extends TaggedError>(
     fn: (error: TError) => TMappedError,
   ): AsyncResult<TValue, TMappedError> {
     return new AsyncResult(
-      this.r.then((result) => result.mapError(fn)),
+      this.r.then((result) => result.errorMap(fn)),
     );
   }
 
   /**
-   * Taps a function if the result is a success.
-   * This is useful for side effects that do not modify the result.
+   * Execute a function if the result is not an error.
+   * The function does not affect the result.
    */
   tap(fn: (value: TValue) => void): AsyncResult<TValue, TError> {
     return new AsyncResult(
       this.r.then((result) => result.tap(fn)),
+    );
+  }
+
+  assert<TResultValue, TResultError extends TaggedError>(
+    fn: (value: TValue) => AsyncResult<TResultValue, TResultError>,
+  ): AsyncResult<TValue, TError | TResultError> {
+    return new AsyncResult(
+      this.r.then((result) => {
+        if (result.isError()) {
+          return result as any;
+        }
+
+        return (fn(result.unwrapOrThrow())).promise();
+      }),
     );
   }
 }

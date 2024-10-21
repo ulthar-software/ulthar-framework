@@ -127,7 +127,7 @@ export class Result<TValue, TError extends TaggedError = never> {
   /**
    * Map a function over the error of the result.
    */
-  mapError<TMappedError extends TaggedError>(
+  errorMap<TMappedError extends TaggedError>(
     fn: (error: TError) => TMappedError,
   ): Result<TValue, TMappedError> {
     if (isError(this.value)) {
@@ -143,9 +143,19 @@ export class Result<TValue, TError extends TaggedError = never> {
    */
   tap(fn: (value: TValue) => void): Result<TValue, TError> {
     if (!isError(this.value)) {
-      fn(this.value as TValue);
+      try {
+        fn(this.value as TValue);
+      } catch {
+        // do nothing
+      }
     }
 
     return this;
+  }
+
+  assert<TResultValue, TResultError extends TaggedError>(
+    fn: (value: TValue) => Result<TResultValue, TResultError>,
+  ): Result<TValue, TError | TResultError> {
+    return this.flatMap((value) => fn(value).map(() => value));
   }
 }
