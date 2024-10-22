@@ -8,6 +8,6 @@ export type Nothing = null;
 export const Nothing = null;
 
 /**
- * Un Optional es un tipo que puede ser un valor o no ser nada.
+ * An `Optional` type is a type that represents a value that may or may not be present.
  */
 export type Optional<T> = T | Nothing;
