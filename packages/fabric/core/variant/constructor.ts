@@ -5,7 +5,7 @@ export function variantConstructor<
 >(
   tag: T[VariantTag],
 ) {
-  return <TOpts extends Omit<T, VariantTag>>(options: TOpts) => {
+  return <TOpts extends Omit<T, VariantTag>>(options: TOpts = {} as TOpts) => {
     return {
       _tag: tag,
       ...options,
