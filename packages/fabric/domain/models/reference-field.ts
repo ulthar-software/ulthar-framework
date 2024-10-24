@@ -1,28 +1,6 @@
-import {
-  Result,
-  TaggedError,
-  type TaggedVariant,
-  VariantTag,
-} from "@fabric/core";
-import type { ModelSchema } from "../model-schema.ts";
-import type { BaseField } from "./base-field.ts";
-
-export interface ReferenceFieldOptions extends BaseField {
-  targetModel: string;
-  targetKey?: string;
-}
-
-export interface ReferenceField
-  extends TaggedVariant<"ReferenceField">, ReferenceFieldOptions {}
-
-export function createReferenceField<T extends ReferenceFieldOptions>(
-  opts: T = {} as T,
-): ReferenceField & T {
-  return {
-    [VariantTag]: "ReferenceField",
-    ...opts,
-  } as const;
-}
+import { Result, TaggedError } from "@fabric/core";
+import type { ReferenceField } from "./fields.ts";
+import type { ModelSchema } from "./model-schema.ts";
 
 export function getTargetKey(field: ReferenceField): string {
   return field.targetKey || "id";

@@ -1,7 +1,7 @@
 import { isError } from "@fabric/core";
 import { describe, expect, test } from "@fabric/testing";
-import { Model } from "../model.ts";
-import { Field } from "./index.ts";
+import { Field } from "../index.ts";
+import { Model } from "./model.ts";
 import {
   InvalidReferenceFieldError,
   validateReferenceField,

@@ -1,11 +1,12 @@
 import {
+  Decimal,
   PosixDate,
   Result,
   TaggedError,
   type VariantFromTag,
 } from "@fabric/core";
 import { isUUID, parseAndSanitizeString } from "@fabric/validations";
-import type { FieldDefinition, FieldToType } from "../index.ts";
+import type { FieldDefinition, FieldToType } from "./index.ts";
 
 export type FieldParsers = {
   [K in FieldDefinition["_tag"]]: FieldParser<
@@ -32,44 +33,54 @@ export const fieldParsers: FieldParsers = {
           : Result.failWith(new InvalidFieldTypeError())
       );
   },
-  TimestampField: (f, v) => {
-    return parseOptionality(f, v).flatMap((parsedValue) => {
-      if (parsedValue === undefined) return Result.ok(undefined);
-
-      if (!(v instanceof PosixDate)) {
-        return Result.failWith(new InvalidFieldTypeError());
+  PosixDateField: (f, v) => {
+    return parseOptionality(f, v, (v) => {
+      if (v instanceof PosixDate) {
+        return Result.ok(v);
       }
-
-      return Result.ok(v);
+      return Result.failWith(new InvalidFieldTypeError());
     });
   },
   BooleanField: (f, v) => {
-    if (!f.isOptional && v === undefined) {
-      return Result.failWith(new MissingRequiredFieldError());
-    }
-    if (v === undefined) {
-      return Result.ok(undefined);
-    }
+    return parseOptionality(f, v, (v) => {
+      if (typeof v === "boolean") {
+        return Result.ok(v);
+      }
 
-    if (typeof v === "boolean") {
-      return Result.ok(v);
-    }
-
-    return Result.failWith(new InvalidFieldTypeError());
+      return Result.failWith(new InvalidFieldTypeError());
+    });
   },
-  IntegerField: function (): Result<
-    number | bigint | undefined,
-    FieldParsingError
-  > {
-    throw new Error("Function not implemented.");
+  IntegerField: (f, v) => {
+    return parseOptionality(f, v, (v) => {
+      if (
+        (typeof v === "number" &&
+          Number.isInteger(v)) || (typeof v === "bigint")
+      ) {
+        return Result.ok(v);
+      }
+      return Result.failWith(new InvalidFieldTypeError());
+    });
   },
-  FloatField: function () {
-    throw new Error("Function not implemented.");
+  FloatField: (f, v) => {
+    return parseOptionality(f, v, (v) => {
+      if (typeof v === "number") {
+        return Result.ok(v);
+      }
+      return Result.failWith(new InvalidFieldTypeError());
+    });
   },
-  DecimalField: function () {
-    throw new Error("Function not implemented.");
+  DecimalField: (f, v) => {
+    return parseOptionality(f, v, (v) => {
+      if (v instanceof Decimal) {
+        return Result.ok(v);
+      }
+      return Result.failWith(new InvalidFieldTypeError());
+    });
   },
   EmbeddedField: function () {
+    throw new Error("Function not implemented.");
+  },
+  EmailField: function () {
     throw new Error("Function not implemented.");
   },
 };
@@ -125,10 +136,17 @@ function parseStringValue(
  */
 function parseOptionality<T>(
   field: FieldDefinition,
-  value: T | undefined,
+  value: unknown,
+  withMapping?: (value: unknown) => Result<T, FieldParsingError>,
 ): Result<T | undefined, FieldParsingError> {
   if (!field.isOptional && value === undefined) {
     return Result.failWith(new MissingRequiredFieldError());
   }
-  return Result.ok(value);
+  if (value === undefined) {
+    return Result.ok(value);
+  }
+  if (!withMapping) {
+    return Result.ok(value as T);
+  }
+  return withMapping(value);
 }
