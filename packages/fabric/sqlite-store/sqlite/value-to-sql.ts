@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
-import { VariantTag } from "@fabric/core";
+import { JSONUtils, VariantTag } from "@fabric/core";
 import { FieldDefinition, FieldToType } from "@fabric/domain";
+import { isNullish } from "@fabric/validations";
 
 type FieldSQLInsertMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -20,13 +21,14 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   ReferenceField: (_, v) => v,
   FloatField: (_, v) => v,
   DecimalField: (_, v) => v,
-  TimestampField: (_, v) => v.timestamp,
-  EmbeddedField: (_, v: string) => JSON.stringify(v),
+  PosixDateField: (_, v) => v.timestamp,
+  EmbeddedField: (_, v: string) => JSONUtils.stringify(v),
   BooleanField: (_, v) => v,
+  EmailField: (_, v) => v,
 };
 
 export function fieldValueToSQL(field: FieldDefinition, value: any) {
-  if (value === null) {
+  if (isNullish(value)) {
     return null;
   }
   const r = FieldSQLInsertMap[field[VariantTag]] as any;

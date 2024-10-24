@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { PosixDate, VariantTag } from "@fabric/core";
+import { JSONUtils, PosixDate, VariantTag } from "@fabric/core";
 import { FieldDefinition, FieldToType, Model } from "@fabric/domain";
 
 export function transformRow(model: Model) {
@@ -39,7 +39,8 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   ReferenceField: (_, v) => v,
   FloatField: (_, v) => v,
   DecimalField: (_, v) => v,
-  TimestampField: (_, v) => new PosixDate(v),
-  EmbeddedField: (_, v: string) => JSON.parse(v),
+  PosixDateField: (_, v) => new PosixDate(v),
+  EmbeddedField: (_, v: string) => JSONUtils.parse(v),
   BooleanField: (_, v) => v,
+  EmailField: (_, v) => v,
 };

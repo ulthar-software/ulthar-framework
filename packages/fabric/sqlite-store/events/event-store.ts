@@ -1,5 +1,6 @@
 import {
   AsyncResult,
+  JSONUtils,
   MaybePromise,
   PosixDate,
   Run,
@@ -11,7 +12,6 @@ import {
   EventFromKey,
   EventStore,
   EventSubscriber,
-  JSONUtils,
   StoredEvent,
   StoreQueryError,
 } from "@fabric/domain";

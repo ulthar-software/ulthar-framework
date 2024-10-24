@@ -8,7 +8,7 @@ describe("ModelToSQL", () => {
     name: Field.string(),
     age: Field.integer(),
     // isTrue: Field.boolean(),
-    date: Field.timestamp(),
+    date: Field.posixDate(),
     reference: Field.reference({ targetModel: "somethingElse" }),
   });
 

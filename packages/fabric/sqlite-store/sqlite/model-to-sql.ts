@@ -40,7 +40,7 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
   DecimalField: (n, f): string => {
     return [n, "REAL", modifiersFromOpts(f)].join(" ");
   },
-  TimestampField: (n, f): string => {
+  PosixDateField: (n, f): string => {
     return [n, "NUMERIC", modifiersFromOpts(f)].join(" ");
   },
   EmbeddedField: (n, f): string => {
@@ -48,6 +48,9 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
   },
   BooleanField: (n, f): string => {
     return [n, "BOOLEAN", modifiersFromOpts(f)].join(" ");
+  },
+  EmailField: (n, f): string => {
+    return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
 };
 function fieldDefinitionToSQL(name: string, field: FieldDefinition) {
