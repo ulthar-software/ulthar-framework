@@ -3,5 +3,8 @@
   "version": "0.1.0",
   "exports": {
     ".": "./index.ts"
+  },
+  "imports": {
+    "decimal": "jsr:@quentinadam/decimal@^0.1.6"
   }
 }

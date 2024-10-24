@@ -1,3 +1,4 @@
+import Decimal from "decimal";
 export * from "./array/index.ts";
 export * from "./error/index.ts";
 export * from "./record/index.ts";
@@ -7,3 +8,4 @@ export * from "./time/index.ts";
 export * from "./types/index.ts";
 export * from "./utils/index.ts";
 export * from "./variant/index.ts";
+export { Decimal };

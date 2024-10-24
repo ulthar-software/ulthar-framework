@@ -6,7 +6,6 @@
   },
   "imports": {
     "@fabric/core": "jsr:@fabric/core",
-    "@fabric/validations": "jsr:@fabric/validations",
-    "decimal": "jsr:@quentinadam/decimal@^0.1.6"
+    "@fabric/validations": "jsr:@fabric/validations"
   }
 }
