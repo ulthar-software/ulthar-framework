@@ -7,8 +7,8 @@ import { isNullish } from "../nullish/is-nullish.ts";
 export function parseAndSanitizeString(
   value: unknown,
 ): string | undefined {
-  if (isNullish(value)) return undefined;
-  return stripLow((String(value)).trim());
+  if (isNullish(value) || typeof value != "string") return undefined;
+  return stripLow(value).trim();
 }
 
 // deno-lint-ignore no-control-regex

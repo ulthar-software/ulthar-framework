@@ -17,13 +17,13 @@ describe("Sanitize String", () => {
   test("Given a number value it should convert it to a string", () => {
     const sanitized = parseAndSanitizeString(123);
 
-    expect(sanitized).toBe("123");
+    expect(sanitized).toBe(undefined);
   });
 
   test("Given a boolean value it should convert it to a string", () => {
     const sanitized = parseAndSanitizeString(true);
 
-    expect(sanitized).toBe("true");
+    expect(sanitized).toBe(undefined);
   });
 
   test("Given a null value it should return null", () => {
