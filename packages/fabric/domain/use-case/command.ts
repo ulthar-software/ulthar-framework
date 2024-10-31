@@ -1,18 +1,24 @@
 // deno-lint-ignore-file no-explicit-any
 import type { TaggedError } from "@fabric/core";
+import type { DomainEvent } from "../events/event.ts";
 import type { UseCase } from "./use-case.ts";
 
 export type Command<
   TDependencies = any,
   TPayload = any,
-  TEvent extends Event = any,
+  TEvent extends DomainEvent = any,
   TErrors extends TaggedError<string> = any,
-> = BasicCommandDefinition<TDependencies, TPayload, TEvent, TErrors>;
+> = BasicCommandDefinition<
+  TDependencies,
+  TPayload,
+  TEvent,
+  TErrors
+>;
 
 interface BasicCommandDefinition<
   TDependencies,
   TPayload,
-  TEvent extends Event,
+  TEvent extends DomainEvent,
   TErrors extends TaggedError<string>,
 > {
   /**

@@ -7,10 +7,10 @@ import type {
   VariantTag,
 } from "@fabric/core";
 import type { StoreQueryError } from "../errors/query-error.ts";
-import type { Event } from "./event.ts";
+import type { DomainEvent } from "./event.ts";
 import type { StoredEvent } from "./stored-event.ts";
 
-export interface EventStore<TEvents extends Event> {
+export interface EventStore<TEvents extends DomainEvent> {
   /**
    * Store a new event in the event store.
    */
@@ -28,7 +28,7 @@ export interface EventStore<TEvents extends Event> {
   ): void;
 }
 
-export type EventSubscriber<TEvents extends Event = Event> = (
+export type EventSubscriber<TEvents extends DomainEvent = DomainEvent> = (
   event: StoredEvent<TEvents>,
 ) => MaybePromise<void>;
 
