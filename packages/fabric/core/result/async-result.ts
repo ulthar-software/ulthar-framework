@@ -35,7 +35,9 @@ export class AsyncResult<
     );
   }
 
-  static ok<T>(value: T): AsyncResult<T, never> {
+  static ok(): AsyncResult<void, never>;
+  static ok<T>(value: T): AsyncResult<T, never>;
+  static ok(value?: any) {
     return new AsyncResult(Promise.resolve(Result.ok(value)));
   }
 
