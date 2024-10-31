@@ -28,6 +28,8 @@ export interface StoreQuery<T> {
   selectOneOrFail<K extends Keyof<T>>(
     keys: K[],
   ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+
+  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError>;
 }
 
 export interface StoreSortableQuery<T> {
@@ -48,6 +50,8 @@ export interface StoreSortableQuery<T> {
   selectOneOrFail<K extends Keyof<T>>(
     keys: K[],
   ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+
+  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError>;
 }
 
 export interface StoreLimitableQuery<T> {
@@ -67,6 +71,8 @@ export interface StoreLimitableQuery<T> {
   selectOneOrFail<K extends Keyof<T>>(
     keys: K[],
   ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+
+  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError>;
 }
 
 export interface SelectableQuery<T> {
@@ -84,6 +90,8 @@ export interface SelectableQuery<T> {
   selectOneOrFail<K extends Keyof<T>>(
     keys: K[],
   ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+
+  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError>;
 }
 
 export interface StoreQueryDefinition<K extends string = string> {
@@ -98,5 +106,11 @@ export interface StoreQueryDefinition<K extends string = string> {
 export class NotFoundError extends TaggedError<"NotFoundError"> {
   constructor() {
     super("NotFoundError");
+  }
+}
+
+export class AlreadyExistsError extends TaggedError<"AlreadyExistsError"> {
+  constructor() {
+    super("AlreadyExistsError");
   }
 }
