@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { AsyncResult, Keyof, Optional } from "@fabric/core";
 import {
+  AlreadyExistsError,
   FilterOptions,
   Model,
   type ModelSchema,
@@ -112,18 +113,43 @@ export class QueryBuilder<T> implements StoreQuery<T> {
             limit: 1,
           },
         );
-        const result = await this.db.onePrepared(
+        return await this.db.onePrepared(
           stmt,
           params,
           transformRow(this.schema[this.query.from]!),
         );
-        if (!result) {
-          throw new NotFoundError();
-        }
-        return result;
       },
       (err) => new StoreQueryError(err.message),
-    );
+    ).flatMap((result) => {
+      if (!result) {
+        return AsyncResult.failWith(new NotFoundError());
+      }
+      return AsyncResult.ok(result);
+    });
+  }
+
+  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError> {
+    return AsyncResult.tryFrom(
+      async () => {
+        const [stmt, params] = getSelectStatement(
+          this.schema[this.query.from]!,
+          {
+            ...this.query,
+            limit: 1,
+          },
+        );
+        return await this.db.onePrepared(
+          stmt,
+          params,
+        );
+      },
+      (err) => new StoreQueryError(err.message),
+    ).flatMap((result) => {
+      if (result) {
+        return AsyncResult.failWith(new AlreadyExistsError());
+      }
+      return AsyncResult.ok();
+    });
   }
 }
 
