@@ -1,5 +1,5 @@
 import { PosixDate } from "@fabric/core";
-import { Event } from "@fabric/domain";
+import { DomainEvent } from "@fabric/domain";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import {
   afterEach,
@@ -12,9 +12,9 @@ import {
 import { SQLiteEventStore } from "./event-store.ts";
 
 describe("Event Store", () => {
-  type UserCreated = Event<"UserCreated", { name: string }>;
-  type UserUpdated = Event<"UserUpdated", { name: string }>;
-  type UserDeleted = Event<"UserDeleted", void>;
+  type UserCreated = DomainEvent<"UserCreated", { name: string }>;
+  type UserUpdated = DomainEvent<"UserUpdated", { name: string }>;
+  type UserDeleted = DomainEvent<"UserDeleted", void>;
 
   type UserEvents = UserCreated | UserUpdated | UserDeleted;
 

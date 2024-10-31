@@ -8,7 +8,7 @@ import {
   VariantTag,
 } from "@fabric/core";
 import {
-  Event,
+  DomainEvent,
   EventFromKey,
   EventStore,
   EventSubscriber,
@@ -17,7 +17,7 @@ import {
 } from "@fabric/domain";
 import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
 
-export class SQLiteEventStore<TEvents extends Event>
+export class SQLiteEventStore<TEvents extends DomainEvent>
   implements EventStore<TEvents> {
   private db: SQLiteDatabase;
 
@@ -139,7 +139,7 @@ export class SQLiteEventStore<TEvents extends Event>
     );
   }
 
-  private storeEvent<T extends Event>(
+  private storeEvent<T extends DomainEvent>(
     streamId: UUID,
     version: bigint,
     event: T,
