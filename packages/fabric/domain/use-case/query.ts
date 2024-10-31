@@ -7,7 +7,12 @@ export type Query<
   TPayload = any,
   TOutput = any,
   TErrors extends TaggedError<string> = any,
-> = BasicQueryDefinition<TDependencies, TPayload, TOutput, TErrors>;
+> = BasicQueryDefinition<
+  TDependencies,
+  TPayload,
+  TOutput,
+  TErrors
+>;
 
 interface BasicQueryDefinition<
   TDependencies,
