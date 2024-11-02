@@ -1,0 +1,10 @@
+{
+  "name": "@syntropy/domain",
+  "exports": {
+    ".": "./index.ts",
+    "./use-cases": "./use-cases.ts"
+  },
+  "imports": {
+    "@fabric/core": "jsr:@fabric/core"
+  }
+}
