@@ -1,4 +1,4 @@
-import { AsyncResult, UnexpectedError, UUID } from "@fabric/core";
+import { Effect, UnexpectedError, UUID } from "@fabric/core";
 import {
   Model,
   ModelSchemaFromModels,
@@ -37,10 +37,10 @@ export class SQLiteStateStore<TModel extends Model>
   insertInto<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
     record: ModelToType<ModelSchemaFromModels<TModel>[T]>,
-  ): AsyncResult<void, StoreQueryError> {
+  ): Effect<void, StoreQueryError> {
     const model = this.schema[collection];
 
-    return AsyncResult.tryFrom(
+    return Effect.tryFrom(
       () => {
         this.db.runPrepared(
           `INSERT INTO ${model.name} (${
@@ -67,10 +67,10 @@ export class SQLiteStateStore<TModel extends Model>
     collection: T,
     id: UUID,
     record: Partial<ModelToType<ModelSchemaFromModels<TModel>[T]>>,
-  ): AsyncResult<void, StoreQueryError> {
+  ): Effect<void, StoreQueryError> {
     const model = this.schema[collection];
 
-    return AsyncResult.tryFrom(
+    return Effect.tryFrom(
       () => {
         const params = recordToSQLParamRecord(model, {
           ...record,
@@ -92,10 +92,10 @@ export class SQLiteStateStore<TModel extends Model>
   delete<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
     id: UUID,
-  ): AsyncResult<void, StoreQueryError> {
+  ): Effect<void, StoreQueryError> {
     const model = this.schema[collection];
 
-    return AsyncResult.tryFrom(
+    return Effect.tryFrom(
       () => {
         this.db.runPrepared(
           `DELETE FROM ${model.name} WHERE id = ${keyToParamKey("id")}`,
@@ -108,8 +108,8 @@ export class SQLiteStateStore<TModel extends Model>
     );
   }
 
-  migrate(): AsyncResult<void, StoreQueryError> {
-    return AsyncResult.tryFrom(
+  migrate(): Effect<void, StoreQueryError> {
+    return Effect.tryFrom(
       async () => {
         this.db.init();
         await this.db.withTransaction(() => {
@@ -124,7 +124,10 @@ export class SQLiteStateStore<TModel extends Model>
     );
   }
 
-  close(): AsyncResult<void, UnexpectedError> {
-    return AsyncResult.from(() => this.db.close());
+  close(): Effect<void, UnexpectedError> {
+    return Effect.tryFrom(
+      () => this.db.close(),
+      (e) => new UnexpectedError(e.message),
+    );
   }
 }

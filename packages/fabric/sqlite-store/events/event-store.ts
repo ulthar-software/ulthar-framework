@@ -1,9 +1,10 @@
 import {
-  AsyncResult,
+  Effect,
   JSONUtils,
   MaybePromise,
   PosixDate,
-  Run,
+  Result,
+  UnexpectedError,
   UUID,
   VariantTag,
 } from "@fabric/core";
@@ -32,8 +33,8 @@ export class SQLiteEventStore<TEvents extends DomainEvent>
     this.db = new SQLiteDatabase(dbPath);
   }
 
-  migrate(): AsyncResult<void, StoreQueryError> {
-    return AsyncResult.tryFrom(
+  migrate(): Effect<void, StoreQueryError> {
+    return Effect.tryFrom(
       () => {
         this.db.init();
         this.db.run(
@@ -54,8 +55,8 @@ export class SQLiteEventStore<TEvents extends DomainEvent>
 
   getEventsFromStream(
     streamId: UUID,
-  ): AsyncResult<StoredEvent<TEvents>[], StoreQueryError> {
-    return AsyncResult.tryFrom(
+  ): Effect<StoredEvent<TEvents>[], StoreQueryError> {
+    return Effect.tryFrom(
       () => {
         const events = this.db.allPrepared(
           `SELECT * FROM events WHERE streamId = $id`,
@@ -79,13 +80,13 @@ export class SQLiteEventStore<TEvents extends DomainEvent>
 
   append<T extends TEvents>(
     event: T,
-  ): AsyncResult<StoredEvent<T>, StoreQueryError> {
-    return Run.seq(
+  ): Effect<StoredEvent<T>, StoreQueryError | UnexpectedError> {
+    return Effect.seq(
       () => this.getLastVersion(event.streamId),
       (version) =>
-        AsyncResult.from(() => {
+        Effect.from(() => {
           this.streamVersions.set(event.streamId, version + 1n);
-          return version;
+          return Result.ok(version);
         }),
       (version) => this.storeEvent(event.streamId, version + 1n, event),
       (storedEvent) =>
@@ -93,15 +94,17 @@ export class SQLiteEventStore<TEvents extends DomainEvent>
     );
   }
 
-  private notifySubscribers(event: StoredEvent<TEvents>): AsyncResult<void> {
-    return AsyncResult.from(async () => {
+  private notifySubscribers(
+    event: StoredEvent<TEvents>,
+  ): Effect<void, UnexpectedError> {
+    return Effect.tryFrom(async () => {
       const subscribers = this.eventSubscribers.get(event[VariantTag]) || [];
       await Promise.all(subscribers.map((subscriber) => subscriber(event)));
-    });
+    }, (e) => new UnexpectedError(e.message));
   }
 
-  private getLastVersion(streamId: UUID): AsyncResult<bigint, StoreQueryError> {
-    return AsyncResult.tryFrom(
+  private getLastVersion(streamId: UUID): Effect<bigint, StoreQueryError> {
+    return Effect.tryFrom(
       () => {
         const { lastVersion } = this.db.onePrepared(
           `SELECT max(version) as lastVersion FROM events WHERE streamId = $id`,
@@ -132,8 +135,8 @@ export class SQLiteEventStore<TEvents extends DomainEvent>
     });
   }
 
-  close(): AsyncResult<void, StoreQueryError> {
-    return AsyncResult.tryFrom(
+  close(): Effect<void, StoreQueryError> {
+    return Effect.tryFrom(
       () => this.db.close(),
       (error) => new StoreQueryError(error.message),
     );
@@ -143,8 +146,8 @@ export class SQLiteEventStore<TEvents extends DomainEvent>
     streamId: UUID,
     version: bigint,
     event: T,
-  ): AsyncResult<StoredEvent<T>, StoreQueryError> {
-    return AsyncResult.tryFrom(
+  ): Effect<StoredEvent<T>, StoreQueryError> {
+    return Effect.tryFrom(
       () => {
         const storedEvent: StoredEvent<T> = {
           ...event,

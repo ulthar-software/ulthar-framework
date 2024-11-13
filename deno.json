@@ -10,8 +10,7 @@
     "packages/fabric/testing",
     "packages/fabric/validations",
     "packages/templates/domain",
-    "packages/templates/lib",
-    "apps/syntropy/domain"
+    "packages/templates/lib"
   ],
   "compilerOptions": {
     "strict": true,

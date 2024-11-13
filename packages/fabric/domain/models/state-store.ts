@@ -1,4 +1,4 @@
-import type { AsyncResult } from "@fabric/core";
+import { Effect } from "@fabric/core";
 import type { StoreQueryError } from "../errors/query-error.ts";
 import type { ModelSchemaFromModels } from "./model-schema.ts";
 import type { Model, ModelToType } from "./model.ts";
@@ -15,5 +15,5 @@ export interface WritableStateStore<TModel extends Model>
   insertInto<T extends keyof ModelSchemaFromModels<TModel>>(
     collection: T,
     record: ModelToType<ModelSchemaFromModels<TModel>[T]>,
-  ): AsyncResult<void, StoreQueryError>;
+  ): Effect<void, StoreQueryError>;
 }

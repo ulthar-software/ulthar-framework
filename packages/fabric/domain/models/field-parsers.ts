@@ -6,7 +6,7 @@ import {
   type VariantFromTag,
 } from "@fabric/core";
 import { isUUID, parseAndSanitizeString } from "@fabric/validations";
-import type { FieldDefinition, FieldToType } from "./index.ts";
+import { FieldDefinition, FieldToType } from "./fields.ts";
 
 export type FieldParsers = {
   [K in FieldDefinition["_tag"]]: FieldParser<

@@ -127,11 +127,15 @@
   },
   "workspace": {
     "members": {
+      "packages/fabric/core": {
+        "dependencies": [
+          "jsr:@quentinadam/decimal@~0.1.6"
+        ]
+      },
       "packages/fabric/domain": {
         "dependencies": [
           "jsr:@fabric/core@*",
-          "jsr:@fabric/validations@*",
-          "jsr:@quentinadam/decimal@~0.1.6"
+          "jsr:@fabric/validations@*"
         ]
       },
       "packages/fabric/sqlite-store": {

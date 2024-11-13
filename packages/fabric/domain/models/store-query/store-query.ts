@@ -1,10 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import {
-  type AsyncResult,
-  type Keyof,
-  type Optional,
-  TaggedError,
-} from "@fabric/core";
+import { Effect, type Keyof, type Optional, TaggedError } from "@fabric/core";
 import type { StoreQueryError } from "../../errors/query-error.ts";
 import type { FilterOptions } from "./filter-options.ts";
 import type { OrderByOptions } from "./order-by-options.ts";
@@ -14,84 +9,84 @@ export interface StoreQuery<T> {
   orderBy(opts: OrderByOptions<T>): StoreLimitableQuery<T>;
   limit(limit: number, offset?: number): SelectableQuery<T>;
 
-  select(): AsyncResult<T[], StoreQueryError>;
+  select(): Effect<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>[], StoreQueryError>;
+  ): Effect<Pick<T, K>[], StoreQueryError>;
 
-  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
+  selectOne(): Effect<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
+  ): Effect<Optional<Pick<T, K>>, StoreQueryError>;
 
-  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail(): Effect<T, StoreQueryError | NotFoundError>;
   selectOneOrFail<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+  ): Effect<Pick<T, K>, StoreQueryError | NotFoundError>;
 
-  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError>;
+  assertNone(): Effect<void, StoreQueryError | AlreadyExistsError>;
 }
 
 export interface StoreSortableQuery<T> {
   orderBy(opts: OrderByOptions<T>): StoreLimitableQuery<T>;
   limit(limit: number, offset?: number): SelectableQuery<T>;
 
-  select(): AsyncResult<T[], StoreQueryError>;
+  select(): Effect<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>[], StoreQueryError>;
+  ): Effect<Pick<T, K>[], StoreQueryError>;
 
-  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
+  selectOne(): Effect<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
+  ): Effect<Optional<Pick<T, K>>, StoreQueryError>;
 
-  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail(): Effect<T, StoreQueryError | NotFoundError>;
   selectOneOrFail<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+  ): Effect<Pick<T, K>, StoreQueryError | NotFoundError>;
 
-  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError>;
+  assertNone(): Effect<void, StoreQueryError | AlreadyExistsError>;
 }
 
 export interface StoreLimitableQuery<T> {
   limit(limit: number, offset?: number): SelectableQuery<T>;
 
-  select(): AsyncResult<T[], StoreQueryError>;
+  select(): Effect<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>[], StoreQueryError>;
+  ): Effect<Pick<T, K>[], StoreQueryError>;
 
-  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
+  selectOne(): Effect<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
+  ): Effect<Optional<Pick<T, K>>, StoreQueryError>;
 
-  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail(): Effect<T, StoreQueryError | NotFoundError>;
   selectOneOrFail<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+  ): Effect<Pick<T, K>, StoreQueryError | NotFoundError>;
 
-  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError>;
+  assertNone(): Effect<void, StoreQueryError | AlreadyExistsError>;
 }
 
 export interface SelectableQuery<T> {
-  select(): AsyncResult<T[], StoreQueryError>;
+  select(): Effect<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>[], StoreQueryError>;
+  ): Effect<Pick<T, K>[], StoreQueryError>;
 
-  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
+  selectOne(): Effect<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
+  ): Effect<Optional<Pick<T, K>>, StoreQueryError>;
 
-  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail(): Effect<T, StoreQueryError | NotFoundError>;
   selectOneOrFail<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+  ): Effect<Pick<T, K>, StoreQueryError | NotFoundError>;
 
-  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError>;
+  assertNone(): Effect<void, StoreQueryError | AlreadyExistsError>;
 }
 
 export interface StoreQueryDefinition<K extends string = string> {

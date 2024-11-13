@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { AsyncResult, Keyof, Optional } from "@fabric/core";
+import { Effect, Keyof, Optional } from "@fabric/core";
 import {
   AlreadyExistsError,
   FilterOptions,
@@ -47,12 +47,12 @@ export class QueryBuilder<T> implements StoreQuery<T> {
     });
   }
 
-  select(): AsyncResult<T[], StoreQueryError>;
+  select(): Effect<T[], StoreQueryError>;
   select<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>[], StoreQueryError>;
-  select<K extends Keyof<T>>(keys?: K[]): AsyncResult<any, StoreQueryError> {
-    return AsyncResult.tryFrom(
+  ): Effect<Pick<T, K>[], StoreQueryError>;
+  select<K extends Keyof<T>>(keys?: K[]): Effect<any, StoreQueryError> {
+    return Effect.tryFrom(
       () => {
         const [sql, params] = getSelectStatement(
           this.schema[this.query.from]!,
@@ -71,12 +71,12 @@ export class QueryBuilder<T> implements StoreQuery<T> {
     );
   }
 
-  selectOne(): AsyncResult<Optional<T>, StoreQueryError>;
+  selectOne(): Effect<Optional<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): AsyncResult<Optional<Pick<T, K>>, StoreQueryError>;
-  selectOne<K extends Keyof<T>>(keys?: K[]): AsyncResult<any, StoreQueryError> {
-    return AsyncResult.tryFrom(
+  ): Effect<Optional<Pick<T, K>>, StoreQueryError>;
+  selectOne<K extends Keyof<T>>(keys?: K[]): Effect<any, StoreQueryError> {
+    return Effect.tryFrom(
       async () => {
         const [stmt, params] = getSelectStatement(
           this.schema[this.query.from]!,
@@ -96,14 +96,14 @@ export class QueryBuilder<T> implements StoreQuery<T> {
     );
   }
 
-  selectOneOrFail(): AsyncResult<T, StoreQueryError | NotFoundError>;
+  selectOneOrFail(): Effect<T, StoreQueryError | NotFoundError>;
   selectOneOrFail<K extends Extract<keyof T, string>>(
     keys: K[],
-  ): AsyncResult<Pick<T, K>, StoreQueryError | NotFoundError>;
+  ): Effect<Pick<T, K>, StoreQueryError | NotFoundError>;
   selectOneOrFail<K extends Extract<keyof T, string>>(
     keys?: K[],
-  ): AsyncResult<any, StoreQueryError | NotFoundError> {
-    return AsyncResult.tryFrom(
+  ): Effect<any, StoreQueryError | NotFoundError> {
+    return Effect.tryFrom(
       async () => {
         const [stmt, params] = getSelectStatement(
           this.schema[this.query.from]!,
@@ -122,14 +122,14 @@ export class QueryBuilder<T> implements StoreQuery<T> {
       (err) => new StoreQueryError(err.message),
     ).flatMap((result) => {
       if (!result) {
-        return AsyncResult.failWith(new NotFoundError());
+        return Effect.failWith(new NotFoundError());
       }
-      return AsyncResult.ok(result);
+      return Effect.ok(result);
     });
   }
 
-  assertNone(): AsyncResult<void, StoreQueryError | AlreadyExistsError> {
-    return AsyncResult.tryFrom(
+  assertNone(): Effect<void, StoreQueryError | AlreadyExistsError> {
+    return Effect.tryFrom(
       async () => {
         const [stmt, params] = getSelectStatement(
           this.schema[this.query.from]!,
@@ -146,9 +146,9 @@ export class QueryBuilder<T> implements StoreQuery<T> {
       (err) => new StoreQueryError(err.message),
     ).flatMap((result) => {
       if (result) {
-        return AsyncResult.failWith(new AlreadyExistsError());
+        return Effect.failWith(new AlreadyExistsError());
       }
-      return AsyncResult.ok();
+      return Effect.ok();
     });
   }
 }

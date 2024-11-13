@@ -1,4 +1,4 @@
-import { Run } from "@fabric/core";
+import { Effect, Run } from "@fabric/core";
 import { Field, isLike, Model } from "@fabric/domain";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import { afterEach, beforeEach, describe, expect, test } from "@fabric/testing";
@@ -20,11 +20,11 @@ describe("State Store", () => {
 
   beforeEach(async () => {
     store = new SQLiteStateStore(":memory:", models);
-    await store.migrate().orThrow();
+    await store.migrate().runOrThrow();
   });
 
   afterEach(async () => {
-    await store.close().orThrow();
+    await store.close().runOrThrow();
   });
 
   test("should insert a record", async () => {
@@ -33,7 +33,7 @@ describe("State Store", () => {
     await store.insertInto("users", {
       id: newUUID,
       name: "test",
-    }).orThrow();
+    }).runOrThrow();
   });
 
   test("should select all records", async () => {
@@ -42,9 +42,9 @@ describe("State Store", () => {
     await store.insertInto("users", {
       name: "test",
       id: newUUID,
-    }).orThrow();
+    }).runOrThrow();
 
-    const result = await store.from("users").select().unwrapOrThrow();
+    const result = await store.from("users").select().runOrThrow();
 
     // expectTypeOf(result).toEqualTypeOf<
     //   {
@@ -64,7 +64,7 @@ describe("State Store", () => {
   test("should select records with a filter", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await Run.seqOrThrow(
+    await Effect.seq(
       () =>
         store.insertInto("users", {
           name: "test",
@@ -80,14 +80,14 @@ describe("State Store", () => {
           name: "anotherName2",
           id: UUIDGeneratorMock.generate(),
         }),
-    );
+    ).runOrThrow();
 
     const result = await store
       .from("users")
       .where({
         name: isLike("te%"),
       })
-      .select().unwrapOrThrow();
+      .select().runOrThrow();
 
     // expectTypeOf(result).toEqualTypeOf<
     //   {
@@ -107,17 +107,20 @@ describe("State Store", () => {
   test("should update a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await store.insertInto("users", {
-      name: "test",
-      id: newUUID,
-    }).orThrow();
-
-    await store.update("users", newUUID, {
-      name: "updated",
-    }).orThrow();
+    await Effect.seq(
+      () =>
+        store.insertInto("users", {
+          name: "test",
+          id: newUUID,
+        }),
+      () =>
+        store.update("users", newUUID, {
+          name: "updated",
+        }),
+    ).runOrThrow();
 
     const result = await store.from("users").where({ id: newUUID }).selectOne()
-      .unwrapOrThrow();
+      .runOrThrow();
 
     expect(result).toEqual({
       id: newUUID,
@@ -128,34 +131,37 @@ describe("State Store", () => {
   test("should delete a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await store.insertInto("users", {
-      name: "test",
-      id: newUUID,
-    }).orThrow();
-
-    await store.delete("users", newUUID).orThrow();
+    await Effect.seq(
+      () =>
+        store.insertInto("users", {
+          name: "test",
+          id: newUUID,
+        }),
+      () => store.delete("users", newUUID),
+    ).runOrThrow();
 
     const result = await store.from("users").where({ id: newUUID }).selectOne()
-      .unwrapOrThrow();
+      .runOrThrow();
 
     expect(result).toBeUndefined();
   });
-
-  //test for inserting into a collection with a reference
 
   test("should insert a record with a reference", async () => {
     const newUUID = UUIDGeneratorMock.generate();
     const ownerUUID = UUIDGeneratorMock.generate();
 
-    await store.insertInto("users", {
-      id: ownerUUID,
-      name: "test",
-    }).orThrow();
-
-    await store.insertInto("demo", {
-      id: newUUID,
-      value: 1.0,
-      owner: ownerUUID,
-    }).orThrow();
+    await Run.seqOrThrow(
+      () =>
+        store.insertInto("users", {
+          id: ownerUUID,
+          name: "test",
+        }),
+      () =>
+        store.insertInto("demo", {
+          id: newUUID,
+          value: 1.0,
+          owner: ownerUUID,
+        }),
+    );
   });
 });

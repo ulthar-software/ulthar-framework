@@ -97,7 +97,7 @@ describe("Effect", () => {
   });
 
   test("Effect.flatMap should skip maps when the Result is an error", async () => {
-    const mockFn = fn() as () => Effect<void, number, UnexpectedError>;
+    const mockFn = fn() as () => Effect<number, UnexpectedError>;
     const effect = Effect.failWith(new UnexpectedError("failure")).flatMap(
       mockFn,
     );
@@ -137,5 +137,17 @@ describe("Effect", () => {
     type Deps = ExtractEffectDependencies<typeof effect>;
 
     expectTypeOf<Deps>().toEqualTypeOf<{ a: number }>();
+  });
+
+  test("Effect.seq should run multiple effects in sequence", async () => {
+    const effect = Effect.seq(
+      () => Effect.ok(1),
+      (x) => Effect.ok(x + 1),
+      (x) => Effect.ok(x * 2),
+    );
+
+    const result = await effect.run();
+    expect(result.isOk()).toBe(true);
+    expect(result.unwrapOrThrow()).toBe(4);
   });
 });

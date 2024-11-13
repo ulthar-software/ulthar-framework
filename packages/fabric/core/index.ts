@@ -1,5 +1,6 @@
 import Decimal from "decimal";
 export * from "./array/index.ts";
+export * from "./effect/index.ts";
 export * from "./error/index.ts";
 export * from "./record/index.ts";
 export * from "./result/index.ts";

@@ -22,11 +22,11 @@ describe("Event Store", () => {
 
   beforeEach(async () => {
     store = new SQLiteEventStore(":memory:");
-    await store.migrate().orThrow();
+    await store.migrate().runOrThrow();
   });
 
   afterEach(async () => {
-    await store.close().orThrow();
+    await store.close().runOrThrow();
   });
 
   test("Should append an event", async () => {
@@ -39,9 +39,9 @@ describe("Event Store", () => {
       payload: { name: "test" },
     };
 
-    await store.append(userCreated).orThrow();
+    await store.append(userCreated).runOrThrow();
 
-    const events = await store.getEventsFromStream(newUUID).unwrapOrThrow();
+    const events = await store.getEventsFromStream(newUUID).runOrThrow();
 
     expect(events).toHaveLength(1);
 
@@ -69,7 +69,7 @@ describe("Event Store", () => {
 
     store.subscribe(["UserCreated"], subscriber);
 
-    await store.append(userCreated).orThrow();
+    await store.append(userCreated).runOrThrow();
 
     expect(subscriber).toHaveBeenCalledTimes(1);
     expect(subscriber).toHaveBeenCalledWith({

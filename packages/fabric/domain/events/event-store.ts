@@ -1,7 +1,8 @@
 import type {
-  AsyncResult,
+  Effect,
   MaybePromise,
   PosixDate,
+  UnexpectedError,
   UUID,
   VariantFromTag,
   VariantTag,
@@ -16,11 +17,11 @@ export interface EventStore<TEvents extends DomainEvent> {
    */
   append<T extends TEvents>(
     event: T,
-  ): AsyncResult<StoredEvent<T>, StoreQueryError>;
+  ): Effect<StoredEvent<T>, StoreQueryError | UnexpectedError>;
 
   getEventsFromStream(
     streamId: UUID,
-  ): AsyncResult<StoredEvent<TEvents>[], StoreQueryError>;
+  ): Effect<StoredEvent<TEvents>[], StoreQueryError>;
 
   subscribe<TEventKey extends TEvents[VariantTag]>(
     events: TEventKey[],

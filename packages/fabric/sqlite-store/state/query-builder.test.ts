@@ -20,26 +20,26 @@ describe("QueryBuilder", () => {
 
   beforeEach(async () => {
     stateStore = new SQLiteStateStore(":memory:", models);
-    await stateStore.migrate().unwrapOrThrow();
+    await stateStore.migrate().runOrThrow();
     await stateStore.insertInto("test", {
       id: UUIDGeneratorMock.generate(),
       name: "test1",
-    }).unwrapOrThrow();
+    }).runOrThrow();
     await stateStore.insertInto("test", {
       id: UUIDGeneratorMock.generate(),
       name: "test2",
-    }).unwrapOrThrow();
+    }).runOrThrow();
   });
 
   afterEach(async () => {
-    await stateStore.close().unwrapOrThrow();
+    await stateStore.close().runOrThrow();
   });
 
   test("select() after a where() should return valid results", async () => {
     const result = await stateStore.from("test").where({
       name: isLike("test%"),
     })
-      .select().unwrapOrThrow();
+      .select().runOrThrow();
     expect(result).toEqual([{
       id: expect.any(String),
       name: "test1",
@@ -51,7 +51,7 @@ describe("QueryBuilder", () => {
 
   test("selectOneOrFail() should return a single result", async () => {
     const result = await stateStore.from("test").where({ name: "test1" })
-      .selectOneOrFail().unwrapOrThrow();
+      .selectOneOrFail().runOrThrow();
     expect(result).toEqual({
       id: expect.any(String),
       name: "test1",
@@ -60,14 +60,14 @@ describe("QueryBuilder", () => {
 
   test("selectOneOrFail() should fail if no results are found", async () => {
     const error = await stateStore.from("test").where({ name: "not-found" })
-      .selectOneOrFail().unwrapErrorOrThrow();
+      .selectOneOrFail().failOrThrow();
 
     expect(error).toBeInstanceOf(NotFoundError);
   });
 
   test("selectOne() should return a single result", async () => {
     const result = await stateStore.from("test")
-      .selectOne().unwrapOrThrow();
+      .selectOne().runOrThrow();
 
     expect(result).toEqual({
       id: expect.any(String),
@@ -79,7 +79,7 @@ describe("QueryBuilder", () => {
     const result = await stateStore.from("test").where({
       name: "not-found",
     })
-      .selectOne().unwrapOrThrow();
+      .selectOne().runOrThrow();
 
     expect(result).toBeUndefined();
   });
@@ -87,14 +87,14 @@ describe("QueryBuilder", () => {
   test("assertNone() should succeed if no results are found", async () => {
     const result = await stateStore.from("test").where({
       name: "not-found",
-    }).assertNone().unwrapOrThrow();
+    }).assertNone().runOrThrow();
 
     expect(result).toBeUndefined();
   });
 
   test("assertNone() should fail if results are found", async () => {
     const error = await stateStore.from("test").where({ name: "test1" })
-      .assertNone().unwrapErrorOrThrow();
+      .assertNone().failOrThrow();
 
     expect(error).toBeInstanceOf(AlreadyExistsError);
   });
