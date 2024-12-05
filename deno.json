@@ -6,6 +6,7 @@
   "workspace": [
     "packages/fabric/core",
     "packages/fabric/domain",
+    "packages/fabric/models",
     "packages/fabric/sqlite-store",
     "packages/fabric/testing",
     "packages/fabric/validations",

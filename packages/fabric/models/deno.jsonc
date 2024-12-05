@@ -1,0 +1,7 @@
+{
+  "name": "@fabric/models",
+  "exports": {
+    ".": "./index.ts",
+    "./parse": "./parse.ts"
+  }
+}
