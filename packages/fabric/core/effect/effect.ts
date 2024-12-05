@@ -1,20 +1,53 @@
 // deno-lint-ignore-file no-explicit-any
 import type { TaggedError } from "../error/tagged-error.ts";
+import { UnexpectedError } from "../index.ts";
 import { Result } from "../result/result.ts";
 import type { MaybePromise } from "../types/maybe-promise.ts";
 import type { MergeTypes } from "../types/merge-types.ts";
 
+/**
+ * An Effect represents a computation that may return a `TValue` or fail with a `TError`,
+ * and it may depend on some `TDeps`.
+ */
 export class Effect<
   TValue = any,
   TError extends TaggedError = never,
   TDeps = void,
 > {
-  static from<TValue, TError extends TaggedError = never, TDeps = void>(
+  /**
+   * Creates an Effect from a simple computation
+   */
+  static from<TValue, TDeps = void>(
+    fn: (deps: TDeps) => MaybePromise<TValue>,
+  ): Effect<TValue, never, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const value = await fn(deps);
+      return Result.ok(value);
+    });
+  }
+
+  static withDeps<TValue, TDeps, TError extends TaggedError = never>(
+    fn: (deps: TDeps) => Effect<TValue, TError>,
+  ): Effect<TValue, TError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      return await fn(deps).fn();
+    });
+  }
+
+  /**
+   * Creates an Effect from a computation that returns a Result
+   */
+  static fromResult<TValue, TError extends TaggedError = never, TDeps = void>(
     fn: (deps: TDeps) => MaybePromise<Result<TValue, TError>>,
   ): Effect<TValue, TError, TDeps> {
     return new Effect(fn);
   }
-  static tryFrom<TValue, TError extends TaggedError = never, TDeps = void>(
+
+  /**
+   * Creates an Effect from a simple computation that may throw an error
+   * and maps the error to a tagged error
+   */
+  static tryFrom<TValue, TError extends TaggedError, TDeps = void>(
     fn: () => MaybePromise<TValue>,
     errorMapper: (error: any) => TError,
   ): Effect<TValue, TError, TDeps> {
@@ -46,8 +79,7 @@ export class Effect<
     private readonly fn: (
       deps: TDeps,
     ) => MaybePromise<Result<TValue, TError>>,
-  ) {
-  }
+  ) {}
 
   map<TNewValue>(
     fn: (value: TValue) => MaybePromise<TNewValue>,
@@ -62,9 +94,7 @@ export class Effect<
   }
 
   flatMap<TNewValue, TNewError extends TaggedError, TNewDeps = void>(
-    fn: (
-      value: TValue,
-    ) => Effect<TNewValue, TNewError, TNewDeps>,
+    fn: (value: TValue) => Effect<TNewValue, TNewError, TNewDeps>,
   ): Effect<TNewValue, TError | TNewError, MergeTypes<TDeps, TNewDeps>> {
     return new Effect(async (deps: TDeps & TNewDeps) => {
       const result = await this.fn(deps);
@@ -79,8 +109,39 @@ export class Effect<
     >;
   }
 
-  async run(deps: TDeps): Promise<Result<TValue, TError>> {
-    return await this.fn(deps);
+  flatMapResult<TNewValue, TNewError extends TaggedError>(
+    fn: (value: TValue) => Result<TNewValue, TNewError>,
+  ): Effect<TNewValue, TError | TNewError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isError()) {
+        return result as Result<TNewValue, TError | TNewError>;
+      }
+      return fn(result.value as TValue);
+    });
+  }
+
+  assertValueOrFailWith<TNewError extends TaggedError>(
+    errFn: () => TNewError,
+  ): Effect<TValue, TError | TNewError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isError()) {
+        return result;
+      }
+      if (!result.value) {
+        return Result.failWith(errFn());
+      }
+      return result as Result<TValue, TError | TNewError>;
+    });
+  }
+
+  async run(deps: TDeps): Promise<Result<TValue, TError | UnexpectedError>> {
+    try {
+      return await this.fn(deps);
+    } catch (error: any) {
+      return Result.failWith(new UnexpectedError(error.message));
+    }
   }
 
   async runOrThrow(deps: TDeps): Promise<TValue> {
@@ -91,42 +152,39 @@ export class Effect<
     return (await this.fn(deps)).unwrapErrorOrThrow();
   }
 
+  // deno-fmt-ignore
   static seq<
-    T1,
-    TE1 extends TaggedError,
-    T2,
-    TE2 extends TaggedError,
+    T1,TE1 extends TaggedError,
+    T2,TE2 extends TaggedError
   >(
     fn1: () => Effect<T1, TE1>,
     fn2: (value: T1) => Effect<T2, TE2>,
   ): Effect<T2, TE1 | TE2>;
+
+  // deno-fmt-ignore
   static seq<
-    T1,
-    TE1 extends TaggedError,
-    T2,
-    TE2 extends TaggedError,
-    T3,
-    TE3 extends TaggedError,
+    T1, TE1 extends TaggedError,
+    T2, TE2 extends TaggedError,
+    T3, TE3 extends TaggedError,
   >(
     fn1: () => Effect<T1, TE1>,
     fn2: (value: T1) => Effect<T2, TE2>,
     fn3: (value: T2) => Effect<T3, TE3>,
   ): Effect<T3, TE1 | TE2 | TE3>;
+
+  // deno-fmt-ignore
   static seq<
-    T1,
-    TE1 extends TaggedError,
-    T2,
-    TE2 extends TaggedError,
-    T3,
-    TE3 extends TaggedError,
-    T4,
-    TE4 extends TaggedError,
+    T1,TE1 extends TaggedError,
+    T2,TE2 extends TaggedError,
+    T3,TE3 extends TaggedError,
+    T4,TE4 extends TaggedError,
   >(
     fn1: () => Effect<T1, TE1>,
     fn2: (value: T1) => Effect<T2, TE2>,
     fn3: (value: T2) => Effect<T3, TE3>,
     fn4: (value: T3) => Effect<T4, TE4>,
   ): Effect<T4, TE1 | TE2 | TE3 | TE4>;
+
   static seq(
     ...fns: ((...args: any[]) => Effect<any, any>)[]
   ): Effect<any, any> {

@@ -1,18 +1,18 @@
-import { describe, expect, expectTypeOf, fn, test } from "@fabric/testing";
+import { describe, expect, expectTypeOf, fnMock, test } from "@fabric/testing";
 import { UnexpectedError } from "../index.ts";
 import { Result } from "../result/result.ts";
 import { Effect, type ExtractEffectDependencies } from "./effect.ts";
 
 describe("Effect", () => {
   test("Effect.from should create an Effect that returns a successful Result", async () => {
-    const effect = Effect.from(() => Result.ok(42));
+    const effect = Effect.fromResult(() => Result.ok(42));
     const result = await effect.run();
     expect(result.isOk()).toBe(true);
     expect(result.unwrapOrThrow()).toBe(42);
   });
 
   test("Effect.from should create an Effect that returns a failed Result with the correct error type and message", async () => {
-    const effect = Effect.from(() =>
+    const effect = Effect.fromResult(() =>
       Result.failWith(new UnexpectedError("failure"))
     );
     const result = await effect.run();
@@ -65,7 +65,7 @@ describe("Effect", () => {
   });
 
   test("Effect.map should skip maps when the Result is an error", async () => {
-    const mockFn = fn() as () => number;
+    const mockFn = fnMock<() => number>();
     const effect = Effect.failWith(new UnexpectedError("failure")).map(
       mockFn,
     );
@@ -97,7 +97,7 @@ describe("Effect", () => {
   });
 
   test("Effect.flatMap should skip maps when the Result is an error", async () => {
-    const mockFn = fn() as () => Effect<number, UnexpectedError>;
+    const mockFn = fnMock<() => Effect<number, UnexpectedError>>();
     const effect = Effect.failWith(new UnexpectedError("failure")).flatMap(
       mockFn,
     );
@@ -109,9 +109,9 @@ describe("Effect", () => {
   });
 
   test("Effect.flatMap should result in an effect which requires both dependencies", async () => {
-    const effect = Effect.from(({ a }: { a: number }) => Result.ok(a * 2))
+    const effect = Effect.fromResult(({ a }: { a: number }) => Result.ok(a * 2))
       .flatMap((value) =>
-        Effect.from(({ b }: { b: number }) => Result.ok(value + b))
+        Effect.fromResult(({ b }: { b: number }) => Result.ok(value + b))
       );
 
     const result = await effect.run({ a: 1, b: 2 });
@@ -127,7 +127,7 @@ describe("Effect", () => {
   });
 
   test("Effect.flatMap should work if an effect has dependencies and the other effect does not", async () => {
-    const effect = Effect.from(({ a }: { a: number }) => Result.ok(a * 2))
+    const effect = Effect.fromResult(({ a }: { a: number }) => Result.ok(a * 2))
       .flatMap((value) => Effect.ok(value + 2));
 
     const result = await effect.run({ a: 1 });
