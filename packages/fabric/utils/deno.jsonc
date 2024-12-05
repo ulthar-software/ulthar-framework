@@ -1,0 +1,6 @@
+{
+  "name": "@fabric/utils",
+  "exports": {
+    "./sort-by-dependencies": "./sort-by-dependencies.ts"
+  }
+}
