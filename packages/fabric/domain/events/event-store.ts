@@ -7,7 +7,6 @@ import type {
   VariantFromTag,
   VariantTag,
 } from "@fabric/core";
-import type { StoreQueryError } from "../errors/query-error.ts";
 import type { DomainEvent } from "./event.ts";
 import type { StoredEvent } from "./stored-event.ts";
 
@@ -17,11 +16,11 @@ export interface EventStore<TEvents extends DomainEvent> {
    */
   append<T extends TEvents>(
     event: T,
-  ): Effect<StoredEvent<T>, StoreQueryError | UnexpectedError>;
+  ): Effect<StoredEvent<T>, UnexpectedError>;
 
   getEventsFromStream(
     streamId: UUID,
-  ): Effect<StoredEvent<TEvents>[], StoreQueryError>;
+  ): Effect<StoredEvent<TEvents>[]>;
 
   subscribe<TEventKey extends TEvents[VariantTag]>(
     events: TEventKey[],

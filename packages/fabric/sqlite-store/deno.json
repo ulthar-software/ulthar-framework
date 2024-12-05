@@ -4,7 +4,6 @@
     ".": "./index.ts"
   },
   "imports": {
-    "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
-    "@fabric/domain": "jsr:@fabric/domain"
+    "@db/sqlite": "jsr:@db/sqlite@^0.12.0"
   }
 }

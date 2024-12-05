@@ -84,7 +84,7 @@ export class SQLiteEventStore<TEvents extends DomainEvent>
     return Effect.seq(
       () => this.getLastVersion(event.streamId),
       (version) =>
-        Effect.from(() => {
+        Effect.fromResult(() => {
           this.streamVersions.set(event.streamId, version + 1n);
           return Result.ok(version);
         }),

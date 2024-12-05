@@ -1,10 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
-import { Effect, Keyof, Optional } from "@fabric/core";
+import { Effect, Keyof, Option } from "@fabric/core";
 import {
   AlreadyExistsError,
   FilterOptions,
   Model,
-  type ModelSchema,
   NotFoundError,
   OrderByOptions,
   SelectableQuery,
@@ -16,31 +15,28 @@ import {
 } from "@fabric/domain";
 import { filterToParams, filterToSQL } from "../sqlite/filter-to-sql.ts";
 import { transformRow } from "../sqlite/sql-to-value.ts";
-import { SQLiteDatabase } from "../sqlite/sqlite-database.ts";
 
 export class QueryBuilder<T> implements StoreQuery<T> {
   constructor(
-    private db: SQLiteDatabase,
-    private schema: ModelSchema,
     private query: StoreQueryDefinition,
   ) {}
 
   where(where: FilterOptions<T>): StoreSortableQuery<T> {
-    return new QueryBuilder(this.db, this.schema, {
+    return new QueryBuilder({
       ...this.query,
       where,
     });
   }
 
   orderBy(opts: OrderByOptions<T>): StoreLimitableQuery<T> {
-    return new QueryBuilder(this.db, this.schema, {
+    return new QueryBuilder({
       ...this.query,
       orderBy: opts,
     });
   }
 
   limit(limit: number, offset?: number | undefined): SelectableQuery<T> {
-    return new QueryBuilder(this.db, this.schema, {
+    return new QueryBuilder({
       ...this.query,
       limit,
       offset: offset ?? 0,
@@ -71,10 +67,10 @@ export class QueryBuilder<T> implements StoreQuery<T> {
     );
   }
 
-  selectOne(): Effect<Optional<T>, StoreQueryError>;
+  selectOne(): Effect<Option<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
     keys: K[],
-  ): Effect<Optional<Pick<T, K>>, StoreQueryError>;
+  ): Effect<Option<Pick<T, K>>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(keys?: K[]): Effect<any, StoreQueryError> {
     return Effect.tryFrom(
       async () => {
