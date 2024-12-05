@@ -1,4 +1,4 @@
-import { describe, expect, expectTypeOf, fn, test } from "@fabric/testing";
+import { describe, expect, expectTypeOf, fnMock, test } from "@fabric/testing";
 import { UnexpectedError } from "../error/unexpected-error.ts";
 import { Result } from "./result.ts";
 
@@ -46,7 +46,7 @@ describe("Result", () => {
     });
 
     test("should not execute the function if the result is an error", () => {
-      const mock = fn() as () => number;
+      const mock = fnMock<() => number>();
       const result = Result.failWith(new UnexpectedError()).map(mock);
 
       expect(result.isError()).toBe(true);
