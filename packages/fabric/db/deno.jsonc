@@ -1,0 +1,9 @@
+{
+  "name": "@fabric/db",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "imports": {
+    "@fabric/core": "jsr:@fabric/core"
+  }
+}
