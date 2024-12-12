@@ -5,6 +5,13 @@
   },
   "imports": {
     "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
-    "@fabric/domain": "jsr:@fabric/domain"
+    "@fabric/core": "jsr:@fabric/core",
+    "@fabric/models": "jsr:@fabric/models"
+  },
+  "tasks": {
+    "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
+    "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
+    "test": "deno test",
+    "test:debug": "deno test --inspect-wait"
   }
 }

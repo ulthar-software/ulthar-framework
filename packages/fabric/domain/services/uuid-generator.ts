@@ -1,4 +1,4 @@
-import type { UUID } from "../../core/types/uuid.ts";
+import type { UUID } from "@fabric/core";
 
 export interface UUIDGenerator {
   generate(): UUID;

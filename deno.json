@@ -6,12 +6,14 @@
   "workspace": [
     "packages/fabric/core",
     "packages/fabric/domain",
+    "packages/fabric/db",
+    "packages/fabric/utils",
+    "packages/fabric/models",
     "packages/fabric/sqlite-store",
     "packages/fabric/testing",
     "packages/fabric/validations",
     "packages/templates/domain",
-    "packages/templates/lib",
-    "apps/syntropy/domain"
+    "packages/templates/lib"
   ],
   "compilerOptions": {
     "strict": true,

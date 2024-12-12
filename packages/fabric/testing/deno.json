@@ -7,5 +7,11 @@
     "expect-type": "npm:expect-type@^1.1.0",
     "@std/expect": "jsr:@std/expect@^1.0.5",
     "@std/testing": "jsr:@std/testing@^1.0.3"
+  },
+  "tasks": {
+    "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
+    "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
+    "test": "deno test",
+    "test:debug": "deno test --inspect-wait"
   }
 }

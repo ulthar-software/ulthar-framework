@@ -4,23 +4,22 @@
     "jsr:@db/sqlite@*": "0.12.0",
     "jsr:@db/sqlite@0.12": "0.12.0",
     "jsr:@denosaurs/plug@1": "1.0.6",
-    "jsr:@quentinadam/assert@~0.1.7": "0.1.7",
-    "jsr:@quentinadam/decimal@~0.1.6": "0.1.6",
     "jsr:@std/assert@0.217": "0.217.0",
     "jsr:@std/assert@0.221": "0.221.0",
-    "jsr:@std/assert@^1.0.6": "1.0.6",
+    "jsr:@std/assert@^1.0.8": "1.0.8",
+    "jsr:@std/async@^1.0.8": "1.0.9",
     "jsr:@std/data-structures@^1.0.4": "1.0.4",
     "jsr:@std/encoding@0.221": "0.221.0",
-    "jsr:@std/expect@*": "1.0.5",
-    "jsr:@std/expect@^1.0.5": "1.0.5",
+    "jsr:@std/expect@*": "1.0.8",
+    "jsr:@std/expect@^1.0.5": "1.0.8",
     "jsr:@std/fmt@0.221": "0.221.0",
     "jsr:@std/fs@0.221": "0.221.0",
-    "jsr:@std/fs@^1.0.4": "1.0.4",
-    "jsr:@std/internal@^1.0.4": "1.0.4",
+    "jsr:@std/fs@^1.0.5": "1.0.6",
+    "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/path@0.217": "0.217.0",
     "jsr:@std/path@0.221": "0.221.0",
-    "jsr:@std/path@^1.0.6": "1.0.6",
-    "jsr:@std/testing@^1.0.3": "1.0.3",
+    "jsr:@std/path@^1.0.8": "1.0.8",
+    "jsr:@std/testing@^1.0.3": "1.0.5",
     "npm:expect-type@*": "1.1.0",
     "npm:expect-type@^1.1.0": "1.1.0"
   },
@@ -41,26 +40,20 @@
         "jsr:@std/path@0.221"
       ]
     },
-    "@quentinadam/assert@0.1.7": {
-      "integrity": "0246fb7fd3aa7b286535db40feefdafc588272d3f287b4eb995c96263ab6dfca"
-    },
-    "@quentinadam/decimal@0.1.6": {
-      "integrity": "fd3e2684614355db8a6ef94a839cbe115f040e8dcc843a17a0c5afa23e3db408",
-      "dependencies": [
-        "jsr:@quentinadam/assert"
-      ]
-    },
     "@std/assert@0.217.0": {
       "integrity": "c98e279362ca6982d5285c3b89517b757c1e3477ee9f14eb2fdf80a45aaa9642"
     },
     "@std/assert@0.221.0": {
       "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a"
     },
-    "@std/assert@1.0.6": {
-      "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
+    "@std/assert@1.0.8": {
+      "integrity": "ebe0bd7eb488ee39686f77003992f389a06c3da1bbd8022184804852b2fa641b",
       "dependencies": [
         "jsr:@std/internal"
       ]
+    },
+    "@std/async@1.0.9": {
+      "integrity": "c6472fd0623b3f3daae023cdf7ca5535e1b721dfbf376562c0c12b3fb4867f91"
     },
     "@std/data-structures@1.0.4": {
       "integrity": "fa0e20c11eb9ba673417450915c750a0001405a784e2a4e0c3725031681684a0"
@@ -68,10 +61,10 @@
     "@std/encoding@0.221.0": {
       "integrity": "d1dd76ef0dc5d14088411e6dc1dede53bf8308c95d1537df1214c97137208e45"
     },
-    "@std/expect@1.0.5": {
-      "integrity": "8c7ac797e2ffe57becc6399c0f2fd06230cb9ef124d45229c6e592c563824af1",
+    "@std/expect@1.0.8": {
+      "integrity": "27e40d8f3aefb372fc6a703fb0b69e34560e72a2f78705178babdffa00119a5f",
       "dependencies": [
-        "jsr:@std/assert@^1.0.6",
+        "jsr:@std/assert@^1.0.8",
         "jsr:@std/internal"
       ]
     },
@@ -85,14 +78,14 @@
         "jsr:@std/path@0.221"
       ]
     },
-    "@std/fs@1.0.4": {
-      "integrity": "2907d32d8d1d9e540588fd5fe0ec21ee638134bd51df327ad4e443aaef07123c",
+    "@std/fs@1.0.6": {
+      "integrity": "42b56e1e41b75583a21d5a37f6a6a27de9f510bcd36c0c85791d685ca0b85fa2",
       "dependencies": [
-        "jsr:@std/path@^1.0.6"
+        "jsr:@std/path@^1.0.8"
       ]
     },
-    "@std/internal@1.0.4": {
-      "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
+    "@std/internal@1.0.5": {
+      "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
     },
     "@std/path@0.217.0": {
       "integrity": "1217cc25534bca9a2f672d7fe7c6f356e4027df400c0e85c0ef3e4343bc67d11",
@@ -106,17 +99,18 @@
         "jsr:@std/assert@0.221"
       ]
     },
-    "@std/path@1.0.6": {
-      "integrity": "ab2c55f902b380cf28e0eec501b4906e4c1960d13f00e11cfbcd21de15f18fed"
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     },
-    "@std/testing@1.0.3": {
-      "integrity": "f98c2bee53860a5916727d7e7d3abe920dd6f9edace022e2d059f00d05c2cf42",
+    "@std/testing@1.0.5": {
+      "integrity": "6e693cbec94c81a1ad3df668685c7ba8e20742bb10305bc7137faa5cf16d2ec4",
       "dependencies": [
-        "jsr:@std/assert@^1.0.6",
+        "jsr:@std/assert@^1.0.8",
+        "jsr:@std/async",
         "jsr:@std/data-structures",
-        "jsr:@std/fs@^1.0.4",
+        "jsr:@std/fs@^1.0.5",
         "jsr:@std/internal",
-        "jsr:@std/path@^1.0.6"
+        "jsr:@std/path@^1.0.8"
       ]
     }
   },
@@ -127,17 +121,28 @@
   },
   "workspace": {
     "members": {
+      "packages/fabric/db": {
+        "dependencies": [
+          "jsr:@fabric/core@*",
+          "jsr:@fabric/models@*"
+        ]
+      },
       "packages/fabric/domain": {
         "dependencies": [
           "jsr:@fabric/core@*",
-          "jsr:@fabric/validations@*",
-          "jsr:@quentinadam/decimal@~0.1.6"
+          "jsr:@fabric/validations@*"
+        ]
+      },
+      "packages/fabric/models": {
+        "dependencies": [
+          "jsr:@fabric/core@*"
         ]
       },
       "packages/fabric/sqlite-store": {
         "dependencies": [
           "jsr:@db/sqlite@0.12",
-          "jsr:@fabric/domain@*"
+          "jsr:@fabric/core@*",
+          "jsr:@fabric/models@*"
         ]
       },
       "packages/fabric/testing": {
