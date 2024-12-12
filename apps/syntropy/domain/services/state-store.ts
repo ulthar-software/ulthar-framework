@@ -1,4 +1,4 @@
-import type { ReadonlyStateStore } from "@fabric/domain";
+import type { ReadonlyValueStore } from "@fabric/db";
 import type { DomainModels } from "../models/index.ts";
 
-export type ReadStateStore = ReadonlyStateStore<DomainModels>;
+export type ReadValueStore = ReadonlyValueStore<DomainModels>;

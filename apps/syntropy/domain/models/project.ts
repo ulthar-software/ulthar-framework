@@ -1,8 +1,8 @@
-import { Field, Model, type ModelToType } from "@fabric/domain";
+import { Field, Model, type ModelToType } from "@fabric/models";
 
-export const ProjectModel = Model.aggregateFrom("projects", {
-  name: Field.string(),
-  description: Field.string(),
+export const ProjectModel = Model.from("projects", {
+  name: Field.string({}),
+  description: Field.string({}),
   userId: Field.reference({
     targetModel: "users",
   }),

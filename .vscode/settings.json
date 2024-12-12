@@ -8,11 +8,15 @@
     "source.fixAll": "always",
     "source.organizeImports": "always"
   },
-  "cSpell.words": ["Syntropy"],
+  "cSpell.words": [
+    "syntropy",
+    "Syntropy"
+  ],
   "deno.enable": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
   "deno.future": true,
   "deno.codeLens.references": true,
+  "deno.codeLens.test": true,
   "deno.testing.args": [
     "--allow-all"
   ],

@@ -1,25 +1,25 @@
 import { TaggedError } from "@fabric/core";
-import { Field, Model, type ModelToType, type Query } from "@fabric/domain";
+import { Query } from "@fabric/domain";
+import { Field, Model, ModelToType } from "@fabric/models";
 import type { AuthService } from "../../services/auth-service.ts";
 import type { CryptoService } from "../../services/crypto-service.ts";
-import type { ReadStateStore } from "../../services/state-store.ts";
-
+import type { ReadValueStore } from "../../services/state-store.ts";
 export interface LoginDependencies {
-  state: ReadStateStore;
+  state: ReadValueStore;
   crypto: CryptoService;
   auth: AuthService;
 }
 
 export const LoginRequestModel = Model.from("LoginRequestModel", {
-  email: Field.email(),
-  password: Field.string(),
+  email: Field.email({}),
+  password: Field.string({}),
   rememberMe: Field.boolean({ isOptional: true }),
 });
 export type LoginRequestModel = ModelToType<typeof LoginRequestModel>;
 
 export const LoginResponseModel = Model.from("LoginResponseModel", {
-  accessToken: Field.string(),
-  refreshToken: Field.string(),
+  accessToken: Field.string({}),
+  refreshToken: Field.string({}),
 });
 export type LoginResponseModel = ModelToType<typeof LoginResponseModel>;
 
@@ -34,7 +34,9 @@ export default {
         email,
       })
       .selectOneOrFail()
-      .assert((user) => crypto.verifyPassword(password, user.hashedPassword))
+      .assertOrFail((user) =>
+        crypto.verifyPassword(password, user.hashedPassword)
+      )
       .errorMap(() => new InvalidCredentialsError())
       .map((user) => ({
         accessToken: auth.generateAccessToken(user),

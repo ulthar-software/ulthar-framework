@@ -2,15 +2,13 @@ import { TaggedError, type UUID } from "@fabric/core";
 import {
   type Command,
   type DomainEvent,
-  Field,
-  Model,
-  type ModelToType,
   type UUIDGenerator,
 } from "@fabric/domain";
-import type { ReadStateStore } from "../../services/state-store.ts";
+import { Field, Model, ModelToType } from "@fabric/models";
+import type { ReadValueStore } from "../../services/state-store.ts";
 
 export interface CreateProjectDependencies {
-  state: ReadStateStore;
+  state: ReadValueStore;
   uuid: UUIDGenerator;
   currentUserId: UUID;
 }
@@ -18,8 +16,8 @@ export interface CreateProjectDependencies {
 export const CreateProjectRequestModel = Model.from(
   "CreateProjectRequestModel",
   {
-    name: Field.string(),
-    description: Field.string(),
+    name: Field.string({}),
+    description: Field.string({}),
   },
 );
 export type CreateProjectRequestModel = ModelToType<

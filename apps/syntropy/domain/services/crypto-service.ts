@@ -1,11 +1,11 @@
-import { type AsyncResult, TaggedError } from "@fabric/core";
+import { Effect, TaggedError } from "@fabric/core";
 
 export interface CryptoService {
-  hashPassword(password: string): AsyncResult<string, InvalidPrivateKeyError>;
+  hashPassword(password: string): Effect<string, InvalidPrivateKeyError>;
   verifyPassword(
     password: string,
     hash: string,
-  ): AsyncResult<void, InvalidPasswordError | InvalidPrivateKeyError>;
+  ): Effect<void, InvalidPasswordError | InvalidPrivateKeyError>;
 }
 
 export class InvalidPasswordError extends TaggedError<"InvalidPasswordError"> {

@@ -1,0 +1,16 @@
+{
+  "name": "@fabric/models",
+  "exports": {
+    ".": "./index.ts",
+    "./parse": "./parse.ts"
+  },
+  "imports": {
+    "@fabric/core": "jsr:@fabric/core"
+  },
+  "tasks": {
+    "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
+    "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
+    "test": "deno test",
+    "test:debug": "deno test --inspect-wait"
+  }
+}
