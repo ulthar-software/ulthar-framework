@@ -1,14 +1,14 @@
-import { Field, Model } from "@fabric/domain";
+import { Field, Model } from "@fabric/models";
 import { describe, expect, test } from "@fabric/testing";
 import { modelToSql } from "./model-to-sql.ts";
 
 describe("ModelToSQL", () => {
   const model = Model.from("something", {
     id: Field.uuid({ isPrimaryKey: true }),
-    name: Field.string(),
-    age: Field.integer(),
+    name: Field.string({}),
+    age: Field.integer({}),
     // isTrue: Field.boolean(),
-    date: Field.posixDate(),
+    date: Field.posixDate({}),
     reference: Field.reference({ targetModel: "somethingElse" }),
   });
 

@@ -4,6 +4,13 @@
     ".": "./index.ts"
   },
   "imports": {
-    "@db/sqlite": "jsr:@db/sqlite@^0.12.0"
+    "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
+    "@fabric/core": "jsr:@fabric/core",
+    "@fabric/models": "jsr:@fabric/models"
+  },
+  "tasks": {
+    "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
+    "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
+    "test": "deno test"
   }
 }

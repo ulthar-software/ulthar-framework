@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { Effect, Keyof, Option, Result } from "@fabric/core";
+import { Model } from "@fabric/models";
 import {
   AlreadyExistsError,
   NotFoundError,
@@ -19,25 +20,26 @@ import {
 export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
   constructor(
     private readonly driver: ValueStoreDriver,
+    private readonly model: Model,
     private query: StoreReadOptions,
   ) {}
 
   where(where: FilterOptions<T>): SortableStoreQuery<T> {
-    return new StoreReadQueryBuilder(this.driver, {
+    return new StoreReadQueryBuilder(this.driver, this.model, {
       ...this.query,
       where,
     });
   }
 
   orderBy(opts: OrderByOptions<T>): LimitableStoreQuery<T> {
-    return new StoreReadQueryBuilder(this.driver, {
+    return new StoreReadQueryBuilder(this.driver, this.model, {
       ...this.query,
       orderBy: opts,
     });
   }
 
   limit(limit: number, offset?: number): SelectableStoreQuery<T> {
-    return new StoreReadQueryBuilder(this.driver, {
+    return new StoreReadQueryBuilder(this.driver, this.model, {
       ...this.query,
       limit,
       offset: offset ?? 0,
@@ -51,7 +53,7 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
   select<K extends Keyof<T>>(
     keys?: K[],
   ): Effect<any, StoreQueryError> {
-    return this.driver.getMany<any>({
+    return this.driver.get<any>(this.model, {
       ...this.query,
       keys: keys!,
     });
@@ -64,10 +66,11 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
   selectOne<K extends Keyof<T>>(
     keys?: K[],
   ): Effect<any, StoreQueryError> {
-    return this.driver.getOne<any>({
+    return this.driver.get<any>(this.model, {
       ...this.query,
       keys: keys!,
-    });
+      limit: 1,
+    }).map((v) => Option.from(v[0]));
   }
 
   selectOneOrFail(): Effect<
@@ -80,10 +83,7 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
   selectOneOrFail<K extends Extract<keyof T, string>>(
     keys?: K[],
   ): Effect<any, StoreQueryError | NotFoundError> {
-    return this.driver.getOne<any>({
-      ...this.query,
-      keys: keys!,
-    }).flatMapResult((v) =>
+    return this.selectOne(keys!).mapResult((v) =>
       v.match({
         some: (value) => Result.ok(value),
         none: () => Result.failWith(new NotFoundError()),
@@ -95,7 +95,7 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
     void,
     StoreQueryError | AlreadyExistsError
   > {
-    return this.driver.getOne<any>(this.query).flatMapResult((v) =>
+    return this.selectOne().mapResult((v) =>
       v.match({
         some: () => Result.failWith(new AlreadyExistsError()),
         none: () => Result.ok(),

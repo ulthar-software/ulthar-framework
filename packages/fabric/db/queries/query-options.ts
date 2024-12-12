@@ -13,13 +13,13 @@ export interface StoreReadOptions {
 
 export interface StoreInsertOptions {
   into: string;
-  values: any[];
+  values: Record<string, any>[];
 }
 
 export interface StoreUpdateOptions {
   table: string;
   where?: FilterOptions;
-  set: any;
+  set?: any;
 }
 
 export interface StoreDeleteOptions {

@@ -1,5 +1,4 @@
 import {
-  Field,
   isGreaterOrEqualTo,
   isGreaterThan,
   isIn,
@@ -7,22 +6,22 @@ import {
   isLessThan,
   isLike,
   isNotEqualTo,
-  Model,
-} from "@fabric/domain";
+} from "@fabric/db";
+import { Field, Model } from "@fabric/models";
 import { describe, expect, test } from "@fabric/testing";
 import { filterToParams, filterToSQL } from "./filter-to-sql.ts";
 
 describe("SQL where clause from filter options", () => {
   const col = Model.from("users", {
-    name: Field.string(),
-    age: Field.integer(),
-    status: Field.string(),
-    salary: Field.decimal(),
-    rating: Field.float(),
+    name: Field.string({}),
+    age: Field.integer({}),
+    status: Field.string({}),
+    salary: Field.decimal({}),
+    rating: Field.float({}),
     quantity: Field.integer({
       isUnsigned: true,
     }),
-    price: Field.decimal(),
+    price: Field.decimal({}),
   });
 
   test("should create a where clause from options with IN option", () => {

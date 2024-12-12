@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { Variant, VariantTag } from "@fabric/core";
-import { FieldDefinition, getTargetKey, Model } from "@fabric/domain";
+import { FieldDefinition, getTargetKey, Model } from "@fabric/models";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (

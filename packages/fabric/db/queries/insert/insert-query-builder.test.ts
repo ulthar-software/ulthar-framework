@@ -1,13 +1,16 @@
 import { Effect } from "@fabric/core";
 import { describe, expect, partialMock, test } from "@fabric/testing";
+import { Field, Model } from "../../../models/index.ts";
+import { ModelToType } from "../../../models/model.ts";
 import { StoreQueryError } from "../../errors/store-query-error.ts";
 import { ValueStoreDriver } from "../../value-store-driver.ts";
 import { StoreInsertQueryBuilder } from "./insert-query-builder.ts";
 
-describe("InsertQueryBuilder", () => {
-  type DemoType = {
-    name: string;
-  };
+describe("StoreInsertQueryBuilder", () => {
+  const Demo = Model.from("demo", {
+    name: Field.string({}),
+  });
+  type Demo = ModelToType<typeof Demo>;
 
   test(
     "given a value, when `value` is called, it should return an Effect",
@@ -16,17 +19,18 @@ describe("InsertQueryBuilder", () => {
         insert: () => Effect.ok(undefined),
       });
 
-      const query = new StoreInsertQueryBuilder<DemoType>(driver, "demo").value(
-        {
-          name: "test",
-        },
-      );
+      const query = new StoreInsertQueryBuilder<Demo>(driver, Demo, "demo")
+        .value(
+          {
+            name: "test",
+          },
+        );
 
       expect(query).toBeInstanceOf(Effect);
 
       const result = await query.run();
 
-      expect(driver.insert).toHaveBeenCalledWith({
+      expect(driver.insert).toHaveBeenCalledWith(Demo, {
         into: "demo",
         values: [{ name: "test" }],
       });
@@ -42,7 +46,7 @@ describe("InsertQueryBuilder", () => {
         insert: () => Effect.ok(undefined),
       });
 
-      const query = new StoreInsertQueryBuilder<DemoType>(driver, "demo")
+      const query = new StoreInsertQueryBuilder<Demo>(driver, Demo, "demo")
         .manyValues([
           { name: "test1" },
           { name: "test2" },
@@ -52,7 +56,7 @@ describe("InsertQueryBuilder", () => {
 
       const result = await query.run();
 
-      expect(driver.insert).toHaveBeenCalledWith({
+      expect(driver.insert).toHaveBeenCalledWith(Demo, {
         into: "demo",
         values: [{ name: "test1" }, { name: "test2" }],
       });
@@ -68,17 +72,18 @@ describe("InsertQueryBuilder", () => {
         insert: () => Effect.failWith(new StoreQueryError("Insert failed")),
       });
 
-      const query = new StoreInsertQueryBuilder<DemoType>(driver, "demo").value(
-        {
-          name: "test",
-        },
-      );
+      const query = new StoreInsertQueryBuilder<Demo>(driver, Demo, "demo")
+        .value(
+          {
+            name: "test",
+          },
+        );
 
       expect(query).toBeInstanceOf(Effect);
 
       const result = await query.run();
 
-      expect(driver.insert).toHaveBeenCalledWith({
+      expect(driver.insert).toHaveBeenCalledWith(Demo, {
         into: "demo",
         values: [{ name: "test" }],
       });

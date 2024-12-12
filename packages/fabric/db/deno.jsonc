@@ -4,6 +4,12 @@
     ".": "./index.ts"
   },
   "imports": {
-    "@fabric/core": "jsr:@fabric/core"
+    "@fabric/core": "jsr:@fabric/core",
+    "@fabric/models": "jsr:@fabric/models"
+  },
+  "tasks": {
+    "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
+    "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
+    "test": "deno test"
   }
 }

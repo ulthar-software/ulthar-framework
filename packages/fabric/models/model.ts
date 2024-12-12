@@ -1,5 +1,9 @@
-import { type Keyof } from "@fabric/core";
-import { type FieldDefinition, type FieldToType } from "./fields.ts";
+import { type Keyof, Variant } from "@fabric/core";
+import {
+  type FieldDefinition,
+  type FieldToType,
+  ReferenceField,
+} from "./fields.ts";
 
 /**
  * A model is a schema definition for some type of structured data.
@@ -15,6 +19,12 @@ export class Model<
     return new Model(name, fields);
   }
   private constructor(readonly name: TName, readonly fields: TFields) {}
+
+  getReferences(): ReferenceField[] {
+    return Object.entries(this.fields).filter(
+      ([, field]) => Variant.is(field, "ReferenceField"),
+    ).map(([, field]) => field as ReferenceField);
+  }
 }
 
 export type ModelToType<TModel extends Model> =

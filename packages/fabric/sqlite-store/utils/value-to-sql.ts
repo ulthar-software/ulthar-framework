@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-import { JSONUtils, VariantTag } from "@fabric/core";
-import { FieldDefinition, FieldToType } from "@fabric/domain";
+import { JSONExt, VariantTag } from "@fabric/core";
+import { FieldDefinition, FieldToType } from "@fabric/models";
 import { isNullish } from "@fabric/validations";
 
 type FieldSQLInsertMap = {
@@ -22,7 +22,7 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   FloatField: (_, v) => v,
   DecimalField: (_, v) => v,
   PosixDateField: (_, v) => v.timestamp,
-  EmbeddedField: (_, v: string) => JSONUtils.stringify(v),
+  EmbeddedField: (_, v: string) => JSONExt.stringify(v),
   BooleanField: (_, v) => v,
   EmailField: (_, v) => v,
 };

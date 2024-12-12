@@ -1,26 +1,31 @@
 import { Effect, Run } from "@fabric/core";
-import { Field, isLike, Model } from "@fabric/domain";
+import { isLike, WritableValueStore } from "@fabric/db";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
+import { Field, Model } from "@fabric/models";
 import { afterEach, beforeEach, describe, expect, test } from "@fabric/testing";
-import { SQLiteStateStore } from "./state-store.ts";
+import { SQLiteStoreDriver } from "./sqlite-store-driver.ts";
 
 describe("State Store", () => {
-  const models = [
-    Model.entityFrom("demo", {
-      value: Field.float(),
-      owner: Field.reference({ targetModel: "users" }),
-      optional: Field.string({ isOptional: true }),
-    }),
-    Model.entityFrom("users", {
-      name: Field.string(),
-    }),
-  ];
+  const Demo = Model.from("demo", {
+    id: Field.uuid({ isPrimaryKey: true }),
+    value: Field.float({}),
+    owner: Field.reference({ targetModel: "users" }),
+    optional: Field.string({ isOptional: true }),
+  });
 
-  let store: SQLiteStateStore<(typeof models)[number]>;
+  const User = Model.from("users", {
+    id: Field.uuid({ isPrimaryKey: true }),
+    name: Field.string({}),
+  });
+
+  const DBSchema = [Demo, User];
+
+  let store: WritableValueStore<typeof DBSchema[number]>;
 
   beforeEach(async () => {
-    store = new SQLiteStateStore(":memory:", models);
-    await store.migrate().runOrThrow();
+    const driver = new SQLiteStoreDriver(":memory:");
+    store = new WritableValueStore(driver, DBSchema);
+    await store.sync().runOrThrow();
   });
 
   afterEach(async () => {
@@ -30,7 +35,7 @@ describe("State Store", () => {
   test("should insert a record", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await store.insertInto("users", {
+    await store.insertInto("users").value({
       id: newUUID,
       name: "test",
     }).runOrThrow();
@@ -39,19 +44,15 @@ describe("State Store", () => {
   test("should select all records", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await store.insertInto("users", {
-      name: "test",
+    await store.insertInto("users").value({
       id: newUUID,
+      name: "test",
     }).runOrThrow();
 
-    const result = await store.from("users").select().runOrThrow();
-
-    // expectTypeOf(result).toEqualTypeOf<
-    //   {
-    //     id: UUID;
-    //     name: string;
-    //   }[]
-    // >();
+    const result = await store
+      .from("users")
+      .select()
+      .runOrThrow();
 
     expect(result).toEqual([
       {
@@ -64,23 +65,20 @@ describe("State Store", () => {
   test("should select records with a filter", async () => {
     const newUUID = UUIDGeneratorMock.generate();
 
-    await Effect.seq(
-      () =>
-        store.insertInto("users", {
-          name: "test",
-          id: newUUID,
-        }),
-      () =>
-        store.insertInto("users", {
-          name: "anotherName",
-          id: UUIDGeneratorMock.generate(),
-        }),
-      () =>
-        store.insertInto("users", {
-          name: "anotherName2",
-          id: UUIDGeneratorMock.generate(),
-        }),
-    ).runOrThrow();
+    await store.insertInto("users").manyValues([
+      {
+        name: "test",
+        id: newUUID,
+      },
+      {
+        name: "anotherName",
+        id: UUIDGeneratorMock.generate(),
+      },
+      {
+        name: "anotherName2",
+        id: UUIDGeneratorMock.generate(),
+      },
+    ]).runOrThrow();
 
     const result = await store
       .from("users")
@@ -109,20 +107,24 @@ describe("State Store", () => {
 
     await Effect.seq(
       () =>
-        store.insertInto("users", {
+        store.insertInto("users").value({
           name: "test",
           id: newUUID,
         }),
       () =>
-        store.update("users", newUUID, {
-          name: "updated",
-        }),
+        store.update("users")
+          .oneById(newUUID)
+          .set({
+            name: "updated",
+          }),
     ).runOrThrow();
 
-    const result = await store.from("users").where({ id: newUUID }).selectOne()
+    const result = await store.from("users")
+      .where({ id: newUUID })
+      .selectOne()
       .runOrThrow();
 
-    expect(result).toEqual({
+    expect(result.value).toEqual({
       id: newUUID,
       name: "updated",
     });
@@ -133,17 +135,22 @@ describe("State Store", () => {
 
     await Effect.seq(
       () =>
-        store.insertInto("users", {
-          name: "test",
-          id: newUUID,
-        }),
-      () => store.delete("users", newUUID),
+        store.insertInto("users")
+          .value({
+            name: "test",
+            id: newUUID,
+          }),
+      () =>
+        store.deleteFrom("users")
+          .oneById(newUUID),
     ).runOrThrow();
 
-    const result = await store.from("users").where({ id: newUUID }).selectOne()
+    const result = await store.from("users")
+      .where({ id: newUUID })
+      .selectOne()
       .runOrThrow();
 
-    expect(result).toBeUndefined();
+    expect(result.isNothing()).toBeTruthy();
   });
 
   test("should insert a record with a reference", async () => {
@@ -152,12 +159,12 @@ describe("State Store", () => {
 
     await Run.seqOrThrow(
       () =>
-        store.insertInto("users", {
+        store.insertInto("users").value({
           id: ownerUUID,
           name: "test",
         }),
       () =>
-        store.insertInto("demo", {
+        store.insertInto("demo").value({
           id: newUUID,
           value: 1.0,
           owner: ownerUUID,
