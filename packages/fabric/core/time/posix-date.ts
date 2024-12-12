@@ -1,39 +1,32 @@
-import { isRecord } from "../record/is-record.ts";
+import {
+  JSONSerializedType,
+  JSONTypeTransformer,
+} from "../json/json-transformer.ts";
 import type { TaggedVariant } from "../variant/variant.ts";
 
 export class PosixDate {
   constructor(public readonly timestamp: number = Date.now()) {}
-
-  public toJSON(): PosixDateJSON {
-    return {
-      type: "posix-date",
-      timestamp: this.timestamp,
-    };
-  }
-
-  public static fromJson(json: PosixDateJSON): PosixDate {
-    return new PosixDate(json.timestamp);
-  }
-
-  public static isPosixDateJSON(value: unknown): value is PosixDateJSON {
-    if (
-      isRecord(value) &&
-      "type" in value &&
-      "timestamp" in value &&
-      value["type"] === "posix-date" &&
-      typeof value["timestamp"] === "number"
-    ) {
-      return true;
-    }
-    return false;
-  }
 }
 
 export interface TimeZone extends TaggedVariant<"TimeZone"> {
   timestamp: number;
 }
 
-export interface PosixDateJSON {
-  type: "posix-date";
-  timestamp: number;
-}
+export type JSONSerializedPosixDate = JSONSerializedType<
+  "posix-date",
+  number
+>;
+
+export const posixDateTransformer: JSONTypeTransformer<
+  "posix-date",
+  number,
+  PosixDate
+> = {
+  _type: "posix-date",
+  deserialize: (value: number) => new PosixDate(value),
+  serialize: (value: PosixDate) => ({
+    _type: "posix-date",
+    value: value.timestamp,
+  }),
+  typeMatches: (value: unknown) => value instanceof PosixDate,
+};

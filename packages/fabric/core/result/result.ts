@@ -2,6 +2,7 @@
 
 import { isError } from "../error/is-error.ts";
 import type { TaggedError } from "../error/tagged-error.ts";
+import { UnexpectedError } from "../error/unexpected-error.ts";
 
 /**
  * A Result represents the outcome of an operation
@@ -59,7 +60,7 @@ export class Result<TValue, TError extends TaggedError = never> {
 
   unwrapErrorOrThrow(): TError {
     if (!isError(this.value)) {
-      throw new Error("Result is not an error");
+      throw new UnexpectedError("Result is not an error");
     }
 
     return this.value;
@@ -109,10 +110,10 @@ export class Result<TValue, TError extends TaggedError = never> {
    * Try to map a function over the value of the result.
    * If the function throws an error, the result will be a failure.
    */
-  tryMap<TMappedValue>(
+  tryMap<TMappedValue, TNewError extends TaggedError>(
     fn: (value: TValue) => TMappedValue,
-    errMapper: (error: any) => TError,
-  ): Result<TMappedValue, TError> {
+    errMapper: (error: any) => TNewError,
+  ): Result<TMappedValue, TError | TNewError> {
     if (!isError(this.value)) {
       try {
         return Result.succeedWith(fn(this.value as TValue));

@@ -48,14 +48,13 @@ export class Effect<
    * and maps the error to a tagged error
    */
   static tryFrom<TValue, TError extends TaggedError, TDeps = void>(
-    fn: () => MaybePromise<TValue>,
+    fn: (deps: TDeps) => MaybePromise<TValue>,
     errorMapper: (error: any) => TError,
   ): Effect<TValue, TError, TDeps> {
     return new Effect(
-      async () => {
+      async (deps) => {
         try {
-          const value = await fn();
-          return Result.ok(value);
+          return Result.ok(await fn(deps));
         } catch (error) {
           return Result.failWith(errorMapper(error));
         }
@@ -109,7 +108,7 @@ export class Effect<
     >;
   }
 
-  flatMapResult<TNewValue, TNewError extends TaggedError>(
+  mapResult<TNewValue, TNewError extends TaggedError>(
     fn: (value: TValue) => Result<TNewValue, TNewError>,
   ): Effect<TNewValue, TError | TNewError, TDeps> {
     return new Effect(async (deps: TDeps) => {
@@ -133,6 +132,23 @@ export class Effect<
         return Result.failWith(errFn());
       }
       return result as Result<TValue, TError | TNewError>;
+    });
+  }
+
+  tryMap<TNewValue, TNewError extends TaggedError>(
+    fn: (value: TValue) => MaybePromise<TNewValue>,
+    errorMapper: (error: any) => TNewError,
+  ): Effect<TNewValue, TError | TNewError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isError()) {
+        return result as Result<TNewValue, TError | TNewError>;
+      }
+      try {
+        return Result.ok(await fn(result.value as TValue));
+      } catch (error) {
+        return Result.failWith(errorMapper(error));
+      }
     });
   }
 

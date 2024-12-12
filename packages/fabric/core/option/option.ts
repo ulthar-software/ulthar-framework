@@ -10,6 +10,13 @@ export class Option<T> {
   static none<T>(): Option<T> {
     return new Option(null) as any;
   }
+
+  static from<T>(value: T | null | undefined): Option<T> {
+    return value === null || value === undefined
+      ? Option.none()
+      : Option.some(value);
+  }
+
   private constructor(readonly value: T | null) {}
 
   isValue(): this is { value: T } {
