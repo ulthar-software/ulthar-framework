@@ -5,5 +5,10 @@
   },
   "imports": {
     "@fabric/core": "jsr:@fabric/core"
+  },
+  "tasks": {
+    "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
+    "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
+    "test": "deno test"
   }
 }
