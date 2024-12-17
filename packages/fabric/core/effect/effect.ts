@@ -168,6 +168,12 @@ export class Effect<
     return (await this.fn(deps)).unwrapErrorOrThrow();
   }
 
+  assertOrFail<TNewError extends TaggedError, TNewDeps = void>(
+    fn: (v: TValue) => Effect<void, TNewError, TNewDeps>,
+  ): Effect<TValue, TError | TNewError, MergeTypes<TDeps, TNewDeps>> {
+    return this.flatMap((value) => fn(value).map(() => value));
+  }
+
   // deno-fmt-ignore
   static seq<
     T1,TE1 extends TaggedError,

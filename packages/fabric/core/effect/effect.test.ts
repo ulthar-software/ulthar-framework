@@ -370,4 +370,32 @@ describe("Effect", () => {
     expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
     expect(result.unwrapErrorOrThrow().message).toBe("unexpected failure");
   });
+
+  test("Effect.assertOrFail should return a successful Result if the assertion passes", async () => {
+    const effect = Effect.ok(42).assertOrFail(() =>
+      Effect.fromResult(() => Result.ok())
+    );
+    const result = await effect.run();
+    expect(result.isOk()).toBe(true);
+    expect(result.unwrapOrThrow()).toBe(42);
+  });
+
+  test("Effect.assertOrFail should return a failed Result if the assertion fails", async () => {
+    const effect = Effect.ok(42).assertOrFail(() =>
+      Effect.failWith(new UnexpectedError("failure"))
+    );
+    const result = await effect.run();
+    expect(result.isError()).toBe(true);
+    expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
+    expect(result.unwrapErrorOrThrow().message).toBe("failure");
+  });
+
+  test("Effect.assertOrFail should return a failed Result if the original effect returns an error", async () => {
+    const effect = Effect.failWith(new UnexpectedError("original failure"))
+      .assertOrFail(() => Effect.ok());
+    const result = await effect.run();
+    expect(result.isError()).toBe(true);
+    expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
+    expect(result.unwrapErrorOrThrow().message).toBe("original failure");
+  });
 });
