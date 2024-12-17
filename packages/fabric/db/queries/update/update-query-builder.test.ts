@@ -1,7 +1,7 @@
 import { Effect } from "@fabric/core";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
+import { Field, Model, ModelToType } from "@fabric/models";
 import { describe, expect, partialMock, test } from "@fabric/testing";
-import { Field, Model, ModelToType } from "../../../models/index.ts";
 import { ValueStoreDriver } from "../../value-store-driver.ts";
 import { StoreUpdateQueryBuilder } from "./update-query-builder.ts";
 

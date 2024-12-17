@@ -1,6 +1,5 @@
 import { Field, Model } from "@fabric/models";
-import { describe, test } from "@fabric/testing";
-import { expect } from "../../testing/index.ts";
+import { describe, expect, test } from "@fabric/testing";
 import { insertToSQL } from "./insert-to-sql.ts";
 
 describe("insertToSQL", () => {
