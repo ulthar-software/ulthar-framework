@@ -156,6 +156,14 @@
         "dependencies": [
           "jsr:@fabric/core@*"
         ]
+      },
+      "packages/templates/domain": {
+        "dependencies": [
+          "jsr:@fabric/core@*",
+          "jsr:@fabric/domain@*",
+          "jsr:@fabric/event-sourcing@*",
+          "jsr:@fabric/models@*"
+        ]
       }
     }
   }
