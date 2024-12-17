@@ -6,7 +6,7 @@ import { ValueStoreDriver } from "../../value-store-driver.ts";
 import { StoreInsertQueryBuilder } from "./insert-query-builder.ts";
 
 describe("StoreInsertQueryBuilder", () => {
-  const Demo = new Model("demo", {
+  const Demo = Model.from("demo", {
     name: Field.string({}),
   });
   type Demo = ModelToType<typeof Demo>;
