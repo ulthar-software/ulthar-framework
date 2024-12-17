@@ -4,7 +4,7 @@ import { insertToSQL } from "./insert-to-sql.ts";
 
 describe("insertToSQL", () => {
   test("Given a model and a query, it should return a SQL string and a record", () => {
-    const model = Model.from("something", {
+    const model = new Model("something", {
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       age: Field.integer({}),

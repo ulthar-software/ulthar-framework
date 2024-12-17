@@ -4,7 +4,7 @@ import { Model, type ModelToType } from "./model.ts";
 
 describe("CreateModel", () => {
   test("given a valid Model, it should create a model and it's interface type", () => {
-    const User = Model.from("User", {
+    const User = new Model("User", {
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       password: Field.string({}),

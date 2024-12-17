@@ -5,7 +5,7 @@ import { ValueStoreDriver } from "../../value-store-driver.ts";
 import { StoreReadQueryBuilder } from "./read-query-builder.ts";
 
 describe("StoreReadQueryBuilder", () => {
-  const Demo = Model.from("demo", {
+  const Demo = new Model("demo", {
     name: Field.string({}),
     age: Field.integer({}),
   });
