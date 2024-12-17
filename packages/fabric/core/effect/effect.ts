@@ -174,6 +174,18 @@ export class Effect<
     return this.flatMap((value) => fn(value).map(() => value));
   }
 
+  mapError<TNewError extends TaggedError>(
+    fn: (error: TError) => MaybePromise<TNewError>,
+  ): Effect<TValue, TNewError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isOk()) {
+        return result;
+      }
+      return Result.failWith(await fn(result.value as TError));
+    });
+  }
+
   // deno-fmt-ignore
   static seq<
     T1,TE1 extends TaggedError,

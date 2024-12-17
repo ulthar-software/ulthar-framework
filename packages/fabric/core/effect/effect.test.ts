@@ -398,4 +398,25 @@ describe("Effect", () => {
     expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
     expect(result.unwrapErrorOrThrow().message).toBe("original failure");
   });
+
+  test("Effect.errorMap should map an error to a new error", async () => {
+    const effect = Effect.failWith(new UnexpectedError("failure")).mapError(
+      (err) => new UnexpectedError(`mapped: ${err.message}`),
+    );
+    const result = await effect.run();
+    expect(result.isError()).toBe(true);
+    expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
+    expect(result.unwrapErrorOrThrow().message).toBe("mapped: failure");
+  });
+
+  test("Effect.errorMap should not affect a successful Result", async () => {
+    const effect: Effect<number, UnexpectedError> = Effect.from(() => 42);
+
+    const mappedEffect = effect.mapError(
+      (err) => new UnexpectedError(`mapped: ${err.message}`),
+    );
+    const result = await mappedEffect.run();
+    expect(result.isOk()).toBe(true);
+    expect(result.unwrapOrThrow()).toBe(42);
+  });
 });
