@@ -6,7 +6,7 @@ import { ValueStoreDriver } from "../../value-store-driver.ts";
 import { StoreDeleteQueryBuilder } from "./delete-query-builder.ts";
 
 describe("StoreDeleteQueryBuilder", () => {
-  const Demo = Model.from("demo", {
+  const Demo = new Model("demo", {
     name: Field.string({}),
   });
   type Demo = ModelToType<typeof Demo>;

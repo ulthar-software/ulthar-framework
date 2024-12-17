@@ -43,7 +43,7 @@ describe("recordToSQLParamKeys", () => {
 describe("recordToSQLParamRecord", () => {
   test("should unfold a record into a string of it's keys separated by commas", () => {
     // arrange
-    const model = Model.from("something", {
+    const model = new Model("something", {
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       age: Field.integer({}),
@@ -66,7 +66,7 @@ describe("recordToSQLParamRecord", () => {
 describe("manyRecordsToSQLParamRecord", () => {
   test("should unfold a record into a string of it's keys separated by commas", () => {
     // arrange
-    const model = Model.from("something", {
+    const model = new Model("something", {
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       age: Field.integer({}),

@@ -12,13 +12,7 @@ export class Model<
   TName extends string = string,
   TFields extends ModelFields = ModelFields,
 > {
-  static from<TName extends string, TFields extends ModelFields>(
-    name: TName,
-    fields: TFields,
-  ) {
-    return new Model(name, fields);
-  }
-  private constructor(readonly name: TName, readonly fields: TFields) {}
+  public constructor(readonly name: TName, readonly fields: TFields) {}
 
   getReferences(): ReferenceField[] {
     return Object.entries(this.fields).filter(
@@ -50,7 +44,7 @@ export type ModelSchemaFromModels<TModels extends Model> = {
   [K in TModels["name"]]: Extract<TModels, { name: K }>;
 };
 
-type ModelFields = Record<string, FieldDefinition>;
+export type ModelFields = Record<string, FieldDefinition>;
 
 type ModelToOptionalFields<TModel extends Model> = {
   [K in OptionalFields<TModel>]?: FieldToType<
