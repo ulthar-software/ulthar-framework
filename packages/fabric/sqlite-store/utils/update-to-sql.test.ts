@@ -1,7 +1,6 @@
+import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import { Field, Model } from "@fabric/models";
-import { describe, test } from "@fabric/testing";
-import { UUIDGeneratorMock } from "../../domain/mocks.ts";
-import { expect } from "../../testing/index.ts";
+import { describe, expect, test } from "@fabric/testing";
 import { updateToSQL } from "./update-to-sql.ts";
 
 describe("updateToSQL", () => {
