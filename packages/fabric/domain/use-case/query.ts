@@ -7,11 +7,13 @@ export type Query<
   TPayload = any,
   TOutput = any,
   TErrors extends TaggedError<string> = any,
+  TPermissions extends string = string,
 > = BasicQueryDefinition<
   TDependencies,
   TPayload,
   TOutput,
-  TErrors
+  TErrors,
+  TPermissions
 >;
 
 interface BasicQueryDefinition<
@@ -19,6 +21,7 @@ interface BasicQueryDefinition<
   TPayload,
   TOutput,
   TErrors extends TaggedError<string>,
+  TPermissions extends string,
 > {
   /**
    * The use case name.
@@ -33,7 +36,7 @@ interface BasicQueryDefinition<
   /**
    * Permissions required to execute the use case.
    */
-  permissions?: string[];
+  permissions?: TPermissions[];
 
   /**
    * The use case function.
