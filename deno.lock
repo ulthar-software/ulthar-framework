@@ -133,6 +133,13 @@
           "jsr:@fabric/validations@*"
         ]
       },
+      "packages/fabric/event-sourcing": {
+        "dependencies": [
+          "jsr:@fabric/core@*",
+          "jsr:@fabric/db@*",
+          "jsr:@fabric/models@*"
+        ]
+      },
       "packages/fabric/models": {
         "dependencies": [
           "jsr:@fabric/core@*"

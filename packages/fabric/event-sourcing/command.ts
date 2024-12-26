@@ -1,18 +1,20 @@
 // deno-lint-ignore-file no-explicit-any
 import type { TaggedError } from "@fabric/core";
-import type { DomainEvent } from "../events/event.ts";
-import type { UseCase } from "./use-case.ts";
+import type { UseCase } from "../domain/use-case/use-case.ts";
+import type { DomainEvent } from "./event.ts";
 
 export type Command<
   TDependencies = any,
   TPayload = any,
   TEvent extends DomainEvent = any,
   TErrors extends TaggedError<string> = any,
+  TPermissions extends string = string,
 > = BasicCommandDefinition<
   TDependencies,
   TPayload,
   TEvent,
-  TErrors
+  TErrors,
+  TPermissions
 >;
 
 interface BasicCommandDefinition<
@@ -20,6 +22,7 @@ interface BasicCommandDefinition<
   TPayload,
   TEvent extends DomainEvent,
   TErrors extends TaggedError<string>,
+  TPermissions extends string,
 > {
   /**
    * The use case name.
@@ -34,7 +37,7 @@ interface BasicCommandDefinition<
   /**
    * Permissions required to execute the use case.
    */
-  permissions?: string[];
+  permissions?: TPermissions[];
 
   /**
    * The use case function.
