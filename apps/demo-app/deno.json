@@ -1,0 +1,18 @@
+{
+  "tasks": {
+    "dev": "deno run -A --node-modules-dir npm:vite",
+    "build": "deno run -A --node-modules-dir npm:vite build",
+    "preview": "deno run -A --node-modules-dir npm:vite preview",
+    "serve": "deno run --allow-net --allow-read jsr:@std/http@1/file-server dist/",
+    "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
+    "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
+    "test": "deno test",
+    "test:debug": "deno test --inspect-wait"
+  },
+  "imports": {
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.0",
+    "vite": "npm:vite@^6.0.1",
+    "@fabric/core": "jsr:@fabric/core",
+    "@fabric/weaver": "jsr:@fabric/weaver"
+  }
+}

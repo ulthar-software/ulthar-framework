@@ -1,7 +1,11 @@
 {
-  "name": "@fabric/template-lib",
+  "name": "@fabric/weaver",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./dom": "./dom/index.ts"
+  },
+  "imports": {
+    "@fabric/core": "jsr:@fabric/core"
   },
   "tasks": {
     "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",

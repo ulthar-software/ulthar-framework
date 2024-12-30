@@ -12,6 +12,8 @@
     "packages/fabric/sqlite-store",
     "packages/fabric/testing",
     "packages/fabric/validations",
+    "packages/fabric/weaver",
+    "apps/demo-app",
     "packages/templates/domain",
     "packages/templates/lib"
   ],
@@ -20,7 +22,12 @@
     "exactOptionalPropertyTypes": true,
     "useUnknownInCatchVariables": true,
     "noImplicitOverride": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "lib": [
+      "esNext",
+      "dom",
+      "window"
+    ]
   },
   "unstable": ["ffi"],
   "lint": {
