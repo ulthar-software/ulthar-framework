@@ -24,9 +24,9 @@
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "lib": [
-      "esNext",
+      "esnext",
       "dom",
-      "window"
+      "deno.window"
     ]
   },
   "unstable": ["ffi"],

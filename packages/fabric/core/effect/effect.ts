@@ -186,6 +186,30 @@ export class Effect<
     });
   }
 
+  tapError(
+    fn: (error: TError) => MaybePromise<void>,
+  ): Effect<TValue, TError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isError()) {
+        await fn(result.value);
+      }
+      return result;
+    });
+  }
+
+  catchAll(
+    fn: (error: TError) => MaybePromise<TValue>,
+  ): Effect<TValue, never, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isError()) {
+        return Result.ok(await fn(result.value));
+      }
+      return result as Result<TValue, never>;
+    });
+  }
+
   // deno-fmt-ignore
   static seq<
     T1,TE1 extends TaggedError,

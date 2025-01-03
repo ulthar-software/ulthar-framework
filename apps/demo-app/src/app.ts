@@ -1,14 +1,24 @@
 import "./style.css";
 
-import { createApp, getSessionFromStorage } from "@fabric/weaver";
+import { createApp, getSessionFromStorage, Session } from "@fabric/weaver";
 
-createApp({
-  init: (startURL) => {
+export interface AppModel {
+  currentSession: Session | null;
+}
+
+export interface AppDependencies {
+  localStorage: Storage;
+}
+
+createApp<AppModel, AppDependencies>({
+  init: () => {
     return [
       {
-        currentSession: getSessionFromStorage(),
+        currentSession: null,
       },
-      undefined,
+      getSessionFromStorage().map((session) => ({
+        currentSession: session.value,
+      })),
     ];
   },
 });
