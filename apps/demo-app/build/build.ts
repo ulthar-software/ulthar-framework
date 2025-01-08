@@ -1,5 +1,8 @@
 import { build } from "esbuild";
-import { opts } from "./config.ts";
-const result = await build(opts);
+import opts from "../config.ts";
 
-console.log(result);
+try {
+  Deno.removeSync("dist", { recursive: true });
+} catch {}
+
+await build(opts);

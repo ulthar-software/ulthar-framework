@@ -1,9 +1,9 @@
-import * as esbuild from "esbuild";
-import { opts } from "./config.ts";
+import esbuild from "esbuild";
+import opts from "../config.ts";
 
 const ctx = await esbuild.context(opts);
 
-await ctx.watch();
+await ctx.watch({});
 
 const { host, port } = await ctx.serve({
   servedir: opts.outdir,

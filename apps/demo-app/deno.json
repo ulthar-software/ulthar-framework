@@ -10,9 +10,7 @@
   "imports": {
     "@fabric/core": "jsr:@fabric/core",
     "@fabric/weaver": "jsr:@fabric/weaver",
-    "tailwindcss": "npm:tailwindcss",
-    "autoprefixer": "npm:autoprefixer",
-    "postcss": "npm:postcss",
+    "tailwindcss": "npm:tailwindcss@^3.4.17",
     "esbuild": "npm:esbuild@0.20.2"
   }
 }

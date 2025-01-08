@@ -3,11 +3,12 @@
   "exports": {
     ".": "./index.ts",
     "./dom": "./dom/index.ts",
-    "./builder": "./builder.ts"
+    "./builder": "./builder/index.ts"
   },
   "imports": {
     "@fabric/core": "jsr:@fabric/core",
-    "esbuild": "npm:esbuild@0.20.2"
+    "esbuild": "npm:esbuild@0.20.2",
+    "esbuild-postcss": "npm:esbuild-postcss@^0.0.4"
   },
   "tasks": {
     "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",

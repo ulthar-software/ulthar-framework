@@ -1,3 +1,5 @@
+import homePage from "./pages/index.ts";
+import routes from "./routes.ts";
 import "./style.css";
 
 import { createApp, getSessionFromStorage, Session } from "@fabric/weaver";
@@ -21,4 +23,6 @@ createApp<AppModel, AppDependencies>({
       })),
     ];
   },
+  homePage,
+  routes,
 });

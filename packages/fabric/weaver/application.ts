@@ -1,9 +1,20 @@
 import { Effect } from "@fabric/core";
+import { Page } from "./page.ts";
 
 export function createApp<TModel, TDeps>(
-  opts: ApplicationOptions<TModel, TDeps>,
+  { init, routes }: ApplicationOptions<TModel, TDeps>,
 ): void {
-  const [model, effect] = opts.init(new URL(location.href));
+  const [model, effect] = init(new URL(location.href));
+
+  const currentPath = location.pathname;
+
+  const route = routes[currentPath];
+
+  if (route) {
+    route().then((module) => {
+      console.log(module.default.view(model));
+    });
+  }
 }
 
 // deno-lint-ignore no-explicit-any
@@ -12,4 +23,8 @@ export interface ApplicationOptions<TModel = any, TDeps = any> {
     TModel,
     Effect<TModel, never, TDeps> | undefined,
   ];
+
+  routes: Record<string, () => Promise<{ default: Page }>>;
+
+  homePage: Page;
 }

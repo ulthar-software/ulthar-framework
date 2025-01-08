@@ -35,5 +35,10 @@
       "tags": ["recommended"],
       "exclude": ["no-namespace"]
     }
+  },
+  "imports": {
+    "autoprefixer": "npm:autoprefixer@^10.4.20",
+    "postcss": "npm:postcss@^8.4.49",
+    "tailwindcss": "npm:tailwindcss@^3.4.17"
   }
 }
