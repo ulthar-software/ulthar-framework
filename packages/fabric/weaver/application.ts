@@ -1,30 +1,35 @@
 import { Effect } from "@fabric/core";
-import { Page } from "./page.ts";
+import { addDevelopmentRebuildListeners } from "./builder/handle-rebuild.ts";
+import { renderDocument } from "./dom/rendering.ts";
+import { WeaverEnv } from "./weaver-env.ts";
 
-export function createApp<TModel, TDeps>(
-  { init, routes }: ApplicationOptions<TModel, TDeps>,
-): void {
-  const [model, effect] = init(new URL(location.href));
-
-  const currentPath = location.pathname;
-
-  const route = routes[currentPath];
-
-  if (route) {
-    route().then((module) => {
-      console.log(module.default.view(model));
-    });
-  }
-}
-
-// deno-lint-ignore no-explicit-any
-export interface ApplicationOptions<TModel = any, TDeps = any> {
+export interface ApplicationOptions<TModel, TDeps, TEnv> {
   init: (startURL: URL) => [
     TModel,
     Effect<TModel, never, TDeps> | undefined,
   ];
 
-  routes: Record<string, () => Promise<{ default: Page }>>;
+  env: WeaverEnv & TEnv;
 
-  homePage: Page;
+  defaultRoute: string;
+
+  routes: Record<string, string>;
+}
+
+let IS_APP_RUNNING = false;
+export function createApp<TModel, TDeps, TEnv>(
+  { init, routes, env, defaultRoute }: ApplicationOptions<TModel, TDeps, TEnv>,
+): void {
+  if (IS_APP_RUNNING) throw new Error("Application already running");
+  IS_APP_RUNNING = true;
+
+  if (WEAVER_MODE === "dev") {
+    addDevelopmentRebuildListeners();
+  }
+
+  const route = routes[defaultRoute]!;
+
+  import(route).then((module) => {
+    renderDocument(module.default.view());
+  });
 }

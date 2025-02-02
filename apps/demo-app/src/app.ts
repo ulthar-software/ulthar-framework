@@ -1,4 +1,3 @@
-import homePage from "./pages/index.ts";
 import routes from "./routes.ts";
 import "./style.css";
 
@@ -12,7 +11,11 @@ export interface AppDependencies {
   localStorage: Storage;
 }
 
-createApp<AppModel, AppDependencies>({
+// deno-lint-ignore no-empty-interface
+export interface AppEnv {
+}
+
+createApp<AppModel, AppDependencies, AppEnv>({
   init: () => {
     return [
       {
@@ -23,6 +26,9 @@ createApp<AppModel, AppDependencies>({
       })),
     ];
   },
-  homePage,
+  defaultRoute: "HOME",
   routes,
+  env: {
+    WEAVER_MODE: "dev",
+  },
 });

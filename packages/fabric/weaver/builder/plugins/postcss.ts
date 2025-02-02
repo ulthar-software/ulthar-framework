@@ -1,7 +1,7 @@
 import autoprefixer from "autoprefixer";
 import type { Plugin } from "esbuild";
 import postcss from "npm:postcss";
-import tailwindcss from "tailwindcss";
+import tailwindcss, { Config } from "tailwindcss";
 
 export type TailwindTheme = tailwindcss.Config["theme"];
 
@@ -15,7 +15,7 @@ export const postcssPlugin = (theme: TailwindTheme) => ({
       ],
       plugins: [],
       theme,
-    });
+    } as Config);
 
     build.onLoad({ filter: /\.css$/, namespace: "file" }, async (args) => {
       const decoder = new TextDecoder("utf-8");

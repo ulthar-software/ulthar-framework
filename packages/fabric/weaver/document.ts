@@ -2,6 +2,7 @@ import { WeaverElement } from "./element.ts";
 
 export interface WeaverDocument {
   title: string;
-  tags: string[];
+  description: string;
+  keywords: string[];
   body: WeaverElement[];
 }

@@ -8,7 +8,11 @@
     "source.fixAll": "always",
     "source.organizeImports": "always"
   },
-  "cSpell.words": ["Syntropy"],
+  "cSpell.words": [
+    "outdir",
+    "servedir",
+    "Syntropy"
+  ],
   "deno.enable": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
   "deno.codeLens.references": true,

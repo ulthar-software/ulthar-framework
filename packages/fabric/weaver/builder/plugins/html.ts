@@ -4,11 +4,10 @@ export const htmlPlugin = {
   name: "html",
   setup(build) {
     build.onLoad({ filter: /\.html$/, namespace: "file" }, async (args) => {
-      const decoder = new TextDecoder("utf-8");
-      const contents = await Deno.readFile(args.path);
+      const contents = await Deno.readTextFile(args.path);
 
       return {
-        contents: decoder.decode(contents).replaceAll(".ts", ".js"),
+        contents: contents.replaceAll(".ts", ".js"),
         loader: "copy",
       };
     });

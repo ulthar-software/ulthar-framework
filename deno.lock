@@ -875,6 +875,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@fabric/weaver@*",
       "npm:autoprefixer@^10.4.20",
       "npm:postcss@^8.4.49",
       "npm:tailwindcss@^3.4.17"

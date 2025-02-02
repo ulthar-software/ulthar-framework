@@ -3,7 +3,8 @@
   "exports": {
     ".": "./index.ts",
     "./dom": "./dom/index.ts",
-    "./builder": "./builder/index.ts"
+    "./builder": "./builder/index.ts",
+    "./cli": "./builder/cli.ts"
   },
   "imports": {
     "@fabric/core": "jsr:@fabric/core",

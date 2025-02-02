@@ -1,11 +1,16 @@
-import { h1, Page } from "@fabric/weaver";
+import { h1, Page, text } from "@fabric/weaver";
+
+import routes from "../routes.ts";
+
+console.log(routes);
 
 const page: Page = {
   view: () => ({
     title: "Welcome to Fabric",
-    tags: ["fabric", "weaver", "typescript"],
+    description: "A simple example of a Fabric page.",
+    keywords: ["fabric", "weaver", "typescript"],
     body: [
-      h1({ className: "px-4" }, "Welcome to Fabric"),
+      h1({ class: "px-4" }, [text("Welcome to Test!!")]),
     ],
   }),
 };
