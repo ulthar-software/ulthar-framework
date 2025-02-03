@@ -11,11 +11,7 @@ export interface AppDependencies {
   localStorage: Storage;
 }
 
-// deno-lint-ignore no-empty-interface
-export interface AppEnv {
-}
-
-createApp<AppModel, AppDependencies, AppEnv>({
+createApp<AppModel, AppDependencies>({
   init: () => {
     return [
       {
@@ -28,7 +24,7 @@ createApp<AppModel, AppDependencies, AppEnv>({
   },
   defaultRoute: "HOME",
   routes,
-  env: {
-    WEAVER_MODE: "dev",
+  dependencies: {
+    localStorage: localStorage,
   },
 });

@@ -1,25 +1,29 @@
 import { Effect } from "@fabric/core";
 import { addDevelopmentRebuildListeners } from "./builder/handle-rebuild.ts";
-import { renderDocument } from "./dom/rendering.ts";
-import { WeaverEnv } from "./weaver-env.ts";
+import { Renderer } from "./renderer/renderer.ts";
 
-export interface ApplicationOptions<TModel, TDeps, TEnv> {
-  init: (startURL: URL) => [
+export interface ApplicationOptions<TModel, TDeps> {
+  init: () => [
     TModel,
     Effect<TModel, never, TDeps> | undefined,
   ];
 
-  env: WeaverEnv & TEnv;
+  dependencies: TDeps;
 
   defaultRoute: string;
 
   routes: Record<string, string>;
 }
 
+declare const renderer: Renderer;
+
 let IS_APP_RUNNING = false;
-export function createApp<TModel, TDeps, TEnv>(
-  { init, routes, env, defaultRoute }: ApplicationOptions<TModel, TDeps, TEnv>,
-): void {
+export async function createApp<TModel, TDeps>(
+  { init, routes, dependencies, defaultRoute }: ApplicationOptions<
+    TModel,
+    TDeps
+  >,
+): Promise<void> {
   if (IS_APP_RUNNING) throw new Error("Application already running");
   IS_APP_RUNNING = true;
 
@@ -27,9 +31,39 @@ export function createApp<TModel, TDeps, TEnv>(
     addDevelopmentRebuildListeners();
   }
 
+  const [appModel, appInitEffect] = init();
+
   const route = routes[defaultRoute]!;
 
-  import(route).then((module) => {
-    renderDocument(module.default.view());
-  });
+  const module = await import(route);
+  const [pageModel, pageInitEffect] = module.default.init(appModel);
+
+  renderer.renderView(module.default.view({
+    ...appModel,
+    ...pageModel,
+  }));
+
+  if (appInitEffect) {
+    const updatedAppModel = await appInitEffect.run(dependencies);
+    if (pageInitEffect) {
+      const updatedPageModel = await pageInitEffect.run(dependencies);
+      renderer.updateView(module.default.view({
+        ...updatedAppModel,
+        ...updatedPageModel,
+      }));
+      return;
+    }
+    renderer.updateView(module.default.view(updatedAppModel));
+    return;
+  }
+
+  if (pageInitEffect) {
+    const updatedPageModel = await pageInitEffect.run(dependencies);
+    renderer.updateView(module.default.view({
+      ...appModel,
+      ...updatedPageModel,
+    }));
+
+    return;
+  }
 }
