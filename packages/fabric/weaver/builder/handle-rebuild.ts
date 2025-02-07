@@ -8,7 +8,7 @@ export function addDevelopmentRebuildListeners() {
     },
   );
 
-  window.addEventListener("beforeunload", () => {
+  globalThis.addEventListener("beforeunload", () => {
     esbuild.close();
   });
 }
