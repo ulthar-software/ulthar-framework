@@ -1,0 +1,22 @@
+{
+  "name": "@fabric/weaver",
+  "exports": {
+    ".": "./index.ts",
+    "./dom": "./dom/index.ts",
+    "./builder": "./builder/index.ts",
+    "./cli": "./builder/cli.ts"
+  },
+  "imports": {
+    "@fabric/core": "jsr:@fabric/core",
+    "@fabric/testing": "jsr:@fabric/testing",
+    "esbuild": "npm:esbuild@0.20.2",
+    "esbuild-postcss": "npm:esbuild-postcss@^0.0.4",
+    "happy-dom": "npm:happy-dom@^16.8.1"
+  },
+  "tasks": {
+    "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
+    "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
+    "test": "deno test",
+    "test:debug": "deno test --inspect-wait"
+  }
+}

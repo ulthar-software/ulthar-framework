@@ -1,5 +1,5 @@
 {
-  "name": "@fabric/weaver",
+  "name": "@fabric/template-lib",
   "exports": {
     ".": "./index.ts"
   },

@@ -8,10 +8,13 @@
     "source.fixAll": "always",
     "source.organizeImports": "always"
   },
-  "cSpell.words": ["Syntropy"],
+  "cSpell.words": [
+    "outdir",
+    "servedir",
+    "Syntropy"
+  ],
   "deno.enable": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
-  "deno.future": true,
   "deno.codeLens.references": true,
   "deno.codeLens.test": true,
   "deno.testing.args": [
@@ -20,5 +23,13 @@
   "notebook.defaultFormatter": "denoland.vscode-deno",
   "[json]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "tailwindCSS.includeLanguages": {
+    "ts": "tsx"
+  },
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": true
   }
 }
