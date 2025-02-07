@@ -14,7 +14,6 @@ export function getSessionFromStorage() {
     },
     (e) => new SessionStorageError(e.message),
   )
-    .tapError(() => console.log("error"))
     .catchAll(() => Option.none());
 }
 

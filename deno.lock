@@ -1,6 +1,7 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@db/sqlite@*": "0.12.0",
     "jsr:@db/sqlite@0.12": "0.12.0",
     "jsr:@denosaurs/plug@1": "1.0.6",
     "jsr:@luca/esbuild-deno-loader@~0.11.1": "0.11.1",
@@ -26,8 +27,11 @@
     "npm:autoprefixer@^10.4.20": "10.4.20_postcss@8.4.49",
     "npm:esbuild-postcss@^0.0.4": "0.0.4_esbuild@0.20.2_postcss@8.4.49",
     "npm:esbuild@0.20.2": "0.20.2",
+    "npm:expect-type@*": "1.1.0",
     "npm:expect-type@^1.1.0": "1.1.0",
     "npm:fs@*": "0.0.1-security",
+    "npm:happy-dom@*": "15.7.4",
+    "npm:happy-dom@^16.8.1": "16.8.1",
     "npm:postcss@*": "8.4.49",
     "npm:postcss@^8.4.49": "8.4.49",
     "npm:tailwindcss@^3.4.17": "3.4.17_postcss@8.4.49"
@@ -398,6 +402,9 @@
     "emoji-regex@9.2.2": {
       "integrity": "sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg=="
     },
+    "entities@4.5.0": {
+      "integrity": "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw=="
+    },
     "esbuild-postcss@0.0.4_esbuild@0.20.2_postcss@8.4.49": {
       "integrity": "sha512-CKYibp+aCswskE+gBPnGZ0b9YyuY0n9w2dxyMaoLYEvGTwmjkRj5SV8l1zGJpw8KylqmcMTK0Gr349RnOLd+8A==",
       "dependencies": [
@@ -502,6 +509,21 @@
         "minipass",
         "package-json-from-dist",
         "path-scurry"
+      ]
+    },
+    "happy-dom@15.7.4": {
+      "integrity": "sha512-r1vadDYGMtsHAAsqhDuk4IpPvr6N8MGKy5ntBo7tSdim+pWDxus2PNqOcOt8LuDZ4t3KJHE+gCuzupcx/GKnyQ==",
+      "dependencies": [
+        "entities",
+        "webidl-conversions",
+        "whatwg-mimetype"
+      ]
+    },
+    "happy-dom@16.8.1": {
+      "integrity": "sha512-n0QrmT9lD81rbpKsyhnlz3DgnMZlaOkJPpgi746doA+HvaMC79bdWkwjrNnGJRvDrWTI8iOcJiVTJ5CdT/AZRw==",
+      "dependencies": [
+        "webidl-conversions",
+        "whatwg-mimetype"
       ]
     },
     "hasown@2.0.2": {
@@ -844,6 +866,12 @@
     "util-deprecate@1.0.2": {
       "integrity": "sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw=="
     },
+    "webidl-conversions@7.0.0": {
+      "integrity": "sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g=="
+    },
+    "whatwg-mimetype@3.0.0": {
+      "integrity": "sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q=="
+    },
     "which@2.0.2": {
       "integrity": "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==",
       "dependencies": [
@@ -928,8 +956,10 @@
       "packages/fabric/weaver": {
         "dependencies": [
           "jsr:@fabric/core@*",
+          "jsr:@fabric/testing@*",
           "npm:esbuild-postcss@^0.0.4",
-          "npm:esbuild@0.20.2"
+          "npm:esbuild@0.20.2",
+          "npm:happy-dom@^16.8.1"
         ]
       },
       "packages/templates/domain": {
