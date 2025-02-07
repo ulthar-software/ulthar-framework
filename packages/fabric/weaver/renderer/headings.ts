@@ -1,18 +1,15 @@
 // deno-lint-ignore-file no-explicit-any
 import { TaggedError } from "../../core/index.ts";
-import {
-  GlobalAttributes,
-  WeaverElement,
-  WeaverHTMLElement,
-} from "./element.ts";
+import { WeaverElement, WeaverHTMLElement } from "./element.ts";
+import { GlobalAttributes } from "./elements/global-attributes.ts";
 
 export function h1<
   TModel = any,
   TError extends TaggedError = never,
   TDependencies = any,
 >(
-  attrs: GlobalAttributes,
-  children: WeaverElement[],
+  attrs: GlobalAttributes<TModel, TError, TDependencies>,
+  children: WeaverElement<TModel, TError, TDependencies>[],
 ): WeaverHTMLElement<TModel, TError, TDependencies, "h1"> {
   return {
     tag: "h1",

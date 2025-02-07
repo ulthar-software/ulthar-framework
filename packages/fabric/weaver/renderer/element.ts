@@ -1,32 +1,12 @@
 // deno-lint-ignore-file no-explicit-any
-import { Effect, TaggedError } from "../../core/index.ts";
+import { TaggedError } from "../../core/index.ts";
+import { GlobalAttributes } from "./elements/global-attributes.ts";
 
 export type WeaverElement<
   TModel = any,
   TError extends TaggedError = never,
   TDependencies = any,
 > = WeaverHTMLElement<TModel, TError, TDependencies> | WeaverTextElement;
-
-export interface GlobalAttributes<
-  TModel = any,
-  TError extends TaggedError = never,
-  TDependencies = any,
-> {
-  class?: string;
-  id?: string;
-  draggable?: boolean;
-  title?: string;
-  role?: string;
-  popover?: string;
-  hidden?: boolean;
-
-  //Events
-  onClick?: () => Effect<TModel, TError, Partial<TDependencies>>;
-}
-
-export interface InputAttributes {
-  writingSuggestions?: boolean;
-}
 
 export type ElementTag = HeadingTag | CustomElementTags;
 export type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
@@ -40,7 +20,7 @@ export interface WeaverHTMLElement<
 > {
   tag: T;
   attrs: GlobalAttributes<TModel, TError, TDependencies>;
-  children: WeaverElement[];
+  children: WeaverElement<TModel, TError, TDependencies>[];
 }
 
 export interface WeaverTextElement {

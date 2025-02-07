@@ -1,9 +1,6 @@
 import { diffObject, ObjectDiff } from "@fabric/core";
-import {
-  GlobalAttributes,
-  WeaverElement,
-  WeaverHTMLElement,
-} from "./element.ts";
+import { WeaverElement, WeaverHTMLElement } from "./element.ts";
+import { GlobalAttributes } from "./elements/global-attributes.ts";
 
 export interface WeaverElementDiff {
   attrs?: ObjectDiff<GlobalAttributes>;
