@@ -13,7 +13,7 @@
     "packages/fabric/testing",
     "packages/fabric/validations",
     "packages/fabric/weaver",
-    "apps/demo-app",
+    "examples/weaver-example",
     "packages/templates/domain",
     "packages/templates/lib"
   ],

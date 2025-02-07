@@ -25,6 +25,11 @@ createApp<AppModel, AppDependencies>({
   defaultRoute: "HOME",
   routes,
   dependencies: {
-    localStorage: localStorage,
+    localStorage,
+    window,
+    document,
+    env: {
+      WEAVER_MODE: "dev",
+    },
   },
 });

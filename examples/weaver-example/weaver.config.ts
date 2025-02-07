@@ -1,4 +1,4 @@
-import { WeaverBuildOptions } from "../../packages/fabric/weaver/builder/build-options.ts";
+import { WeaverBuildOptions } from "@fabric/weaver/builder";
 import routes from "./src/routes.ts";
 
 export default {

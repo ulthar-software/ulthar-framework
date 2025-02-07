@@ -909,7 +909,7 @@
       "npm:tailwindcss@^3.4.17"
     ],
     "members": {
-      "apps/demo-app": {
+      "examples/weaver-example": {
         "dependencies": [
           "jsr:@fabric/core@*",
           "jsr:@fabric/weaver@*",

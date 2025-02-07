@@ -7,8 +7,7 @@ console.log(routes);
 const page: Page = {
   view: () => ({
     title: "Welcome to Fabric",
-    description: "A simple example of a Fabric page.",
-    keywords: ["fabric", "weaver", "typescript"],
+    meta: {},
     body: [
       h1({ class: "px-4" }, [text("Welcome to Test!!")]),
     ],
