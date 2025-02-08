@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
-import { TaggedError } from "../../core/index.ts";
-import { WeaverElement, WeaverHTMLElement } from "./element.ts";
-import { GlobalAttributes } from "./elements/global-attributes.ts";
+import type { TaggedError } from "../../core/index.ts";
+import type { WeaverElement, WeaverHTMLElement } from "./element.ts";
+import type { GlobalAttributes } from "./elements/global-attributes.ts";
 
 export function h1<
   TModel = any,

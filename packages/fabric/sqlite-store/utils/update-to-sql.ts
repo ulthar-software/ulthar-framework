@@ -1,5 +1,5 @@
-import { StoreUpdateOptions } from "@fabric/db";
-import { Model } from "@fabric/models";
+import type { StoreUpdateOptions } from "@fabric/db";
+import type { Model } from "@fabric/models";
 import { filterToParams, filterToSQL } from "./filter-to-sql.ts";
 import { recordToSQLParamRecord, recordToSQLSet } from "./record-utils.ts";
 

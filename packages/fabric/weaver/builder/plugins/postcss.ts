@@ -1,7 +1,7 @@
 import autoprefixer from "autoprefixer";
 import type { Plugin } from "esbuild";
 import postcss from "npm:postcss";
-import tailwindcss, { Config } from "tailwindcss";
+import tailwindcss, { type Config } from "tailwindcss";
 
 export type TailwindTheme = tailwindcss.Config["theme"];
 

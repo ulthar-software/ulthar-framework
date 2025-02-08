@@ -1,7 +1,7 @@
 import routes from "./routes.ts";
 import "./style.css";
 
-import { createApp, getSessionFromStorage, Session } from "@fabric/weaver";
+import { createApp, getSessionFromStorage, type Session } from "@fabric/weaver";
 
 export interface AppModel {
   currentSession: Session | null;

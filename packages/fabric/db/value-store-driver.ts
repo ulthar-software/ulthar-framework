@@ -1,8 +1,8 @@
-import { Effect } from "@fabric/core";
-import { Model } from "@fabric/models";
-import { CircularDependencyError } from "@fabric/utils/sort-by-dependencies";
-import { StoreQueryError } from "./errors/store-query-error.ts";
-import {
+import type { Effect } from "@fabric/core";
+import type { Model } from "@fabric/models";
+import type { CircularDependencyError } from "@fabric/utils/sort-by-dependencies";
+import type { StoreQueryError } from "./errors/store-query-error.ts";
+import type {
   StoreDeleteOptions,
   StoreInsertOptions,
   StoreReadOptions,

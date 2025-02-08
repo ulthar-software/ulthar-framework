@@ -1,6 +1,6 @@
 import { describe, expect, fnMock, test } from "@fabric/testing";
 import { Window as HappyDomWindow } from "npm:happy-dom";
-import { WeaverDocument } from "../../document.ts";
+import type { WeaverDocument } from "../../document.ts";
 import { text } from "../element.ts";
 import { h1 } from "../headings.ts";
 import { HTMLRenderer } from "./html-renderer.ts";

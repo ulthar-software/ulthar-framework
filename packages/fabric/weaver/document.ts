@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-import { TaggedError } from "../core/index.ts";
-import { WeaverElement } from "./renderer/element.ts";
+import type { TaggedError } from "../core/index.ts";
+import type { WeaverElement } from "./renderer/element.ts";
 
 export interface WeaverDocument<
   TModel = any,

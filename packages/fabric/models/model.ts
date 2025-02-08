@@ -1,9 +1,5 @@
 import { type Keyof, Variant } from "@fabric/core";
-import {
-  type FieldDefinition,
-  type FieldToType,
-  ReferenceField,
-} from "./fields.ts";
+import type { FieldDefinition, FieldToType, ReferenceField } from "./fields.ts";
 
 /**
  * A model is a schema definition for some type of structured data.

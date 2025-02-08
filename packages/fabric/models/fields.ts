@@ -19,7 +19,9 @@ export const Field = {
   embedded: variantConstructor<EmbeddedField>("EmbeddedField"),
   boolean: variantConstructor<BooleanField>("BooleanField"),
   email: variantConstructor<EmailField>("EmailField"),
-} as const;
+  enum: variantConstructor<EnumField>("EnumField"),
+  url: variantConstructor<UrlField>("UrlField"),
+} as const satisfies Record<FieldShortName, any>;
 
 export type FieldDefinition =
   | StringField
@@ -31,7 +33,25 @@ export type FieldDefinition =
   | PosixDateField
   | EmbeddedField
   | EmailField
-  | BooleanField;
+  | BooleanField
+  | EnumField
+  | UrlField;
+
+const FieldShortNames = {
+  StringField: "string",
+  UUIDField: "uuid",
+  IntegerField: "integer",
+  FloatField: "float",
+  DecimalField: "decimal",
+  ReferenceField: "reference",
+  PosixDateField: "posixDate",
+  EmbeddedField: "embedded",
+  BooleanField: "boolean",
+  EmailField: "email",
+  EnumField: "enum",
+  UrlField: "url",
+} as const satisfies Record<FieldDefinition["_tag"], string>;
+type FieldShortName = typeof FieldShortNames[keyof typeof FieldShortNames];
 
 /**
  * Converts a field definition to its corresponding TypeScript type.
@@ -47,6 +67,8 @@ export type FieldToType<TField> = TField extends StringField
   : TField extends PosixDateField ? MaybeOptional<TField, PosixDate>
   : TField extends BooleanField ? MaybeOptional<TField, boolean>
   : TField extends EmailField ? MaybeOptional<TField, Email>
+  : TField extends EnumField ? MaybeOptional<TField, string>
+  : TField extends UrlField ? MaybeOptional<TField, string>
   : TField extends EmbeddedField<infer TSubModel>
     ? MaybeOptional<TField, TSubModel>
   : never;
@@ -106,3 +128,9 @@ export interface DecimalField extends TaggedVariant<"DecimalField">, BaseField {
 
 export interface EmbeddedField<T = any>
   extends TaggedVariant<"EmbeddedField">, BaseField {}
+
+export interface EnumField extends TaggedVariant<"EnumField">, BaseField {
+  values: string[];
+}
+
+export interface UrlField extends TaggedVariant<"UrlField">, BaseField {}

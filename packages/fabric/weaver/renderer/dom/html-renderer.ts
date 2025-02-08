@@ -1,9 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
-import { Effect } from "../../../core/index.ts";
-import { WeaverDocument } from "../../document.ts";
-import { diffElements, WeaverElementDiff } from "../diff-elements.ts";
-import { isTextElement, WeaverElement } from "../element.ts";
-import { Renderer } from "../renderer.ts";
+import type { Effect } from "../../../core/index.ts";
+import type { WeaverDocument } from "../../document.ts";
+import { diffElements, type WeaverElementDiff } from "../diff-elements.ts";
+import { isTextElement, type WeaverElement } from "../element.ts";
+import type { Renderer } from "../renderer.ts";
 
 export type EventRegisterFn = (
   element: WeaverElement,

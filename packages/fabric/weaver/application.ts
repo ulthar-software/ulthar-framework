@@ -1,4 +1,4 @@
-import { Effect } from "@fabric/core";
+import type { Effect } from "@fabric/core";
 import { addDevelopmentRebuildListeners } from "./builder/handle-rebuild.ts";
 import { HTMLRenderer } from "./renderer/dom/html-renderer.ts";
 

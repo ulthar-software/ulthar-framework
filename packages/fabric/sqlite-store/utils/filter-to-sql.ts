@@ -3,12 +3,12 @@ import {
   FILTER_OPTION_OPERATOR_KEY,
   FILTER_OPTION_TYPE_KEY,
   FILTER_OPTION_VALUE_KEY,
-  FilterOptions,
-  FilterValue,
-  MultiFilterOption,
-  SingleFilterOption,
+  type FilterOptions,
+  type FilterValue,
+  type MultiFilterOption,
+  type SingleFilterOption,
 } from "@fabric/db";
-import { FieldDefinition, Model } from "@fabric/models";
+import type { FieldDefinition, Model } from "@fabric/models";
 import { keyToParamKey } from "./record-utils.ts";
 import { fieldValueToSQL } from "./value-to-sql.ts";
 

@@ -1,6 +1,6 @@
-import { Effect } from "@fabric/core";
-import { StoreQueryError } from "../../errors/store-query-error.ts";
-import { FilterOptions } from "../filter-options.ts";
+import type { Effect } from "@fabric/core";
+import type { StoreQueryError } from "../../errors/store-query-error.ts";
+import type { FilterOptions } from "../filter-options.ts";
 
 export interface StoreDeleteQuery<T> {
   manyWhere(filter: FilterOptions<T>): Effect<void, StoreQueryError>;

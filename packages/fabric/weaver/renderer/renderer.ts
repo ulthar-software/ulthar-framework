@@ -1,4 +1,4 @@
-import { WeaverDocument } from "../document.ts";
+import type { WeaverDocument } from "../document.ts";
 
 export interface Renderer {
   renderView: (document: WeaverDocument) => void;

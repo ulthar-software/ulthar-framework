@@ -1,12 +1,13 @@
 import {
   Decimal,
+  type Email,
   PosixDate,
   Result,
   TaggedError,
   type VariantFromTag,
 } from "@fabric/core";
 import { isUUID, parseAndSanitizeString } from "@fabric/validations";
-import { FieldDefinition, FieldToType } from "./fields.ts";
+import type { FieldDefinition, FieldToType } from "./fields.ts";
 
 export type FieldParsers = {
   [K in FieldDefinition["_tag"]]: FieldParser<
@@ -80,7 +81,26 @@ export const fieldParsers: FieldParsers = {
   EmbeddedField: function () {
     throw new Error("Function not implemented.");
   },
-  EmailField: function () {
+  EmailField: function (f, v) {
+    return parseOptionality(f, v, (v) => {
+      const parsedValue = parseAndSanitizeString(v);
+      if (parsedValue === undefined) {
+        return Result.failWith(new InvalidFieldTypeError());
+      }
+      return Result.ok(parsedValue as Email);
+    });
+  },
+  EnumField: function (f, v) {
+    return parseOptionality(f, v, (v) => {
+      const parsedValue = parseAndSanitizeString(v);
+      if (!parsedValue) return Result.failWith(new InvalidFieldTypeError());
+      if (f.values.includes(parsedValue)) {
+        return Result.ok(parsedValue);
+      }
+      return Result.failWith(new InvalidFieldTypeError());
+    });
+  },
+  UrlField: function (): Result<undefined, FieldParsingError> {
     throw new Error("Function not implemented.");
   },
 };

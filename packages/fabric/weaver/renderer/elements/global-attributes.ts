@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { Effect, TaggedError } from "../../../core/index.ts";
+import type { Effect, TaggedError } from "../../../core/index.ts";
 
 export interface GlobalAttributes<
   TModel = any,

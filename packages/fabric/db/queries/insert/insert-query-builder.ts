@@ -1,9 +1,9 @@
-import { Effect } from "@fabric/core";
-import { Model } from "@fabric/models";
-import { StoreQueryError } from "../../errors/store-query-error.ts";
-import { ValueStoreDriver } from "../../value-store-driver.ts";
-import { StoreInsertOptions } from "../query-options.ts";
-import { StoreInsertQuery } from "./insert-query.ts";
+import type { Effect } from "@fabric/core";
+import type { Model } from "@fabric/models";
+import type { StoreQueryError } from "../../errors/store-query-error.ts";
+import type { ValueStoreDriver } from "../../value-store-driver.ts";
+import type { StoreInsertOptions } from "../query-options.ts";
+import type { StoreInsertQuery } from "./insert-query.ts";
 
 // deno-lint-ignore no-explicit-any
 export class StoreInsertQueryBuilder<T extends Record<string, any>>

@@ -1,8 +1,8 @@
 import { Effect } from "@fabric/core";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
-import { Field, Model, ModelToType } from "@fabric/models";
+import { Field, Model, type ModelToType } from "@fabric/models";
 import { describe, expect, partialMock, test } from "@fabric/testing";
-import { ValueStoreDriver } from "../../value-store-driver.ts";
+import type { ValueStoreDriver } from "../../value-store-driver.ts";
 import { StoreDeleteQueryBuilder } from "./delete-query-builder.ts";
 
 describe("StoreDeleteQueryBuilder", () => {

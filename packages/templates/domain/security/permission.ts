@@ -1,4 +1,4 @@
-import { EnumToType } from "@fabric/core";
+import type { EnumToType } from "@fabric/core";
 
 /**
  * A permission is a string that represents a something that a user is allowed to do in the system. It should be in the form of: `ACTION_ENTITY`.

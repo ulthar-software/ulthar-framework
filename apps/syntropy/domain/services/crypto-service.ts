@@ -1,4 +1,4 @@
-import { Effect, TaggedError } from "@fabric/core";
+import { type Effect, TaggedError } from "@fabric/core";
 
 export interface CryptoService {
   hashPassword(password: string): Effect<string, InvalidPrivateKeyError>;

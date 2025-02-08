@@ -1,5 +1,5 @@
-import { StoreInsertOptions } from "@fabric/db";
-import { Model } from "@fabric/models";
+import type { StoreInsertOptions } from "@fabric/db";
+import type { Model } from "@fabric/models";
 import {
   manyRecordsToSQLParamRecord,
   recordToSQLKeys,

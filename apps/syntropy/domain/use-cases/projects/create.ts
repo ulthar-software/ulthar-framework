@@ -1,10 +1,6 @@
 import { TaggedError, type UUID } from "@fabric/core";
-import {
-  type Command,
-  type DomainEvent,
-  type UUIDGenerator,
-} from "@fabric/domain";
-import { Field, Model, ModelToType } from "@fabric/models";
+import type { Command, DomainEvent, UUIDGenerator } from "@fabric/domain";
+import { Field, Model, type ModelToType } from "@fabric/models";
 import type { ReadValueStore } from "../../services/state-store.ts";
 
 export interface CreateProjectDependencies {

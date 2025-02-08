@@ -1,4 +1,10 @@
-import { Effect, Option, PosixDate, TaggedError, UUID } from "@fabric/core";
+import {
+  Effect,
+  Option,
+  type PosixDate,
+  TaggedError,
+  type UUID,
+} from "@fabric/core";
 
 export interface GetSessionFromStorageDeps {
   localStorage: Storage;

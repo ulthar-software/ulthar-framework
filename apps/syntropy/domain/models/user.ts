@@ -1,4 +1,4 @@
-import { Field, Model, ModelToType } from "@fabric/models";
+import { Field, Model, type ModelToType } from "@fabric/models";
 import type { ReadValueStore } from "../services/state-store.ts";
 
 export const UserModel = new Model("users", {

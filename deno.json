@@ -16,7 +16,8 @@
     "examples/weaver-example",
     "packages/templates/domain",
     "packages/templates/lib",
-    "apps/syntropy/domain"
+    "apps/syntropy/domain",
+    "apps/syntropy/api"
   ],
   "compilerOptions": {
     "strict": true,
@@ -38,6 +39,14 @@
     }
   },
   "imports": {
+    "@fabric/core": "jsr:@fabric/core",
+    "@fabric/db": "jsr:@fabric/db",
+    "@fabric/domain": "jsr:@fabric/domain",
+    "@fabric/models": "jsr:@fabric/models",
+    "@fabric/sqlite-store": "jsr:@fabric/sqlite-store",
+    "@fabric/testing": "jsr:@fabric/testing",
+    "@fabric/utils": "jsr:@fabric/utils",
+    "@fabric/validations": "jsr:@fabric/validations",
     "@fabric/weaver": "jsr:@fabric/weaver",
     "autoprefixer": "npm:autoprefixer@^10.4.20",
     "postcss": "npm:postcss@^8.4.49",

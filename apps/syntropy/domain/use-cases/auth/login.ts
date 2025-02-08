@@ -1,6 +1,6 @@
 import { TaggedError } from "@fabric/core";
-import { Query } from "@fabric/domain";
-import { Field, Model, ModelToType } from "@fabric/models";
+import type { Query } from "@fabric/domain";
+import { Field, Model, type ModelToType } from "@fabric/models";
 import type { AuthService } from "../../services/auth-service.ts";
 import type { CryptoService } from "../../services/crypto-service.ts";
 import type { ReadValueStore } from "../../services/state-store.ts";

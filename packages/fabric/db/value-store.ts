@@ -1,19 +1,19 @@
-import { Effect } from "@fabric/core";
-import { Model, ModelSchemaFromModels, ModelToType } from "@fabric/models";
-import { CircularDependencyError } from "@fabric/utils/sort-by-dependencies";
-import { StoreQueryError } from "./errors/store-query-error.ts";
+import type { Effect } from "@fabric/core";
+import type { Model, ModelSchemaFromModels, ModelToType } from "@fabric/models";
+import type { CircularDependencyError } from "@fabric/utils/sort-by-dependencies";
+import type { StoreQueryError } from "./errors/store-query-error.ts";
 import {
-  StoreDeleteQuery,
+  type StoreDeleteQuery,
   StoreDeleteQueryBuilder,
-  StoreInsertQuery,
+  type StoreInsertQuery,
   StoreInsertQueryBuilder,
-  StoreReadQuery,
+  type StoreReadQuery,
   StoreReadQueryBuilder,
-  StoreUpdateQuery,
+  type StoreUpdateQuery,
 } from "./queries/index.ts";
-import { StoreUpdateOptions } from "./queries/query-options.ts";
+import type { StoreUpdateOptions } from "./queries/query-options.ts";
 import { StoreUpdateQueryBuilder } from "./queries/update/update-query-builder.ts";
-import { ValueStoreDriver } from "./value-store-driver.ts";
+import type { ValueStoreDriver } from "./value-store-driver.ts";
 
 export class ReadonlyValueStore<TModel extends Model> {
   protected readonly modelSchema: ModelSchemaFromModels<TModel>;

@@ -1,4 +1,4 @@
-import {
+import type {
   JSONSerializedType,
   JSONTypeTransformer,
 } from "../json/json-transformer.ts";

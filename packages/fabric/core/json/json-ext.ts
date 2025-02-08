@@ -2,7 +2,7 @@ import { TaggedError } from "../error/tagged-error.ts";
 import { UnexpectedError } from "../error/unexpected-error.ts";
 import { isRecord } from "../record/is-record.ts";
 import { Result } from "../result/result.ts";
-import {
+import type {
   JSONScalar,
   JSONSerializedType,
   JSONTypeTransformer,

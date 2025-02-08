@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-namespace no-explicit-any
-import { Effect } from "../effect/index.ts";
+import type { Effect } from "../effect/index.ts";
 import type { TaggedError } from "../error/tagged-error.ts";
-import { Result } from "../result/index.ts";
+import type { Result } from "../result/index.ts";
 
 export namespace Run {
   // deno-fmt-ignore

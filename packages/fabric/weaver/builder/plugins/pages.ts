@@ -1,6 +1,6 @@
-import { Plugin } from "esbuild";
+import type { Plugin } from "esbuild";
 import fs from "node:fs";
-import { RoutePath, RoutesDefinition } from "../../routing/route-path.ts";
+import type { RoutePath, RoutesDefinition } from "../../routing/route-path.ts";
 
 export const pagesPlugin = (routes: RoutesDefinition) => ({
   name: "pages",

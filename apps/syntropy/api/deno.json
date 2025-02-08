@@ -1,19 +1,18 @@
 {
-  "name": "@syntropy/domain",
+  "name": "@syntropy/api",
   "exports": {
-    ".": "./index.ts",
-    "./use-cases": "./use-cases.ts"
-  },
-  "imports": {
-    "@fabric/core": "jsr:@fabric/core",
-    "@fabric/event-sourcing": "jsr:@fabric/event-sourcing",
-    "@fabric/domain": "jsr:@fabric/domain",
-    "@fabric/models": "jsr:@fabric/models"
+    ".": "./index.ts"
   },
   "tasks": {
     "test:coverage:details": "deno test --coverage && deno coverage --detailed --include=$(basename $(pwd))",
     "test:coverage": "deno test --coverage && deno coverage --include=$(basename $(pwd))",
     "test": "deno test",
     "test:debug": "deno test --inspect-wait"
+  },
+  "imports": {
+    "@oak/oak": "jsr:@oak/oak@^17.1.4",
+    "@fabric/core": "jsr:@fabric/core",
+    "@fabric/domain": "jsr:@fabric/domain",
+    "@fabric/models": "jsr:@fabric/models"
   }
 }

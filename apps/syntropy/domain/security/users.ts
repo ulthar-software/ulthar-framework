@@ -1,4 +1,4 @@
-import { EnumToType } from "@fabric/core";
+import type { EnumToType } from "@fabric/core";
 
 /**
  * A User Type is a string that represents a user type.

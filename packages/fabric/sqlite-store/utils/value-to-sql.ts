@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { JSONExt, VariantTag } from "@fabric/core";
-import { FieldDefinition, FieldToType } from "@fabric/models";
+import type { FieldDefinition, FieldToType } from "@fabric/models";
 import { isNullish } from "@fabric/validations";
 
 type FieldSQLInsertMap = {
@@ -25,6 +25,8 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   EmbeddedField: (_, v: string) => JSONExt.stringify(v),
   BooleanField: (_, v) => v,
   EmailField: (_, v) => v,
+  EnumField: (_, v) => v,
+  UrlField: (_, v) => v,
 };
 
 export function fieldValueToSQL(field: FieldDefinition, value: any) {

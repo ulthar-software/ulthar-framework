@@ -1,19 +1,19 @@
 // deno-lint-ignore-file no-explicit-any
 import { Effect } from "@fabric/core";
 import {
-  StoreDeleteOptions,
-  StoreInsertOptions,
+  type StoreDeleteOptions,
+  type StoreInsertOptions,
   StoreQueryError,
-  StoreReadOptions,
-  StoreUpdateOptions,
-  ValueStoreDriver,
+  type StoreReadOptions,
+  type StoreUpdateOptions,
+  type ValueStoreDriver,
 } from "@fabric/db";
-import { Model } from "@fabric/models";
+import type { Model } from "@fabric/models";
 import {
-  CircularDependencyError,
+  type CircularDependencyError,
   sortByDependencies,
 } from "@fabric/utils/sort-by-dependencies";
-import { Database, Statement } from "jsr:@db/sqlite";
+import { Database, type Statement } from "jsr:@db/sqlite";
 import { filterToParams, filterToSQL } from "./utils/filter-to-sql.ts";
 import { insertToSQL } from "./utils/insert-to-sql.ts";
 import { modelToSql } from "./utils/model-to-sql.ts";
@@ -106,7 +106,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     );
   }
 
-  close() {
+  close(): Effect<void, StoreQueryError, void> {
     return Effect.tryFrom(() => {
       this.finalizeStatements();
       this.db.close();

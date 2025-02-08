@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { Variant, VariantTag } from "@fabric/core";
-import { FieldDefinition, getTargetKey, Model } from "@fabric/models";
+import { type FieldDefinition, getTargetKey, type Model } from "@fabric/models";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -50,6 +50,12 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
     return [n, "BOOLEAN", modifiersFromOpts(f)].join(" ");
   },
   EmailField: (n, f): string => {
+    return [n, "TEXT", modifiersFromOpts(f)].join(" ");
+  },
+  EnumField: (n, f): string => {
+    return [n, "TEXT", modifiersFromOpts(f)].join(" ");
+  },
+  UrlField: (n, f): string => {
     return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
 };

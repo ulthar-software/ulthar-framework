@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@fabric/testing";
 import { diffElements } from "./diff-elements.ts";
-import { text, WeaverElement } from "./element.ts";
+import { text, type WeaverElement } from "./element.ts";
 import { h1 } from "./headings.ts";
 
 describe("diffElements", () => {

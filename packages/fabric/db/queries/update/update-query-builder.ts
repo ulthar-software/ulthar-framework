@@ -1,10 +1,10 @@
-import { Effect, UUID } from "@fabric/core";
-import { Model } from "@fabric/models";
-import { StoreQueryError } from "../../errors/store-query-error.ts";
-import { ValueStoreDriver } from "../../value-store-driver.ts";
-import { FilterOptions } from "../filter-options.ts";
-import { StoreUpdateOptions } from "../query-options.ts";
-import { SettableUpdateQuery, StoreUpdateQuery } from "./update-query.ts";
+import type { Effect, UUID } from "@fabric/core";
+import type { Model } from "@fabric/models";
+import type { StoreQueryError } from "../../errors/store-query-error.ts";
+import type { ValueStoreDriver } from "../../value-store-driver.ts";
+import type { FilterOptions } from "../filter-options.ts";
+import type { StoreUpdateOptions } from "../query-options.ts";
+import type { SettableUpdateQuery, StoreUpdateQuery } from "./update-query.ts";
 
 export class StoreUpdateQueryBuilder<T> implements StoreUpdateQuery<T> {
   constructor(

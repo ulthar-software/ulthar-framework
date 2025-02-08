@@ -1,5 +1,5 @@
 import { argv, cwd } from "node:process";
-import { WeaverBuildOptions } from "./builder/build-options.ts";
+import type { WeaverBuildOptions } from "./builder/build-options.ts";
 import { build } from "./builder/build.ts";
 import { dev } from "./builder/dev.ts";
 

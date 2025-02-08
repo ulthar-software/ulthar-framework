@@ -1,6 +1,6 @@
-import { Effect, UUID } from "@fabric/core";
-import { StoreQueryError } from "../../errors/store-query-error.ts";
-import { FilterOptions } from "../filter-options.ts";
+import type { Effect, UUID } from "@fabric/core";
+import type { StoreQueryError } from "../../errors/store-query-error.ts";
+import type { FilterOptions } from "../filter-options.ts";
 
 export interface StoreUpdateQuery<T> extends SettableUpdateQuery<T> {
   where(filter: FilterOptions): SettableUpdateQuery<T>;

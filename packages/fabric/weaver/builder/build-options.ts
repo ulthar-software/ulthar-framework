@@ -1,9 +1,9 @@
-import esbuild from "esbuild";
+import type esbuild from "esbuild";
 import { denoPlugins } from "jsr:@luca/esbuild-deno-loader@^0.11.1";
-import { RoutesDefinition } from "../routing/route-path.ts";
+import type { RoutesDefinition } from "../routing/route-path.ts";
 import { htmlPlugin } from "./plugins/html.ts";
 import { pagesPlugin } from "./plugins/pages.ts";
-import { postcssPlugin, TailwindTheme } from "./plugins/postcss.ts";
+import { postcssPlugin, type TailwindTheme } from "./plugins/postcss.ts";
 
 export interface WeaverBuildOptions {
   tailwindTheme: TailwindTheme;

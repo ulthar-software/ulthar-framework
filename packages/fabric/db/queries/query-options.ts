@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-import { FilterOptions } from "./filter-options.ts";
-import { OrderByOptions } from "./order-by-options.ts";
+import type { FilterOptions } from "./filter-options.ts";
+import type { OrderByOptions } from "./order-by-options.ts";
 
 export interface StoreReadOptions {
   from: string;

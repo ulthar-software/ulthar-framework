@@ -1,6 +1,6 @@
 import { Result, TaggedError } from "@fabric/core";
 import type { ReferenceField } from "./fields.ts";
-import { ModelSchema } from "./model.ts";
+import type { ModelSchema } from "./model.ts";
 
 export function getTargetKey(field: ReferenceField): string {
   return field.targetKey || "id";

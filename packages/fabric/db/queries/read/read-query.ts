@@ -1,12 +1,12 @@
-import { Effect, type Keyof, type Option } from "@fabric/core";
-import {
+import type { Effect, Keyof, Option } from "@fabric/core";
+import type {
   AlreadyExistsError,
   NotFoundError,
   StoreQueryError,
 } from "../../errors/index.ts";
-import { ValueStoreDriver } from "../../value-store-driver.ts";
+import type { ValueStoreDriver } from "../../value-store-driver.ts";
 import type { FilterOptions } from "../filter-options.ts";
-import { OrderByOptions } from "../order-by-options.ts";
+import type { OrderByOptions } from "../order-by-options.ts";
 
 export interface StoreReadQueryDeps {
   store: ValueStoreDriver;

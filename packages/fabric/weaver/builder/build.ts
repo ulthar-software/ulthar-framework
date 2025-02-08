@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
 import { rmdirSync } from "node:fs";
-import { defaultPlugins, WeaverBuildOptions } from "./build-options.ts";
+import { defaultPlugins, type WeaverBuildOptions } from "./build-options.ts";
 import { transformRoutes } from "./plugins/pages.ts";
 
 export async function build(opts: WeaverBuildOptions) {

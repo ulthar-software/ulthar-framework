@@ -1,7 +1,7 @@
 import { Effect } from "@fabric/core";
-import { Field, Model, ModelToType } from "@fabric/models";
+import { Field, Model, type ModelToType } from "@fabric/models";
 import { describe, expect, partialMock, test } from "@fabric/testing";
-import { ValueStoreDriver } from "../../value-store-driver.ts";
+import type { ValueStoreDriver } from "../../value-store-driver.ts";
 import { StoreReadQueryBuilder } from "./read-query-builder.ts";
 
 describe("StoreReadQueryBuilder", () => {

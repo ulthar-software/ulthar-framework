@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
-import { Model } from "@fabric/models";
+import type { Model } from "@fabric/models";
 import { fieldValueToSQL } from "./value-to-sql.ts";
 
 /**

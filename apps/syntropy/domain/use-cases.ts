@@ -1,4 +1,4 @@
-import { Query } from "@fabric/domain";
+import type { Query } from "@fabric/domain";
 
 export const UseCases = [] as const satisfies Query[];
 
