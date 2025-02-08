@@ -10,14 +10,14 @@ export interface LoginDependencies {
   auth: AuthService;
 }
 
-export const LoginRequestModel = Model.from("LoginRequestModel", {
+export const LoginRequestModel = new Model("LoginRequestModel", {
   email: Field.email({}),
   password: Field.string({}),
   rememberMe: Field.boolean({ isOptional: true }),
 });
 export type LoginRequestModel = ModelToType<typeof LoginRequestModel>;
 
-export const LoginResponseModel = Model.from("LoginResponseModel", {
+export const LoginResponseModel = new Model("LoginResponseModel", {
   accessToken: Field.string({}),
   refreshToken: Field.string({}),
 });

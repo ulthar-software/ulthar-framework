@@ -12,6 +12,8 @@
     "packages/fabric/sqlite-store",
     "packages/fabric/testing",
     "packages/fabric/validations",
+    "packages/fabric/weaver",
+    "examples/weaver-example",
     "packages/templates/domain",
     "packages/templates/lib",
     "apps/syntropy/domain"
@@ -21,7 +23,12 @@
     "exactOptionalPropertyTypes": true,
     "useUnknownInCatchVariables": true,
     "noImplicitOverride": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "lib": [
+      "esnext",
+      "dom",
+      "deno.window"
+    ]
   },
   "unstable": ["ffi"],
   "lint": {
@@ -29,5 +36,11 @@
       "tags": ["recommended"],
       "exclude": ["no-namespace"]
     }
+  },
+  "imports": {
+    "@fabric/weaver": "jsr:@fabric/weaver",
+    "autoprefixer": "npm:autoprefixer@^10.4.20",
+    "postcss": "npm:postcss@^8.4.49",
+    "tailwindcss": "npm:tailwindcss@^3.4.17"
   }
 }

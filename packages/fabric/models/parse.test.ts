@@ -5,7 +5,7 @@ import { parse, SchemaParsingError } from "./parse.ts";
 
 describe("Parsing Models", () => {
   test("should parse valid data correctly", () => {
-    const User = Model.from("User", {
+    const User = new Model("User", {
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       password: Field.string({}),
@@ -28,7 +28,7 @@ describe("Parsing Models", () => {
   });
 
   test("should fail to parse invalid data", () => {
-    const User = Model.from("User", {
+    const User = new Model("User", {
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       password: Field.string({}),

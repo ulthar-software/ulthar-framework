@@ -9,7 +9,7 @@ import {
 
 describe("Validate Reference Field", () => {
   const schema = {
-    User: Model.from("User", {
+    User: new Model("User", {
       name: Field.string({}),
       password: Field.string({}),
       otherUnique: Field.integer({ isUnique: true }),

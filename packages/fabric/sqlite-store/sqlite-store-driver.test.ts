@@ -6,14 +6,14 @@ import { afterEach, beforeEach, describe, expect, test } from "@fabric/testing";
 import { SQLiteStoreDriver } from "./sqlite-store-driver.ts";
 
 describe("State Store", () => {
-  const Demo = Model.from("demo", {
+  const Demo = new Model("demo", {
     id: Field.uuid({ isPrimaryKey: true }),
     value: Field.float({}),
     owner: Field.reference({ targetModel: "users" }),
     optional: Field.string({ isOptional: true }),
   });
 
-  const User = Model.from("users", {
+  const User = new Model("users", {
     id: Field.uuid({ isPrimaryKey: true }),
     name: Field.string({}),
   });

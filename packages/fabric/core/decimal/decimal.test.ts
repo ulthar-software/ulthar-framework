@@ -1,4 +1,4 @@
-import { describe, expect, test } from "../../testing/index.ts";
+import { describe, expect, test } from "@fabric/testing";
 import { Decimal } from "./decimal.ts";
 
 describe("Decimal", () => {

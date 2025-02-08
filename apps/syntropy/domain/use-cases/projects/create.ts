@@ -13,7 +13,7 @@ export interface CreateProjectDependencies {
   currentUserId: UUID;
 }
 
-export const CreateProjectRequestModel = Model.from(
+export const CreateProjectRequestModel = new Model(
   "CreateProjectRequestModel",
   {
     name: Field.string({}),

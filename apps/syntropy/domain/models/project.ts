@@ -1,6 +1,6 @@
 import { Field, Model, type ModelToType } from "@fabric/models";
 
-export const ProjectModel = Model.from("projects", {
+export const ProjectModel = new Model("projects", {
   name: Field.string({}),
   description: Field.string({}),
   userId: Field.reference({

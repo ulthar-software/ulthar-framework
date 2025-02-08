@@ -12,7 +12,7 @@ import { describe, expect, test } from "@fabric/testing";
 import { filterToParams, filterToSQL } from "./filter-to-sql.ts";
 
 describe("SQL where clause from filter options", () => {
-  const col = Model.from("users", {
+  const col = new Model("users", {
     name: Field.string({}),
     age: Field.integer({}),
     status: Field.string({}),

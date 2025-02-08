@@ -2,7 +2,6 @@ export * from "./array/index.ts";
 export * from "./decimal/decimal.ts";
 export * from "./effect/index.ts";
 export * from "./error/index.ts";
-export * from "./json/default-json-transformers.ts";
 export * from "./json/json-ext.ts";
 export * from "./json/json-transformer.ts";
 export * from "./option/index.ts";

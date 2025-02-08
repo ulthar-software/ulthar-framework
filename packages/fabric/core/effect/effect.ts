@@ -135,22 +135,6 @@ export class Effect<
     });
   }
 
-  assertOrFail<TNewError extends TaggedError>(
-    fn: (value: TValue) => Effect<void, TNewError>,
-  ): Effect<TValue, TError | TNewError, TDeps> {
-    return new Effect(async (deps: TDeps) => {
-      const originalValueResult = await this.fn(deps);
-      if (originalValueResult.isError()) {
-        return originalValueResult;
-      }
-      const fnResult = await fn(originalValueResult.value as TValue).fn();
-      if (fnResult.isError()) {
-        return fnResult as Result<TValue, TError | TNewError>;
-      }
-      return originalValueResult as Result<TValue, TError | TNewError>;
-    });
-  }
-
   tryMap<TNewValue, TNewError extends TaggedError>(
     fn: (value: TValue) => MaybePromise<TNewValue>,
     errorMapper: (error: any) => TNewError,
@@ -194,6 +178,48 @@ export class Effect<
 
   async failOrThrow(deps: TDeps): Promise<TError> {
     return (await this.fn(deps)).unwrapErrorOrThrow();
+  }
+
+  assertOrFail<TNewError extends TaggedError, TNewDeps = void>(
+    fn: (v: TValue) => Effect<void, TNewError, TNewDeps>,
+  ): Effect<TValue, TError | TNewError, MergeTypes<TDeps, TNewDeps>> {
+    return this.flatMap((value) => fn(value).map(() => value));
+  }
+
+  mapError<TNewError extends TaggedError>(
+    fn: (error: TError) => MaybePromise<TNewError>,
+  ): Effect<TValue, TNewError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isOk()) {
+        return result;
+      }
+      return Result.failWith(await fn(result.value as TError));
+    });
+  }
+
+  tapError(
+    fn: (error: TError) => MaybePromise<void>,
+  ): Effect<TValue, TError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isError()) {
+        await fn(result.value);
+      }
+      return result;
+    });
+  }
+
+  catchAll(
+    fn: (error: TError) => MaybePromise<TValue>,
+  ): Effect<TValue, never, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isError()) {
+        return Result.ok(await fn(result.value));
+      }
+      return result as Result<TValue, never>;
+    });
   }
 
   // deno-fmt-ignore
