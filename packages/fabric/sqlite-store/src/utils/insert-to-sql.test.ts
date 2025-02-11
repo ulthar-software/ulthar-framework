@@ -1,0 +1,32 @@
+import { Field, Model } from "@fabric/models";
+import { describe, expect, test } from "@fabric/testing";
+import { insertToSql } from "./insert-to-sql.js";
+
+describe("insertToSQL", () => {
+  test("Given a model and a query, it should return a SQL string and a record", () => {
+    const model = new Model("something", {
+      id: Field.uuid({ isPrimaryKey: true }),
+      name: Field.string({}),
+      age: Field.integer({}),
+    });
+
+    const record = {
+      id: "1",
+      name: "test",
+      age: 20,
+    };
+    const result = insertToSql(model, {
+      into: "something",
+      values: [record],
+    });
+
+    expect(result).toEqual([
+      `INSERT INTO something (id, name, age) VALUES ($0_id, $0_name, $0_age)`,
+      {
+        "0_id": "1",
+        "0_name": "test",
+        "0_age": 20,
+      },
+    ]);
+  });
+});

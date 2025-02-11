@@ -1,0 +1,34 @@
+{
+  "name": "@fabric/sqlite-store",
+  "version": "0.0.1",
+  "description": "SQLite3 database driver for the Fabric framework",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "sideEffects": false,
+  "devDependencies": {
+    "@fabric/testing": "workspace:^",
+    "@types/better-sqlite3": "^7.6.12",
+    "typescript": "npm:^5.7.3",
+    "vitest": "npm:^3.0.5"
+  },
+  "dependencies": {
+    "@fabric/algorithms": "workspace:^",
+    "@fabric/core": "workspace:^",
+    "@fabric/db": "workspace:^",
+    "@fabric/domain": "workspace:^",
+    "@fabric/models": "workspace:^",
+    "better-sqlite3": "^11.8.1"
+  },
+  "scripts": {
+    "test:coverage": "vitest run --coverage",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "build": "tsc -p tsconfig.build.json"
+  }
+}

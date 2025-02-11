@@ -14,22 +14,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup repo
-        uses: actions/checkout@v4
-
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          deno-version: v2.x
+          node-version: lts/*
 
-      - name: Verify formatting
-        run: deno fmt --check
+      - run: yarn install --immutable
 
-      - name: Run linter
-        run: deno lint
+      - run: yarn fmt
 
-      - name: Run Checker
-        run: deno check **/*.ts
+      - run: yarn lint
 
-      - name: Run tests
-        run: deno test -A
+      - run: yarn build:all
+
+      - run: yarn test:all

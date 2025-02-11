@@ -1,0 +1,30 @@
+{
+  "name": "@fabric/domain",
+  "version": "0.0.1",
+  "description": "Domain utilities for the Fabric framework",
+  "exports": {
+    ".": "./dist/index.js",
+    "./mocks": "./dist/mocks.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "sideEffects": false,
+  "devDependencies": {
+    "@fabric/testing": "workspace:^",
+    "typescript": "npm:^5.7.3",
+    "vitest": "npm:^3.0.5"
+  },
+  "dependencies": {
+    "@fabric/core": "workspace:^",
+    "@fabric/models": "workspace:^"
+  },
+  "scripts": {
+    "test:coverage": "vitest run --coverage",
+    "test:dev": "vitest",
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.build.json"
+  }
+}

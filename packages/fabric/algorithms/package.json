@@ -1,0 +1,28 @@
+{
+  "name": "@fabric/algorithms",
+  "version": "0.0.1",
+  "description": "A library for advanced algorithms in the Fabric framework",
+  "exports": {
+    "./sort-by-dependencies": "./dist/sort-by-dependencies.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "sideEffects": false,
+  "devDependencies": {
+    "@fabric/testing": "workspace:^",
+    "typescript": "npm:^5.7.3",
+    "vitest": "npm:^3.0.5"
+  },
+  "dependencies": {
+    "@fabric/core": "workspace:^"
+  },
+  "scripts": {
+    "test:dev": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.build.json"
+  }
+}
