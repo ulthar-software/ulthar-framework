@@ -21,10 +21,10 @@ jobs:
 
       - run: yarn install --immutable
 
-      - run: yarn build:all
+      - run: yarn build:full
 
       - run: yarn fmt
 
       - run: yarn lint
 
-      - run: yarn test:all
+      - run: yarn test:full
