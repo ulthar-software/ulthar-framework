@@ -11,7 +11,7 @@ export interface AppDependencies {
   localStorage: Storage;
 }
 
-createApp<AppModel, AppDependencies>({
+await createApp<AppModel, AppDependencies>({
   init: () => {
     return [
       {

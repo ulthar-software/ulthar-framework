@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Effect } from "@fabric/core";
 import type { Model } from "@fabric/models";
 import type { StoreQueryError } from "../../errors/store-query-error.js";

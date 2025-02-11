@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FilterOptions } from "./filter-options.js";
 import type { OrderByOptions } from "./order-by-options.js";
 

@@ -1,9 +1,5 @@
 import { h1, type Page, text } from "@fabric/weaver";
 
-import routes from "../routes.js";
-
-console.log(routes);
-
 const page: Page = {
   view: () => ({
     title: "Welcome to Fabric",

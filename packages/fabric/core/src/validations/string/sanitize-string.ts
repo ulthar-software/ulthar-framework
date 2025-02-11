@@ -9,6 +9,7 @@ export function parseAndSanitizeString(value: unknown): string | undefined {
   return stripLow(value).trim();
 }
 
+// eslint-disable-next-line no-control-regex
 const lowCharsRegex = /[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/g;
 
 const stripLow = (str: string) => str.replace(lowCharsRegex, "");

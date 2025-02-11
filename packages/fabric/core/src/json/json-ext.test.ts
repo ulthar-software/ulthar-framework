@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeAll, describe, expect, test } from "@fabric/testing";
 import { Decimal } from "../decimal/decimal.js";
 import { UnexpectedError } from "../error/unexpected-error.js";

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type FilterOptions<T = any> =
   | SingleFilterOption<T>
   | MultiFilterOption<T>;

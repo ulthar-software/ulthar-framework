@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface JSONTypeTransformer<
   TKey extends string,
   TScalar extends JSONScalar,

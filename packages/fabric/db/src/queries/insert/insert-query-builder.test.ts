@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Effect } from "@fabric/core";
 import { Field, Model, type ModelToType } from "@fabric/models";
 import { describe, expect, partialMock, test } from "@fabric/testing";

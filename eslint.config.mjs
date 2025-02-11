@@ -43,16 +43,16 @@ export default tseslint.config(
         "error",
         {
           selector: "default",
-          format: ["strictCamelCase"],
+          format: ["camelCase"],
         },
         {
           selector: "import",
-          format: ["strictCamelCase", "UPPER_CASE", "PascalCase"],
+          format: ["camelCase", "UPPER_CASE", "PascalCase"],
         },
         {
           selector: "variable",
           modifiers: ["const"],
-          format: ["strictCamelCase", "UPPER_CASE", "PascalCase"],
+          format: ["camelCase", "UPPER_CASE", "PascalCase"],
         },
         {
           selector: "objectLiteralProperty",
@@ -64,11 +64,11 @@ export default tseslint.config(
         },
         {
           selector: "function",
-          format: ["strictCamelCase", "PascalCase"],
+          format: ["camelCase", "PascalCase"],
         },
         {
           selector: "parameter",
-          format: ["strictCamelCase"],
+          format: ["camelCase"],
           modifiers: ["unused"],
           leadingUnderscore: "allow",
         },

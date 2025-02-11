@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { assert } from "../utils/assert.js";
 import { ensure } from "../utils/ensure.js";
 
@@ -453,7 +454,7 @@ export class Decimal {
    * @returns A bigint representing the integer value of the Decimal instance.
    */
   toBigInt(): bigint {
-    assert(this.isInteger(), `Decimal ${this} is not an integer`);
+    assert(this.isInteger(), `Decimal ${this.toString()} is not an integer`);
     return this.mantissa * 10n ** BigInt(this.exponent);
   }
 

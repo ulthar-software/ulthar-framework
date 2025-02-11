@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { isError } from "../error/is-error.js";
 import type { TaggedError } from "../error/tagged-error.js";
 import { UnexpectedError } from "../error/unexpected-error.js";

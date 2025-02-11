@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { describe, expect, test } from "@fabric/testing";
 import { variantConstructor } from "./constructor.js";
 import type { TaggedVariant } from "./variant.js";
@@ -24,6 +25,7 @@ describe("variantConstructor", () => {
   });
 
   test("given only optional properties, it should require an empty object", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const createTestVariant =
       variantConstructor<TestVariantWithOptionals>("test2");
 

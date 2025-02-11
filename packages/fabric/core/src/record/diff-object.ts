@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ObjectDiff<T extends object> {
   set: Partial<T>;
   remove: string[];

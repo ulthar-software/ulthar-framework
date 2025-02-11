@@ -25,13 +25,14 @@ describe("Result", () => {
   test("Result.ok should create a successful Result without a value", () => {
     const result = Result.ok();
     expect(result.isOk()).toBe(true);
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     expect(result.unwrapOrThrow()).toBeUndefined();
   });
 
   test("Result.tryFrom should create a successful Result if the function does not throw", () => {
     const result = Result.tryFrom(
       () => 42,
-      (e) => new UnexpectedError(e.message),
+      (e: Error) => new UnexpectedError(e.message),
     );
     expect(result.isOk()).toBe(true);
     expect(result.unwrapOrThrow()).toBe(42);
@@ -42,7 +43,7 @@ describe("Result", () => {
       () => {
         throw new Error("failure");
       },
-      (e) => new UnexpectedError(e.message),
+      (e: Error) => new UnexpectedError(e.message),
     );
     expect(result.isError()).toBe(true);
     expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
@@ -150,7 +151,7 @@ describe("Result", () => {
   test("tryMap should map a successful Result to a new successful Result", () => {
     const result = Result.succeedWith(42).tryMap(
       (value) => value * 2,
-      (e) => new UnexpectedError(e.message),
+      (e: Error) => new UnexpectedError(e.message),
     );
     expect(result.isOk()).toBe(true);
     expect(result.unwrapOrThrow()).toBe(84);
@@ -161,7 +162,7 @@ describe("Result", () => {
       () => {
         throw new Error("failure");
       },
-      (e) => new UnexpectedError(e.message),
+      (e: Error) => new UnexpectedError(e.message),
     );
     expect(result.isError()).toBe(true);
     expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
@@ -171,7 +172,7 @@ describe("Result", () => {
   test("tryMap should skip maps when the Result is an error", () => {
     const result = Result.failWith(new UnexpectedError("failure")).tryMap(
       (value) => value * 2,
-      (e) => new UnexpectedError(e.message),
+      (e: Error) => new UnexpectedError(e.message),
     );
     expect(result.isError()).toBe(true);
     expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
@@ -189,7 +190,7 @@ describe("Result", () => {
 
   test("errorMap should skip maps when the Result is successful", () => {
     const result = Result.succeedWith(42).errorMap(
-      (error: any) => new UnexpectedError(error.message + " mapped"),
+      (error: Error) => new UnexpectedError(error.message + " mapped"),
     );
     expect(result.isOk()).toBe(true);
     expect(result.unwrapOrThrow()).toBe(42);

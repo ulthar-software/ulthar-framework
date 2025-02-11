@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { TaggedError } from "../error/tagged-error.js";
 import { UnexpectedError } from "../error/unexpected-error.js";
 import { isRecord } from "../record/is-record.js";
@@ -12,16 +15,16 @@ export const JSONExt = {
   parse<T>(json: string): Result<T, JSONParsingError> {
     try {
       return Result.ok(JSON.parse(json, reviver));
-    } catch (e: any) {
-      return Result.failWith(new JSONParsingError(e.message));
+    } catch (e: unknown) {
+      return Result.failWith(new JSONParsingError((e as Error).message));
     }
   },
 
   stringify<T>(value: T): Result<string, JSONStringifyError> {
     try {
       return Result.ok(JSON.stringify(value, replacer));
-    } catch (e: any) {
-      return Result.failWith(new JSONStringifyError(e.message));
+    } catch (e: unknown) {
+      return Result.failWith(new JSONStringifyError((e as Error).message));
     }
   },
 

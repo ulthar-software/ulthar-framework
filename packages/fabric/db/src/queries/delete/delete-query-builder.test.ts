@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Effect } from "@fabric/core";
 import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import { Field, Model, type ModelToType } from "@fabric/models";

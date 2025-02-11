@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaggedError } from "../error/tagged-error.js";
 import { UnexpectedError } from "../index.js";
 import { Result } from "../result/result.js";
@@ -158,8 +159,8 @@ export class Effect<
   async run(deps: TDeps): Promise<Result<TValue, TError | UnexpectedError>> {
     try {
       return await this.fn(deps);
-    } catch (error: any) {
-      return Result.failWith(new UnexpectedError(error.message));
+    } catch (error: unknown) {
+      return Result.failWith(new UnexpectedError((error as Error).message));
     }
   }
 
@@ -256,6 +257,7 @@ export class Effect<
       result = result.flatMap((value) => fns[i](value));
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return result;
   }
 }

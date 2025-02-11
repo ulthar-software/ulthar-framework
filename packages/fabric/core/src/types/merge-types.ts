@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-invalid-void-type */
 /**
  * Merges two types A and B into a new type that contains all the properties of A and B.
  * This is like `A & B`, but it also works when A or B are `never` or `void` and coalesces the result type

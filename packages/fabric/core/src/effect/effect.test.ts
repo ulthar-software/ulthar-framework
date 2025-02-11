@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { describe, expect, expectTypeOf, fnMock, test } from "@fabric/testing";
 import { UnexpectedError } from "../index.js";
 import { Result } from "../result/result.js";
@@ -289,7 +291,11 @@ describe("Effect", () => {
   });
 
   test("Effect.fromResult should create an Effect that returns a failed Result with dependencies", async () => {
-    const effect = Effect.fromResult(({}: { a: number }) =>
+    interface Deps {
+      a: number;
+    }
+    // eslint-disable-next-line no-empty-pattern
+    const effect = Effect.fromResult(({}: Deps) =>
       Result.failWith(new UnexpectedError("failure")),
     );
     const result = await effect.run({ a: 21 });
@@ -309,8 +315,12 @@ describe("Effect", () => {
   });
 
   test("Effect.tryFrom should create an Effect that returns a failed Result with dependencies", async () => {
+    interface Deps {
+      a: number;
+    }
     const effect = Effect.tryFrom(
-      ({}: { a: number }) => Promise.reject(new Error("failure")),
+      // eslint-disable-next-line no-empty-pattern
+      ({}: Deps) => Promise.reject(new Error("failure")),
       (e) => new UnexpectedError(e.message),
     );
     const result = await effect.run({ a: 21 });

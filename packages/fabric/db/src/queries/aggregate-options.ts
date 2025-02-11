@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Keyof, TaggedVariant } from "@fabric/core";
 
 export type AggregateOptions<T = any> = Record<string, AggregateFn<T>>;

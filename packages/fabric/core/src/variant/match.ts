@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Fn } from "../types/fn.js";
 import {
   type TaggedVariant,
@@ -13,13 +15,9 @@ export function match<const TVariant extends TaggedVariant<string>>(
   v: TVariant,
 ) {
   return {
-    case<
-      const TReturnType,
-      const TMatcher extends VariantMatcher<
-        TVariant,
-        TReturnType
-      > = VariantMatcher<TVariant, TReturnType>,
-    >(cases: TMatcher): TReturnType {
+    case<const TMatcher extends VariantMatcher<TVariant, any>>(
+      cases: TMatcher,
+    ): ReturnType<TMatcher[keyof TMatcher]> {
       if (!(v[VariantTag] in cases)) {
         throw new Error("Non-exhaustive pattern match");
       }

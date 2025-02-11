@@ -2,7 +2,7 @@ import type { Email } from "@fabric/core";
 import isFQDN from "./is-fqdn.js";
 import { isString } from "./is-string.js";
 
-const emailUserPart = /^[a-z\d!\-_\.]+$/i;
+const emailUserPart = /^[a-z\d!\-_.]+$/i;
 
 export function isEmail(value: unknown): value is Email {
   if (!isString(value)) {
@@ -22,9 +22,8 @@ export function isEmail(value: unknown): value is Email {
     return false;
   }
 
-  const user_parts = user.split(".");
-  for (let i = 0; i < user_parts.length; i++) {
-    const part = user_parts[i];
+  const userParts = user.split(".");
+  for (const part of userParts) {
     if (!part) return false;
     if (!emailUserPart.test(part)) return false;
   }
