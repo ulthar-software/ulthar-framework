@@ -1,0 +1,87 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Effect } from "../effect/index.js";
+import type { TaggedError } from "../error/tagged-error.js";
+import type { Result } from "../result/index.js";
+
+export namespace Run {
+  export function seq<T1, TE1 extends TaggedError, T2, TE2 extends TaggedError>(
+    fn1: () => Effect<T1, TE1>,
+    fn2: (value: T1) => Effect<T2, TE2>,
+  ): Promise<Result<T2, TE1 | TE2>>;
+
+  export function seq<
+    T1,
+    TE1 extends TaggedError,
+    T2,
+    TE2 extends TaggedError,
+    T3,
+    TE3 extends TaggedError,
+  >(
+    fn1: () => Effect<T1, TE1>,
+    fn2: (value: T1) => Effect<T2, TE2>,
+    fn3: (value: T2) => Effect<T3, TE3>,
+  ): Promise<Result<T3, TE1 | TE2 | TE3>>;
+
+  export function seq<
+    T1,
+    TE1 extends TaggedError,
+    T2,
+    TE2 extends TaggedError,
+    T3,
+    TE3 extends TaggedError,
+    T4,
+    TE4 extends TaggedError,
+  >(
+    fn1: () => Effect<T1, TE1>,
+    fn2: (value: T1) => Effect<T2, TE2>,
+    fn3: (value: T2) => Effect<T3, TE3>,
+    fn4: (value: T3) => Effect<T4, TE4>,
+  ): Promise<Result<T4, TE1 | TE2 | TE3 | TE4>>;
+
+  export function seq(
+    ...fns: ((...args: any[]) => Effect<any, any>)[]
+  ): Promise<Result<any, any>> {
+    let result = fns[0]();
+
+    for (let i = 1; i < fns.length; i++) {
+      result = result.flatMap((value) => fns[i](value));
+    }
+
+    return result.run();
+  }
+
+  export function seqOrThrow<
+    T1,
+    TE1 extends TaggedError,
+    T2,
+    TE2 extends TaggedError,
+  >(
+    fn1: () => Effect<T1, TE1>,
+    fn2: (value: T1) => Effect<T2, TE2>,
+  ): Promise<T2>;
+
+  export function seqOrThrow<
+    T1,
+    TE1 extends TaggedError,
+    T2,
+    TE2 extends TaggedError,
+    T3,
+    TE3 extends TaggedError,
+  >(
+    fn1: () => Effect<T1, TE1>,
+    fn2: (value: T1) => Effect<T2, TE2>,
+    fn3: (value: T2) => Effect<T3, TE3>,
+  ): Promise<T2>;
+
+  export async function seqOrThrow(
+    ...fns: ((...args: any[]) => Effect<any, any>)[]
+  ): Promise<any> {
+    const result = await (seq as any)(...fns);
+
+    return result.unwrapOrThrow();
+  }
+}

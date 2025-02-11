@@ -7,6 +7,10 @@
     "usernamehw.errorlens",
     "bourhaouta.tailwindshades",
     "austenc.tailwind-docs",
-    "denoland.vscode-deno"
+    "ms-vscode.atom-keybindings",
+    "usernamehw.errorlens",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "arcanis.vscode-zipfs"
   ]
 }

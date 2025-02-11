@@ -1,0 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { StoreInsertOptions } from "@fabric/db";
+import type { Model } from "@fabric/models";
+import {
+  manyRecordsToSqlParamRecord,
+  recordToSqlKeys,
+  recordToSqlParamKeys,
+} from "./record-utils.js";
+
+export function insertToSql(
+  model: Model,
+  query: StoreInsertOptions,
+): [string, Record<string, any>] {
+  return [
+    `INSERT INTO ${query.into} (${recordToSqlKeys(
+      query.values[0],
+    )}) VALUES ${query.values
+      .map((v, index) => `(${recordToSqlParamKeys(v, `${index}_`)})`)
+      .join(", ")}`,
+    manyRecordsToSqlParamRecord(model, query.values),
+  ];
+}

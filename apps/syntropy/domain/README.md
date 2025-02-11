@@ -6,4 +6,4 @@
 
 # @syntropy/domain
 
->>>>>>> Stashed changes
+> > > > > > > Stashed changes

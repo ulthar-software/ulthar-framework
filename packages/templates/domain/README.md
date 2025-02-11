@@ -1,1 +1,1 @@
-# domain-template
+# @fabric/domain-template

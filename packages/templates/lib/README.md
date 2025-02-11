@@ -1,1 +1,1 @@
-# lib-template
+# @fabric/lib-template

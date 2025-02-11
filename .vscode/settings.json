@@ -6,25 +6,10 @@
   "files.eol": "\n",
   "editor.codeActionsOnSave": {
     "source.fixAll": "always",
-    "source.organizeImports": "always"
+    "source.organizeImports": "always",
+    "source.fixAll.eslint": "always"
   },
-  "cSpell.words": [
-    "outdir",
-    "servedir",
-    "syntropy",
-    "Syntropy"
-  ],
-  "deno.enable": true,
-  "editor.defaultFormatter": "denoland.vscode-deno",
-  "deno.codeLens.references": true,
-  "deno.codeLens.test": true,
-  "deno.testing.args": [
-    "--allow-all"
-  ],
-  "notebook.defaultFormatter": "denoland.vscode-deno",
-  "[json]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  },
+  "cSpell.words": ["outdir", "servedir", "syntropy", "Syntropy"],
   "tailwindCSS.includeLanguages": {
     "ts": "tsx"
   },
@@ -33,6 +18,17 @@
     "comments": "off",
     "strings": true
   },
-  "deno.lint": true,
-  "deno.config": "./deno.json"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "javascript.preferences.importModuleSpecifierEnding": "js",
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/node_modules": true,
+    "packages/frontend/{android,ios}": true,
+    "**/.pnp.*": true
+  },
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "eslint.nodePath": ".yarn/sdks",
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

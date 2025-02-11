@@ -1,1 +1,1 @@
-# lib-template
+# @fabric/weaver

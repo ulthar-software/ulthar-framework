@@ -1,0 +1,45 @@
+{
+  "name": "fabric-framework",
+  "version": "0.0.1",
+  "description": "A framework for building applications in Typescript",
+  "packageManager": "yarn@4.6.0",
+  "workspaces": [
+    "packages/fabric/*",
+    "packages/templates/*",
+    "packages/examples/*",
+    "apps/syntropy/*"
+  ],
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ultharsoftware/fabric-framework.git"
+  },
+  "keywords": [
+    "typescript",
+    "framework",
+    "fabric"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.19.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.23.0",
+    "vitest": "^3.0.5",
+    "zx": "^8.3.2"
+  },
+  "scripts": {
+    "lint": "eslint . --fix --report-unused-disable-directives",
+    "fmt": "prettier --write .",
+    "check": "tsc",
+    "postinstall": "husky",
+    "test:all": "yarn workspaces foreach -vvpA run test --run --clearScreen false",
+    "test:full": "cross-env RUN_ALL_TESTS=true yarn workspaces foreach -vvpA run test --run --clearScreen false",
+    "build:all": "yarn workspaces foreach -vvpA --topological-dev --exclude 'packages/templates/*' --exclude 'packages/examples/*' run build",
+    "build:full": "yarn workspaces foreach -vvpA --topological-dev run build"
+  }
+}
