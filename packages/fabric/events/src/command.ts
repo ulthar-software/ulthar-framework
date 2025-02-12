@@ -1,18 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaggedError } from "@fabric/core";
-import type { UseCase } from "./use-case.js";
+import type { UseCase } from "@fabric/domain";
+import type { DomainEvent } from "./event.js";
+import type { StoredEvent } from "./stored-event.js";
 
 export type Command<
   TPermissions extends string,
   TDependencies = any,
   TPayload = any,
-  TOutput = any,
+  TEvent extends DomainEvent = any,
   TErrors extends TaggedError = any,
 > = BasicCommandDefinition<
   TPermissions,
   TDependencies,
   TPayload,
-  TOutput,
+  TEvent,
   TErrors
 >;
 
@@ -20,7 +22,7 @@ interface BasicCommandDefinition<
   TPermissions extends string,
   TDependencies,
   TPayload,
-  TOutput,
+  TEvent extends DomainEvent,
   TErrors extends TaggedError,
 > {
   /**
@@ -41,5 +43,5 @@ interface BasicCommandDefinition<
   /**
    * The use case function.
    */
-  useCase: UseCase<TDependencies, TPayload, TOutput, TErrors>;
+  useCase: UseCase<TDependencies, TPayload, StoredEvent<TEvent>, TErrors>;
 }

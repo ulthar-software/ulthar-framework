@@ -19,6 +19,7 @@
   "dependencies": {
     "@fabric/core": "workspace:^",
     "@fabric/db": "workspace:^",
+    "@fabric/domain": "workspace:^",
     "@fabric/models": "workspace:^"
   },
   "scripts": {
