@@ -20,5 +20,8 @@
     "test": "vitest",
     "lint": "eslint .",
     "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.4.0"
   }
 }
