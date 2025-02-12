@@ -9,6 +9,7 @@ export interface DomainEvent<TTag extends string = string, TPayload = any>
   readonly id: UUID;
   readonly streamId: UUID;
   readonly payload: TPayload;
+  readonly timestamp: number;
 }
 
 export type EventFromKey<
