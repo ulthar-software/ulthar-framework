@@ -3,13 +3,21 @@ import type { TaggedError } from "@fabric/core";
 import type { UseCase } from "./use-case.js";
 
 export type Query<
+  TPermissions extends string,
   TDependencies = any,
   TPayload = any,
   TOutput = any,
   TErrors extends TaggedError = any,
-> = BasicQueryDefinition<TDependencies, TPayload, TOutput, TErrors>;
+> = BasicQueryDefinition<
+  TPermissions,
+  TDependencies,
+  TPayload,
+  TOutput,
+  TErrors
+>;
 
 interface BasicQueryDefinition<
+  TPermissions extends string,
   TDependencies,
   TPayload,
   TOutput,
@@ -28,7 +36,7 @@ interface BasicQueryDefinition<
   /**
    * Permissions required to execute the use case.
    */
-  permissions?: string[];
+  permissions?: TPermissions[];
 
   /**
    * The use case function.
