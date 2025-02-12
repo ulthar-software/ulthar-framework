@@ -1,4 +1,4 @@
-import type { Effect, TaggedError } from "@fabric/core";
+import type { Effect, TaggedError, UnexpectedError } from "@fabric/core";
 
 /**
  * A use case is a piece of domain logic that can be executed.
@@ -9,8 +9,8 @@ export type UseCase<
   TOutput,
   TErrors extends TaggedError,
 > = TPayload extends undefined
-  ? (dependencies: TDependencies) => Effect<TOutput, TErrors>
+  ? (dependencies: TDependencies) => Effect<TOutput, TErrors | UnexpectedError>
   : (
       dependencies: TDependencies,
       payload: TPayload,
-    ) => Effect<TOutput, TErrors>;
+    ) => Effect<TOutput, TErrors | UnexpectedError>;
