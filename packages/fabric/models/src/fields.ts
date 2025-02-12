@@ -5,6 +5,7 @@ import type {
   PosixDate,
   TaggedVariant,
   UUID,
+  VariantTag,
 } from "@fabric/core";
 import { variantConstructor } from "@fabric/core";
 
@@ -19,7 +20,9 @@ export const Field = {
   embedded: variantConstructor<EmbeddedField>("EmbeddedField"),
   boolean: variantConstructor<BooleanField>("BooleanField"),
   email: variantConstructor<EmailField>("EmailField"),
-  enum: variantConstructor<EnumField>("EnumField"),
+  enum: <K extends string, TOpts extends Omit<EnumField<K>, VariantTag>>(
+    opts: TOpts,
+  ) => variantConstructor<EnumField<K>>("EnumField")(opts),
   url: variantConstructor<UrlField>("UrlField"),
 } as const satisfies Record<FieldShortName, any>;
 
@@ -34,7 +37,7 @@ export type FieldDefinition =
   | EmbeddedField
   | EmailField
   | BooleanField
-  | EnumField
+  | EnumField<string>
   | UrlField;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -58,8 +61,8 @@ type FieldShortName = (typeof FieldShortNames)[keyof typeof FieldShortNames];
  * Converts a field definition to its corresponding TypeScript type.
  */
 //prettier-ignore
-export type FieldToType<TField> = TField extends StringField
-  ? MaybeOptional<TField, string>
+export type FieldToType<TField> = 
+  TField extends StringField ? MaybeOptional<TField, string>
   : TField extends UUIDField ? MaybeOptional<TField, UUID>
   : TField extends IntegerField ? IntegerFieldToType<TField>
   : TField extends ReferenceField ? MaybeOptional<TField, UUID>
@@ -68,7 +71,7 @@ export type FieldToType<TField> = TField extends StringField
   : TField extends PosixDateField ? MaybeOptional<TField, PosixDate>
   : TField extends BooleanField ? MaybeOptional<TField, boolean>
   : TField extends EmailField ? MaybeOptional<TField, Email>
-  : TField extends EnumField ? MaybeOptional<TField, string>
+  : TField extends EnumField<infer K> ? MaybeOptional<TField, K>
   : TField extends UrlField ? MaybeOptional<TField, string>
   : TField extends EmbeddedField<infer TSubModel>
     ? MaybeOptional<TField, TSubModel>
@@ -135,8 +138,10 @@ export interface EmbeddedField<T = any>
   extends TaggedVariant<"EmbeddedField">,
     BaseField {}
 
-export interface EnumField extends TaggedVariant<"EnumField">, BaseField {
-  values: string[];
+export interface EnumField<TValues extends string>
+  extends TaggedVariant<"EnumField">,
+    BaseField {
+  values: TValues[];
 }
 
 export interface UrlField extends TaggedVariant<"UrlField">, BaseField {}
