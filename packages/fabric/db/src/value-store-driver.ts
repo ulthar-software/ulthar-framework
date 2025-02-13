@@ -1,3 +1,4 @@
+export type { CircularDependencyError } from "@fabric/algorithms/sort-by-dependencies";
 import type { CircularDependencyError } from "@fabric/algorithms/sort-by-dependencies";
 import type { Effect } from "@fabric/core";
 import type { Model } from "@fabric/models";
