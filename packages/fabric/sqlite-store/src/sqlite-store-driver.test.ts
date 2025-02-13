@@ -224,4 +224,46 @@ describe("State Store", () => {
       timestamp: expect.any(PosixDate),
     });
   });
+
+  test("should enforce custom constraints", async () => {
+    const streamId = crypto.randomUUID();
+
+    await store
+      .insertInto("events")
+      .value({
+        _tag: "CreateState",
+        id: crypto.randomUUID(),
+        streamId,
+        version: 0n,
+        payload: {
+          name: "test",
+        },
+        timestamp: new PosixDate(),
+      })
+      .runOrThrow();
+
+    await expect(async () =>
+      store
+        .insertInto("events")
+        .value({
+          _tag: "CreateState",
+          id: crypto.randomUUID(),
+          streamId,
+          version: 0n,
+          payload: {
+            name: "test",
+          },
+          timestamp: new PosixDate(),
+        })
+        .runOrThrow(),
+    ).rejects.toThrow();
+
+    const result = await store
+      .from("events")
+      .where({ streamId })
+      .select()
+      .runOrThrow();
+
+    expect(result.length).toBe(1);
+  });
 });

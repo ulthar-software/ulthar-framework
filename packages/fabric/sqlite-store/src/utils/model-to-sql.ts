@@ -2,7 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Variant, VariantTag } from "@fabric/core";
-import { type FieldDefinition, getTargetKey, type Model } from "@fabric/models";
+import {
+  type FieldDefinition,
+  getTargetKey,
+  type Model,
+  type ModelConstraint,
+} from "@fabric/models";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -74,13 +79,33 @@ function modifiersFromOpts(field: FieldDefinition) {
     .join(" ");
 }
 
+function generateSQLConstraint(constraint: ModelConstraint) {
+  switch (constraint.type) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    case "unique":
+      return `UNIQUE(${constraint.fields.join(", ")})`;
+
+    default:
+      // eslint-disable-next-line no-case-declarations
+      const exhaustiveCheck: never = constraint.type;
+      return exhaustiveCheck;
+  }
+}
+
 export function modelToSql(
   model: Model<string, Record<string, FieldDefinition>>,
 ) {
   const fields = Object.entries(model.fields)
     .map(([name, type]) => fieldDefinitionToSQL(name, type))
+    .join(", ");
+
+  const constraints = (
+    model.opts.constraints?.map(generateSQLConstraint) ?? []
+  ).join(", ");
+
+  const fieldsAndConstraints = [fields, constraints]
     .filter((x) => x)
     .join(", ");
 
-  return `CREATE TABLE ${model.name} (${fields})`;
+  return `CREATE TABLE ${model.name} (${fieldsAndConstraints})`;
 }
