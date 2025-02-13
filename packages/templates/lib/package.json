@@ -20,9 +20,11 @@
     "@fabric/core": "workspace:^"
   },
   "scripts": {
+    "dev": "tsc build --watch",
+    "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test": "vitest run",
+    "check": "tsc",
     "build": "tsc -p tsconfig.build.json"
   }
 }

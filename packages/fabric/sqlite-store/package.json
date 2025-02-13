@@ -26,9 +26,11 @@
     "better-sqlite3": "^11.8.1"
   },
   "scripts": {
-    "test:coverage": "vitest run --coverage",
+    "dev": "tsc build --watch",
     "test": "vitest run",
     "test:dev": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check": "tsc",
     "build": "tsc -p tsconfig.build.json"
   }
 }
