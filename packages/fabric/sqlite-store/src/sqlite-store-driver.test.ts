@@ -1,4 +1,5 @@
-import { Effect, Run } from "@fabric/core";
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { Effect, PosixDate, Run } from "@fabric/core";
 import { isLike, WritableValueStore } from "@fabric/db";
 import { Field, Model } from "@fabric/models";
 import { afterEach, beforeEach, describe, expect, test } from "@fabric/testing";
@@ -17,7 +18,22 @@ describe("State Store", () => {
     name: Field.string({}),
   });
 
-  const DBSchema = [Demo, User];
+  const Events = new Model(
+    "events",
+    {
+      _tag: Field.string(),
+      streamId: Field.uuid(),
+      id: Field.uuid({ isPrimaryKey: true }),
+      version: Field.integer({ hasArbitraryPrecision: true }),
+      payload: Field.embedded(),
+      timestamp: Field.posixDate(),
+    },
+    {
+      constraints: [{ type: "unique", fields: ["streamId", "version"] }],
+    },
+  );
+
+  const DBSchema = [Demo, User, Events];
 
   let store: WritableValueStore<(typeof DBSchema)[number]>;
 
@@ -173,5 +189,39 @@ describe("State Store", () => {
           owner: ownerId,
         }),
     );
+  });
+
+  test("should insert and retrieve an embedded field", async () => {
+    const newId = crypto.randomUUID();
+    await store
+      .insertInto("events")
+      .value({
+        _tag: "CreateState",
+        id: newId,
+        streamId: crypto.randomUUID(),
+        version: 0n,
+        payload: {
+          name: "test",
+        },
+        timestamp: new PosixDate(),
+      })
+      .runOrThrow();
+
+    const retrievedEvent = await store
+      .from("events")
+      .where({ id: newId })
+      .selectOne()
+      .runOrThrow();
+
+    expect(retrievedEvent.value).toEqual({
+      _tag: "CreateState",
+      id: newId,
+      streamId: expect.any(String),
+      version: 0n,
+      payload: {
+        name: "test",
+      },
+      timestamp: expect.any(PosixDate),
+    });
   });
 });
