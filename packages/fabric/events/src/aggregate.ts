@@ -1,15 +1,20 @@
-import { Field, Model, type ModelFields } from "@fabric/models";
+import {
+  Field,
+  Model,
+  type ModelFields,
+  type ModelOptions,
+} from "@fabric/models";
 
 export class AggregateModel<
-  TName extends string,
-  TFields extends ModelFields,
+  TName extends string = string,
+  TFields extends ModelFields = ModelFields,
 > extends Model<TName, TFields & BaseAggregateFields> {
-  constructor(name: TName, fields: TFields) {
+  constructor(name: TName, fields: TFields, opts: ModelOptions = {}) {
     const updatedFields = {
       ...BaseAggregateFields,
       ...fields,
     };
-    super(name, updatedFields);
+    super(name, updatedFields, opts);
   }
 }
 

@@ -2,7 +2,6 @@
 import type { TaggedError } from "@fabric/core";
 import type { UseCase } from "@fabric/domain";
 import type { DomainEvent } from "./event.js";
-import type { StoredEvent } from "./stored-event.js";
 
 export type Command<
   TPermissions extends string,
@@ -43,5 +42,5 @@ interface BasicCommandDefinition<
   /**
    * The use case function.
    */
-  useCase: UseCase<TDependencies, TPayload, StoredEvent<TEvent>, TErrors>;
+  useCase: UseCase<TDependencies, TPayload, TEvent, TErrors>;
 }
