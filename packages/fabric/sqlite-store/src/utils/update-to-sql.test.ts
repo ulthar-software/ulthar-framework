@@ -1,4 +1,3 @@
-import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import { Field, Model } from "@fabric/models";
 import { describe, expect, test } from "@fabric/testing";
 import { updateToSql } from "./update-to-sql.js";
@@ -11,7 +10,7 @@ describe("updateToSQL", () => {
       age: Field.integer({}),
     });
 
-    const uuid = UUIDGeneratorMock.generate();
+    const uuid = crypto.randomUUID();
 
     const record = {
       name: "test",

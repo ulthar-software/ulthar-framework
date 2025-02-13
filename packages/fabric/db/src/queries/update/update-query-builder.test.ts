@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Effect } from "@fabric/core";
-import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import { Field, Model, type ModelToType } from "@fabric/models";
 import { describe, expect, partialMock, test } from "@fabric/testing";
 import type { ValueStoreDriver } from "../../value-store-driver.js";
@@ -17,7 +16,7 @@ describe("StoreUpdateQueryBuilder", () => {
       update: () => Effect.ok(),
     });
 
-    const uuid = UUIDGeneratorMock.generate();
+    const uuid = crypto.randomUUID();
 
     const query = new StoreUpdateQueryBuilder<Demo>(driver, Demo, {
       table: "demo",

@@ -1,6 +1,17 @@
 import { type Keyof, Variant } from "@fabric/core";
 import type { FieldDefinition, FieldToType, ReferenceField } from "./fields.js";
 
+export interface UniqueModelConstraint {
+  type: "unique";
+  fields: string[];
+}
+
+export type ModelConstraint = UniqueModelConstraint;
+
+export interface ModelOptions {
+  constraints?: ModelConstraint[];
+}
+
 /**
  * A model is a schema definition for some type of structured data.
  */
@@ -11,6 +22,7 @@ export class Model<
   public constructor(
     readonly name: TName,
     readonly fields: TFields,
+    readonly opts: ModelOptions = {},
   ) {}
 
   getReferences(): ReferenceField[] {

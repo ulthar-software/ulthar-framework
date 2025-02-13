@@ -1,6 +1,5 @@
 import { Effect, Run } from "@fabric/core";
 import { isLike, WritableValueStore } from "@fabric/db";
-import { UUIDGeneratorMock } from "@fabric/domain/mocks";
 import { Field, Model } from "@fabric/models";
 import { afterEach, beforeEach, describe, expect, test } from "@fabric/testing";
 import { SQLiteStoreDriver } from "./sqlite-store-driver.js";
@@ -33,24 +32,24 @@ describe("State Store", () => {
   });
 
   test("should insert a record", async () => {
-    const newUuid = UUIDGeneratorMock.generate();
+    const newId = crypto.randomUUID();
 
     await store
       .insertInto("users")
       .value({
-        id: newUuid,
+        id: newId,
         name: "test",
       })
       .runOrThrow();
   });
 
   test("should select all records", async () => {
-    const newUuid = UUIDGeneratorMock.generate();
+    const newId = crypto.randomUUID();
 
     await store
       .insertInto("users")
       .value({
-        id: newUuid,
+        id: newId,
         name: "test",
       })
       .runOrThrow();
@@ -59,29 +58,29 @@ describe("State Store", () => {
 
     expect(result).toEqual([
       {
-        id: newUuid,
+        id: newId,
         name: "test",
       },
     ]);
   });
 
   test("should select records with a filter", async () => {
-    const newUuid = UUIDGeneratorMock.generate();
+    const newId = crypto.randomUUID();
 
     await store
       .insertInto("users")
       .manyValues([
         {
           name: "test",
-          id: newUuid,
+          id: newId,
         },
         {
           name: "anotherName",
-          id: UUIDGeneratorMock.generate(),
+          id: crypto.randomUUID(),
         },
         {
           name: "anotherName2",
-          id: UUIDGeneratorMock.generate(),
+          id: crypto.randomUUID(),
         },
       ])
       .runOrThrow();
@@ -103,54 +102,54 @@ describe("State Store", () => {
 
     expect(result).toEqual([
       {
-        id: newUuid,
+        id: newId,
         name: "test",
       },
     ]);
   });
 
   test("should update a record", async () => {
-    const newUuid = UUIDGeneratorMock.generate();
+    const newId = crypto.randomUUID();
 
     await Effect.seq(
       () =>
         store.insertInto("users").value({
           name: "test",
-          id: newUuid,
+          id: newId,
         }),
       () =>
-        store.update("users").oneById(newUuid).set({
+        store.update("users").oneById(newId).set({
           name: "updated",
         }),
     ).runOrThrow();
 
     const result = await store
       .from("users")
-      .where({ id: newUuid })
+      .where({ id: newId })
       .selectOne()
       .runOrThrow();
 
     expect(result.value).toEqual({
-      id: newUuid,
+      id: newId,
       name: "updated",
     });
   });
 
   test("should delete a record", async () => {
-    const newUuid = UUIDGeneratorMock.generate();
+    const newId = crypto.randomUUID();
 
     await Effect.seq(
       () =>
         store.insertInto("users").value({
           name: "test",
-          id: newUuid,
+          id: newId,
         }),
-      () => store.deleteFrom("users").oneById(newUuid),
+      () => store.deleteFrom("users").oneById(newId),
     ).runOrThrow();
 
     const result = await store
       .from("users")
-      .where({ id: newUuid })
+      .where({ id: newId })
       .selectOne()
       .runOrThrow();
 
@@ -158,8 +157,8 @@ describe("State Store", () => {
   });
 
   test("should insert a record with a reference", async () => {
-    const newUuid = UUIDGeneratorMock.generate();
-    const ownerId = UUIDGeneratorMock.generate();
+    const newId = crypto.randomUUID();
+    const ownerId = crypto.randomUUID();
 
     await Run.seqOrThrow(
       () =>
@@ -169,7 +168,7 @@ describe("State Store", () => {
         }),
       () =>
         store.insertInto("demo").value({
-          id: newUuid,
+          id: newId,
           value: 1.0,
           owner: ownerId,
         }),
