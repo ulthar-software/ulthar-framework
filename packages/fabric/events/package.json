@@ -12,6 +12,7 @@
   "main": "dist/index.js",
   "sideEffects": false,
   "devDependencies": {
+    "@fabric/sqlite-store": "workspace:^",
     "@fabric/testing": "workspace:^",
     "typescript": "npm:^5.7.3",
     "vitest": "npm:^3.0.5"
