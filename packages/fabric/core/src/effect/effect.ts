@@ -72,6 +72,27 @@ export class Effect<
     return new Effect(() => Result.failWith(error));
   }
 
+  static all<TValue, TError extends TaggedError, TDeps>(
+    fns: () => Effect<TValue, TError, TDeps>[],
+  ): Effect<TValue[], TError, TDeps> {
+    return new Effect<TValue[], TError, TDeps>(async (deps: TDeps) => {
+      const results = await Promise.all(fns().map((fn) => fn.fn(deps)));
+      const errors = results.filter((r) => r.isError());
+      if (errors.length > 0) {
+        return Result.failWith(errors[0].value);
+      }
+      return Result.ok(results.map((r) => r.value as TValue));
+    });
+  }
+  static allSkippingErrors<TValue, TError extends TaggedError, TDeps>(
+    fns: () => Effect<TValue, TError, TDeps>[],
+  ): Effect<TValue[], never, TDeps> {
+    return new Effect<TValue[], never, TDeps>(async (deps: TDeps) => {
+      const results = await Promise.all(fns().map((fn) => fn.fn(deps)));
+      return Result.ok(results.filter((r) => r.isOk()).map((r) => r.value));
+    });
+  }
+
   constructor(
     private readonly fn: (deps: TDeps) => MaybePromise<Result<TValue, TError>>,
   ) {}
