@@ -1,15 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type Keyof, Variant } from "@fabric/core";
 import type { FieldDefinition, FieldToType, ReferenceField } from "./fields.js";
 
-export interface UniqueModelConstraint {
+export interface UniqueModelConstraint<TName extends string = string> {
   type: "unique";
-  fields: string[];
+  fields: TName[];
 }
 
-export type ModelConstraint = UniqueModelConstraint;
+export type ModelConstraint<TName extends string = string> =
+  UniqueModelConstraint<TName>;
 
-export interface ModelOptions {
-  constraints?: ModelConstraint[];
+export interface ModelOptions<TName extends string = string> {
+  constraints?: ModelConstraint<TName>[];
 }
 
 /**
@@ -17,12 +19,12 @@ export interface ModelOptions {
  */
 export class Model<
   TName extends string = string,
-  TFields extends ModelFields = ModelFields,
+  TFields extends ModelFields = any,
 > {
   public constructor(
     readonly name: TName,
     readonly fields: TFields,
-    readonly opts: ModelOptions = {},
+    readonly opts: ModelOptions<Keyof<TFields>> = {},
   ) {}
 
   getReferences(): ReferenceField[] {

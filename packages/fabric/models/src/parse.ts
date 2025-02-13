@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
 import { isRecordEmpty, Result, TaggedError } from "@fabric/core";
 import { fieldParsers, type FieldParsingError } from "./field-parsers.js";
+import type { FieldDefinition } from "./fields.js";
 import type { Model, ModelToType } from "./model.js";
 
 export function parse<T extends Model>(
@@ -14,7 +16,7 @@ export function parse<T extends Model>(
   const parsedValue = {} as ModelToType<T>;
 
   for (const key in model.fields) {
-    const field = model.fields[key];
+    const field = model.fields[key] as FieldDefinition;
     const fieldResult = fieldParsers[field._tag](
       field as any,
       (value as any)[key],

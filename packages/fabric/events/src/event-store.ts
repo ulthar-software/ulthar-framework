@@ -35,8 +35,8 @@ export const DefaultStreamModelFields = {
 export type DefaultStreamModelFields = typeof DefaultStreamModelFields;
 
 export class EventStore<
-  TAggregateModels extends AggregateModel,
-  TEventStreams extends EventStream<TAggregateModels>,
+  const TAggregateModels extends AggregateModel,
+  const TEventStreams extends EventStream<TAggregateModels>,
 > {
   private models: Model<string, DefaultStreamModelFields>[];
   private eventSubscriptions: EventSubscriptions = {};

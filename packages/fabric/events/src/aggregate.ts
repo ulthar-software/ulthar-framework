@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Keyof } from "@fabric/core";
 import {
   Field,
   Model,
@@ -7,9 +9,13 @@ import {
 
 export class AggregateModel<
   TName extends string = string,
-  TFields extends ModelFields = ModelFields,
+  TFields extends ModelFields = any,
 > extends Model<TName, TFields & BaseAggregateFields> {
-  constructor(name: TName, fields: TFields, opts: ModelOptions = {}) {
+  constructor(
+    name: TName,
+    fields: TFields,
+    opts: ModelOptions<Keyof<TFields>> = {},
+  ) {
     const updatedFields = {
       ...BaseAggregateFields,
       ...fields,
