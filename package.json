@@ -37,9 +37,11 @@
     "fmt": "prettier --write .",
     "check": "tsc",
     "postinstall": "husky",
-    "test:all": "yarn workspaces foreach -vvpA run test --run --clearScreen false",
-    "test:full": "cross-env RUN_ALL_TESTS=true yarn workspaces foreach -vvpA run test --run --clearScreen false",
+    "test:all": "yarn workspaces foreach -vvpA run test",
+    "test:libs": "yarn workspaces foreach -vvpA --include 'packages/fabric/*' run test",
+    "test:full": "cross-env RUN_ALL_TESTS=true yarn workspaces foreach -vvpA run test",
     "build:all": "yarn workspaces foreach -vvpA --topological-dev --exclude 'packages/templates/*' --exclude 'packages/examples/*' run build",
+    "build:libs": "yarn workspaces foreach -vvpA --topological-dev --include 'packages/fabric/*' run build",
     "build:full": "yarn workspaces foreach -vvpA --topological-dev run build"
   }
 }
