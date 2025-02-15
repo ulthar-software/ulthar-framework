@@ -1,12 +1,15 @@
-import { TaggedError, type UUID } from "@fabric/core";
-import type { Command, DomainEvent, UUIDGenerator } from "@fabric/domain";
-import { Field, Model, type ModelToType } from "@fabric/models";
+import type { CryptoService, ModelToType } from "@fabric/core";
+import { Field, Model, PosixDate, TaggedError, type UUID } from "@fabric/core";
+import type { ProjectCreatedEvent } from "../../models/project.js";
+import type { DomainEventStore } from "../../services/event-store.js";
 import type { ReadValueStore } from "../../services/state-store.js";
+import type { DomainCommand } from "../domain-command.js";
 
 export interface CreateProjectDependencies {
   state: ReadValueStore;
-  uuid: UUIDGenerator;
+  crypto: CryptoService;
   currentUserId: UUID;
+  events: DomainEventStore;
 }
 
 export const CreateProjectRequestModel = new Model(
@@ -20,48 +23,35 @@ export type CreateProjectRequestModel = ModelToType<
   typeof CreateProjectRequestModel
 >;
 
-export type ProjectCreatedEvent = DomainEvent<
-  "ProjectCreated",
-  {
-    id: string;
-    name: string;
-    description: string;
-    userId: string;
-  }
->;
-
-export type CreateProjectErrors = ProjectNameInUseError;
-
 export default {
   name: "createProject",
   isAuthRequired: true,
-  useCase: ({ state, uuid, currentUserId }, { name, description }) =>
+  permissions: ["CREATE_PROJECT"],
+  useCase: ({ state, crypto, currentUserId, events }, { name, description }) =>
     state
       .from("projects")
       .where({ name })
       .assertNone()
       .errorMap(() => new ProjectNameInUseError())
-      .map(() => {
-        const newEventId = uuid.generate();
-        const newProjectId = uuid.generate();
-
-        return {
+      .flatMap(() =>
+        events.append("projects", {
           _tag: "ProjectCreated",
-          id: newEventId,
-          streamId: newProjectId,
+          id: crypto.randomUUID(),
+          streamId: crypto.randomUUID(),
+          timestamp: new PosixDate(),
           payload: {
-            id: newProjectId,
             name,
             description,
             userId: currentUserId,
           },
-        };
-      }),
-} as const satisfies Command<
+          version: 1n,
+        }),
+      ),
+} as const satisfies DomainCommand<
   CreateProjectDependencies,
   CreateProjectRequestModel,
   ProjectCreatedEvent,
-  CreateProjectErrors
+  ProjectNameInUseError
 >;
 
 export class ProjectNameInUseError extends TaggedError<"ProjectNameInUseError"> {

@@ -5,6 +5,8 @@ import type { EnumToType } from "@fabric/core";
  *    - `ACTION`: The domain action that the user can perform on the domain object. This is a domain verb in the imperative mood. i.e. "CREATE", "EDIT", "VIEW", "FIX", "RELEASE", etc.
  *    - `ENTITY`: The domain object that the user can perform the action on. This is a domain noun in the singular form.
  */
-export const Permission = {} as const;
+export const Permission = {
+  CREATE_PROJECT: "CREATE_PROJECT",
+} as const;
 
 export type Permission = EnumToType<typeof Permission>;

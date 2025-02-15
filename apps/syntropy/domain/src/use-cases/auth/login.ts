@@ -1,19 +1,17 @@
-import { TaggedError } from "@fabric/core";
-import type { Query } from "@fabric/domain";
-import { Field, Model, type ModelToType } from "@fabric/models";
-import type { AuthService } from "../../services/auth-service.js";
-import type { CryptoService } from "../../services/crypto-service.js";
+import type { AuthService, CryptoService } from "@fabric/core";
+import { Field, Model, TaggedError, type ModelToType } from "@fabric/core";
+import type { User } from "../../models/user.js";
 import type { ReadValueStore } from "../../services/state-store.js";
+import type { DomainQuery } from "../domain-query.js";
 export interface LoginDependencies {
   state: ReadValueStore;
   crypto: CryptoService;
-  auth: AuthService;
+  auth: AuthService<User>;
 }
 
 export const LoginRequestModel = new Model("LoginRequestModel", {
   email: Field.email({}),
   password: Field.string({}),
-  rememberMe: Field.boolean({ isOptional: true }),
 });
 export type LoginRequestModel = ModelToType<typeof LoginRequestModel>;
 
@@ -43,7 +41,7 @@ export default {
         accessToken: auth.generateAccessToken(user),
         refreshToken: auth.generateRefreshToken(user),
       })),
-} as const satisfies Query<
+} as const satisfies DomainQuery<
   LoginDependencies,
   LoginRequestModel,
   LoginResponseModel,

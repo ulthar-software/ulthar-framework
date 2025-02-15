@@ -1,4 +1,4 @@
-import { Field, Model } from "@fabric/models";
+import { Field, Model } from "@fabric/core";
 
 export const environmentModel = new Model("Environment", {
   API_HOST: Field.url({}),

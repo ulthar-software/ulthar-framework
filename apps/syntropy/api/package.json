@@ -11,8 +11,7 @@
   "type": "module",
   "main": "dist/index.js",
   "dependencies": {
-    "@fabric/core": "workspace:^",
-    "@fabric/models": "workspace:^"
+    "@fabric/core": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

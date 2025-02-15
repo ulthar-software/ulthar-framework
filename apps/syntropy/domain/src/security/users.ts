@@ -6,6 +6,10 @@ import type { EnumToType } from "@fabric/core";
  */
 export const UserType = {
   ADMIN: "ADMIN",
+  BASE_USER: "BASE_USER",
   // SPECIAL_USER: "SPECIAL_USER",
-};
+} as const;
+
+export const UserTypeValues = Object.values(UserType);
+
 export type UserType = EnumToType<typeof UserType>;

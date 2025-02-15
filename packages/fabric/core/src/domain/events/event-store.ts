@@ -103,9 +103,7 @@ export class EventStore<
   sync(): Effect<void, CircularDependencyError | StoreQueryError> {
     return this.valueStore
       .sync()
-      .flatMap(() =>
-        this.storageDriver.sync(this.models as unknown as Model[]),
-      );
+      .flatMap(() => this.storageDriver.sync(this.models));
   }
 
   get stateStore(): ReadonlyValueStore<AggregateModel> {
