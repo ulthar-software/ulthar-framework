@@ -1,0 +1,1 @@
+(yarn vitest --no-isolate --run --changed --bail 1 && git commit -am "WIP" --no-verify) || git checkout .
