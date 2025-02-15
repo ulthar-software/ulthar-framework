@@ -443,36 +443,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fabric/algorithms@workspace:^, @fabric/algorithms@workspace:packages/fabric/algorithms":
-  version: 0.0.0-use.local
-  resolution: "@fabric/algorithms@workspace:packages/fabric/algorithms"
-  dependencies:
-    "@fabric/core": "workspace:^"
-    "@fabric/testing": "workspace:^"
-    typescript: "npm:^5.7.3"
-    vitest: "npm:^3.0.5"
-  languageName: unknown
-  linkType: soft
-
 "@fabric/core@workspace:^, @fabric/core@workspace:packages/fabric/core":
   version: 0.0.0-use.local
   resolution: "@fabric/core@workspace:packages/fabric/core"
   dependencies:
     "@fabric/testing": "workspace:^"
-    typescript: "npm:^5.7.3"
-    vitest: "npm:^3.0.5"
-  languageName: unknown
-  linkType: soft
-
-"@fabric/db@workspace:^, @fabric/db@workspace:packages/fabric/db":
-  version: 0.0.0-use.local
-  resolution: "@fabric/db@workspace:packages/fabric/db"
-  dependencies:
-    "@fabric/algorithms": "workspace:^"
-    "@fabric/core": "workspace:^"
-    "@fabric/domain": "workspace:^"
-    "@fabric/models": "workspace:^"
-    "@fabric/testing": "workspace:^"
+    "@types/node": "npm:^22.13.4"
     typescript: "npm:^5.7.3"
     vitest: "npm:^3.0.5"
   languageName: unknown
@@ -483,35 +459,6 @@ __metadata:
   resolution: "@fabric/domain-template@workspace:packages/templates/domain"
   dependencies:
     "@fabric/core": "workspace:^"
-    "@fabric/domain": "workspace:^"
-    "@fabric/testing": "workspace:^"
-    typescript: "npm:^5.7.3"
-    vitest: "npm:^3.0.5"
-  languageName: unknown
-  linkType: soft
-
-"@fabric/domain@workspace:^, @fabric/domain@workspace:packages/fabric/domain":
-  version: 0.0.0-use.local
-  resolution: "@fabric/domain@workspace:packages/fabric/domain"
-  dependencies:
-    "@fabric/core": "workspace:^"
-    "@fabric/models": "workspace:^"
-    "@fabric/testing": "workspace:^"
-    "@types/node": "npm:^22.13.1"
-    typescript: "npm:^5.7.3"
-    vitest: "npm:^3.0.5"
-  languageName: unknown
-  linkType: soft
-
-"@fabric/events@workspace:^, @fabric/events@workspace:packages/fabric/events":
-  version: 0.0.0-use.local
-  resolution: "@fabric/events@workspace:packages/fabric/events"
-  dependencies:
-    "@fabric/core": "workspace:^"
-    "@fabric/db": "workspace:^"
-    "@fabric/domain": "workspace:^"
-    "@fabric/models": "workspace:^"
-    "@fabric/sqlite-store": "workspace:^"
     "@fabric/testing": "workspace:^"
     typescript: "npm:^5.7.3"
     vitest: "npm:^3.0.5"
@@ -529,26 +476,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fabric/models@workspace:^, @fabric/models@workspace:packages/fabric/models":
-  version: 0.0.0-use.local
-  resolution: "@fabric/models@workspace:packages/fabric/models"
-  dependencies:
-    "@fabric/core": "workspace:^"
-    "@fabric/testing": "workspace:^"
-    typescript: "npm:^5.7.3"
-    vitest: "npm:^3.0.5"
-  languageName: unknown
-  linkType: soft
-
 "@fabric/sqlite-store@workspace:^, @fabric/sqlite-store@workspace:packages/fabric/sqlite-store":
   version: 0.0.0-use.local
   resolution: "@fabric/sqlite-store@workspace:packages/fabric/sqlite-store"
   dependencies:
-    "@fabric/algorithms": "workspace:^"
     "@fabric/core": "workspace:^"
-    "@fabric/db": "workspace:^"
-    "@fabric/domain": "workspace:^"
-    "@fabric/models": "workspace:^"
     "@fabric/testing": "workspace:^"
     "@types/better-sqlite3": "npm:^7.6.12"
     better-sqlite3: "npm:^11.8.1"
@@ -857,7 +789,6 @@ __metadata:
   resolution: "@syntropy/api@workspace:apps/syntropy/api"
   dependencies:
     "@fabric/core": "workspace:^"
-    "@fabric/models": "workspace:^"
     typescript: "npm:^5.7.3"
     vitest: "npm:^3.0.5"
   languageName: unknown
@@ -868,10 +799,6 @@ __metadata:
   resolution: "@syntropy/domain@workspace:apps/syntropy/domain"
   dependencies:
     "@fabric/core": "workspace:^"
-    "@fabric/db": "workspace:^"
-    "@fabric/domain": "workspace:^"
-    "@fabric/events": "workspace:^"
-    "@fabric/models": "workspace:^"
     "@fabric/sqlite-store": "workspace:^"
     "@fabric/testing": "workspace:^"
     typescript: "npm:^5.7.3"
@@ -1071,6 +998,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.20.0"
   checksum: 10c0/d4e56d41d8bd53de93da2651c0a0234e330bd7b1b6d071b1a94bd3b5ee2d9f387519e739c52a15c1faa4fb9d97e825b848421af4b2e50e6518011e7adb4a34b7
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^22.13.4":
+  version: 22.13.4
+  resolution: "@types/node@npm:22.13.4"
+  dependencies:
+    undici-types: "npm:~6.20.0"
+  checksum: 10c0/3a234fa7766a3efc382cf81f66f474c26cdab2f54f43f757634c81c0444eb2160c2dabbde9741e4983078a318a88515b65416b5f1ab5478548579d7b3ead1d95
   languageName: node
   linkType: hard
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Model } from "@fabric/models";
+import type { Model } from "@fabric/core";
 import { fieldValueToSQL } from "./value-to-sql.js";
 
 /**
@@ -37,11 +37,12 @@ export function recordToSqlParamRecord(
   );
 }
 export function manyRecordsToSqlParamRecord(
-  model: Model,
+  model: Model<string, any>,
   records: Record<string, any>[],
 ) {
   return records
     .map((record, index) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return recordToSqlParamRecord(model, record, `${index}_`);
     })
     .reduce((acc, record) => ({ ...acc, ...record }), {});

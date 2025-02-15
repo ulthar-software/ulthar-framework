@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { FieldDefinition, FieldToType, Model } from "@fabric/core";
 import { JSONExt, PosixDate, VariantTag } from "@fabric/core";
-import type { FieldDefinition, FieldToType, Model } from "@fabric/models";
 
 export function transformRow(model: Model) {
   return (row: Record<string, any>) => {

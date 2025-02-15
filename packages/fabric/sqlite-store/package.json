@@ -18,15 +18,11 @@
     "vitest": "npm:^3.0.5"
   },
   "dependencies": {
-    "@fabric/algorithms": "workspace:^",
     "@fabric/core": "workspace:^",
-    "@fabric/db": "workspace:^",
-    "@fabric/domain": "workspace:^",
-    "@fabric/models": "workspace:^",
     "better-sqlite3": "^11.8.1"
   },
   "scripts": {
-    "dev": "tsc build --watch",
+    "dev": "tsc build --watch --preserveWatchOutput",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",

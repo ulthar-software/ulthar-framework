@@ -1,4 +1,5 @@
 import {
+  Field,
   isGreaterOrEqualTo,
   isGreaterThan,
   isIn,
@@ -6,8 +7,8 @@ import {
   isLessThan,
   isLike,
   isNotEqualTo,
-} from "@fabric/db";
-import { Field, Model } from "@fabric/models";
+  Model,
+} from "@fabric/core";
 import { describe, expect, test } from "@fabric/testing";
 import { filterToParams, filterToSQL } from "./filter-to-sql.js";
 

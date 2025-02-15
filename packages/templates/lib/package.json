@@ -20,7 +20,7 @@
     "@fabric/core": "workspace:^"
   },
   "scripts": {
-    "dev": "tsc build --watch",
+    "dev": "tsc build --watch --preserveWatchOutput",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",

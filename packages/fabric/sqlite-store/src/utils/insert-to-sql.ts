@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { StoreInsertOptions } from "@fabric/db";
-import type { Model } from "@fabric/models";
+import type { Model, StoreInsertOptions } from "@fabric/core";
 import {
   manyRecordsToSqlParamRecord,
   recordToSqlKeys,
@@ -8,7 +7,7 @@ import {
 } from "./record-utils.js";
 
 export function insertToSql(
-  model: Model,
+  model: Model<string, any>,
   query: StoreInsertOptions,
 ): [string, Record<string, any>] {
   return [

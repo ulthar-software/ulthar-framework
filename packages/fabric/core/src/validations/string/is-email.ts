@@ -1,4 +1,4 @@
-import type { Email } from "@fabric/core";
+import type { Email } from "../../types/email.js";
 import isFQDN from "./is-fqdn.js";
 import { isString } from "./is-string.js";
 

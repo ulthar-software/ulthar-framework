@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A framework for building applications in Typescript",
   "packageManager": "yarn@4.6.0",
+  "type": "module",
   "workspaces": [
     "packages/fabric/*",
     "packages/templates/*",
@@ -37,11 +38,12 @@
     "fmt": "prettier --write .",
     "check": "tsc",
     "postinstall": "husky",
-    "test:all": "yarn workspaces foreach -vvpA run test",
-    "test:libs": "yarn workspaces foreach -vvpA --include 'packages/fabric/*' run test",
-    "test:full": "cross-env RUN_ALL_TESTS=true yarn workspaces foreach -vvpA run test",
-    "build:all": "yarn workspaces foreach -vvpA --topological-dev --exclude 'packages/templates/*' --exclude 'packages/examples/*' run build",
-    "build:libs": "yarn workspaces foreach -vvpA --topological-dev --include 'packages/fabric/*' run build",
-    "build:full": "yarn workspaces foreach -vvpA --topological-dev run build"
+    "apps:build": "yarn workspaces foreach -vvA --topological --include 'domain' --include 'apps/**/*' run build",
+    "apps:test": "yarn workspaces foreach -vvA --topological --include 'domain' --include 'apps/**/*' run test",
+    "libs:test": "yarn workspaces foreach -vvA --include 'packages/**/*' run test",
+    "libs:build": "yarn workspaces foreach -vvA --topological --include 'packages/**/*' run build",
+    "ci:test": "yarn workspaces foreach -vvA run test",
+    "ci:build": "yarn workspaces foreach -vvA --topological run build",
+    "full:test": "cross-env RUN_ALL_TESTS=true yarn workspaces foreach -vvA run test"
   }
 }

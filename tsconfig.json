@@ -9,7 +9,8 @@
     "noEmit": true,
     "declaration": true,
     "declarationMap": true,
-    "verbatimModuleSyntax": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noErrorTruncation": true,
+    "allowImportingTsExtensions": false
   }
 }

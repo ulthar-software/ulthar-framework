@@ -29,7 +29,7 @@
     "tsx": "^4.19.2"
   },
   "scripts": {
-    "dev": "tsc build --watch",
+    "dev": "tsc build --watch --preserveWatchOutput",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",

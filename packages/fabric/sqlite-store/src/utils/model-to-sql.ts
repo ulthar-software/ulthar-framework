@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Variant, VariantTag } from "@fabric/core";
+import type { Model } from "@fabric/core";
 import {
-  type FieldDefinition,
+  exhaustiveCheck,
   getTargetKey,
-  type Model,
+  Variant,
+  VariantTag,
+  type FieldDefinition,
   type ModelConstraint,
-} from "@fabric/models";
+} from "@fabric/core";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -86,17 +88,14 @@ function generateSQLConstraint(constraint: ModelConstraint) {
       return `UNIQUE(${constraint.fields.join(", ")})`;
 
     default:
-      // eslint-disable-next-line no-case-declarations
-      const exhaustiveCheck: never = constraint.type;
-      return exhaustiveCheck;
+      return exhaustiveCheck(constraint.type);
   }
 }
 
-export function modelToSql(
-  model: Model<string, Record<string, FieldDefinition>>,
-) {
+export function modelToSql(model: Model) {
   const fields = Object.entries(model.fields)
-    .map(([name, type]) => fieldDefinitionToSQL(name, type))
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    .map(([name, type]) => fieldDefinitionToSQL(name, type as FieldDefinition))
     .join(", ");
 
   const constraints = (

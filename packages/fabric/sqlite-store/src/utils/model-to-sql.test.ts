@@ -1,4 +1,4 @@
-import { Field, Model } from "@fabric/models";
+import { Field, Model } from "@fabric/core";
 import { describe, expect, test } from "@fabric/testing";
 import { modelToSql } from "./model-to-sql.js";
 

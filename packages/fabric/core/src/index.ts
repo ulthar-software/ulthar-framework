@@ -1,5 +1,6 @@
 export * from "./array/index.js";
 export * from "./decimal/decimal.js";
+export * from "./domain/index.js";
 export * from "./effect/index.js";
 export * from "./error/index.js";
 export * from "./json/json-ext.js";
@@ -10,5 +11,5 @@ export * from "./result/index.js";
 export * from "./run/index.js";
 export * from "./time/index.js";
 export * from "./types/index.js";
-export * from "./utils/ensure.js";
+export * from "./utils/index.js";
 export * from "./variant/index.js";

@@ -1,5 +1,3 @@
-import type { Query } from "@fabric/domain";
-
-export const UseCases = [] as const satisfies Query[];
+export const UseCases = [] as const;
 
 export type UseCases = typeof UseCases;

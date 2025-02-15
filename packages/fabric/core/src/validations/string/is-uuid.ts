@@ -1,4 +1,4 @@
-import type { UUID } from "@fabric/core";
+import type { UUID } from "../../types/uuid.js";
 import { isString } from "./is-string.js";
 
 // From https://github.com/uuidjs/uuid/blob/main/src/regex.ts

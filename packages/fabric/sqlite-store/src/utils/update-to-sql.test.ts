@@ -1,4 +1,4 @@
-import { Field, Model } from "@fabric/models";
+import { Field, Model } from "@fabric/core";
 import { describe, expect, test } from "@fabric/testing";
 import { updateToSql } from "./update-to-sql.js";
 
@@ -16,7 +16,7 @@ describe("updateToSQL", () => {
       name: "test",
       age: 20,
     };
-    const result = updateToSql(model, {
+    const result = updateToSql(model as unknown as Model, {
       table: "something",
       where: {
         id: uuid,

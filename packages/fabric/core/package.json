@@ -5,7 +5,8 @@
   "exports": {
     ".": "./dist/index.js",
     "./default-json-transformers": "./dist/json/default-json-transformers.js",
-    "./validations": "./dist/validations/index.js"
+    "./validations": "./dist/validations/index.js",
+    "./mocks": "./dist/domain/mocks.js"
   },
   "files": [
     "dist"
@@ -15,11 +16,12 @@
   "sideEffects": false,
   "devDependencies": {
     "@fabric/testing": "workspace:^",
+    "@types/node": "^22.13.4",
     "typescript": "npm:^5.7.3",
     "vitest": "npm:^3.0.5"
   },
   "scripts": {
-    "dev": "tsc build --watch",
+    "dev": "tsc --build --watch --preserveWatchOutput",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",

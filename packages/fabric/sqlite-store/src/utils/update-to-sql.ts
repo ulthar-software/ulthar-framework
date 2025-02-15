@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { StoreUpdateOptions } from "@fabric/db";
-import type { Model } from "@fabric/models";
+import type { Model, StoreUpdateOptions } from "@fabric/core";
 import { filterToParams, filterToSQL } from "./filter-to-sql.js";
 import { recordToSqlParamRecord, recordToSqlSet } from "./record-utils.js";
 

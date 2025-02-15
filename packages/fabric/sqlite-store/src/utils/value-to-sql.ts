@@ -3,9 +3,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JSONExt, VariantTag } from "@fabric/core";
+import {
+  JSONExt,
+  VariantTag,
+  type FieldDefinition,
+  type FieldToType,
+} from "@fabric/core";
 import { isNullish } from "@fabric/core/validations";
-import type { FieldDefinition, FieldToType } from "@fabric/models";
 
 type FieldSQLInsertMap = {
   [K in FieldDefinition[VariantTag]]: (

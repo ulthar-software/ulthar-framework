@@ -19,7 +19,7 @@
     "@faker-js/faker": "^9.4.0"
   },
   "scripts": {
-    "dev": "tsc build --watch",
+    "dev": "tsc build --watch --preserveWatchOutput",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",

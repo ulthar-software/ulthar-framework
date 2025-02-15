@@ -3,18 +3,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import type {
+  FieldDefinition,
   FilterOptions,
   FilterValue,
+  Model,
   MultiFilterOption,
   SingleFilterOption,
-} from "@fabric/db";
+} from "@fabric/core";
 import {
   FILTER_OPTION_OPERATOR_KEY,
   FILTER_OPTION_TYPE_KEY,
   FILTER_OPTION_VALUE_KEY,
-} from "@fabric/db";
-import type { FieldDefinition, Model } from "@fabric/models";
+} from "@fabric/core";
 import { keyToParamKey } from "./record-utils.js";
 import { fieldValueToSQL } from "./value-to-sql.js";
 
