@@ -1,23 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { ModelToType } from "../models/model.js";
-import type { AggregateModel } from "./aggregate.js";
 import type { DomainEvent } from "./event.js";
-
-export interface EventStreamHandlers<
-  TModel extends AggregateModel,
-  TEventTags extends EventNames,
-> {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-  create<TEvent extends DomainEvent<TEventTags["createEvents"][number]>>(
-    event: TEvent,
-  ): ModelToType<TModel>;
-
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-  update<TEvent extends DomainEvent<TEventTags["updateEvents"][number]>>(
-    event: TEvent,
-    model: ModelToType<TModel>,
-  ): ModelToType<TModel>;
-}
 
 export interface EventNames<
   TCreateTag extends string = string,
@@ -30,28 +12,17 @@ export interface EventNames<
 }
 
 export class EventStream<
-  const TModel extends AggregateModel = AggregateModel,
-  const TEventNames extends EventNames = EventNames,
+  const TName extends string = string,
+  const TEvents extends readonly DomainEvent[] = readonly DomainEvent[],
 > {
   constructor(
-    readonly model: TModel,
-    readonly events: TEventNames,
-    readonly handlers: EventStreamHandlers<TModel, TEventNames>,
+    readonly name: TName,
+    readonly events: TEvents,
   ) {}
-
-  get name(): TModel["name"] {
-    return this.model.name;
-  }
 }
 
 export type PossibleEvents<T extends EventStream<any, any>> =
-  T extends EventStream<any, infer TEventTags>
-    ? DomainEvent<
-        | TEventTags["createEvents"][number]
-        | TEventTags["updateEvents"][number]
-        | TEventTags["deleteEvents"][number]
-      >
-    : never;
+  T extends EventStream<any, infer TEvents> ? TEvents[number] : never;
 
 export type EventStreamFromName<
   T extends EventStream<any, any>,

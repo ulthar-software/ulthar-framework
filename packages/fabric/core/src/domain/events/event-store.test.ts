@@ -1,94 +1,146 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
-import { beforeEach, describe, expect, test } from "@fabric/testing";
+/* eslint-disable @typescript-eslint/naming-convention */
+import { describe, expect, test } from "@fabric/testing";
 import { Field } from "../models/fields.js";
-import { WritableValueStore } from "../value-store/value-store.js";
+
+import type { ModelToType } from "../models/model.js";
+import { ValueStoreDriverMock } from "../value-store/value-store-driver-mock.js";
+import { AggregateStore } from "./aggregate-store.js";
 import { AggregateModel } from "./aggregate.js";
 import { EventStore } from "./event-store.js";
 import { EventStream } from "./event-stream.js";
-import type { DomainEvent } from "./event.js";
+import type { EventToType } from "./event.js";
+import { DomainEvent } from "./event.js";
+import { AggregateProjector } from "./projector.js";
 
-import { PosixDate } from "../../time/posix-date.js";
-import { ValueStoreDriverMock } from "../value-store/value-store-driver-mock.js";
-
-describe("EventStore", () => {
-  const stateModel = new AggregateModel("demo", {
-    name: Field.string({
-      isUnique: true,
-    }),
-    count: Field.integer(),
+describe("EventStore", async () => {
+  const CreateStateEventModel = new DomainEvent("CreateStateEvent", {
+    name: Field.string(),
   });
-  type StateModel = typeof stateModel;
-  type CreateStateEvent = DomainEvent<"CreateState", { name: string }>;
-  type UpdateStateEvent = DomainEvent<"UpdateState", { count: number }>;
-  // type DeleteStateEvent = DomainEvent<"DeleteState">;
+  type CreateStateEventModel = typeof CreateStateEventModel;
+  type CreateStateEvent = EventToType<CreateStateEventModel>;
 
-  const demoStream = new EventStream(
-    stateModel,
+  const UpdateStateEventModel = new DomainEvent("UpdateStateEvent", {
+    count: Field.integer({ hasArbitraryPrecision: false }),
+  });
+  type UpdateStateEventModel = typeof UpdateStateEventModel;
+  type UpdateStateEvent = EventToType<UpdateStateEventModel>;
+
+  const DeleteStateEvent = new DomainEvent("DeleteStateEvent", {});
+  type DeleteStateEvent = typeof DeleteStateEvent;
+
+  const events = [
+    CreateStateEventModel,
+    UpdateStateEventModel,
+    DeleteStateEvent,
+  ] as const;
+
+  const StateAggregateModel = new AggregateModel("StateAggregateModel", {
+    name: Field.string(),
+    count: Field.integer({ hasArbitraryPrecision: false }),
+  });
+  type StateAggregateModel = typeof StateAggregateModel;
+  type StateAggregate = ModelToType<StateAggregateModel>;
+
+  const eventStream = new EventStream("StateAggregate", events);
+
+  const StateAggregateProjector = new AggregateProjector(
+    "StateAggregate",
+    StateAggregateModel,
+    events,
     {
-      createEvents: ["CreateState"],
-      updateEvents: ["UpdateState"],
-      deleteEvents: ["DeleteState"],
-    },
-    {
-      create: (evt: CreateStateEvent) => {
-        return {
-          id: crypto.randomUUID(),
-          version: 0n,
-          createdAt: new PosixDate(),
-          updatedAt: new PosixDate(),
-          name: evt.payload.name,
+      CreateStateEvent: (event: CreateStateEvent): StateAggregate =>
+        StateAggregateModel.from(event, {
+          name: event.payload.name,
           count: 0,
-        };
-      },
-      update: (evt: UpdateStateEvent, model) => {
-        return {
-          ...model,
-          count: evt.payload.count,
-          updatedAt: new PosixDate(),
-        };
-      },
+        }),
+      UpdateStateEvent: (
+        event: UpdateStateEvent,
+        aggregate: StateAggregate,
+      ): StateAggregate =>
+        StateAggregateModel.update(aggregate, event, {
+          count: event.payload.count,
+        }),
+      DeleteStateEvent: () => null,
     },
   );
-  type DemoStream = typeof demoStream;
 
-  let eventStore: EventStore<StateModel, DemoStream>;
+  const eventStreams = [eventStream];
 
-  beforeEach(async () => {
-    const eventStorageDriver = new ValueStoreDriverMock();
-    const stateStorageDriver = new ValueStoreDriverMock();
-    const stateStore = new WritableValueStore(stateStorageDriver, [stateModel]);
+  const eventStore = new EventStore(new ValueStoreDriverMock(), eventStreams);
 
-    eventStore = new EventStore(eventStorageDriver, stateStore, [demoStream]);
+  const aggregateStore = new AggregateStore(
+    new ValueStoreDriverMock(),
+    eventStore,
+    [StateAggregateProjector],
+  );
 
-    await eventStore.sync().runOrThrow();
-  });
-  test("given an event store, we can append events to it", async () => {
-    await eventStore
-      .append("demo", {
-        _tag: "CreateState",
-        id: crypto.randomUUID(),
-        payload: {
-          name: "test",
-        },
-        streamId: crypto.randomUUID(),
-        version: 1n,
-        timestamp: new PosixDate(),
-      })
-      .runOrThrow();
+  await aggregateStore.sync().runOrThrow();
 
-    const state = await eventStore.stateStore
-      .from("demo")
+  test("Given an aggregate store build from an event store and some projectors, when we call append, the aggregate store should be updated", async () => {
+    const streamId = crypto.randomUUID();
+    const createStateEvent = CreateStateEventModel.from({
+      id: crypto.randomUUID(),
+      streamId,
+      version: 1n,
+      payload: { name: "test" },
+    });
+
+    await eventStore.append("StateAggregate", createStateEvent).runOrThrow();
+
+    const state = await aggregateStore
+      .from("StateAggregateModel")
+      .where({ id: streamId })
       .selectOneOrFail()
       .runOrThrow();
 
     expect(state).toEqual({
-      id: expect.any(String),
-      version: 0n,
-      createdAt: expect.any(PosixDate),
-      updatedAt: expect.any(PosixDate),
+      id: streamId,
       name: "test",
       count: 0,
+      createdAt: createStateEvent.timestamp,
+      updatedAt: createStateEvent.timestamp,
+      version: 1n,
     });
+
+    const updateStateEvent = UpdateStateEventModel.from({
+      id: crypto.randomUUID(),
+      streamId,
+      version: 2n,
+      payload: { count: 1 },
+    });
+
+    await eventStore.append("StateAggregate", updateStateEvent).runOrThrow();
+
+    const updatedState = await aggregateStore
+      .from("StateAggregateModel")
+      .where({ id: streamId })
+      .selectOneOrFail()
+      .runOrThrow();
+
+    expect(updatedState).toEqual({
+      id: streamId,
+      name: "test",
+      count: 1,
+      createdAt: createStateEvent.timestamp,
+      updatedAt: updateStateEvent.timestamp,
+      version: 2n,
+    });
+
+    const deleteStateEvent = DeleteStateEvent.from({
+      id: crypto.randomUUID(),
+      streamId,
+      version: 3n,
+      payload: {},
+    });
+
+    await eventStore.append("StateAggregate", deleteStateEvent).runOrThrow();
+
+    const deletedState = await aggregateStore
+      .from("StateAggregateModel")
+      .where({ id: streamId })
+      .selectOne()
+      .runOrThrow();
+
+    expect(deletedState.isNothing()).toBe(true);
   });
 });
