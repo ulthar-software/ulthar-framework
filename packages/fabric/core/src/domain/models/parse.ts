@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -25,7 +25,8 @@ export function parseModel<T extends Model>(
     );
 
     if (fieldResult.isOk()) {
-      parsedValue[key as keyof ModelToType<T>] = fieldResult.value;
+      parsedValue[key as keyof ModelToType<T>] =
+        fieldResult.value as ModelToType<T>[keyof ModelToType<T>];
     } else {
       parsingErrors[key as keyof ModelToType<T>] =
         fieldResult.unwrapErrorOrThrow();
