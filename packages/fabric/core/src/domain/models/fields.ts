@@ -6,6 +6,7 @@ import type { Email } from "../../types/email.js";
 import type { UUID } from "../../types/uuid.js";
 import { variantConstructor } from "../../variant/constructor.js";
 import type { TaggedVariant, VariantTag } from "../../variant/variant.js";
+import type { Model, ModelToType } from "./model.js";
 
 export const Field = {
   string: variantConstructor<StringField>("StringField"),
@@ -15,13 +16,16 @@ export const Field = {
   decimal: variantConstructor<DecimalField>("DecimalField"),
   reference: variantConstructor<ReferenceField>("ReferenceField"),
   posixDate: variantConstructor<PosixDateField>("PosixDateField"),
-  embedded: variantConstructor<EmbeddedField>("EmbeddedField"),
   boolean: variantConstructor<BooleanField>("BooleanField"),
   email: variantConstructor<EmailField>("EmailField"),
+  url: variantConstructor<UrlField>("UrlField"),
   enum: <K extends string, TOpts extends Omit<EnumField<K>, VariantTag>>(
     opts: TOpts,
   ) => variantConstructor<EnumField<K>>("EnumField")(opts),
-  url: variantConstructor<UrlField>("UrlField"),
+  embedded: <T extends Record<string, FieldDefinition>>(model: T) =>
+    variantConstructor<EmbeddedField<T>>("EmbeddedField")({
+      model,
+    }),
 } as const satisfies Record<FieldShortName, any>;
 
 export type FieldDefinition =
@@ -32,7 +36,7 @@ export type FieldDefinition =
   | DecimalField
   | ReferenceField
   | PosixDateField
-  | EmbeddedField
+  | EmbeddedField<any>
   | EmailField
   | BooleanField
   | EnumField<string>
@@ -72,7 +76,7 @@ export type FieldToType<TField> =
   : TField extends EnumField<infer K> ? MaybeOptional<TField, K>
   : TField extends UrlField ? MaybeOptional<TField, string>
   : TField extends EmbeddedField<infer TSubModel>
-    ? MaybeOptional<TField, TSubModel>
+    ? MaybeOptional<TField, ModelToType<Model<string, TSubModel>>>
   : never;
 
 //prettier-ignore
@@ -131,10 +135,11 @@ export interface DecimalField extends TaggedVariant<"DecimalField">, BaseField {
   scale?: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export interface EmbeddedField<T = any>
+export interface EmbeddedField<T extends Record<string, FieldDefinition>>
   extends TaggedVariant<"EmbeddedField">,
-    BaseField {}
+    BaseField {
+  model: T;
+}
 
 export interface EnumField<TValues extends string>
   extends TaggedVariant<"EnumField">,
