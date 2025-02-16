@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -10,7 +11,7 @@ export function transformRow(model: Model) {
   return (row: Record<string, any>) => {
     const result: Record<string, any> = {};
     for (const key in row) {
-      const field = model.fields[key];
+      const field = model.fields[key] as FieldDefinition;
       result[key] = valueFromSQL(field, row[key]);
     }
     return result;
@@ -44,7 +45,7 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   FloatField: (_, v) => v,
   DecimalField: (_, v) => v,
   PosixDateField: (_, v) => new PosixDate(v),
-  EmbeddedField: (_, v: string) => JSONExt.parse(v).unwrapOrThrow(),
+  EmbeddedField: (_, v: string) => JSONExt.parse<any>(v).unwrapOrThrow(),
   BooleanField: (_, v) => v,
   EmailField: (_, v) => v,
   EnumField: (_, v) => v,
