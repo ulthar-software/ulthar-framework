@@ -23,6 +23,22 @@ export class Result<TValue, TError extends TaggedError = never> {
     return new Result(value ?? undefined);
   }
 
+  /**
+   * Create a Result from an array of Results, which resolves to an array of values and it fails with the first error found in the original array
+   * @param array An array of Result instances.
+   * @returns A Result containing an array of unwrapped values or an error.
+   */
+  static fromArray<T, TError extends TaggedError>(
+    array: Result<T, TError>[],
+  ): Result<T[], TError> {
+    try {
+      const values = array.map((result) => result.unwrapOrThrow());
+      return Result.succeedWith(values);
+    } catch (error: any) {
+      return Result.failWith(error as TError);
+    }
+  }
+
   static tryFrom<T, TError extends TaggedError>(
     fn: () => T,
     errorMapper: (error: any) => TError,
