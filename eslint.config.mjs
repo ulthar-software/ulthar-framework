@@ -25,6 +25,7 @@ export default tseslint.config(
       "**/node_modules",
       "**/coverage",
       ".yarn",
+      "**/__tests__",
     ],
   },
   {
@@ -56,6 +57,10 @@ export default tseslint.config(
         },
         {
           selector: "objectLiteralProperty",
+          format: null,
+        },
+        {
+          selector: "objectLiteralMethod",
           format: null,
         },
         {
