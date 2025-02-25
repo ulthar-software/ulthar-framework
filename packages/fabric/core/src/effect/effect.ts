@@ -155,16 +155,19 @@ export class Effect<
 
   assertValueOrFailWith<TNewError extends TaggedError>(
     errFn: () => TNewError,
-  ): Effect<TValue, TError | TNewError, TDeps> {
+  ): Effect<Exclude<TValue, undefined | null>, TError | TNewError, TDeps> {
     return new Effect(async (deps: TDeps) => {
       const result = await this.fn(deps);
       if (result.isError()) {
         return result;
       }
-      if (!result.value) {
+      if (result.value === undefined || result.value === null) {
         return Result.failWith(errFn());
       }
-      return result as Result<TValue, TError | TNewError>;
+      return result as Result<
+        Exclude<TValue, undefined | null>,
+        TError | TNewError
+      >;
     });
   }
 
