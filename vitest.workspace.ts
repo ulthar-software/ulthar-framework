@@ -4,6 +4,8 @@ export default defineWorkspace([
   "./packages/templates/lib/vitest.config.ts",
   "./packages/templates/domain/vitest.config.ts",
   "./packages/fabric/weaver/vitest.config.ts",
+  "./packages/fabric/cli/vitest.config.ts",
+  "./packages/fabric/http/vitest.config.ts",
   "./packages/fabric/testing/vitest.config.ts",
   "./packages/fabric/sqlite-store/vitest.config.ts",
   "./packages/fabric/core/vitest.config.ts",

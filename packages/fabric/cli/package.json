@@ -1,22 +1,30 @@
 {
-  "name": "@fabric/domain-template",
+  "name": "@fabric/cli",
   "version": "0.0.1",
-  "description": "A template for creating domain packages in the Fabric framework",
+  "description": "A template for creating library packages in the Fabric framework",
   "exports": {
     ".": "./dist/index.js"
   },
   "files": [
     "dist"
   ],
+  "bin": {
+    "fabric": "./dist/index.js"
+  },
   "type": "module",
   "main": "dist/index.js",
+  "sideEffects": false,
   "devDependencies": {
     "@fabric/testing": "workspace:^",
+    "@types/node": "^22.13.5",
     "typescript": "^5.7.3",
     "vitest": "^3.0.6"
   },
   "dependencies": {
-    "@fabric/core": "workspace:^"
+    "@fabric/core": "workspace:^",
+    "@fabric/http": "workspace:^",
+    "puppeteer": "^24.2.1",
+    "sharp": "^0.33.5"
   },
   "scripts": {
     "dev": "tsc build --watch --preserveWatchOutput",

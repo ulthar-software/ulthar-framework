@@ -12,11 +12,11 @@
   "main": "dist/index.js",
   "sideEffects": false,
   "devDependencies": {
-    "typescript": "npm:^5.7.3",
-    "vitest": "npm:^3.0.5"
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6"
   },
   "dependencies": {
-    "@faker-js/faker": "^9.4.0"
+    "@faker-js/faker": "^9.5.0"
   },
   "scripts": {
     "dev": "tsc build --watch --preserveWatchOutput",

@@ -11,8 +11,8 @@
   "type": "module",
   "main": "dist/index.js",
   "devDependencies": {
-    "typescript": "npm:^5.7.3",
-    "vitest": "npm:^3.0.5"
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6"
   },
   "dependencies": {
     "@fabric/core": "workspace:^",

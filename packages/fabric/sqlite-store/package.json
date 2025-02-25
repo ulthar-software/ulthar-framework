@@ -14,8 +14,8 @@
   "devDependencies": {
     "@fabric/testing": "workspace:^",
     "@types/better-sqlite3": "^7.6.12",
-    "typescript": "npm:^5.7.3",
-    "vitest": "npm:^3.0.5"
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6"
   },
   "dependencies": {
     "@fabric/core": "workspace:^",

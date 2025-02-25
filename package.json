@@ -21,16 +21,16 @@
     "fabric"
   ],
   "devDependencies": {
-    "@eslint/js": "^9.19.0",
+    "@eslint/js": "^9.21.0",
     "cross-env": "^7.0.3",
-    "eslint": "^9.19.0",
+    "eslint": "^9.21.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
-    "prettier": "^3.4.2",
-    "tsx": "^4.19.2",
+    "prettier": "^3.5.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.23.0",
-    "vitest": "^3.0.5",
+    "typescript-eslint": "^8.24.1",
+    "vitest": "^3.0.6",
     "zx": "^8.3.2"
   },
   "scripts": {
