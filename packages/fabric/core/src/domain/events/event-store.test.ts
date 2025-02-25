@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { describe, expect, test } from "@fabric/testing";
+import { describe, expect, expectTypeOf, test } from "@fabric/testing";
 import { Field } from "../models/fields.js";
 
 import type { ModelToType } from "../models/model.js";
@@ -85,7 +84,11 @@ describe("EventStore", async () => {
       payload: { name: "test" },
     });
 
-    await eventStore.append("StateAggregate", createStateEvent).runOrThrow();
+    const result = await eventStore
+      .append("StateAggregate", createStateEvent)
+      .runOrThrow();
+
+    expectTypeOf(result.type).toEqualTypeOf<"CreateStateEvent">();
 
     const state = await aggregateStore
       .from("StateAggregateModel")

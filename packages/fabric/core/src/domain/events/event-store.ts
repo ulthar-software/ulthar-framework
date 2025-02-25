@@ -41,8 +41,8 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
    * Store a new event in the event store.
    */
   append<
-    TStreamName extends TEventStreams[number]["name"],
-    TEvent extends PossibleEvents<
+    const TStreamName extends TEventStreams[number]["name"],
+    const TEvent extends PossibleEvents<
       EventStreamFromName<TEventStreams[number], TStreamName>
     >,
   >(

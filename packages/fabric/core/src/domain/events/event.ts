@@ -4,7 +4,7 @@ import { PosixDate } from "../../time/posix-date.js";
 import type { Keyof } from "../../types/keyof.js";
 import type { EmbeddedField, FieldToType } from "../models/fields.js";
 import { Field } from "../models/fields.js";
-import type { ModelFields, ModelToType } from "../models/model.js";
+import type { ModelFields } from "../models/model.js";
 import { Model } from "../models/model.js";
 
 /**
@@ -19,7 +19,9 @@ export class DomainEvent<
       name,
       {
         ...BaseEventFields,
-        payload: Field.embedded(fields),
+        payload: Field.embedded({
+          subModel: fields,
+        }),
       },
       {
         constraints: [{ type: "unique", fields: ["streamId", "version"] }],
@@ -27,14 +29,12 @@ export class DomainEvent<
     );
   }
 
-  from(
-    data: Omit<ModelToType<this>, "type" | "timestamp">,
-  ): ModelToType<this> & { type: TName } {
+  from(data: Omit<EventToType<this>, "type" | "timestamp">): EventToType<this> {
     return {
       ...data,
       type: this.name,
       timestamp: new PosixDate(),
-    } as ModelToType<this> & { type: TName };
+    } as EventToType<this>;
   }
 }
 

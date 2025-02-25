@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { TupleToUnion } from "../../types/tuple-to-union.js";
 import type { DomainEvent } from "./event.js";
 
 export interface EventNames<
@@ -22,7 +23,7 @@ export class EventStream<
 }
 
 export type PossibleEvents<T extends EventStream<any, any>> =
-  T extends EventStream<any, infer TEvents> ? TEvents[number] : never;
+  T extends EventStream<any, infer TEvents> ? TupleToUnion<TEvents> : never;
 
 export type EventStreamFromName<
   T extends EventStream<any, any>,
