@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeAll, describe, expect, test } from "@fabric/testing";
 import { Decimal } from "../decimal/decimal.js";
+import { Field, Model, SchemaParsingError } from "../domain/index.js";
 import { UnexpectedError } from "../error/unexpected-error.js";
 import { PosixDate } from "../time/index.js";
 import { registerDefaultTransformers } from "./default-json-transformers.js";
@@ -140,5 +141,31 @@ describe("JSONExt", () => {
     }).toThrow(
       new UnexpectedError(`Transformer with type duplicate already registered`),
     );
+  });
+
+  test("parseFromModel should parse a JSON string from a defined Model", () => {
+    const jsonString =
+      '{"key": "value", "date": {"_type":"posix-date","value":1633072800000} }';
+    const model = new Model("something", {
+      key: Field.string(),
+      date: Field.posixDate(),
+    });
+    const result = JSONExt.parseWithModel(model, jsonString);
+    expect(result.isOk()).toBe(true);
+    expect(result.unwrapOrThrow()).toEqual({
+      key: "value",
+      date: new PosixDate(1633072800000),
+    });
+  });
+
+  test("parseFromModel should return a SchemaParsingError for an invalid JSON string", () => {
+    const jsonString = '{"key": "value", "date": 1633072800000 }';
+    const model = new Model("something", {
+      key: Field.string(),
+      date: Field.posixDate(),
+    });
+    const result = JSONExt.parseWithModel(model, jsonString);
+    expect(result.isError()).toBe(true);
+    expect(result.unwrapErrorOrThrow()).toBeInstanceOf(SchemaParsingError);
   });
 });
