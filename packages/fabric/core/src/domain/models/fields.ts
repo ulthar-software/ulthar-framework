@@ -5,7 +5,8 @@ import type { PosixDate } from "../../time/posix-date.js";
 import type { Email } from "../../types/email.js";
 import type { UUID } from "../../types/uuid.js";
 import { variantConstructor } from "../../variant/constructor.js";
-import type { TaggedVariant, VariantTag } from "../../variant/variant.js";
+import type { TaggedVariant } from "../../variant/variant.js";
+import { VariantTag } from "../../variant/variant.js";
 import type { Model, ModelToType } from "./model.js";
 
 export const Field = {
@@ -22,9 +23,28 @@ export const Field = {
   enum: <K extends string, TOpts extends Omit<EnumField<K>, VariantTag>>(
     opts: TOpts,
   ) => variantConstructor<EnumField<K>>("EnumField")(opts),
-  embedded: <T extends Record<string, FieldDefinition>>(model: T) =>
-    variantConstructor<EmbeddedField<T>>("EmbeddedField")({
-      model,
+  embedded: <
+    T extends Record<string, FieldDefinition>,
+    TOpts extends EmbeddedField<T>,
+  >(
+    opts: Omit<TOpts, VariantTag>,
+  ): TOpts => {
+    return {
+      [VariantTag]: "EmbeddedField",
+      ...opts,
+    } as const as TOpts;
+  },
+  objectArray: <
+    T extends Record<string, FieldDefinition>,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+    TOpts extends Omit<ObjectArrayField<T>, VariantTag | "subModel">,
+  >(
+    subModel: T,
+    opts?: TOpts,
+  ) =>
+    variantConstructor<ObjectArrayField<T>>("ObjectArrayField")({
+      subModel,
+      ...opts,
     }),
 } as const satisfies Record<FieldShortName, any>;
 
@@ -40,7 +60,8 @@ export type FieldDefinition =
   | EmailField
   | BooleanField
   | EnumField<string>
-  | UrlField;
+  | UrlField
+  | ObjectArrayField<any>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FieldShortNames = {
@@ -56,6 +77,7 @@ const FieldShortNames = {
   EmailField: "email",
   EnumField: "enum",
   UrlField: "url",
+  ObjectArrayField: "objectArray",
 } as const satisfies Record<FieldDefinition["_tag"], string>;
 type FieldShortName = (typeof FieldShortNames)[keyof typeof FieldShortNames];
 
@@ -75,8 +97,8 @@ export type FieldToType<TField> =
   : TField extends EmailField ? MaybeOptional<TField, Email>
   : TField extends EnumField<infer K> ? MaybeOptional<TField, K>
   : TField extends UrlField ? MaybeOptional<TField, string>
-  : TField extends EmbeddedField<infer TSubModel>
-    ? MaybeOptional<TField, ModelToType<Model<string, TSubModel>>>
+  : TField extends EmbeddedField<infer TSubModel> ? MaybeOptional<TField, ModelToType<Model<string, TSubModel>>>
+  : TField extends ObjectArrayField<infer TSubModel> ? MaybeOptional<TField, ModelToType<Model<string, TSubModel>>[]>
   : never;
 
 //prettier-ignore
@@ -138,7 +160,7 @@ export interface DecimalField extends TaggedVariant<"DecimalField">, BaseField {
 export interface EmbeddedField<T extends Record<string, FieldDefinition>>
   extends TaggedVariant<"EmbeddedField">,
     BaseField {
-  model: T;
+  subModel: T;
 }
 
 export interface EnumField<TValues extends string>
@@ -148,3 +170,9 @@ export interface EnumField<TValues extends string>
 }
 
 export interface UrlField extends TaggedVariant<"UrlField">, BaseField {}
+
+export interface ObjectArrayField<T extends Record<string, FieldDefinition>>
+  extends TaggedVariant<"ObjectArrayField">,
+    BaseField {
+  subModel: T;
+}

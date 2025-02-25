@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Decimal } from "../../decimal/decimal.js";
 import { TaggedError } from "../../error/tagged-error.js";
 import { Result } from "../../result/result.js";
@@ -7,6 +6,8 @@ import type { Email } from "../../types/email.js";
 import { isUUID, parseAndSanitizeString } from "../../validations/index.js";
 import type { VariantFromTag } from "../../variant/variant.js";
 import type { FieldDefinition, FieldToType } from "./fields.js";
+import { Model } from "./model.js";
+import { parseModel } from "./parse.js";
 
 export type FieldParsers = {
   [K in FieldDefinition["_tag"]]: FieldParser<
@@ -75,8 +76,19 @@ export const fieldParsers: FieldParsers = {
       return Result.failWith(new InvalidFieldTypeError());
     });
   },
-  EmbeddedField: function () {
-    throw new Error("Function not implemented.");
+  EmbeddedField: function (f, v) {
+    return parseOptionality(f, v, (v) => {
+      if (typeof v === "object" && v !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const result = parseSubModel(f.subModel, v);
+        return result.errorMap(() => new InvalidFieldTypeError()) as Result<
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          any,
+          InvalidFieldTypeError
+        >;
+      }
+      return Result.failWith(new InvalidFieldTypeError());
+    });
   },
   EmailField: function (f, v) {
     return parseOptionality(f, v, (v) => {
@@ -97,8 +109,23 @@ export const fieldParsers: FieldParsers = {
       return Result.failWith(new InvalidFieldTypeError());
     });
   },
-  UrlField: function (): Result<undefined, FieldParsingError> {
+  UrlField: function () {
     throw new Error("Function not implemented.");
+  },
+  ObjectArrayField: function (f, v) {
+    return parseOptionality(f, v, (v) => {
+      if (Array.isArray(v)) {
+        const result = Result.fromArray(
+          v.map((value) =>
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            parseSubModel(f.subModel, value),
+          ),
+        );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return result as Result<any[], InvalidFieldTypeError>;
+      }
+      return Result.failWith(new InvalidFieldTypeError());
+    });
   },
 };
 
@@ -171,4 +198,13 @@ function parseOptionality<T>(
     return Result.ok(value as T);
   }
   return withMapping(value);
+}
+
+function parseSubModel<T>(
+  subModel: Record<string, FieldDefinition>,
+  value: unknown,
+): Result<T, InvalidFieldTypeError> {
+  return parseModel(new Model("subModel", subModel), value).errorMap(
+    () => new InvalidFieldTypeError(),
+  ) as Result<T, InvalidFieldTypeError>;
 }
