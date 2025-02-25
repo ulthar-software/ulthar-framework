@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/naming-convention */
 import { describe, expect, test } from "@fabric/testing";
 import { match } from "./match.js";
 import { type TaggedVariant, VariantTag } from "./variant.js";

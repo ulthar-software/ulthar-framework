@@ -13,7 +13,6 @@ export class Environment<TEnv extends Model> {
   get<TKey extends keyof ModelToType<TEnv>>(
     name: TKey,
   ): ModelToType<TEnv>[TKey] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.env[name];
   }
 

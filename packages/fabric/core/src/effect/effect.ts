@@ -142,14 +142,14 @@ export class Effect<
   }
 
   mapResult<TNewValue, TNewError extends TaggedError>(
-    fn: (value: TValue) => Result<TNewValue, TNewError>,
+    fn: (value: TValue) => MaybePromise<Result<TNewValue, TNewError>>,
   ): Effect<TNewValue, TError | TNewError, TDeps> {
     return new Effect(async (deps: TDeps) => {
       const result = await this.fn(deps);
       if (result.isError()) {
         return result as Result<TNewValue, TError | TNewError>;
       }
-      return fn(result.value as TValue);
+      return await fn(result.value as TValue);
     });
   }
 
@@ -253,6 +253,18 @@ export class Effect<
       const result = await this.fn(deps);
       if (result.isError()) {
         return Result.ok(await fn(result.value));
+      }
+      return result as Result<TValue>;
+    });
+  }
+
+  catchWithEffect<TNewError extends TaggedError, TNewDeps = void>(
+    fn: (error: TError) => Effect<TValue, TNewError, TNewDeps>,
+  ): Effect<TValue, TNewError, TDeps & TNewDeps> {
+    return new Effect(async (deps: TDeps & TNewDeps) => {
+      const result = await this.fn(deps);
+      if (result.isError()) {
+        return await fn(result.value).fn(deps);
       }
       return result as Result<TValue>;
     });

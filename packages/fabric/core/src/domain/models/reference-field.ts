@@ -20,7 +20,7 @@ export function validateReferenceField(
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (field.targetKey && !schema[field.targetModel].fields[field.targetKey]) {
     return Result.failWith(
       new InvalidReferenceFieldError(
@@ -31,6 +31,7 @@ export function validateReferenceField(
 
   if (
     field.targetKey &&
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     !schema[field.targetModel].fields[field.targetKey].isUnique
   ) {
     return Result.failWith(

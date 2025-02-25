@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/naming-convention */
+
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FieldDefinition, FieldToType, Model } from "@fabric/core";
@@ -50,4 +50,5 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   EmailField: (_, v) => v,
   EnumField: (_, v) => v,
   UrlField: (_, v) => v,
+  ObjectArrayField: (_, v: string) => JSONExt.parse<any>(v).unwrapOrThrow(),
 };

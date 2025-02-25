@@ -31,18 +31,18 @@ export function recordToSqlParamRecord(
   return Object.keys(record).reduce(
     (acc, key) => ({
       ...acc,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       [`${prefix}${key}`]: fieldValueToSQL(model.fields[key], record[key]),
     }),
     {},
   );
 }
 export function manyRecordsToSqlParamRecord(
-  model: Model<string, any>,
+  model: Model,
   records: Record<string, any>[],
 ) {
   return records
     .map((record, index) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return recordToSqlParamRecord(model, record, `${index}_`);
     })
     .reduce((acc, record) => ({ ...acc, ...record }), {});

@@ -131,6 +131,7 @@ function getParamsFromSingleFilterOption(
     .reduce(
       (acc, [key, value]) => ({
         ...acc,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         ...getParamsForFilterKeyValue(collection.fields[key], key, value, opts),
       }),
       {},

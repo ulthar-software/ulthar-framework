@@ -7,7 +7,7 @@ import {
 } from "./record-utils.js";
 
 export function insertToSql(
-  model: Model<string, any>,
+  model: Model,
   query: StoreInsertOptions,
 ): [string, Record<string, any>] {
   return [

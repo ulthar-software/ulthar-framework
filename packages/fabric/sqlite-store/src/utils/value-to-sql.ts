@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/naming-convention */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   JSONExt,
@@ -35,6 +35,7 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   EmailField: (_, v) => v,
   EnumField: (_, v) => v,
   UrlField: (_, v) => v,
+  ObjectArrayField: (_, v) => JSONExt.stringify(v).unwrapOrThrow(),
 };
 
 export function fieldValueToSQL(field: FieldDefinition, value: any) {

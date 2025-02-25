@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/naming-convention */
+
 import type { Model } from "@fabric/core";
 import {
   exhaustiveCheck,
@@ -67,6 +67,9 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
   UrlField: (n, f): string => {
     return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
+  ObjectArrayField: (n, f): string => {
+    return [n, "TEXT", modifiersFromOpts(f)].join(" ");
+  },
 };
 function fieldDefinitionToSQL(name: string, field: FieldDefinition) {
   return FieldSQLDefinitionMap[field[VariantTag]](name, field as any);
@@ -94,7 +97,7 @@ function generateSQLConstraint(constraint: ModelConstraint) {
 
 export function modelToSql(model: Model) {
   const fields = Object.entries(model.fields)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
     .map(([name, type]) => fieldDefinitionToSQL(name, type as FieldDefinition))
     .join(", ");
 

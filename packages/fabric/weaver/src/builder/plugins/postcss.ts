@@ -22,12 +22,12 @@ export const postcssPlugin = (theme: TailwindTheme) =>
       build.onLoad({ filter: /\.css$/, namespace: "file" }, async (args) => {
         const contents = await fs.readFile(args.path, "utf-8");
 
-        const result = await postcss([tailwindPlugin, autoprefixer]).process(
-          contents,
-          {
-            from: args.path,
-          },
-        );
+        const result = await postcss([
+          tailwindPlugin as postcss.Plugin,
+          autoprefixer,
+        ]).process(contents, {
+          from: args.path,
+        });
         return {
           contents: result.css,
           loader: "css",
