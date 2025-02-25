@@ -1,4 +1,4 @@
 {
-  "!(__test__/*)": ["yarn prettier -u --write"],
+  "!(**/__tests__/*)": ["yarn prettier -u --write"],
   "*.ts": ["yarn eslint --fix", "yarn vitest related --run"]
 }

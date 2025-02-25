@@ -1,0 +1,4 @@
+*
+!.gitignore
+!invalid.json
+!object-test.json
