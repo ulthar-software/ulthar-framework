@@ -93,6 +93,22 @@ export class Effect<
     });
   }
 
+  static allInSequence<TValue, TError extends TaggedError, TDeps>(
+    fns: () => Effect<TValue, TError, TDeps>[],
+  ): Effect<TValue[], TError, TDeps> {
+    return new Effect<TValue[], TError, TDeps>(async (deps: TDeps) => {
+      const results: TValue[] = [];
+      for (const fn of fns()) {
+        const result = await fn.fn(deps);
+        if (result.isError()) {
+          return result;
+        }
+        results.push(result.value as TValue);
+      }
+      return Result.ok(results);
+    });
+  }
+
   constructor(
     private readonly fn: (deps: TDeps) => MaybePromise<Result<TValue, TError>>,
   ) {}
