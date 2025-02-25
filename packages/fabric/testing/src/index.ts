@@ -6,6 +6,7 @@ export {
   describe,
   expect,
   expectTypeOf,
+  it,
   test,
 } from "vitest";
 export * from "./faker.js";
