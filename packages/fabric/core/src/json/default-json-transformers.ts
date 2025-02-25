@@ -5,7 +5,14 @@ import { JSONExt } from "./json-ext.js";
 export function registerDefaultTransformers() {
   JSONExt.registerTransformer({
     _type: "bigint",
-    deserialize: (value: string) => BigInt(value),
+    deserialize: (value: unknown) => {
+      if (typeof value !== "string") {
+        throw new Error(
+          "BigInt value must be a string with the numeric representation",
+        );
+      }
+      return BigInt(value);
+    },
     serialize: (value: bigint) => ({
       _type: "bigint",
       value: value.toString(),
@@ -15,7 +22,14 @@ export function registerDefaultTransformers() {
 
   JSONExt.registerTransformer({
     _type: "decimal",
-    deserialize: (value: string) => Decimal.from(value),
+    deserialize: (value: unknown) => {
+      if (typeof value !== "string") {
+        throw new Error(
+          "Decimal value must be a string with the numeric representation",
+        );
+      }
+      return Decimal.from(value);
+    },
     serialize: (value: Decimal) => ({
       _type: "decimal",
       value: value.toString(),

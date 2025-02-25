@@ -20,7 +20,12 @@ export const posixDateTransformer: JSONTypeTransformer<
   PosixDate
 > = {
   _type: "posix-date",
-  deserialize: (value: number) => new PosixDate(value),
+  deserialize: (value: unknown) => {
+    if (typeof value !== "number") {
+      throw new Error("serialized PosixDate value must be a number");
+    }
+    return new PosixDate(value);
+  },
   serialize: (value: PosixDate) => ({
     _type: "posix-date",
     value: value.timestamp,

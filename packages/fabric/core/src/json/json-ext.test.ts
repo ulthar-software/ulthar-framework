@@ -49,6 +49,13 @@ describe("JSONExt", () => {
     expect(result.unwrapOrThrow()).toBe(BigInt("12345678901234567890"));
   });
 
+  test("JSONExt.parse should throw for an invalid bigint", () => {
+    const jsonString = '{"_type":"bigint","value":"invalid"}';
+    const result = JSONExt.parse(jsonString);
+    expect(result.isError()).toBe(true);
+    expect(result.unwrapErrorOrThrow()).toBeInstanceOf(JSONParsingError);
+  });
+
   test("JSONExt.stringify should stringify an object with a registered transformer (bigint)", () => {
     const obj = BigInt("12345678901234567890");
     const result = JSONExt.stringify(obj);
@@ -63,6 +70,13 @@ describe("JSONExt", () => {
     const result = JSONExt.parse<Decimal>(jsonString);
     expect(result.isOk()).toBe(true);
     expect(result.unwrapOrThrow().toString()).toBe("12345.6789");
+  });
+
+  test("JSONExt.parse should throw for an invalid decimal", () => {
+    const jsonString = '{"_type":"decimal","value":"invalid"}';
+    const result = JSONExt.parse(jsonString);
+    expect(result.isError()).toBe(true);
+    expect(result.unwrapErrorOrThrow()).toBeInstanceOf(JSONParsingError);
   });
 
   test("JSONExt.stringify should stringify an object with a registered transformer (decimal)", () => {
@@ -89,6 +103,13 @@ describe("JSONExt", () => {
     const result = JSONExt.parse<PosixDate>(jsonString);
     expect(result.isOk()).toBe(true);
     expect(result.unwrapOrThrow()).toEqual(new PosixDate(1633072800000));
+  });
+
+  test("JSONExt.parse should throw for an invalid posix-date", () => {
+    const jsonString = '{"_type":"posix-date","value":"invalid"}';
+    const result = JSONExt.parse<PosixDate>(jsonString);
+    expect(result.isError()).toBe(true);
+    expect(result.unwrapErrorOrThrow()).toBeInstanceOf(JSONParsingError);
   });
 
   test("JSONExt.stringify should stringify an object with a registered transformer (posix-date)", () => {
