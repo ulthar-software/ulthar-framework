@@ -125,6 +125,10 @@ export class Effect<
     });
   }
 
+  discardValue(): Effect<void, TError, TDeps> {
+    return this.map(() => void 0);
+  }
+
   flatMap<TNewValue, TNewError extends TaggedError, TNewDeps = void>(
     fn: (value: TValue) => Effect<TNewValue, TNewError, TNewDeps>,
   ): Effect<TNewValue, TError | TNewError, MergeTypes<TDeps, TNewDeps>> {
