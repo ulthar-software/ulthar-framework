@@ -56,9 +56,9 @@ export const JSONExt = {
     }
     transformers.set(transformer._type, transformer);
   },
-};
+} as const;
 
-export function reviver(_key: string, value: unknown) {
+export function reviver(_key: string, value: unknown): any {
   if (isJSONSerializedType(value)) {
     const transformer = transformers.get(value._type);
     if (!transformer) {
@@ -69,7 +69,7 @@ export function reviver(_key: string, value: unknown) {
   return value;
 }
 
-export function replacer(_key: string, value: any) {
+export function replacer(_key: string, value: any): any {
   for (const transformer of transformers.values()) {
     if (transformer.typeMatches(value)) {
       return transformer.serialize(value);

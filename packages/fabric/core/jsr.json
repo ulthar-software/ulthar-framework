@@ -1,0 +1,11 @@
+{
+  "name": "@fabric/core",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./default-json-transformers": "./src/json/default-json-transformers.ts",
+    "./validations": "./src/validations/index.ts",
+    "./mocks": "./src/domain/mocks.ts"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@fabric/core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Core functionality for the Fabric framework",
   "exports": {
     ".": "./dist/index.js",
@@ -11,6 +11,7 @@
   "files": [
     "dist"
   ],
+  "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
   "sideEffects": false,
