@@ -1,10 +1,10 @@
 import type { AuthService, CryptoService } from "@fabric/core";
 import { Field, Model, TaggedError, type ModelToType } from "@fabric/core";
 import type { User } from "../../models/user.js";
-import type { ReadValueStore } from "../../services/state-store.js";
+import type { DomainStateStore } from "../../services/state-store.js";
 import type { DomainQuery } from "../domain-query.js";
 export interface LoginDependencies {
-  state: ReadValueStore;
+  state: DomainStateStore;
   crypto: CryptoService;
   auth: AuthService<User>;
 }

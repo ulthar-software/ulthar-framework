@@ -1,34 +1,34 @@
-import { EventStore, WritableValueStore } from "@fabric/core";
+import { AggregateStore, EventStore } from "@fabric/core";
 import { AuthServiceMock, CryptoServiceMock } from "@fabric/core/mocks";
 import { SQLiteStoreDriver } from "@fabric/sqlite-store";
-import { DomainModels, DomainStreams } from "../../models/index.js";
+import { DomainProjectors, DomainStreams } from "../../models/index.js";
 import type { User } from "../../models/user.js";
 import type { DomainEventStore } from "../event-store.js";
-import type { ReadValueStore } from "../state-store.js";
+import type { DomainStateStore } from "../state-store.js";
 
-export interface Dependencies {
-  state: ReadValueStore;
+export interface MockedDependencies {
+  state: DomainStateStore;
   events: DomainEventStore;
   crypto: CryptoServiceMock;
   auth: AuthServiceMock<User>;
 }
 
-export async function createMockServices(): Promise<Dependencies> {
-  const state = new WritableValueStore(
+export async function createServiceMocks(): Promise<MockedDependencies> {
+  const events: DomainEventStore = new EventStore(
     new SQLiteStoreDriver(":memory:"),
-    DomainModels,
+    DomainStreams,
   );
 
-  const events = new EventStore(
+  const state = new AggregateStore(
     new SQLiteStoreDriver(":memory:"),
-    state,
-    DomainStreams,
+    events,
+    DomainProjectors,
   );
 
   const crypto = new CryptoServiceMock();
   const auth = new AuthServiceMock<User>();
 
-  await events.sync().run();
+  await state.sync().runOrThrow();
 
   return { state, events, crypto, auth };
 }

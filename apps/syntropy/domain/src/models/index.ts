@@ -1,12 +1,10 @@
-import { ProjectModel, ProjectStream } from "./project.js";
-import { UserModel, UserStream } from "./user.js";
+import { ProjectModel, ProjectProjector, ProjectStream } from "./project.js";
+import { UserModel, UserProjector, UserStream } from "./user.js";
 export * from "./project.js";
 export * from "./user.js";
 
-export const DomainModels = [UserModel, ProjectModel];
+export const DomainModels = [UserModel, ProjectModel] as const;
 
-export type DomainModels = (typeof DomainModels)[number];
+export const DomainStreams = [ProjectStream, UserStream] as const;
 
-export const DomainStreams = [ProjectStream, UserStream];
-
-export type DomainStreams = (typeof DomainStreams)[number];
+export const DomainProjectors = [UserProjector, ProjectProjector] as const;

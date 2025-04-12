@@ -1,13 +1,13 @@
-import type { UUID } from "@fabric/core";
+import type { EventToType } from "@fabric/core";
 import {
   AggregateModel,
+  AggregateProjector,
+  DomainEvent,
   EventStream,
   Field,
-  VariantTag,
-  withUpdate,
-  type DomainEvent,
   type ModelToType,
 } from "@fabric/core";
+import { UserModel } from "./user.js";
 
 export const RepoProviders = {
   GITHUB: "github",
@@ -19,7 +19,7 @@ export const ProjectModel = new AggregateModel("projects", {
   name: Field.string(),
   description: Field.string(),
   userId: Field.reference({
-    targetModel: "users",
+    targetModel: UserModel.name,
   }),
   repositoryId: Field.string({
     isOptional: true,
@@ -29,100 +29,90 @@ export const ProjectModel = new AggregateModel("projects", {
     isOptional: true,
   }),
 });
-export type ProjectModel = typeof ProjectModel;
-export type Project = ModelToType<ProjectModel>;
+export type Project = ModelToType<typeof ProjectModel>;
 
-export type ProjectCreatedEvent = DomainEvent<
-  "ProjectCreated",
-  {
-    name: string;
-    description: string;
-    userId: UUID;
-  }
+export const ProjectCreatedEvent = new DomainEvent("ProjectCreated", {
+  name: Field.string(),
+  description: Field.string(),
+  userId: Field.uuid(),
+});
+export type ProjectCreatedEvent = EventToType<typeof ProjectCreatedEvent>;
+
+export const ProjectNameUpdatedEvent = new DomainEvent("ProjectNameUpdated", {
+  name: Field.string(),
+  userId: Field.uuid(),
+});
+export type ProjectNameUpdatedEvent = EventToType<
+  typeof ProjectNameUpdatedEvent
 >;
 
-export type ProjectNameUpdatedEvent = DomainEvent<
-  "ProjectNameUpdated",
-  {
-    name: string;
-    userId: UUID;
-  }
->;
-export type ProjectDescriptionUpdatedEvent = DomainEvent<
+export const ProjectDescriptionUpdatedEvent = new DomainEvent(
   "ProjectDescriptionUpdated",
   {
-    description: string;
-    userId: UUID;
-  }
+    description: Field.string(),
+    userId: Field.reference({
+      targetModel: "users",
+    }),
+  },
+);
+export type ProjectDescriptionUpdatedEvent = EventToType<
+  typeof ProjectDescriptionUpdatedEvent
 >;
 
-export type LinkedProjectToRepositoryEvent = DomainEvent<
+export const LinkedProjectToRepositoryEvent = new DomainEvent(
   "LinkedProjectToRepository",
   {
-    provider: RepoProviders;
-    repositoryId: string;
-    userId: UUID;
-  }
->;
-
-export type ProjectDeletedEvent = DomainEvent<"ProjectDeleted">;
-
-export type ProjectEvents = ProjectCreatedEvent | UpdateProjectEvents;
-
-export type UpdateProjectEvents =
-  | LinkedProjectToRepositoryEvent
-  | ProjectDescriptionUpdatedEvent
-  | ProjectNameUpdatedEvent;
-
-export const ProjectStream = new EventStream(
-  ProjectModel,
-  {
-    createEvents: ["ProjectCreated"],
-    updateEvents: [
-      "LinkedProjectToRepository",
-      "ProjectNameUpdated",
-      "ProjectDescriptionUpdated",
-    ],
-    deleteEvents: ["ProjectDeleted"],
+    provider: Field.enum({
+      values: RepoProviderValues,
+    }),
+    repositoryId: Field.string(),
+    userId: Field.reference({
+      targetModel: "users",
+    }),
   },
+);
+export type LinkedProjectToRepositoryEvent = EventToType<
+  typeof LinkedProjectToRepositoryEvent
+>;
+export const ProjectDeletedEvent = new DomainEvent("ProjectDeleted", {
+  deletedBy: Field.uuid(),
+});
+export type ProjectDeletedEvent = EventToType<typeof ProjectDeletedEvent>;
+
+export const ProjectEvents = [
+  ProjectCreatedEvent,
+  ProjectNameUpdatedEvent,
+  ProjectDescriptionUpdatedEvent,
+  LinkedProjectToRepositoryEvent,
+  ProjectDeletedEvent,
+] as const;
+
+export const ProjectStream = new EventStream("projects", ProjectEvents);
+
+export const ProjectProjector = new AggregateProjector(
+  ProjectStream.name,
+  ProjectModel,
+  ProjectEvents,
   {
-    create: (evt: ProjectCreatedEvent) => {
-      return {
-        id: evt.streamId,
-        name: evt.payload.name,
-        description: evt.payload.description,
-        userId: evt.payload.userId,
-        createdAt: evt.timestamp,
-        updatedAt: evt.timestamp,
-        version: 1n,
-      };
-    },
-    update: (event: UpdateProjectEvents, project: Project) => {
-      switch (event[VariantTag]) {
-        case "LinkedProjectToRepository":
-          return withUpdate(project, {
-            repositoryProvider: event.payload.provider,
-            repositoryId: event.payload.repositoryId,
-            version: event.version,
-            updatedAt: event.timestamp,
-          });
-        case "ProjectNameUpdated":
-          return withUpdate(project, {
-            name: event.payload.name,
-            version: event.version,
-            updatedAt: event.timestamp,
-          });
-        case "ProjectDescriptionUpdated":
-          return withUpdate(project, {
-            description: event.payload.description,
-            version: event.version,
-            updatedAt: event.timestamp,
-          });
-        default: {
-          const exhaustiveCheck: never = event;
-          return exhaustiveCheck;
-        }
-      }
-    },
+    ProjectCreated: (event) =>
+      ProjectModel.from(event, {
+        name: event.payload.name,
+        description: event.payload.description,
+        userId: event.payload.userId,
+      }),
+    ProjectNameUpdated: (event, project) =>
+      ProjectModel.update(project, event, {
+        name: event.payload.name,
+      }),
+    ProjectDescriptionUpdated: (event, project) =>
+      ProjectModel.update(project, event, {
+        description: event.payload.description,
+      }),
+    LinkedProjectToRepository: (event, project) =>
+      ProjectModel.update(project, event, {
+        repositoryId: event.payload.repositoryId,
+        repositoryProvider: event.payload.provider,
+      }),
+    ProjectDeleted: () => null,
   },
 );
