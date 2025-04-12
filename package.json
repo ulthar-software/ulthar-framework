@@ -2,7 +2,7 @@
   "name": "fabric-framework",
   "version": "0.0.1",
   "description": "A framework for building applications in Typescript",
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "yarn@4.7.0",
   "type": "module",
   "workspaces": [
     "packages/fabric/*",
