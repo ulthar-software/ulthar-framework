@@ -1,24 +1,22 @@
-import type { Model, ModelToType } from "../models/model.js";
-import { parseModel } from "../models/parse.js";
+import type { Model } from "../models/model.js";
+import type { Infer } from "../models/schema.js";
 
 export class Environment<TEnv extends Model> {
-  private env: ModelToType<TEnv>;
+  private env: Infer<TEnv>;
   constructor(
     private model: TEnv,
     env: unknown,
   ) {
-    this.env = parseModel(this.model, env).unwrapOrThrow();
+    this.env = this.model.parse(env).unwrapOrThrow();
   }
 
-  get<TKey extends keyof ModelToType<TEnv>>(
-    name: TKey,
-  ): ModelToType<TEnv>[TKey] {
+  get<TKey extends keyof Infer<TEnv>>(name: TKey): Infer<TEnv>[TKey] {
     return this.env[name];
   }
 
-  set<TKey extends keyof ModelToType<TEnv>>(
+  set<TKey extends keyof Infer<TEnv>>(
     name: TKey,
-    value: ModelToType<TEnv>[TKey],
+    value: Infer<TEnv>[TKey],
   ): void {
     this.env[name] = value;
   }

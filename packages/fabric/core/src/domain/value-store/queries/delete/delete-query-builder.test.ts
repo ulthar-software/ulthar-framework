@@ -2,7 +2,8 @@
 import { describe, expect, partialMock, test } from "@fabric/testing";
 import { Effect } from "../../../../effect/effect.js";
 import { Field } from "../../../models/fields.js";
-import { Model, type ModelToType } from "../../../models/model.js";
+import { Model } from "../../../models/model.js";
+import type { Infer } from "../../../models/schema.js";
 import type { ValueStoreDriver } from "../../value-store-driver.js";
 import { StoreDeleteQueryBuilder } from "./delete-query-builder.js";
 
@@ -10,7 +11,7 @@ describe("StoreDeleteQueryBuilder", () => {
   const Demo = new Model("demo", {
     name: Field.string({}),
   });
-  type Demo = ModelToType<typeof Demo>;
+  type Demo = Infer<typeof Demo>;
 
   test("given a query, when `manyWhere` is called, it should return an Effect", async () => {
     const driver = partialMock<ValueStoreDriver>({

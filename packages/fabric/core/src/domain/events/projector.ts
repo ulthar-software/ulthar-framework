@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { ModelToType } from "../models/model.js";
+import type { Infer } from "../models/index.js";
 import type { AggregateModel } from "./aggregate.js";
 import type { DomainEvent, EventToType } from "./event.js";
 
@@ -8,8 +8,8 @@ export type Projector<
   TModel extends AggregateModel,
 > = (
   event: EventToType<TEvent>,
-  aggregate: ModelToType<TModel>,
-) => ModelToType<TModel> | null;
+  aggregate: Infer<TModel>,
+) => Infer<TModel> | null;
 
 // export type TupleToUnion<T extends readonly any[]> = {
 //   [K in keyof T]: T[K];

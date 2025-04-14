@@ -3,11 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Effect } from "../../effect/effect.js";
 import type { CircularDependencyError } from "../../utils/sort-by-dependencies.js";
-import type {
-  Model,
-  ModelSchemaFromModels,
-  ModelToType,
-} from "../models/index.js";
+import type { Infer, Model, ModelSchemaFromModels } from "../models/index.js";
 import type { StoreQueryError } from "./errors/store-query-error.js";
 import {
   type StoreDeleteQuery,
@@ -37,7 +33,7 @@ export class ReadonlyValueStore<TModel extends Model> {
 
   from<TKey extends keyof ModelSchemaFromModels<TModel>>(
     modelName: TKey,
-  ): StoreReadQuery<ModelToType<ModelSchemaFromModels<TModel>[TKey]>> {
+  ): StoreReadQuery<Infer<ModelSchemaFromModels<TModel>[TKey]>> {
     return new StoreReadQueryBuilder(this.driver, this.modelSchema[modelName], {
       from: modelName,
     });
@@ -53,7 +49,7 @@ export class WritableValueStore<
 > extends ReadonlyValueStore<TModel> {
   insertInto<TKey extends keyof ModelSchemaFromModels<TModel>>(
     modelName: TKey,
-  ): StoreInsertQuery<ModelToType<ModelSchemaFromModels<TModel>[TKey]>> {
+  ): StoreInsertQuery<Infer<ModelSchemaFromModels<TModel>[TKey]>> {
     return new StoreInsertQueryBuilder(
       this.driver,
       this.modelSchema[modelName],
@@ -63,7 +59,7 @@ export class WritableValueStore<
 
   update<TKey extends keyof ModelSchemaFromModels<TModel>>(
     modelName: TKey,
-  ): StoreUpdateQuery<ModelToType<ModelSchemaFromModels<TModel>[TKey]>> {
+  ): StoreUpdateQuery<Infer<ModelSchemaFromModels<TModel>[TKey]>> {
     return new StoreUpdateQueryBuilder(
       this.driver,
       this.modelSchema[modelName],
@@ -76,7 +72,7 @@ export class WritableValueStore<
 
   deleteFrom<TKey extends keyof ModelSchemaFromModels<TModel>>(
     modelName: TKey,
-  ): StoreDeleteQuery<ModelToType<ModelSchemaFromModels<TModel>[TKey]>> {
+  ): StoreDeleteQuery<Infer<ModelSchemaFromModels<TModel>[TKey]>> {
     return new StoreDeleteQueryBuilder(
       this.driver,
       this.modelSchema[modelName],

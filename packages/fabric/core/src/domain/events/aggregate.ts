@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Keyof } from "../../types/keyof.js";
-import type { ModelToType } from "../models/index.js";
+import type { Infer } from "../models/index.js";
 import {
   Field,
   Model,
@@ -27,28 +27,28 @@ export class AggregateModel<
 
   from(
     event: EventToType<DomainEvent>,
-    initialState: Omit<ModelToType<this>, Keyof<BaseAggregateFields>>,
-  ): ModelToType<this> {
+    initialState: Omit<Infer<this>, Keyof<BaseAggregateFields>>,
+  ): Infer<this> {
     return {
       id: event.streamId,
       version: 1n,
       createdAt: event.timestamp,
       updatedAt: event.timestamp,
       ...initialState,
-    } as ModelToType<this>;
+    } as Infer<this>;
   }
 
   update(
-    aggregate: ModelToType<this>,
+    aggregate: Infer<this>,
     event: EventToType<DomainEvent>,
-    update: Partial<Omit<ModelToType<this>, Keyof<BaseAggregateFields>>>,
-  ): ModelToType<this> {
+    update: Partial<Omit<Infer<this>, Keyof<BaseAggregateFields>>>,
+  ): Infer<this> {
     return {
       ...aggregate,
       version: event.version,
       updatedAt: event.timestamp,
       ...update,
-    } as ModelToType<this>;
+    } as Infer<this>;
   }
 }
 

@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import type {
-  Model,
-  ModelToType,
-  SchemaParsingError,
-} from "../domain/index.js";
-import { parseModel } from "../domain/index.js";
+import type { Infer, Schema, SchemaParsingError } from "../domain/index.js";
 import { TaggedError } from "../error/tagged-error.js";
 import { UnexpectedError } from "../error/unexpected-error.js";
 import { isRecord } from "../record/is-record.js";
@@ -26,15 +21,12 @@ export const JSONExt = {
     }
   },
 
-  parseWithModel<TModel extends Model>(
+  parseWithModel<TModel extends Schema>(
     model: TModel,
     json: string,
-  ): Result<
-    ModelToType<TModel>,
-    JSONParsingError | SchemaParsingError<TModel>
-  > {
+  ): Result<Infer<TModel>, JSONParsingError | SchemaParsingError<TModel>> {
     return this.parse(json).flatMap((parsed) => {
-      return parseModel(model, parsed);
+      return model.parse(parsed);
     });
   },
 

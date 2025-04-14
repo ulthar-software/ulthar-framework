@@ -2,7 +2,7 @@
 import { describe, expect, partialMock, test } from "@fabric/testing";
 import { Effect } from "../../../../effect/effect.js";
 import { Field } from "../../../models/fields.js";
-import { Model, type ModelToType } from "../../../models/model.js";
+import { Model, type Infer } from "../../../models/index.js";
 import type { ValueStoreDriver } from "../../value-store-driver.js";
 import { StoreReadQueryBuilder } from "./read-query-builder.js";
 
@@ -11,7 +11,7 @@ describe("StoreReadQueryBuilder", () => {
     name: Field.string({}),
     age: Field.integer({}),
   });
-  type Demo = ModelToType<typeof Demo>;
+  type Demo = Infer<typeof Demo>;
 
   test("given a query, when `select` is called, it should return an Effect", async () => {
     const driver = partialMock<ValueStoreDriver>({

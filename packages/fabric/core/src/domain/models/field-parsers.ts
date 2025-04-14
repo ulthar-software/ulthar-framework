@@ -6,8 +6,7 @@ import type { Email } from "../../types/email.js";
 import { isUUID, parseAndSanitizeString } from "../../validations/index.js";
 import type { VariantFromTag } from "../../variant/variant.js";
 import type { FieldDefinition, FieldToType } from "./fields.js";
-import { Model } from "./model.js";
-import { parseModel } from "./parse.js";
+import { Schema } from "./schema.js";
 
 export type FieldParsers = {
   [K in FieldDefinition["_tag"]]: FieldParser<
@@ -204,7 +203,10 @@ function parseSubModel<T>(
   subModel: Record<string, FieldDefinition>,
   value: unknown,
 ): Result<T, InvalidFieldTypeError> {
-  return parseModel(new Model("subModel", subModel), value).errorMap(
-    () => new InvalidFieldTypeError(),
-  ) as Result<T, InvalidFieldTypeError>;
+  return new Schema(subModel)
+    .parse(value)
+    .errorMap(() => new InvalidFieldTypeError()) as Result<
+    T,
+    InvalidFieldTypeError
+  >;
 }

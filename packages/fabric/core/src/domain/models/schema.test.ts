@@ -1,18 +1,17 @@
 import { describe, expect, it, test } from "@fabric/testing";
 import { Field } from "./fields.js";
-import { Model } from "./model.js";
-import { parseModel, SchemaParsingError } from "./parse.js";
+import { Schema, SchemaParsingError } from "./schema.js";
 
-describe("Parsing Models", () => {
+describe("Schema", () => {
   test("should parse valid data correctly", () => {
-    const User = new Model("User", {
+    const User = new Schema({
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       password: Field.string({}),
       phone: Field.string({ isOptional: true }),
     });
 
-    const result = parseModel(User, {
+    const result = User.parse({
       id: "123e4567-e89b-12d3-a456-426614174000",
       name: "John Doe",
       password: "password123",
@@ -28,14 +27,14 @@ describe("Parsing Models", () => {
   });
 
   test("should fail to parse invalid data", () => {
-    const User = new Model("User", {
+    const User = new Schema({
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       password: Field.string({}),
       phone: Field.string({ isOptional: true }),
     });
 
-    const result = parseModel(User, {
+    const result = User.parse({
       id: "invalid-uuid",
       name: 123,
       password: true,
@@ -56,7 +55,7 @@ describe("Parsing Models", () => {
   });
 
   it("should parse a model with embedded fields", () => {
-    const User = new Model("User", {
+    const User = new Schema({
       id: Field.uuid({ isPrimaryKey: true }),
       name: Field.string({}),
       password: Field.string({}),
@@ -71,7 +70,7 @@ describe("Parsing Models", () => {
       }),
     });
 
-    const result = parseModel(User, {
+    const result = User.parse({
       id: "123e4567-e89b-12d3-a456-426614174000",
       name: "John Doe",
       password: "password123",

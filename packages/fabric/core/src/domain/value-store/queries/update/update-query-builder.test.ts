@@ -2,7 +2,7 @@
 import { describe, expect, partialMock, test } from "@fabric/testing";
 import { Effect } from "../../../../effect/effect.js";
 import { Field } from "../../../models/fields.js";
-import { Model, type ModelToType } from "../../../models/model.js";
+import { Model, type Infer } from "../../../models/index.js";
 import type { ValueStoreDriver } from "../../value-store-driver.js";
 import { StoreUpdateQueryBuilder } from "./update-query-builder.js";
 
@@ -10,7 +10,7 @@ describe("StoreUpdateQueryBuilder", () => {
   const Demo = new Model("demo", {
     name: Field.string({}),
   });
-  type Demo = ModelToType<typeof Demo>;
+  type Demo = Infer<typeof Demo>;
 
   test("given an ID, when `oneById` is called, it should return a SettableUpdateQuery", async () => {
     const driver = partialMock<ValueStoreDriver>({

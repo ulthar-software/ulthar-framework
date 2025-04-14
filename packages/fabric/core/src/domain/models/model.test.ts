@@ -1,6 +1,7 @@
 import { describe, test } from "@fabric/testing";
 import { Field } from "./fields.js";
-import { Model, type ModelToType } from "./model.js";
+import { Model } from "./model.js";
+import type { Infer } from "./schema.js";
 
 describe("CreateModel", () => {
   test("given a valid Model, it should create a model and it's interface type", () => {
@@ -10,7 +11,7 @@ describe("CreateModel", () => {
       password: Field.string({}),
       phone: Field.string({ isOptional: true }),
     });
-    type User = ModelToType<typeof User>;
+    type User = Infer<typeof User>;
 
     // expectTypeOf<User>().toEqualTypeOf<{
     //   id: UUID;

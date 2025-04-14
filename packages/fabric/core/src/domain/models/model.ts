@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Keyof } from "../../types/keyof.js";
 import { Variant } from "../../variant/variant.js";
-import type { FieldDefinition, FieldToType, ReferenceField } from "./fields.js";
+import type { FieldDefinition, ReferenceField } from "./fields.js";
+import { Schema } from "./schema.js";
 
 export interface UniqueModelConstraint<TName extends string = string> {
   type: "unique";
@@ -21,12 +22,14 @@ export interface ModelOptions<TName extends string = string> {
 export class Model<
   TName extends string = string,
   TFields extends ModelFields = any,
-> {
+> extends Schema<TFields> {
   public constructor(
     readonly name: TName,
-    readonly fields: TFields,
+    fields: TFields,
     readonly opts: ModelOptions<Keyof<TFields>> = {},
-  ) {}
+  ) {
+    super(fields);
+  }
 
   getReferences(): ReferenceField[] {
     return Object.entries(this.fields)
@@ -34,13 +37,6 @@ export class Model<
       .map(([, field]) => field as ReferenceField);
   }
 }
-
-export type ModelToType<TModel extends Model> = ModelToOptionalFields<TModel> &
-  ModelToRequiredFields<TModel>;
-
-export type ModelFieldNames<TModel extends ModelFields> = Keyof<
-  TModel["fields"]
->;
 
 /**
  * Extracts the names of the fields that are addressable, i.e. have the isUnique flag set to true.
@@ -58,27 +54,3 @@ export type ModelSchemaFromModels<TModels extends Model> = {
 };
 
 export type ModelFields = Record<string, FieldDefinition>;
-
-type ModelToOptionalFields<TModel extends Model> = {
-  [K in OptionalFields<TModel>]?: FieldToType<TModel["fields"][K]>;
-};
-
-type ModelToRequiredFields<TModel extends Model> = {
-  [K in RequiredFields<TModel>]: FieldToType<TModel["fields"][K]>;
-};
-
-type OptionalFields<TModel extends Model> = {
-  [K in Keyof<TModel["fields"]>]: TModel["fields"][K] extends {
-    isOptional: true;
-  }
-    ? K
-    : never;
-}[Keyof<TModel["fields"]>];
-
-type RequiredFields<TModel extends Model> = {
-  [K in Keyof<TModel["fields"]>]: TModel["fields"][K] extends {
-    isOptional: true;
-  }
-    ? never
-    : K;
-}[Keyof<TModel["fields"]>];

@@ -7,7 +7,8 @@ import type { UUID } from "../../types/uuid.js";
 import { variantConstructor } from "../../variant/constructor.js";
 import type { TaggedVariant } from "../../variant/variant.js";
 import { VariantTag } from "../../variant/variant.js";
-import type { Model, ModelToType } from "./model.js";
+import type { Model } from "./model.js";
+import type { Infer } from "./schema.js";
 
 export const Field = {
   string: variantConstructor<StringField>("StringField"),
@@ -97,8 +98,8 @@ export type FieldToType<TField> =
   : TField extends EmailField ? MaybeOptional<TField, Email>
   : TField extends EnumField<infer K> ? MaybeOptional<TField, K>
   : TField extends UrlField ? MaybeOptional<TField, string>
-  : TField extends EmbeddedField<infer TSubModel> ? MaybeOptional<TField, ModelToType<Model<string, TSubModel>>>
-  : TField extends ObjectArrayField<infer TSubModel> ? MaybeOptional<TField, ModelToType<Model<string, TSubModel>>[]>
+  : TField extends EmbeddedField<infer TSubModel> ? MaybeOptional<TField, Infer<Model<string, TSubModel>>>
+  : TField extends ObjectArrayField<infer TSubModel> ? MaybeOptional<TField, Infer<Model<string, TSubModel>>[]>
   : never;
 
 //prettier-ignore

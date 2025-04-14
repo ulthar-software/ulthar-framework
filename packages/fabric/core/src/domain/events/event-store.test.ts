@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, test } from "@fabric/testing";
 import { Field } from "../models/fields.js";
 
-import type { ModelToType } from "../models/model.js";
+import type { Infer } from "../models/index.js";
 import { ValueStoreDriverMock } from "../value-store/value-store-driver-mock.js";
 import { AggregateStore } from "./aggregate-store.js";
 import { AggregateModel } from "./aggregate.js";
@@ -38,7 +38,7 @@ describe("EventStore", async () => {
     count: Field.integer({ hasArbitraryPrecision: false }),
   });
   type StateAggregateModel = typeof StateAggregateModel;
-  type StateAggregate = ModelToType<StateAggregateModel>;
+  type StateAggregate = Infer<StateAggregateModel>;
 
   const eventStream = new EventStream("StateAggregate", events);
 
