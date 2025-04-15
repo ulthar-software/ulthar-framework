@@ -1384,6 +1384,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ulthar/academy-domain@workspace:apps/academy/domain":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/academy-domain@workspace:apps/academy/domain"
+  dependencies:
+    "@fabric/core": "workspace:^"
+    "@fabric/testing": "workspace:^"
+    typescript: "npm:^5.7.3"
+    vitest: "npm:^3.0.6"
+  languageName: unknown
+  linkType: soft
+
 "@vitest/expect@npm:3.0.6":
   version: 3.0.6
   resolution: "@vitest/expect@npm:3.0.6"
