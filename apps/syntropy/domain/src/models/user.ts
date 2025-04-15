@@ -5,7 +5,7 @@ import {
   DomainEvent,
   EventStream,
   Field,
-  type ModelToType,
+  type Infer,
 } from "@fabric/core";
 import { UserTypeValues } from "../security/users.js";
 
@@ -19,7 +19,7 @@ export const UserModel = new AggregateModel("users", {
   }),
 });
 export type UserModel = typeof UserModel;
-export type User = ModelToType<UserModel>;
+export type User = Infer<UserModel>;
 
 export const UserRegisteredEvent = new DomainEvent("UserRegistered", {
   firstName: Field.string(),

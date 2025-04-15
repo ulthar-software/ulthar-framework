@@ -5,7 +5,7 @@ import {
   DomainEvent,
   EventStream,
   Field,
-  type ModelToType,
+  type Infer,
 } from "@fabric/core";
 import { UserModel } from "./user.js";
 
@@ -29,7 +29,7 @@ export const ProjectModel = new AggregateModel("projects", {
     isOptional: true,
   }),
 });
-export type Project = ModelToType<typeof ProjectModel>;
+export type Project = Infer<typeof ProjectModel>;
 
 export const ProjectCreatedEvent = new DomainEvent("ProjectCreated", {
   name: Field.string(),

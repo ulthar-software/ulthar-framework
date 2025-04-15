@@ -7,6 +7,12 @@ import {
 } from "./record-utils.js";
 
 describe("recordToSQLParamKeys", () => {
+  const model = new Model("test", {
+    id: Field.uuid({ isPrimaryKey: true }),
+    name: Field.string({}),
+    age: Field.integer({}),
+  });
+
   test("Given a record, it should return a string of it's keys separated by commas", () => {
     // arrange
     const record = {
@@ -15,7 +21,7 @@ describe("recordToSQLParamKeys", () => {
       age: 20,
     };
     // act
-    const result = recordToSqlParamKeys(record);
+    const result = recordToSqlParamKeys(model, record);
     // assert
     expect(result).toEqual("$id, $name, $age");
   });
@@ -28,7 +34,7 @@ describe("recordToSQLParamKeys", () => {
       age: 20,
     };
     // act
-    const result = recordToSqlParamKeys(record, "prefix_");
+    const result = recordToSqlParamKeys(model, record, "prefix_");
     // assert
     expect(result).toEqual("$prefix_id, $prefix_name, $prefix_age");
   });

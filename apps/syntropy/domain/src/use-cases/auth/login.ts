@@ -1,5 +1,5 @@
 import type { AuthService, CryptoService } from "@fabric/core";
-import { Field, Model, TaggedError, type ModelToType } from "@fabric/core";
+import { Field, Model, TaggedError, type Infer } from "@fabric/core";
 import type { User } from "../../models/user.js";
 import type { DomainStateStore } from "../../services/state-store.js";
 import type { DomainQuery } from "../domain-query.js";
@@ -13,13 +13,13 @@ export const LoginRequestModel = new Model("LoginRequestModel", {
   email: Field.email({}),
   password: Field.string({}),
 });
-export type LoginRequestModel = ModelToType<typeof LoginRequestModel>;
+export type LoginRequestModel = Infer<typeof LoginRequestModel>;
 
 export const LoginResponseModel = new Model("LoginResponseModel", {
   accessToken: Field.string({}),
   refreshToken: Field.string({}),
 });
-export type LoginResponseModel = ModelToType<typeof LoginResponseModel>;
+export type LoginResponseModel = Infer<typeof LoginResponseModel>;
 
 export type LoginErrors = InvalidCredentialsError;
 

@@ -5,4 +5,5 @@ export default defineWorkspace([
   "./packages/fabric/*",
   "./packages/examples/*",
   "./apps/syntropy/*",
+  "./apps/academy/*",
 ]);

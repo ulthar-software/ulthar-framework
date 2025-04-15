@@ -1,7 +1,7 @@
 import type {
+  Infer,
   JSONParsingError,
   Model,
-  ModelToType,
   SchemaParsingError,
 } from "@fabric/core";
 import { Effect, JSONExt, UnexpectedError } from "@fabric/core";
@@ -34,7 +34,7 @@ export class FileServiceImplementation implements FileService {
     model: TModel,
     path: string,
   ): Effect<
-    ModelToType<TModel>,
+    Infer<TModel>,
     | UnexpectedError
     | FileReadError
     | JSONParsingError

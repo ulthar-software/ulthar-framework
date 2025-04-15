@@ -12,9 +12,10 @@ export function insertToSql(
 ): [string, Record<string, any>] {
   return [
     `INSERT INTO ${query.into} (${recordToSqlKeys(
+      model,
       query.values[0],
     )}) VALUES ${query.values
-      .map((v, index) => `(${recordToSqlParamKeys(v, `${index}_`)})`)
+      .map((v, index) => `(${recordToSqlParamKeys(model, v, `${index}_`)})`)
       .join(", ")}`,
     manyRecordsToSqlParamRecord(model, query.values),
   ];

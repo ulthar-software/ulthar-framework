@@ -1,4 +1,4 @@
-import type { CryptoService, ModelToType } from "@fabric/core";
+import type { CryptoService, Infer } from "@fabric/core";
 import { Field, Model, TaggedError, type UUID } from "@fabric/core";
 import { ProjectCreatedEvent } from "../../models/project.js";
 import type { DomainEventStore } from "../../services/event-store.js";
@@ -19,9 +19,7 @@ export const CreateProjectRequestModel = new Model(
     description: Field.string({}),
   },
 );
-export type CreateProjectRequestModel = ModelToType<
-  typeof CreateProjectRequestModel
->;
+export type CreateProjectRequestModel = Infer<typeof CreateProjectRequestModel>;
 
 export default {
   name: "createProject",

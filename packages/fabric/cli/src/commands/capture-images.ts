@@ -1,6 +1,6 @@
 import type {
+  Infer,
   JSONParsingError,
-  ModelToType,
   SchemaParsingError,
   UnexpectedError,
 } from "@fabric/core";
@@ -88,7 +88,7 @@ export const ConfigModel = new Model("capture-images-config", {
   }),
 });
 
-type Config = ModelToType<typeof ConfigModel>;
+type Config = Infer<typeof ConfigModel>;
 
 function captureImages(
   configPath: string,

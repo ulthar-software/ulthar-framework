@@ -31,7 +31,11 @@ describe("State Store", () => {
       streamId: Field.uuid(),
       id: Field.uuid({ isPrimaryKey: true }),
       version: Field.integer({ hasArbitraryPrecision: true }),
-      payload: Field.embedded(),
+      payload: Field.embedded({
+        subModel: {
+          name: Field.string(),
+        },
+      }),
       timestamp: Field.posixDate(),
     },
     {

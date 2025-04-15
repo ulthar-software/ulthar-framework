@@ -2,8 +2,8 @@ import type { JSONParsingError, SchemaParsingError } from "@fabric/core";
 import {
   TaggedError,
   type Effect,
+  type Infer,
   type Model,
-  type ModelToType,
   type UnexpectedError,
 } from "@fabric/core";
 
@@ -12,7 +12,7 @@ export interface FileService {
     model: TModel,
     path: string,
   ): Effect<
-    ModelToType<TModel>,
+    Infer<TModel>,
     | UnexpectedError
     | FileReadError
     | JSONParsingError
