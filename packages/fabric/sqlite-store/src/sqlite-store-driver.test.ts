@@ -276,4 +276,37 @@ describe("State Store", () => {
 
     expect(result.length).toBe(1);
   });
+
+  //Test count operation
+  test("should count records", async () => {
+    const newId = crypto.randomUUID();
+
+    await store
+      .insertInto("users")
+      .manyValues([
+        {
+          name: "test",
+          id: newId,
+        },
+        {
+          name: "anotherName",
+          id: crypto.randomUUID(),
+        },
+        {
+          name: "anotherName2",
+          id: crypto.randomUUID(),
+        },
+      ])
+      .runOrThrow();
+
+    const result = await store
+      .from("users")
+      .where({
+        name: isLike("an%"),
+      })
+      .count()
+      .runOrThrow();
+
+    expect(result).toBe(2);
+  });
 });

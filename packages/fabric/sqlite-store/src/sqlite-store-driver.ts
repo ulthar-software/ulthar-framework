@@ -30,6 +30,21 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     this.db.pragma("foreign_keys = ON");
   }
 
+  count(
+    model: Model,
+    query: StoreReadOptions,
+  ): Effect<number, StoreQueryError> {
+    return Effect.tryFrom(
+      () => {
+        const [sql, params] = this.getCountStatement(model, query);
+        const result = this.allPrepared(sql, params);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        return result[0]["COUNT(*)"] as number;
+      },
+      (error: Error) => new StoreQueryError(error.message),
+    );
+  }
+
   sync(
     models: Model[],
   ): Effect<void, CircularDependencyError | StoreQueryError> {
@@ -132,6 +147,25 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
       cached = stmt;
     }
     return cached;
+  }
+
+  private getCountStatement(
+    model: Model,
+    query: StoreReadOptions,
+  ): [string, Record<string, any>] {
+    const queryFilter = filterToSQL(query.where);
+    const limit = query.limit ? `LIMIT ${query.limit}` : "";
+    const offset = query.offset ? `OFFSET ${query.offset}` : "";
+
+    const sql = [
+      `SELECT COUNT(*)`,
+      `FROM ${query.from}`,
+      queryFilter,
+      limit,
+      offset,
+    ].join(" ");
+
+    return [sql, { ...filterToParams(model, query.where) }];
   }
 
   private getSelectStatement(
