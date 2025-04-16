@@ -32,6 +32,15 @@ import type {
 import type { ValueStoreDriver } from "./value-store-driver.js";
 
 export class ValueStoreDriverMock implements ValueStoreDriver {
+  count(
+    model: Model,
+    query: StoreReadOptions,
+  ): Effect<number, StoreQueryError> {
+    return Effect.from(() => {
+      const data = this.data[query.from];
+      return filter(data, query.where).length;
+    });
+  }
   private data: Record<string, any[]> = {};
 
   get<T>(model: Model, query: StoreReadOptions): Effect<T[], StoreQueryError> {

@@ -10,6 +10,8 @@ import type {
 } from "./queries/query-options.js";
 
 export interface ValueStoreDriver {
+  count(model: Model, query: StoreReadOptions): Effect<number, StoreQueryError>;
+
   get<T>(model: Model, query: StoreReadOptions): Effect<T[], StoreQueryError>;
 
   insert(

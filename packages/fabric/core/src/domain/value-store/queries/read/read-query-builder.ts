@@ -29,6 +29,10 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
     private query: StoreReadOptions,
   ) {}
 
+  count(): Effect<number, StoreQueryError> {
+    return this.driver.count(this.model, this.query);
+  }
+
   where(where: FilterOptions<T>): SortableStoreQuery<T> {
     return new StoreReadQueryBuilder(this.driver, this.model, {
       ...this.query,
