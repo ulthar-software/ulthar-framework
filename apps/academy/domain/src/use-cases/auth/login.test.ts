@@ -24,10 +24,16 @@ describe("Login Use Case", () => {
       password: testingPassword,
     });
 
-    const result = await LoginUseCase.call(undefined, services, {
-      email: testingEmail,
-      password: testingPassword,
-    }).runOrThrow();
+    const result = await LoginUseCase.call(
+      {
+        ...services,
+        currentUser: undefined,
+      },
+      {
+        email: testingEmail,
+        password: testingPassword,
+      },
+    ).runOrThrow();
 
     expect(result).toEqual({
       accessToken: expect.any(String),
@@ -46,10 +52,16 @@ describe("Login Use Case", () => {
     });
 
     // Act
-    const result = await LoginUseCase.call(undefined, services, {
-      email: testingEmail,
-      password: wrongPassword,
-    }).run();
+    const result = await LoginUseCase.call(
+      {
+        ...services,
+        currentUser: undefined,
+      },
+      {
+        email: testingEmail,
+        password: wrongPassword,
+      },
+    ).run();
 
     // Assert
     expect(result.isError()).toBe(true);
@@ -63,10 +75,16 @@ describe("Login Use Case", () => {
     const password = "anyPassword";
 
     // Act
-    const result = await LoginUseCase.call(undefined, services, {
-      email: nonExistentEmail,
-      password,
-    }).run();
+    const result = await LoginUseCase.call(
+      {
+        ...services,
+        currentUser: undefined,
+      },
+      {
+        email: nonExistentEmail,
+        password,
+      },
+    ).run();
 
     // Assert
     expect(result.isError()).toBe(true);
@@ -80,10 +98,16 @@ describe("Login Use Case", () => {
     const password = "anyPassword";
 
     // Act
-    const result = await LoginUseCase.call(undefined, services, {
-      email: invalidEmail,
-      password,
-    }).run();
+    const result = await LoginUseCase.call(
+      {
+        ...services,
+        currentUser: undefined,
+      },
+      {
+        email: invalidEmail,
+        password,
+      },
+    ).run();
 
     // Assert
     expect(result.isError()).toBe(true);

@@ -17,6 +17,10 @@ export interface UseCaseAuth {
 
 export type UseCaseType = "command" | "query";
 
+export interface DefaultDependencies {
+  currentUser: UserAccess | undefined;
+}
+
 export interface QueryUseCaseDefinition<
   TDeps,
   TInputModel extends Model,
@@ -54,14 +58,13 @@ export class UseCase<
   }
 
   call(
-    currentUser: UserAccess | undefined,
-    deps: TDeps,
+    deps: TDeps & DefaultDependencies,
     input: unknown,
   ): Effect<
     TOutput,
     UnauthorizedError | SchemaParsingError<TInputModel> | TError
   > {
-    return this.checkPermissions(currentUser)
+    return this.checkPermissions(deps.currentUser)
       .mapResult(() => this.useCase.inputSchema.parse(input))
       .flatMap((parsedInput) => this.useCase.effect(deps, parsedInput));
   }

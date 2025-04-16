@@ -51,42 +51,35 @@ export const InviteUserUseCase = new UseCase({
     { state, events, crypto }: InviteUserDependencies,
     { email, role }: InviteUserInput,
   ) => {
-    // Step 1: Check if user already exists
-    return (
-      state
-        .from("users")
-        .where({ email })
-        .assertNone()
-        .mapError(() => new UserAlreadyExistsError(email))
-        // Step 2: Check if there's an active invitation
-        .flatMap(() =>
-          state
-            .from("userInvites")
-            .where({ email })
-            .assertNone()
-            .mapError(() => new UserAlreadyInvitedError(email)),
-        )
-        // Step 3: Generate invitation code
-        .flatMap(() => {
-          const inviteCode = crypto.generateInviteCode();
-          const id = crypto.randomUUID();
+    return state
+      .from("users")
+      .where({ email })
+      .assertNone()
+      .mapError(() => new UserAlreadyExistsError(email))
+      .flatMap(() =>
+        state
+          .from("userInvites")
+          .where({ email })
+          .assertNone()
+          .mapError(() => new UserAlreadyInvitedError(email)),
+      )
+      .flatMap(() => {
+        const inviteCode = crypto.generateInviteCode();
+        const id = crypto.randomUUID();
 
-          // Step 4: Create the UserInvited event
-          const inviteEvent = UserInvitedEvent.from({
-            id,
-            streamId: id,
-            version: 1n,
-            payload: {
-              email,
-              role,
-              code: inviteCode,
-            },
-          });
+        const inviteEvent = UserInvitedEvent.from({
+          id,
+          streamId: id,
+          version: 1n,
+          payload: {
+            email,
+            role,
+            code: inviteCode,
+          },
+        });
 
-          // Step 5: Append the event to the event store and return void
-          return events.append("userInvites", inviteEvent).map(() => undefined);
-        })
-    );
+        return events.append("userInvites", inviteEvent).map(() => undefined);
+      });
   },
 });
 

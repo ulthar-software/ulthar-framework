@@ -2,12 +2,10 @@ import type { Effect, UUID } from "@fabric/core";
 import { TaggedError } from "@fabric/core";
 import type { User } from "../models/user.js";
 import type { Permission } from "../security/permission.js";
-import type { UserRole } from "../security/user-role.js";
 
 export interface UserAccess {
-  userId: UUID;
+  id: UUID;
   permissions: Permission[];
-  role: UserRole;
 }
 
 export interface AuthService {

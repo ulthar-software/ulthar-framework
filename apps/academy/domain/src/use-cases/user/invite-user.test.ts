@@ -37,11 +37,12 @@ describe("Invite User Use Case", () => {
     // Act
     await InviteUserUseCase.call(
       {
-        userId: adminUser.id,
-        permissions: [Permission.INVITE_USERS],
-        role: UserRole.ADMIN,
+        ...services,
+        currentUser: {
+          id: adminUser.id,
+          permissions: [Permission.INVITE_USERS],
+        },
       },
-      services,
       {
         email: testingEmail,
         role: testingRole,
@@ -72,11 +73,12 @@ describe("Invite User Use Case", () => {
     // Act
     await InviteUserUseCase.call(
       {
-        userId: adminUser.id,
-        permissions: [Permission.INVITE_USERS],
-        role: UserRole.ADMIN,
+        ...services,
+        currentUser: {
+          id: adminUser.id,
+          permissions: [Permission.INVITE_USERS],
+        },
       },
-      services,
       {
         email: testingEmail,
         role: testingRole,
@@ -107,11 +109,12 @@ describe("Invite User Use Case", () => {
     // Act
     await InviteUserUseCase.call(
       {
-        userId: adminUser.id,
-        permissions: [Permission.INVITE_USERS],
-        role: UserRole.ADMIN,
+        ...services,
+        currentUser: {
+          id: adminUser.id,
+          permissions: [Permission.INVITE_USERS],
+        },
       },
-      services,
       {
         email: testingEmail,
         role: testingRole,
@@ -144,11 +147,12 @@ describe("Invite User Use Case", () => {
     // Act
     const result = await InviteUserUseCase.call(
       {
-        userId: adminUser.id,
-        permissions: [Permission.INVITE_USERS],
-        role: UserRole.ADMIN,
+        ...services,
+        currentUser: {
+          id: adminUser.id,
+          permissions: [Permission.INVITE_USERS],
+        },
       },
-      services,
       {
         email: testingEmail,
         role: UserRole.STUDENT,
@@ -170,11 +174,12 @@ describe("Invite User Use Case", () => {
     // First invitation
     await InviteUserUseCase.call(
       {
-        userId: adminUser.id,
-        permissions: [Permission.INVITE_USERS],
-        role: UserRole.ADMIN,
+        ...services,
+        currentUser: {
+          id: adminUser.id,
+          permissions: [Permission.INVITE_USERS],
+        },
       },
-      services,
       {
         email: testingEmail,
         role: UserRole.STUDENT,
@@ -184,11 +189,12 @@ describe("Invite User Use Case", () => {
     // Act - Second invitation
     const result = await InviteUserUseCase.call(
       {
-        userId: adminUser.id,
-        permissions: [Permission.INVITE_USERS],
-        role: UserRole.ADMIN,
+        ...services,
+        currentUser: {
+          id: adminUser.id,
+          permissions: [Permission.INVITE_USERS],
+        },
       },
-      services,
       {
         email: testingEmail,
         role: UserRole.STUDENT,
@@ -213,11 +219,12 @@ describe("Invite User Use Case", () => {
     // Act
     const result = await InviteUserUseCase.call(
       {
-        userId: regularUser.id,
-        permissions: [], // Empty permissions
-        role: UserRole.STUDENT,
+        ...services,
+        currentUser: {
+          id: regularUser.id,
+          permissions: [], // Empty permissions
+        },
       },
-      services,
       {
         email: "newstudent@example.com",
         role: UserRole.STUDENT,
