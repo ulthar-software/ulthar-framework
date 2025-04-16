@@ -2,7 +2,11 @@ import { Decimal } from "../../decimal/decimal.js";
 import { TaggedError } from "../../error/tagged-error.js";
 import { Result } from "../../result/result.js";
 import { PosixDate } from "../../time/posix-date.js";
-import { isUUID, parseAndSanitizeString } from "../../validations/index.js";
+import {
+  isNullish,
+  isUUID,
+  parseAndSanitizeString,
+} from "../../validations/index.js";
 import { isEmail } from "../../validations/string/is-email.js";
 import type { VariantFromTag } from "../../variant/variant.js";
 import type { FieldDefinition, FieldToType } from "./fields.js";
@@ -15,7 +19,7 @@ export type FieldParsers = {
 };
 export const fieldParsers: FieldParsers = {
   StringField: (f, v) => {
-    return parseStringValue(f, v);
+    return parseStringValue(f, v).flatMap((v) => parseStringSize(f, v));
   },
   UUIDField: (f, v) => {
     return parseStringValue(f, v).flatMap((parsedString) =>
@@ -155,10 +159,23 @@ export class InvalidFieldTypeError extends TaggedError<"InvalidField"> {
 /**
  * An error that occurs when a required field is missing
  */
-export class MissingRequiredFieldError extends TaggedError<"RequiredField"> {
+export class MissingRequiredFieldError extends TaggedError<"MissingRequiredField"> {
   constructor() {
-    super("RequiredField");
+    super("MissingRequiredField");
   }
+}
+
+function parseStringSize(
+  field: { minLength?: number; maxLength?: number },
+  value: string | undefined,
+): Result<string | undefined, FieldParsingError> {
+  if (field.minLength && !isNullish(value) && value.length < field.minLength) {
+    return Result.failWith(new InvalidFieldTypeError());
+  }
+  if (field.maxLength && !isNullish(value) && value.length > field.maxLength) {
+    return Result.failWith(new InvalidFieldTypeError());
+  }
+  return Result.ok(value);
 }
 
 /**

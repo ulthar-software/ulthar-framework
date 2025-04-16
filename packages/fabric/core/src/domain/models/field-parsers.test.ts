@@ -1,6 +1,10 @@
-import { describe, expect, it } from "@fabric/testing";
+import { describe, expect, it, test } from "@fabric/testing";
 
-import { fieldParsers, InvalidFieldTypeError } from "./field-parsers.js";
+import {
+  fieldParsers,
+  InvalidFieldTypeError,
+  MissingRequiredFieldError,
+} from "./field-parsers.js";
 import { Field } from "./fields.js";
 
 describe("FieldParsers", () => {
@@ -36,6 +40,23 @@ describe("FieldParsers", () => {
       );
 
       expect(result.unwrapErrorOrThrow()).toBeInstanceOf(InvalidFieldTypeError);
+    });
+  });
+  describe("StringField", () => {
+    test("should parse a string with min length", () => {
+      const field = Field.string({ minLength: 3 });
+      expect(fieldParsers.StringField(field, "abc").unwrapOrThrow()).toBe(
+        "abc",
+      );
+      expect(
+        fieldParsers.StringField(field, "ab").unwrapErrorOrThrow(),
+      ).toBeInstanceOf(InvalidFieldTypeError);
+      expect(
+        fieldParsers.StringField(field, "").unwrapErrorOrThrow(),
+      ).toBeInstanceOf(InvalidFieldTypeError);
+      expect(
+        fieldParsers.StringField(field, undefined).unwrapErrorOrThrow(),
+      ).toBeInstanceOf(MissingRequiredFieldError);
     });
   });
 });
