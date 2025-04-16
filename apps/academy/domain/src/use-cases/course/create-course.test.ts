@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { SchemaParsingError, type UUID } from "@fabric/core";
+import { SchemaParsingError } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createUserMock } from "../../models/mocks/create-user-mock.js";
+import type { User } from "../../models/user.js";
 import { Permission } from "../../security/permission.js";
 import { UserRole } from "../../security/user-role.js";
 import {
@@ -13,8 +14,8 @@ import { CreateCourseUseCase } from "./create-course.js";
 
 describe("Create Course Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: { id: UUID; email: string };
-  let teacherUser: { id: UUID; email: string };
+  let adminUser: User;
+  let teacherUser: User;
 
   beforeEach(async () => {
     services = await createServiceMocks();
