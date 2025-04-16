@@ -2,8 +2,8 @@ import { Decimal } from "../../decimal/decimal.js";
 import { TaggedError } from "../../error/tagged-error.js";
 import { Result } from "../../result/result.js";
 import { PosixDate } from "../../time/posix-date.js";
-import type { Email } from "../../types/email.js";
 import { isUUID, parseAndSanitizeString } from "../../validations/index.js";
+import { isEmail } from "../../validations/string/is-email.js";
 import type { VariantFromTag } from "../../variant/variant.js";
 import type { FieldDefinition, FieldToType } from "./fields.js";
 import { Schema } from "./schema.js";
@@ -92,10 +92,10 @@ export const fieldParsers: FieldParsers = {
   EmailField: function (f, v) {
     return parseOptionality(f, v, (v) => {
       const parsedValue = parseAndSanitizeString(v);
-      if (parsedValue === undefined) {
+      if (parsedValue === undefined || !isEmail(parsedValue)) {
         return Result.failWith(new InvalidFieldTypeError());
       }
-      return Result.ok(parsedValue as Email);
+      return Result.ok(parsedValue);
     });
   },
   EnumField: function (f, v) {
