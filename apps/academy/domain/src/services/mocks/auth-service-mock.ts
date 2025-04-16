@@ -1,8 +1,10 @@
 import type { UUID } from "@fabric/core";
 import { Effect, JSONExt } from "@fabric/core";
 import type { User } from "../../models/user.js";
-import type { Permission } from "../../security/permission.js";
-import { getPermissionsForRole } from "../../security/policy.js";
+import {
+  getPermissionsForRole,
+  type Permission,
+} from "../../security/permission.js";
 import type { UserRole } from "../../security/user-role.js";
 import type {
   AuthService,
