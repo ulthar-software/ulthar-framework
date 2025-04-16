@@ -27,6 +27,6 @@ export class CryptoServiceMock implements DomainCryptoService {
   }
 
   generateInviteCode(): string {
-    return crypto.randomBytes(16).toString("hex");
+    return crypto.randomBytes(4).toString("hex");
   }
 }
