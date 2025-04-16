@@ -25,7 +25,7 @@ describe("updateToSQL", () => {
     });
 
     expect(result).toEqual([
-      `UPDATE something SET name = $name, age = $age WHERE id = $where_id`,
+      `UPDATE \`something\` SET \`name\` = $name, \`age\` = $age WHERE \`id\` = $where_id`,
       {
         name: "test",
         age: 20,

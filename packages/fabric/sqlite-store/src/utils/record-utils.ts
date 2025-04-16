@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FieldDefinition, Model } from "@fabric/core";
+import { identifierToSQL } from "./identifier-to-sql.js";
 import { fieldValueToSQL } from "./value-to-sql.js";
 
 /**
@@ -11,7 +12,7 @@ export function recordToSqlKeys(model: Model, record: Record<string, any>) {
   const modelKeys = Object.keys(model.fields);
   return Object.keys(record)
     .filter((key) => modelKeys.includes(key))
-    .map((key) => key)
+    .map((key) => identifierToSQL(key))
     .join(", ");
 }
 /**
@@ -64,7 +65,7 @@ export function manyRecordsToSqlParamRecord(
 
 export function recordToSqlSet(record: Record<string, any>) {
   return Object.keys(record)
-    .map((key) => `${key} = ${keyToParamKey(key)}`)
+    .map((key) => `${identifierToSQL(key)} = ${keyToParamKey(key)}`)
     .join(", ");
 }
 

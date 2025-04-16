@@ -21,7 +21,7 @@ describe("insertToSQL", () => {
     });
 
     expect(result).toEqual([
-      `INSERT INTO something (id, name, age) VALUES ($0_id, $0_name, $0_age)`,
+      `INSERT INTO something (\`id\`, \`name\`, \`age\`) VALUES ($0_id, $0_name, $0_age)`,
       {
         "0_id": "1",
         "0_name": "test",

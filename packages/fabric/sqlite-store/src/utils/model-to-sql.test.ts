@@ -15,7 +15,7 @@ describe("ModelToSQL", () => {
     const result = modelToSql(model);
 
     expect(result).toEqual(
-      `CREATE TABLE something (id TEXT PRIMARY KEY, name TEXT NOT NULL, age INTEGER NOT NULL, date NUMERIC NOT NULL, reference TEXT NOT NULL REFERENCES somethingElse(id))`,
+      `CREATE TABLE \`something\` (\`id\` TEXT PRIMARY KEY, \`name\` TEXT NOT NULL, \`age\` INTEGER NOT NULL, \`date\` NUMERIC NOT NULL, \`reference\` TEXT NOT NULL REFERENCES \`somethingElse\`(\`id\`))`,
     );
   });
 
@@ -42,7 +42,7 @@ describe("ModelToSQL", () => {
     const result = modelToSql(modelWithConstraints);
 
     expect(result).toEqual(
-      `CREATE TABLE events (_tag TEXT NOT NULL, streamId TEXT NOT NULL, id TEXT PRIMARY KEY, version INTEGER NOT NULL, payload TEXT NOT NULL, timestamp NUMERIC NOT NULL, UNIQUE(streamId, version))`,
+      `CREATE TABLE \`events\` (\`_tag\` TEXT NOT NULL, \`streamId\` TEXT NOT NULL, \`id\` TEXT PRIMARY KEY, \`version\` INTEGER NOT NULL, \`payload\` TEXT NOT NULL, \`timestamp\` NUMERIC NOT NULL, UNIQUE(\`streamId\`, \`version\`))`,
     );
   });
 });

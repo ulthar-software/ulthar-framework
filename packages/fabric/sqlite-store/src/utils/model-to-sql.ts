@@ -10,6 +10,7 @@ import {
   type FieldDefinition,
   type ModelConstraint,
 } from "@fabric/core";
+import { identifierToSQL } from "./identifier-to-sql.js";
 
 type FieldSQLDefinitionMap = {
   [K in FieldDefinition[VariantTag]]: (
@@ -40,7 +41,7 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
       n,
       "TEXT",
       modifiersFromOpts(f),
-      `REFERENCES ${f.targetModel}(${getTargetKey(f)})`,
+      `REFERENCES ${identifierToSQL(f.targetModel)}(${identifierToSQL(getTargetKey(f))})`,
     ].join(" ");
   },
   FloatField: (n, f): string => {
@@ -88,7 +89,7 @@ function generateSQLConstraint(constraint: ModelConstraint) {
   switch (constraint.type) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     case "unique":
-      return `UNIQUE(${constraint.fields.join(", ")})`;
+      return `UNIQUE(${constraint.fields.map(identifierToSQL).join(", ")})`;
 
     default:
       return exhaustiveCheck(constraint.type);
@@ -98,7 +99,9 @@ function generateSQLConstraint(constraint: ModelConstraint) {
 export function modelToSql(model: Model) {
   const fields = Object.entries(model.fields)
 
-    .map(([name, type]) => fieldDefinitionToSQL(name, type as FieldDefinition))
+    .map(([name, type]) =>
+      fieldDefinitionToSQL(identifierToSQL(name), type as FieldDefinition),
+    )
     .join(", ");
 
   const constraints = (
@@ -109,5 +112,5 @@ export function modelToSql(model: Model) {
     .filter((x) => x)
     .join(", ");
 
-  return `CREATE TABLE ${model.name} (${fieldsAndConstraints})`;
+  return `CREATE TABLE ${identifierToSQL(model.name)} (${fieldsAndConstraints})`;
 }

@@ -17,6 +17,7 @@ import {
   FILTER_OPTION_TYPE_KEY,
   FILTER_OPTION_VALUE_KEY,
 } from "@fabric/core";
+import { identifierToSQL } from "./identifier-to-sql.js";
 import { keyToParamKey } from "./record-utils.js";
 import { fieldValueToSQL } from "./value-to-sql.js";
 
@@ -77,16 +78,16 @@ function getWhereFromKeyValue(
   opts: { postfix?: string } = {},
 ) {
   if (value == undefined) {
-    return `${key} IS NULL`;
+    return `${identifierToSQL(key)} IS NULL`;
   }
 
   if (typeof value === "object") {
     if (value[FILTER_OPTION_TYPE_KEY] === "like") {
-      return `${key} LIKE ${getWhereParamKey(key, opts)}`;
+      return `${identifierToSQL(key)} LIKE ${getWhereParamKey(key, opts)}`;
     }
 
     if (value[FILTER_OPTION_TYPE_KEY] === "in") {
-      return `${key} IN (${value[FILTER_OPTION_VALUE_KEY].map(
+      return `${identifierToSQL(key)} IN (${value[FILTER_OPTION_VALUE_KEY].map(
         (_v: any, i: number) =>
           getWhereParamKey(key, {
             postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
@@ -95,13 +96,13 @@ function getWhereFromKeyValue(
     }
 
     if (value[FILTER_OPTION_TYPE_KEY] === "comparison") {
-      return `${key} ${value[FILTER_OPTION_OPERATOR_KEY]} ${getWhereParamKey(
+      return `${identifierToSQL(key)} ${value[FILTER_OPTION_OPERATOR_KEY]} ${getWhereParamKey(
         key,
         opts,
       )}`;
     }
   }
-  return `${key} = ${getWhereParamKey(key, opts)}`;
+  return `${identifierToSQL(key)} = ${getWhereParamKey(key, opts)}`;
 }
 
 function getParamsFromMultiFilterOption(
