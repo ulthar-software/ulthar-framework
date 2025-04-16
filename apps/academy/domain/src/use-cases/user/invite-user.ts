@@ -1,9 +1,9 @@
 import { Field, Model, TaggedError, type Infer } from "@fabric/core";
-import crypto from "node:crypto";
 import { UserInvitedEvent } from "../../models/user-invite.js";
 import { AccessPolicy } from "../../security/access-policy.js";
 import { Permission } from "../../security/permission.js";
 import { UserRole } from "../../security/user-role.js";
+import type { DomainCryptoService } from "../../services/crypto-service.js";
 import type { DomainEventStore } from "../../services/event-store.js";
 import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
@@ -22,6 +22,7 @@ export type InviteUserInput = Infer<typeof InviteUserInputModel>;
 export interface InviteUserDependencies {
   state: DomainStateStore;
   events: DomainEventStore;
+  crypto: DomainCryptoService;
 }
 
 // Custom errors for the invite user use case
@@ -47,14 +48,9 @@ export const InviteUserUseCase = new UseCase({
   auth: AccessPolicy.WithPermission(Permission.INVITE_USERS),
   inputSchema: InviteUserInputModel,
   effect: (
-    { state, events }: InviteUserDependencies,
+    { state, events, crypto }: InviteUserDependencies,
     { email, role }: InviteUserInput,
   ) => {
-    // Helper function to generate a unique invitation code
-    const generateInviteCode = (): string => {
-      return crypto.randomBytes(16).toString("hex");
-    };
-
     // Step 1: Check if user already exists
     return (
       state
@@ -72,7 +68,7 @@ export const InviteUserUseCase = new UseCase({
         )
         // Step 3: Generate invitation code
         .flatMap(() => {
-          const inviteCode = generateInviteCode();
+          const inviteCode = crypto.generateInviteCode();
           const id = crypto.randomUUID();
 
           // Step 4: Create the UserInvited event
