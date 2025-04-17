@@ -1,5 +1,6 @@
 import { CourseModel, CourseProjector, CourseStream } from "./course.js";
 import { ModuleModel, ModuleProjector, ModuleStream } from "./module.js";
+import { UnitModel, UnitProjector, UnitStream } from "./unit.js";
 import {
   UserInviteModel,
   UserInviteProjector,
@@ -9,6 +10,8 @@ import { UserModel, UserProjector, UserStream } from "./user.js";
 
 export * from "./course.js";
 export * from "./module.js";
+export * from "./unit.js";
+export * from "./user-invite.js";
 export * from "./user.js";
 
 export const DomainModels = [
@@ -16,6 +19,7 @@ export const DomainModels = [
   UserInviteModel,
   CourseModel,
   ModuleModel,
+  UnitModel,
 ] as const;
 
 export const DomainStreams = [
@@ -23,6 +27,7 @@ export const DomainStreams = [
   UserInviteStream,
   CourseStream,
   ModuleStream,
+  UnitStream,
 ] as const;
 
 export const DomainProjectors = [
@@ -30,4 +35,5 @@ export const DomainProjectors = [
   UserInviteProjector,
   CourseProjector,
   ModuleProjector,
+  UnitProjector,
 ] as const;
