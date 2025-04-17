@@ -113,6 +113,46 @@ describe("Create Course Use Case", () => {
     );
   });
 
+  test("Should successfully create a course without providing description", async () => {
+    // Arrange
+    const courseData = {
+      title: "TypeScript Basics",
+      // description field intentionally omitted
+    };
+
+    // Act
+    const result = await CreateCourseUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: adminUser.id,
+          permissions: [Permission.CREATE_COURSE],
+        },
+      },
+      courseData,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toEqual({
+      courseId: expect.any(String),
+    });
+
+    // Verify the course is in the database
+    const courseInDb = await services.state
+      .from("courses")
+      .where({ id: result.courseId })
+      .selectOneOrFail()
+      .runOrThrow();
+
+    expect(courseInDb).toEqual(
+      expect.objectContaining({
+        title: courseData.title,
+        description: "", // Expect description to be empty
+        createdBy: adminUser.id,
+      }),
+    );
+  });
+
   test("Should fail when course title is empty", async () => {
     // Arrange
     const courseData = {

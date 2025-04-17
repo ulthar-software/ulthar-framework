@@ -1,5 +1,5 @@
 import type { Effect, UnexpectedError, UUID } from "@fabric/core";
-import { Field, Model, TaggedError, type Infer } from "@fabric/core";
+import { Field, Model, type Infer } from "@fabric/core";
 import { CourseCreatedEvent } from "../../models/course.js";
 import { AccessPolicy } from "../../security/access-policy.js";
 import { Permission } from "../../security/permission.js";
@@ -29,19 +29,6 @@ export type CreateCourseInput = Infer<typeof CreateCourseInputModel>;
 
 export interface CreateCourseOutput {
   courseId: UUID;
-}
-
-export class EmptyCourseTitleError extends TaggedError<"EmptyCourseTitleError"> {
-  constructor() {
-    super("EmptyCourseTitleError", "Course title cannot be empty");
-  }
-}
-
-export class CourseCreationError extends TaggedError<"CourseCreationError"> {
-  constructor(public readonly reason: string) {
-    super("CourseCreationError");
-    this.message = `Failed to create course: ${reason}`;
-  }
 }
 
 export const CreateCourseUseCase = new UseCase({
