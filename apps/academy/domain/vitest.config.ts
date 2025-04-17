@@ -1,7 +1,15 @@
-import { defineConfig } from "vitest/config";
+import { coverageConfigDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     passWithNoTests: true,
+    coverage: {
+      exclude: [
+        "**/index.ts",
+        "src/use-cases.ts",
+        "**/services/**/*.ts",
+        ...coverageConfigDefaults.exclude,
+      ],
+    },
   },
 });
