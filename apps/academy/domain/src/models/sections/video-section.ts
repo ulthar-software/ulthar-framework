@@ -1,4 +1,4 @@
-import type { EventToType, Infer } from "@fabric/core";
+import type { EventToType, Infer, Schema } from "@fabric/core";
 import {
   AggregateModel,
   AggregateProjector,
@@ -24,6 +24,10 @@ export const VideoSectionContentModel = {
     isUnsigned: true,
   }),
 };
+
+export type VideoSectionContent = Infer<
+  Schema<typeof VideoSectionContentModel>
+>;
 
 // Video Section Model
 export const VideoSectionModel = new AggregateModel("videoSections", {
