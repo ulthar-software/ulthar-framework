@@ -247,6 +247,48 @@ describe("Add Module To Course Use Case", () => {
     expect(error).toBeInstanceOf(SchemaParsingError);
   });
 
+  test("Should successfully add a module without a description", async () => {
+    // Arrange
+    const moduleData = {
+      courseId: existingCourseId,
+      title: "Module Without Description",
+      // No description provided
+    };
+
+    // Act
+    const result = await AddModuleToCourseUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: teacherUser.id,
+          permissions: [Permission.ADD_MODULE_TO_COURSE],
+        },
+      },
+      moduleData,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toEqual({
+      moduleId: expect.any(String),
+    });
+
+    // Verify the module was added to the database
+    const moduleInDb = await services.state
+      .from("modules")
+      .where({ id: result.moduleId })
+      .selectOneOrFail()
+      .runOrThrow();
+
+    expect(moduleInDb).toEqual(
+      expect.objectContaining({
+        title: moduleData.title,
+        description: "", // Description should be an empty string
+        courseId: existingCourseId,
+        createdBy: teacherUser.id,
+      }),
+    );
+  });
+
   test("Should fail when user doesn't have ADD_MODULE_TO_COURSE permission", async () => {
     // Arrange
     const moduleData = {
