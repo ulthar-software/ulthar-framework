@@ -5,100 +5,19 @@ import {
 } from "../../services/mocks/create-mock-services.js";
 import {
   QuestionnaireSectionAddedEvent,
+  QuestionnaireSectionContentChangedEvent,
   QuestionnaireSectionProjector,
+} from "./questionnaire-section.js";
+import {
   SectionOrderChangedEvent,
   SectionTitleChangedEvent,
-  TextSectionAddedEvent,
-  TextSectionContentChangedEvent,
-  TextSectionProjector,
-  VideoSectionAddedEvent,
-  VideoSectionContentChangedEvent,
-  VideoSectionProjector,
-} from "./section.js";
+} from "./section-base.js";
 
-describe("Specialized Sections", () => {
+describe("Questionnaire Section", () => {
   let services: MockedDependencies;
 
   beforeEach(async () => {
     services = await createServiceMocks();
-  });
-
-  test("Creating a TextSection", () => {
-    const sectionId = services.crypto.randomUUID();
-    const unitId = services.crypto.randomUUID();
-    const createdBy = services.crypto.randomUUID();
-
-    const event = TextSectionAddedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: sectionId,
-      payload: {
-        title: "Introduction",
-        content: {
-          text: "This is an introductory text section with detailed content.",
-        },
-        unitId,
-        order: 1,
-        createdBy,
-      },
-      version: 1n,
-    });
-
-    const section = TextSectionProjector.project(event).unwrapOrThrow();
-
-    expect(section).toEqual({
-      id: sectionId,
-      title: "Introduction",
-      content: {
-        text: "This is an introductory text section with detailed content.",
-      },
-      unitId,
-      order: 1,
-      createdBy,
-      version: 1n,
-      updatedAt: event.timestamp,
-      createdAt: event.timestamp,
-    });
-  });
-
-  test("Creating a VideoSection", () => {
-    const sectionId = services.crypto.randomUUID();
-    const unitId = services.crypto.randomUUID();
-    const createdBy = services.crypto.randomUUID();
-
-    const event = VideoSectionAddedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: sectionId,
-      payload: {
-        title: "Video Tutorial",
-        content: {
-          videoUrl: "https://example.com/intro-video",
-          description: "An introductory video about the course",
-          duration: 360, // in seconds
-        },
-        unitId,
-        order: 2,
-        createdBy,
-      },
-      version: 1n,
-    });
-
-    const section = VideoSectionProjector.project(event).unwrapOrThrow();
-
-    expect(section).toEqual({
-      id: sectionId,
-      title: "Video Tutorial",
-      content: {
-        videoUrl: "https://example.com/intro-video",
-        description: "An introductory video about the course",
-        duration: 360,
-      },
-      unitId,
-      order: 2,
-      createdBy,
-      version: 1n,
-      updatedAt: event.timestamp,
-      createdAt: event.timestamp,
-    });
   });
 
   test("Creating a QuestionnaireSection", () => {
@@ -175,56 +94,100 @@ describe("Specialized Sections", () => {
     });
   });
 
-  test("Updating a TextSection content", () => {
-    // First create a text section
+  test("Updating a QuestionnaireSection content", () => {
+    // First create a questionnaire section
     const sectionId = services.crypto.randomUUID();
     const unitId = services.crypto.randomUUID();
     const createdBy = services.crypto.randomUUID();
 
-    const addEvent = TextSectionAddedEvent.from({
+    const addEvent = QuestionnaireSectionAddedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: sectionId,
       payload: {
-        title: "Introduction",
+        title: "Quiz",
         content: {
-          text: "This is an introductory text section.",
+          questions: [
+            {
+              questionText: "Original question?",
+              options: [
+                { text: "Option A", isCorrect: true },
+                { text: "Option B", isCorrect: false },
+              ],
+            },
+          ],
+          passingScore: 70,
         },
         unitId,
-        order: 1,
+        order: 3,
         createdBy,
       },
       version: 1n,
     });
 
-    const section = TextSectionProjector.project(addEvent).unwrapOrThrow();
+    const section =
+      QuestionnaireSectionProjector.project(addEvent).unwrapOrThrow();
     if (!section) throw new Error("Section was not created");
 
     // Then update the content
-    const contentChangeEvent = TextSectionContentChangedEvent.from({
+    const contentChangeEvent = QuestionnaireSectionContentChangedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: sectionId,
       payload: {
         content: {
-          text: "This is a revised and expanded introduction with more details.",
+          questions: [
+            {
+              questionText: "Updated question?",
+              options: [
+                { text: "Option A", isCorrect: false },
+                { text: "Option B", isCorrect: true },
+                { text: "Option C", isCorrect: false },
+              ],
+            },
+            {
+              questionText: "New question?",
+              options: [
+                { text: "Option X", isCorrect: true },
+                { text: "Option Y", isCorrect: false },
+              ],
+            },
+          ],
+          passingScore: 80,
         },
         updatedBy: services.crypto.randomUUID(),
       },
       version: 2n,
     });
 
-    const updatedSection = TextSectionProjector.project(
+    const updatedSection = QuestionnaireSectionProjector.project(
       contentChangeEvent,
       section,
     ).unwrapOrThrow();
 
     expect(updatedSection).toEqual({
       id: sectionId,
-      title: "Introduction", // Unchanged
+      title: "Quiz", // Unchanged
       content: {
-        text: "This is a revised and expanded introduction with more details.", // Changed
-      },
+        questions: [
+          {
+            questionText: "Updated question?",
+            options: [
+              { text: "Option A", isCorrect: false },
+              { text: "Option B", isCorrect: true },
+              { text: "Option C", isCorrect: false },
+            ],
+          },
+          {
+            questionText: "New question?",
+            options: [
+              { text: "Option X", isCorrect: true },
+              { text: "Option Y", isCorrect: false },
+            ],
+          },
+        ],
+        passingScore: 80,
+      }, // Changed
       unitId, // Unchanged
-      order: 1, // Unchanged
+      order: 3, // Unchanged
       createdBy,
       version: 2n,
       updatedAt: contentChangeEvent.timestamp,
@@ -232,70 +195,7 @@ describe("Specialized Sections", () => {
     });
   });
 
-  test("Updating a VideoSection content", () => {
-    // First create a video section
-    const sectionId = services.crypto.randomUUID();
-    const unitId = services.crypto.randomUUID();
-    const createdBy = services.crypto.randomUUID();
-
-    const addEvent = VideoSectionAddedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: sectionId,
-      payload: {
-        title: "Video Tutorial",
-        content: {
-          videoUrl: "https://example.com/old-video",
-          description: "Old description",
-          duration: 300,
-        },
-        unitId,
-        order: 2,
-        createdBy,
-      },
-      version: 1n,
-    });
-
-    const section = VideoSectionProjector.project(addEvent).unwrapOrThrow();
-    if (!section) throw new Error("Section was not created");
-
-    // Then update the content
-    const contentChangeEvent = VideoSectionContentChangedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: sectionId,
-      payload: {
-        content: {
-          videoUrl: "https://example.com/new-video",
-          description: "Updated description with more details",
-          duration: 450,
-        },
-        updatedBy: services.crypto.randomUUID(),
-      },
-      version: 2n,
-    });
-
-    const updatedSection = VideoSectionProjector.project(
-      contentChangeEvent,
-      section,
-    ).unwrapOrThrow();
-
-    expect(updatedSection).toEqual({
-      id: sectionId,
-      title: "Video Tutorial", // Unchanged
-      content: {
-        videoUrl: "https://example.com/new-video", // Changed
-        description: "Updated description with more details", // Changed
-        duration: 450, // Changed
-      },
-      unitId, // Unchanged
-      order: 2, // Unchanged
-      createdBy,
-      version: 2n,
-      updatedAt: contentChangeEvent.timestamp,
-      createdAt: section.createdAt,
-    });
-  });
-
-  test("Updating section title works on all section types", () => {
+  test("Updating section title", () => {
     // First create a questionnaire section
     const sectionId = services.crypto.randomUUID();
     const unitId = services.crypto.randomUUID();
@@ -329,7 +229,7 @@ describe("Specialized Sections", () => {
       QuestionnaireSectionProjector.project(addEvent).unwrapOrThrow();
     if (!section) throw new Error("Section was not created");
 
-    // Then update only the title
+    // Then update the title
     const titleChangeEvent = SectionTitleChangedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: sectionId,
@@ -358,28 +258,38 @@ describe("Specialized Sections", () => {
     });
   });
 
-  test("Updating section order works on all section types", () => {
-    // Create a text section
+  test("Updating section order", () => {
+    // First create a questionnaire section
     const sectionId = services.crypto.randomUUID();
     const unitId = services.crypto.randomUUID();
     const createdBy = services.crypto.randomUUID();
 
-    const addEvent = TextSectionAddedEvent.from({
+    const addEvent = QuestionnaireSectionAddedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: sectionId,
       payload: {
-        title: "Introduction",
+        title: "Quiz",
         content: {
-          text: "This is an introductory text.",
+          questions: [
+            {
+              questionText: "Sample question?",
+              options: [
+                { text: "Option A", isCorrect: true },
+                { text: "Option B", isCorrect: false },
+              ],
+            },
+          ],
+          passingScore: 70,
         },
         unitId,
-        order: 1,
+        order: 3,
         createdBy,
       },
       version: 1n,
     });
 
-    const section = TextSectionProjector.project(addEvent).unwrapOrThrow();
+    const section =
+      QuestionnaireSectionProjector.project(addEvent).unwrapOrThrow();
     if (!section) throw new Error("Section was not created");
 
     // Then update the order
@@ -387,23 +297,23 @@ describe("Specialized Sections", () => {
       id: services.crypto.randomUUID(),
       streamId: sectionId,
       payload: {
-        order: 4,
+        order: 6,
         updatedBy: services.crypto.randomUUID(),
       },
       version: 2n,
     });
 
-    const updatedSection = TextSectionProjector.project(
+    const updatedSection = QuestionnaireSectionProjector.project(
       orderChangeEvent,
       section,
     ).unwrapOrThrow();
 
     expect(updatedSection).toEqual({
       id: sectionId,
-      title: "Introduction", // Unchanged
+      title: "Quiz", // Unchanged
       content: section.content, // Unchanged
       unitId, // Unchanged
-      order: 4, // Changed
+      order: 6, // Changed
       createdBy,
       version: 2n,
       updatedAt: orderChangeEvent.timestamp,

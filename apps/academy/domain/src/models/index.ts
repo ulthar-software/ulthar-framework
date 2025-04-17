@@ -10,7 +10,8 @@ import {
   VideoSectionModel,
   VideoSectionProjector,
   VideoSectionStream,
-} from "./sections/section.js";
+} from "./sections/index.js";
+
 import { UnitModel, UnitProjector, UnitStream } from "./unit.js";
 import {
   UserInviteModel,
@@ -21,8 +22,7 @@ import { UserModel, UserProjector, UserStream } from "./user.js";
 
 export * from "./course.js";
 export * from "./module.js";
-export * from "./sections/section-types.js";
-export * from "./sections/section.js";
+export * from "./sections/index.js";
 export * from "./unit.js";
 export * from "./user-invite.js";
 export * from "./user.js";
