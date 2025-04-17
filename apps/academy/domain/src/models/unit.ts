@@ -34,17 +34,27 @@ export const UnitAddedEvent = new DomainEvent("UnitAdded", {
 
 export type UnitAddedEvent = EventToType<typeof UnitAddedEvent>;
 
-export const UnitUpdatedEvent = new DomainEvent("UnitUpdated", {
+export const UnitNameChangedEvent = new DomainEvent("UnitNameChanged", {
   name: Field.string(),
+  updatedBy: Field.uuid(),
+});
+
+export type UnitNameChangedEvent = EventToType<typeof UnitNameChangedEvent>;
+
+export const UnitOrderChangedEvent = new DomainEvent("UnitOrderChanged", {
   order: Field.integer({
     isUnsigned: true,
   }),
   updatedBy: Field.uuid(),
 });
 
-export type UnitUpdatedEvent = EventToType<typeof UnitUpdatedEvent>;
+export type UnitOrderChangedEvent = EventToType<typeof UnitOrderChangedEvent>;
 
-export const UnitEvents = [UnitAddedEvent, UnitUpdatedEvent] as const;
+export const UnitEvents = [
+  UnitAddedEvent,
+  UnitNameChangedEvent,
+  UnitOrderChangedEvent,
+] as const;
 
 export const UnitStream = new EventStream(UnitModel.name, UnitEvents);
 
@@ -54,9 +64,12 @@ export const UnitProjector = new AggregateProjector(
   UnitEvents,
   {
     UnitAdded: (event): Unit => UnitModel.from(event, event.payload),
-    UnitUpdated: (event, unit): Unit =>
+    UnitNameChanged: (event, unit): Unit =>
       UnitModel.update(unit, event, {
         name: event.payload.name,
+      }),
+    UnitOrderChanged: (event, unit): Unit =>
+      UnitModel.update(unit, event, {
         order: event.payload.order,
       }),
   },

@@ -3,7 +3,12 @@ import {
   createServiceMocks,
   type MockedDependencies,
 } from "../services/mocks/create-mock-services.js";
-import { UnitAddedEvent, UnitProjector, UnitUpdatedEvent } from "./unit.js";
+import {
+  UnitAddedEvent,
+  UnitNameChangedEvent,
+  UnitOrderChangedEvent,
+  UnitProjector,
+} from "./unit.js";
 
 describe("Unit", () => {
   let services: MockedDependencies;
@@ -40,7 +45,7 @@ describe("Unit", () => {
     });
   });
 
-  test("Updating a unit", () => {
+  test("Changing a unit name", () => {
     // First create a unit
     const unitId = services.crypto.randomUUID();
     const addEvent: UnitAddedEvent = UnitAddedEvent.from({
@@ -59,20 +64,19 @@ describe("Unit", () => {
 
     if (!unit) throw new Error("Unit was not created");
 
-    // Then update the unit
-    const updateEvent: UnitUpdatedEvent = UnitUpdatedEvent.from({
+    // Then update the unit name
+    const nameChangedEvent: UnitNameChangedEvent = UnitNameChangedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: unitId,
       payload: {
         name: "Updated Unit Name",
-        order: 2,
         updatedBy: services.crypto.randomUUID(),
       },
       version: 2n,
     });
 
     const updatedUnit = UnitProjector.project(
-      updateEvent,
+      nameChangedEvent,
       unit,
     ).unwrapOrThrow();
 
@@ -80,10 +84,59 @@ describe("Unit", () => {
       id: unitId,
       name: "Updated Unit Name",
       moduleId: unit.moduleId,
+      order: unit.order,
+      createdBy: unit.createdBy,
+      version: 2n,
+      updatedAt: nameChangedEvent.timestamp,
+      createdAt: unit.createdAt,
+    });
+  });
+
+  test("Changing a unit order", () => {
+    // First create a unit
+    const unitId = services.crypto.randomUUID();
+    const addEvent: UnitAddedEvent = UnitAddedEvent.from({
+      id: services.crypto.randomUUID(),
+      streamId: unitId,
+      payload: {
+        name: "Unit 1",
+        moduleId: services.crypto.randomUUID(),
+        order: 1,
+        createdBy: services.crypto.randomUUID(),
+      },
+      version: 1n,
+    });
+
+    const unit = UnitProjector.project(addEvent).unwrapOrThrow();
+
+    if (!unit) throw new Error("Unit was not created");
+
+    // Then update the unit order
+    const orderChangedEvent: UnitOrderChangedEvent = UnitOrderChangedEvent.from(
+      {
+        id: services.crypto.randomUUID(),
+        streamId: unitId,
+        payload: {
+          order: 2,
+          updatedBy: services.crypto.randomUUID(),
+        },
+        version: 2n,
+      },
+    );
+
+    const updatedUnit = UnitProjector.project(
+      orderChangedEvent,
+      unit,
+    ).unwrapOrThrow();
+
+    expect(updatedUnit).toEqual({
+      id: unitId,
+      name: unit.name,
+      moduleId: unit.moduleId,
       order: 2,
       createdBy: unit.createdBy,
       version: 2n,
-      updatedAt: updateEvent.timestamp,
+      updatedAt: orderChangedEvent.timestamp,
       createdAt: unit.createdAt,
     });
   });
