@@ -1,11 +1,5 @@
 import type { Effect, UUID } from "@fabric/core";
-import {
-  Field,
-  Model,
-  TaggedError,
-  UnexpectedError,
-  type Infer,
-} from "@fabric/core";
+import { Field, Model, UnexpectedError, type Infer } from "@fabric/core";
 import { ModuleAddedEvent } from "../../../models/module.js";
 import { AccessPolicy } from "../../../security/access-policy.js";
 import { Permission } from "../../../security/permission.js";
@@ -37,13 +31,6 @@ export type AddModuleToCourseInput = Infer<typeof AddModuleToCourseInputModel>;
 
 export interface AddModuleToCourseOutput {
   moduleId: UUID;
-}
-
-export class ModuleCreationError extends TaggedError<"ModuleCreationError"> {
-  constructor(public readonly reason: string) {
-    super("ModuleCreationError");
-    this.message = `Failed to create module: ${reason}`;
-  }
 }
 
 export const AddModuleToCourseUseCase = new UseCase({
