@@ -26,15 +26,32 @@ export const CourseCreatedEvent = new DomainEvent("CourseCreated", {
 
 export type CourseCreatedEvent = EventToType<typeof CourseCreatedEvent>;
 
-export const CourseUpdatedEvent = new DomainEvent("CourseUpdated", {
+export const CourseTitleChangedEvent = new DomainEvent("CourseTitleChanged", {
   title: Field.string(),
-  description: Field.string(),
   updatedBy: Field.uuid(),
 });
 
-export type CourseUpdatedEvent = EventToType<typeof CourseUpdatedEvent>;
+export type CourseTitleChangedEvent = EventToType<
+  typeof CourseTitleChangedEvent
+>;
 
-export const CourseEvents = [CourseCreatedEvent, CourseUpdatedEvent] as const;
+export const CourseDescriptionChangedEvent = new DomainEvent(
+  "CourseDescriptionChanged",
+  {
+    description: Field.string(),
+    updatedBy: Field.uuid(),
+  },
+);
+
+export type CourseDescriptionChangedEvent = EventToType<
+  typeof CourseDescriptionChangedEvent
+>;
+
+export const CourseEvents = [
+  CourseCreatedEvent,
+  CourseTitleChangedEvent,
+  CourseDescriptionChangedEvent,
+] as const;
 
 export const CourseStream = new EventStream(CourseModel.name, CourseEvents);
 
@@ -44,9 +61,12 @@ export const CourseProjector = new AggregateProjector(
   CourseEvents,
   {
     CourseCreated: (event): Course => CourseModel.from(event, event.payload),
-    CourseUpdated: (event, course): Course =>
+    CourseTitleChanged: (event, course): Course =>
       CourseModel.update(course, event, {
         title: event.payload.title,
+      }),
+    CourseDescriptionChanged: (event, course): Course =>
+      CourseModel.update(course, event, {
         description: event.payload.description,
       }),
   },

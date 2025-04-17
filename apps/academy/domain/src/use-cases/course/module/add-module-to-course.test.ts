@@ -11,7 +11,7 @@ import {
 } from "../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../utils/use-case.js";
 import { CreateCourseUseCase } from "../create-course.js";
-import { CourseNotFoundError } from "../edit-course.js";
+import { CourseNotFoundError } from "../errors.js";
 import { AddModuleToCourseUseCase } from "./add-module-to-course.js";
 
 describe("Add Module To Course Use Case", () => {

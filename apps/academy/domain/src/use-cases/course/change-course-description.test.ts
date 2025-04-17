@@ -1,4 +1,4 @@
-import { SchemaParsingError, type UUID } from "@fabric/core";
+import { type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createUserMock } from "../../models/mocks/create-user-mock.js";
 import type { User } from "../../models/user.js";
@@ -9,10 +9,11 @@ import {
   type MockedDependencies,
 } from "../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../utils/use-case.js";
+import { ChangeCourseDescriptionUseCase } from "./change-course-description.js";
 import { CreateCourseUseCase } from "./create-course.js";
-import { CourseNotFoundError, EditCourseUseCase } from "./edit-course.js";
+import { CourseNotFoundError } from "./errors.js";
 
-describe("Edit Course Use Case", () => {
+describe("Change Course Description Use Case", () => {
   let services: MockedDependencies;
   let adminUser: User;
   let teacherUser: User;
@@ -56,16 +57,15 @@ describe("Edit Course Use Case", () => {
     existingCourseId = courseResult.courseId;
   });
 
-  test("Admin should successfully edit a course", async () => {
+  test("Admin should successfully change course description", async () => {
     // Arrange
     const updateData = {
       courseId: existingCourseId,
-      title: "Updated Course Title",
       description: "Updated course description",
     };
 
     // Act
-    await EditCourseUseCase.call(
+    await ChangeCourseDescriptionUseCase.call(
       {
         ...services,
         currentUser: {
@@ -85,22 +85,21 @@ describe("Edit Course Use Case", () => {
 
     expect(updatedCourse).toEqual(
       expect.objectContaining({
-        title: updateData.title,
+        title: "Original Course Title", // Title should remain unchanged
         description: updateData.description,
       }),
     );
   });
 
-  test("Teacher should successfully edit a course", async () => {
+  test("Teacher should successfully change course description", async () => {
     // Arrange
     const updateData = {
       courseId: existingCourseId,
-      title: "Teacher's Updated Title",
       description: "Updated by a teacher",
     };
 
     // Act
-    await EditCourseUseCase.call(
+    await ChangeCourseDescriptionUseCase.call(
       {
         ...services,
         currentUser: {
@@ -120,7 +119,6 @@ describe("Edit Course Use Case", () => {
 
     expect(updatedCourse).toEqual(
       expect.objectContaining({
-        title: updateData.title,
         description: updateData.description,
       }),
     );
@@ -131,12 +129,11 @@ describe("Edit Course Use Case", () => {
     const nonExistentCourseId = "00000000-0000-0000-0000-000000000000";
     const updateData = {
       courseId: nonExistentCourseId,
-      title: "Updated Title",
       description: "Updated description",
     };
 
     // Act
-    const result = await EditCourseUseCase.call(
+    const result = await ChangeCourseDescriptionUseCase.call(
       {
         ...services,
         currentUser: {
@@ -153,42 +150,15 @@ describe("Edit Course Use Case", () => {
     expect(error).toBeInstanceOf(CourseNotFoundError);
   });
 
-  test("Should fail when title is too short", async () => {
-    // Arrange
-    const updateData = {
-      courseId: existingCourseId,
-      title: "AB", // Too short (minLength: 3)
-      description: "Updated description",
-    };
-
-    // Act
-    const result = await EditCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: adminUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      updateData,
-    ).run();
-
-    // Assert
-    expect(result.isError()).toBe(true);
-    const error = result.unwrapErrorOrThrow();
-    expect(error).toBeInstanceOf(SchemaParsingError);
-  });
-
   test("Should fail when user doesn't have EDIT_COURSE permission", async () => {
     // Arrange
     const updateData = {
       courseId: existingCourseId,
-      title: "Unauthorized Update",
       description: "This update should be rejected",
     };
 
     // Act
-    const result = await EditCourseUseCase.call(
+    const result = await ChangeCourseDescriptionUseCase.call(
       {
         ...services,
         currentUser: {

@@ -14,7 +14,7 @@ import type { DomainCryptoService } from "../../../services/crypto-service.js";
 import type { DomainEventStore } from "../../../services/event-store.js";
 import type { DomainStateStore } from "../../../services/state-store.js";
 import { UseCase } from "../../../utils/use-case.js";
-import { CourseNotFoundError } from "../edit-course.js";
+import { CourseNotFoundError } from "../errors.js";
 
 export interface AddModuleToCourseDependencies {
   state: DomainStateStore;
