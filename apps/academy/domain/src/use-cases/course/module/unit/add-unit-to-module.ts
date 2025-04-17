@@ -42,13 +42,6 @@ export class ModuleNotFoundError extends TaggedError<"ModuleNotFoundError"> {
   }
 }
 
-export class UnitCreationError extends TaggedError<"UnitCreationError"> {
-  constructor(public readonly reason: string) {
-    super("UnitCreationError");
-    this.message = `Failed to create unit: ${reason}`;
-  }
-}
-
 export const AddUnitToModuleUseCase = new UseCase({
   name: "AddUnitToModule",
   type: "command",
