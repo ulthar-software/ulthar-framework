@@ -23,7 +23,7 @@ describe("Unit", () => {
       id: services.crypto.randomUUID(),
       streamId: unitId,
       payload: {
-        name: "Unit 1",
+        title: "Unit 1",
         moduleId: services.crypto.randomUUID(),
         order: 1,
         createdBy: services.crypto.randomUUID(),
@@ -35,7 +35,7 @@ describe("Unit", () => {
 
     expect(unit).toEqual({
       id: unitId,
-      name: "Unit 1",
+      title: "Unit 1",
       moduleId: event.payload.moduleId,
       order: 1,
       createdBy: event.payload.createdBy,
@@ -45,14 +45,14 @@ describe("Unit", () => {
     });
   });
 
-  test("Changing a unit name", () => {
+  test("Changing a unit title", () => {
     // First create a unit
     const unitId = services.crypto.randomUUID();
     const addEvent: UnitAddedEvent = UnitAddedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: unitId,
       payload: {
-        name: "Unit 1",
+        title: "Unit 1",
         moduleId: services.crypto.randomUUID(),
         order: 1,
         createdBy: services.crypto.randomUUID(),
@@ -64,30 +64,30 @@ describe("Unit", () => {
 
     if (!unit) throw new Error("Unit was not created");
 
-    // Then update the unit name
-    const nameChangedEvent: UnitNameChangedEvent = UnitNameChangedEvent.from({
+    // Then update the unit title
+    const titleChangedEvent: UnitNameChangedEvent = UnitNameChangedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: unitId,
       payload: {
-        name: "Updated Unit Name",
+        title: "Updated Unit Name",
         updatedBy: services.crypto.randomUUID(),
       },
       version: 2n,
     });
 
     const updatedUnit = UnitProjector.project(
-      nameChangedEvent,
+      titleChangedEvent,
       unit,
     ).unwrapOrThrow();
 
     expect(updatedUnit).toEqual({
       id: unitId,
-      name: "Updated Unit Name",
+      title: "Updated Unit Name",
       moduleId: unit.moduleId,
       order: unit.order,
       createdBy: unit.createdBy,
       version: 2n,
-      updatedAt: nameChangedEvent.timestamp,
+      updatedAt: titleChangedEvent.timestamp,
       createdAt: unit.createdAt,
     });
   });
@@ -99,7 +99,7 @@ describe("Unit", () => {
       id: services.crypto.randomUUID(),
       streamId: unitId,
       payload: {
-        name: "Unit 1",
+        title: "Unit 1",
         moduleId: services.crypto.randomUUID(),
         order: 1,
         createdBy: services.crypto.randomUUID(),
@@ -131,7 +131,7 @@ describe("Unit", () => {
 
     expect(updatedUnit).toEqual({
       id: unitId,
-      name: unit.name,
+      title: unit.title,
       moduleId: unit.moduleId,
       order: 2,
       createdBy: unit.createdBy,

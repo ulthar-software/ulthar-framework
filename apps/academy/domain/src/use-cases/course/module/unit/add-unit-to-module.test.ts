@@ -70,11 +70,11 @@ describe("Add Unit To Module Use Case", () => {
     existingModuleId = moduleResult.moduleId;
   });
 
-  test("Given a valid module ID and unit name, it should add a unit to the module", async () => {
+  test("Given a valid module ID and unit title, it should add a unit to the module", async () => {
     // Arrange
     const input = {
       moduleId: existingModuleId,
-      name: "Test Unit",
+      title: "Test Unit",
     };
 
     // Act
@@ -104,7 +104,7 @@ describe("Add Unit To Module Use Case", () => {
     expect(unit.unwrapOrThrow()).toEqual(
       expect.objectContaining({
         id: unitId,
-        name: "Test Unit",
+        title: "Test Unit",
         moduleId: existingModuleId,
         order: 100, // First unit in the module
         createdBy: teacherUser.id,
@@ -117,7 +117,7 @@ describe("Add Unit To Module Use Case", () => {
     const nonExistentModuleId = services.crypto.randomUUID();
     const input = {
       moduleId: nonExistentModuleId,
-      name: "Test Unit",
+      title: "Test Unit",
     };
 
     // Act
@@ -145,7 +145,7 @@ describe("Add Unit To Module Use Case", () => {
     // Arrange
     const input = {
       moduleId: existingModuleId,
-      name: "Test Unit",
+      title: "Test Unit",
     };
 
     // Act
@@ -169,7 +169,7 @@ describe("Add Unit To Module Use Case", () => {
     // Arrange
     const invalidInput = {
       moduleId: existingModuleId,
-      name: "", // Too short
+      title: "", // Too short
     };
 
     // Act

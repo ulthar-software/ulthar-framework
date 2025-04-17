@@ -8,7 +8,7 @@ import {
 } from "@fabric/core";
 
 export const UnitModel = new AggregateModel("units", {
-  name: Field.string(),
+  title: Field.string(),
   moduleId: Field.reference({
     targetModel: "modules",
   }),
@@ -24,7 +24,7 @@ export type UnitModel = typeof UnitModel;
 export type Unit = Infer<UnitModel>;
 
 export const UnitAddedEvent = new DomainEvent("UnitAdded", {
-  name: Field.string(),
+  title: Field.string(),
   moduleId: Field.uuid(),
   order: Field.integer({
     isUnsigned: true,
@@ -35,7 +35,7 @@ export const UnitAddedEvent = new DomainEvent("UnitAdded", {
 export type UnitAddedEvent = EventToType<typeof UnitAddedEvent>;
 
 export const UnitNameChangedEvent = new DomainEvent("UnitNameChanged", {
-  name: Field.string(),
+  title: Field.string(),
   updatedBy: Field.uuid(),
 });
 
@@ -66,7 +66,7 @@ export const UnitProjector = new AggregateProjector(
     UnitAdded: (event): Unit => UnitModel.from(event, event.payload),
     UnitNameChanged: (event, unit): Unit =>
       UnitModel.update(unit, event, {
-        name: event.payload.name,
+        title: event.payload.title,
       }),
     UnitOrderChanged: (event, unit): Unit =>
       UnitModel.update(unit, event, {

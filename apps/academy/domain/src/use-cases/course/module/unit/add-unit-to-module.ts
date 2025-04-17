@@ -24,7 +24,7 @@ export interface AddUnitToModuleDependencies {
 
 export const AddUnitToModuleInputModel = new Model("AddUnitToModuleInput", {
   moduleId: Field.uuid(),
-  name: Field.string({
+  title: Field.string({
     minLength: 3,
   }),
 });
@@ -49,7 +49,7 @@ export const AddUnitToModuleUseCase = new UseCase({
   inputSchema: AddUnitToModuleInputModel,
   effect: (
     { state, events, crypto, currentUser }: AddUnitToModuleDependencies,
-    { moduleId, name }: AddUnitToModuleInput,
+    { moduleId, title }: AddUnitToModuleInput,
   ): Effect<AddUnitToModuleOutput, ModuleNotFoundError | UnexpectedError> => {
     return state
       .from("modules")
@@ -72,7 +72,7 @@ export const AddUnitToModuleUseCase = new UseCase({
               id: eventId,
               streamId: unitId,
               payload: {
-                name,
+                title,
                 moduleId,
                 order: unitOrder,
                 createdBy: currentUser.id,
