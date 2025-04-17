@@ -59,7 +59,6 @@ export const ModuleProjector = new AggregateProjector(
     ModuleAdded: (event): Module => ModuleModel.from(event, event.payload),
     ModuleUpdated: (event, module): Module =>
       ModuleModel.update(module, event, {
-        ...module,
         title: event.payload.title,
         description: event.payload.description,
         order: event.payload.order,

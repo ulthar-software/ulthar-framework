@@ -69,12 +69,10 @@ export const UserProjector = new AggregateProjector(
     ): User => UserModel.from(event, event.payload),
     UserRoleChanged: (event: UserRoleChangedEvent, user: User): User =>
       UserModel.update(user, event, {
-        ...user,
         role: event.payload.role,
       }),
     UserPasswordChanged: (event: UserPasswordChangedEvent, user: User): User =>
       UserModel.update(user, event, {
-        ...user,
         hashedPassword: event.payload.hashedPassword,
       }),
   },

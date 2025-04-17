@@ -46,7 +46,6 @@ export const CourseProjector = new AggregateProjector(
     CourseCreated: (event): Course => CourseModel.from(event, event.payload),
     CourseUpdated: (event, course): Course =>
       CourseModel.update(course, event, {
-        ...course,
         title: event.payload.title,
         description: event.payload.description,
       }),
