@@ -22,12 +22,13 @@ export interface DefaultDependencies {
 }
 
 export interface QueryUseCaseDefinition<
+  TName extends string,
   TDeps,
   TInputModel extends Model,
   TOutput,
   TError extends TaggedError,
 > {
-  name: string;
+  name: TName;
   type: UseCaseType;
   auth: UseCaseAuth;
   effect: UseCaseFunction<TDeps, Infer<TInputModel>, TOutput, TError>;
@@ -35,6 +36,7 @@ export interface QueryUseCaseDefinition<
 }
 
 export class UseCase<
+  TName extends string,
   TDeps,
   TInputModel extends Model,
   TOutput,
@@ -42,6 +44,7 @@ export class UseCase<
 > {
   constructor(
     private readonly useCase: QueryUseCaseDefinition<
+      TName,
       TDeps,
       TInputModel,
       TOutput,
@@ -49,7 +52,7 @@ export class UseCase<
     >,
   ) {}
 
-  get name(): string {
+  get name(): TName {
     return this.useCase.name;
   }
 

@@ -5,7 +5,6 @@ import {
   getPermissionsForRole,
   type Permission,
 } from "../../security/permission.js";
-import type { UserRole } from "../../security/user-role.js";
 import type {
   AuthService,
   ExpiredTokenError,
@@ -25,16 +24,16 @@ export class AuthServiceMock implements AuthService {
   ): Effect<UserAccess, InvalidTokenError | ExpiredTokenError> {
     try {
       const userId = token.split("-")[0];
-      const role = token.split("-")[1] as UserRole;
       const permissions = JSONExt.parse<Permission[]>(
         token.split("-")[2],
       ).unwrapOrThrow();
 
-      return Effect.ok({
-        userId: userId as UUID,
+      const userAccess: UserAccess = {
+        id: userId as UUID,
         permissions: permissions,
-        role: role,
-      });
+      };
+
+      return Effect.ok(userAccess);
     } catch {
       return Effect.failWith(new InvalidTokenError());
     }
