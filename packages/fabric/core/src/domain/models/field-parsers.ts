@@ -112,8 +112,8 @@ export const fieldParsers: FieldParsers = {
       return Result.failWith(new InvalidFieldTypeError());
     });
   },
-  UrlField: function () {
-    throw new Error("Function not implemented.");
+  UrlField: function (f, v) {
+    return parseStringValue(f, v);
   },
   ObjectArrayField: function (f, v) {
     return parseOptionality(f, v, (v) => {
