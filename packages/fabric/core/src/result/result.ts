@@ -20,7 +20,7 @@ export class Result<TValue, TError extends TaggedError = never> {
   static ok(): Result<void>;
   static ok<T>(value: T): Result<T>;
   static ok(value?: any) {
-    return new Result(value ?? undefined);
+    return new Result(value);
   }
 
   /**
