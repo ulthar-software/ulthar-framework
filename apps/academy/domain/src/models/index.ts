@@ -1,6 +1,16 @@
 import { CourseModel, CourseProjector, CourseStream } from "./course.js";
 import { ModuleModel, ModuleProjector, ModuleStream } from "./module.js";
-import { SectionModel, SectionProjector, SectionStream } from "./section.js";
+import {
+  QuestionnaireSectionModel,
+  QuestionnaireSectionProjector,
+  QuestionnaireSectionStream,
+  TextSectionModel,
+  TextSectionProjector,
+  TextSectionStream,
+  VideoSectionModel,
+  VideoSectionProjector,
+  VideoSectionStream,
+} from "./sections/section.js";
 import { UnitModel, UnitProjector, UnitStream } from "./unit.js";
 import {
   UserInviteModel,
@@ -11,7 +21,8 @@ import { UserModel, UserProjector, UserStream } from "./user.js";
 
 export * from "./course.js";
 export * from "./module.js";
-export * from "./section.js";
+export * from "./sections/section-types.js";
+export * from "./sections/section.js";
 export * from "./unit.js";
 export * from "./user-invite.js";
 export * from "./user.js";
@@ -22,7 +33,9 @@ export const DomainModels = [
   CourseModel,
   ModuleModel,
   UnitModel,
-  SectionModel,
+  TextSectionModel,
+  VideoSectionModel,
+  QuestionnaireSectionModel,
 ] as const;
 
 export const DomainStreams = [
@@ -31,7 +44,9 @@ export const DomainStreams = [
   CourseStream,
   ModuleStream,
   UnitStream,
-  SectionStream,
+  TextSectionStream,
+  VideoSectionStream,
+  QuestionnaireSectionStream,
 ] as const;
 
 export const DomainProjectors = [
@@ -40,5 +55,7 @@ export const DomainProjectors = [
   CourseProjector,
   ModuleProjector,
   UnitProjector,
-  SectionProjector,
+  TextSectionProjector,
+  VideoSectionProjector,
+  QuestionnaireSectionProjector,
 ] as const;
