@@ -11,12 +11,10 @@ import {
 } from "../../../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../../../utils/use-case.js";
 import { CreateCourseUseCase } from "../../../create-course.js";
+import { UnitNotFoundError } from "../../../errors.js";
 import { AddModuleToCourseUseCase } from "../../add-module-to-course.js";
 import { AddUnitToModuleUseCase } from "../add-unit-to-module.js";
-import {
-  AddVideoSectionToUnitUseCase,
-  UnitNotFoundError,
-} from "./add-video-section-to-unit.js";
+import { AddVideoSectionToUnitUseCase } from "./add-video-section-to-unit.js";
 
 describe("Add Video Section To Unit Use Case", () => {
   let services: MockedDependencies;

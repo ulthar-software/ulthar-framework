@@ -10,11 +10,9 @@ import {
 } from "../../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../../utils/use-case.js";
 import { CreateCourseUseCase } from "../../create-course.js";
+import { ModuleNotFoundError } from "../../errors.js";
 import { AddModuleToCourseUseCase } from "../add-module-to-course.js";
-import {
-  AddUnitToModuleUseCase,
-  ModuleNotFoundError,
-} from "./add-unit-to-module.js";
+import { AddUnitToModuleUseCase } from "./add-unit-to-module.js";
 
 describe("Add Unit To Module Use Case", () => {
   let services: MockedDependencies;

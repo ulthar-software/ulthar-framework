@@ -1,11 +1,5 @@
 import type { Effect, UUID } from "@fabric/core";
-import {
-  Field,
-  Model,
-  TaggedError,
-  UnexpectedError,
-  type Infer,
-} from "@fabric/core";
+import { Field, Model, UnexpectedError, type Infer } from "@fabric/core";
 import { UnitAddedEvent } from "../../../../models/unit.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
 import { Permission } from "../../../../security/permission.js";
@@ -14,6 +8,7 @@ import type { DomainCryptoService } from "../../../../services/crypto-service.js
 import type { DomainEventStore } from "../../../../services/event-store.js";
 import type { DomainStateStore } from "../../../../services/state-store.js";
 import { UseCase } from "../../../../utils/use-case.js";
+import { ModuleNotFoundError } from "../../errors.js";
 
 export interface AddUnitToModuleDependencies {
   state: DomainStateStore;
@@ -33,13 +28,6 @@ export type AddUnitToModuleInput = Infer<typeof AddUnitToModuleInputModel>;
 
 export interface AddUnitToModuleOutput {
   unitId: UUID;
-}
-
-export class ModuleNotFoundError extends TaggedError<"ModuleNotFoundError"> {
-  constructor(public readonly moduleId: UUID) {
-    super("ModuleNotFoundError");
-    this.message = `Module with ID ${moduleId} not found`;
-  }
 }
 
 export const AddUnitToModuleUseCase = new UseCase({

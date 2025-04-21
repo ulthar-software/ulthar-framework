@@ -1,11 +1,5 @@
 import type { Effect, UUID } from "@fabric/core";
-import {
-  Field,
-  Model,
-  TaggedError,
-  UnexpectedError,
-  type Infer,
-} from "@fabric/core";
+import { Field, Model, UnexpectedError, type Infer } from "@fabric/core";
 import type { VideoSectionContent } from "../../../../../models/sections/video-section.js";
 import { VideoSectionAddedEvent } from "../../../../../models/sections/video-section.js";
 import { AccessPolicy } from "../../../../../security/access-policy.js";
@@ -15,6 +9,7 @@ import type { DomainCryptoService } from "../../../../../services/crypto-service
 import type { DomainEventStore } from "../../../../../services/event-store.js";
 import type { DomainStateStore } from "../../../../../services/state-store.js";
 import { UseCase } from "../../../../../utils/use-case.js";
+import { UnitNotFoundError } from "../../../errors.js";
 
 export interface AddVideoSectionToUnitDependencies {
   state: DomainStateStore;
@@ -40,13 +35,6 @@ export type AddVideoSectionToUnitInput = Infer<
 
 export interface AddVideoSectionToUnitOutput {
   sectionId: UUID;
-}
-
-export class UnitNotFoundError extends TaggedError<"UnitNotFoundError"> {
-  constructor(public readonly unitId: UUID) {
-    super("UnitNotFoundError");
-    this.message = `Unit with ID ${unitId} not found`;
-  }
 }
 
 export const AddVideoSectionToUnitUseCase = new UseCase({
