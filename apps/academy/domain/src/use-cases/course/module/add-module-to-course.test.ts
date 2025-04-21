@@ -72,7 +72,7 @@ describe("Add Module To Course Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       moduleData,
@@ -115,7 +115,7 @@ describe("Add Module To Course Use Case", () => {
         ...services,
         currentUser: {
           id: teacherUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       moduleData,
@@ -151,7 +151,7 @@ describe("Add Module To Course Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       {
@@ -174,7 +174,7 @@ describe("Add Module To Course Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       secondModuleData,
@@ -209,7 +209,7 @@ describe("Add Module To Course Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       moduleData,
@@ -235,7 +235,7 @@ describe("Add Module To Course Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       moduleData,
@@ -261,7 +261,7 @@ describe("Add Module To Course Use Case", () => {
         ...services,
         currentUser: {
           id: teacherUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       moduleData,
@@ -289,7 +289,7 @@ describe("Add Module To Course Use Case", () => {
     );
   });
 
-  test("Should fail when user doesn't have ADD_MODULE_TO_COURSE permission", async () => {
+  test("Should fail when user doesn't have EDIT_COURSE permission", async () => {
     // Arrange
     const moduleData = {
       courseId: existingCourseId,

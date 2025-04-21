@@ -52,7 +52,7 @@ export class UnitNotFoundError extends TaggedError<"UnitNotFoundError"> {
 export const AddVideoSectionToUnitUseCase = new UseCase({
   name: "AddVideoSectionToUnit",
   type: "command",
-  auth: AccessPolicy.WithPermission(Permission.ADD_SECTION_TO_UNIT),
+  auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: AddVideoSectionToUnitInputModel,
   effect: (
     { state, events, crypto, currentUser }: AddVideoSectionToUnitDependencies,

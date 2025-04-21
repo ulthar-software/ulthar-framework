@@ -36,7 +36,7 @@ export interface AddModuleToCourseOutput {
 export const AddModuleToCourseUseCase = new UseCase({
   name: "AddModuleToCourse",
   type: "command",
-  auth: AccessPolicy.WithPermission(Permission.ADD_MODULE_TO_COURSE),
+  auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: AddModuleToCourseInputModel,
   effect: (
     { state, events, crypto, currentUser }: AddModuleToCourseDependencies,

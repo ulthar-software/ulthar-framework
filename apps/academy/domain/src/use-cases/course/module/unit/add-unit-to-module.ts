@@ -45,7 +45,7 @@ export class ModuleNotFoundError extends TaggedError<"ModuleNotFoundError"> {
 export const AddUnitToModuleUseCase = new UseCase({
   name: "AddUnitToModule",
   type: "command",
-  auth: AccessPolicy.WithPermission(Permission.ADD_UNIT_TO_MODULE),
+  auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: AddUnitToModuleInputModel,
   effect: (
     { state, events, crypto, currentUser }: AddUnitToModuleDependencies,

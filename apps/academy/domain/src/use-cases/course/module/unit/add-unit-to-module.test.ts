@@ -57,7 +57,7 @@ describe("Add Unit To Module Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       {
@@ -83,7 +83,7 @@ describe("Add Unit To Module Use Case", () => {
         ...services,
         currentUser: {
           id: teacherUser.id,
-          permissions: [Permission.ADD_UNIT_TO_MODULE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       input,
@@ -126,7 +126,7 @@ describe("Add Unit To Module Use Case", () => {
         ...services,
         currentUser: {
           id: teacherUser.id,
-          permissions: [Permission.ADD_UNIT_TO_MODULE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       input,
@@ -178,7 +178,7 @@ describe("Add Unit To Module Use Case", () => {
         ...services,
         currentUser: {
           id: teacherUser.id,
-          permissions: [Permission.ADD_UNIT_TO_MODULE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       invalidInput,

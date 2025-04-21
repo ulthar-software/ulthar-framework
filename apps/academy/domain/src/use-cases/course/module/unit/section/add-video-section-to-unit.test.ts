@@ -62,7 +62,7 @@ describe("Add Video Section To Unit Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_MODULE_TO_COURSE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       {
@@ -80,7 +80,7 @@ describe("Add Video Section To Unit Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_UNIT_TO_MODULE],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       {
@@ -108,7 +108,7 @@ describe("Add Video Section To Unit Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_SECTION_TO_UNIT],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       sectionData,
@@ -155,7 +155,7 @@ describe("Add Video Section To Unit Use Case", () => {
         ...services,
         currentUser: {
           id: teacherUser.id,
-          permissions: [Permission.ADD_SECTION_TO_UNIT],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       sectionData,
@@ -200,7 +200,7 @@ describe("Add Video Section To Unit Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_SECTION_TO_UNIT],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       sectionData,
@@ -239,7 +239,7 @@ describe("Add Video Section To Unit Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_SECTION_TO_UNIT],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       sectionData,
@@ -289,7 +289,7 @@ describe("Add Video Section To Unit Use Case", () => {
         ...services,
         currentUser: {
           id: adminUser.id,
-          permissions: [Permission.ADD_SECTION_TO_UNIT],
+          permissions: [Permission.EDIT_COURSE],
         },
       },
       invalidInput,
