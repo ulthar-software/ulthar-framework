@@ -1,5 +1,5 @@
-import type { Infer, SchemaParsingError } from "@fabric/core";
-import { Effect, TaggedError, type Model } from "@fabric/core";
+import type { Infer, Schema, SchemaParsingError } from "@fabric/core";
+import { Effect, TaggedError } from "@fabric/core";
 import type { Permission } from "../security/permission.js";
 import type { UserAccess } from "../services/auth-service.js";
 
@@ -24,7 +24,7 @@ export interface DefaultDependencies {
 export interface QueryUseCaseDefinition<
   TName extends string,
   TDeps,
-  TInputModel extends Model,
+  TInputModel extends Schema,
   TOutput,
   TError extends TaggedError,
 > {
@@ -38,7 +38,7 @@ export interface QueryUseCaseDefinition<
 export class UseCase<
   TName extends string,
   TDeps,
-  TInputModel extends Model,
+  TInputModel extends Schema,
   TOutput,
   TError extends TaggedError,
 > {
