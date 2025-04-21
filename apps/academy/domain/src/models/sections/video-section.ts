@@ -16,13 +16,6 @@ import {
 // Video Section Content Model
 export const VideoSectionContentModel = {
   videoUrl: Field.url(),
-  description: Field.string({
-    isOptional: true,
-  }),
-  duration: Field.integer({
-    isOptional: true,
-    isUnsigned: true,
-  }),
 };
 
 export type VideoSectionContent = Infer<

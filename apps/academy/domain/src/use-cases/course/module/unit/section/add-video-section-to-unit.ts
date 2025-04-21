@@ -31,13 +31,6 @@ export const AddVideoSectionToUnitInputModel = new Model(
       minLength: 3,
     }),
     videoUrl: Field.url(),
-    description: Field.string({
-      isOptional: true,
-    }),
-    duration: Field.integer({
-      isOptional: true,
-      isUnsigned: true,
-    }),
   },
 );
 
@@ -63,13 +56,7 @@ export const AddVideoSectionToUnitUseCase = new UseCase({
   inputSchema: AddVideoSectionToUnitInputModel,
   effect: (
     { state, events, crypto, currentUser }: AddVideoSectionToUnitDependencies,
-    {
-      unitId,
-      title,
-      videoUrl,
-      description,
-      duration,
-    }: AddVideoSectionToUnitInput,
+    { unitId, title, videoUrl }: AddVideoSectionToUnitInput,
   ): Effect<
     AddVideoSectionToUnitOutput,
     UnitNotFoundError | UnexpectedError
@@ -101,8 +88,6 @@ export const AddVideoSectionToUnitUseCase = new UseCase({
                 createdBy: currentUser.id,
                 content: {
                   videoUrl,
-                  description: description ?? "",
-                  duration,
                 } as VideoSectionContent,
               },
               version: 1n,

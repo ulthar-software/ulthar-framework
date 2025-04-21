@@ -134,8 +134,6 @@ describe("Add Video Section To Unit Use Case", () => {
         createdBy: adminUser.id,
         content: expect.objectContaining({
           videoUrl: sectionData.videoUrl,
-          description: sectionData.description,
-          duration: sectionData.duration,
         }),
       }),
     );
@@ -182,8 +180,6 @@ describe("Add Video Section To Unit Use Case", () => {
         createdBy: teacherUser.id,
         content: expect.objectContaining({
           videoUrl: sectionData.videoUrl,
-          description: sectionData.description,
-          duration: sectionData.duration,
         }),
       }),
     );
@@ -223,8 +219,6 @@ describe("Add Video Section To Unit Use Case", () => {
         title: sectionData.title,
         content: expect.objectContaining({
           videoUrl: sectionData.videoUrl,
-          description: "", // Default empty description
-          // Duration is omitted entirely when not provided, not set to undefined
         }),
       }),
     );
