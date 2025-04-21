@@ -17,7 +17,7 @@ export type Permission = EnumToType<typeof Permission>;
 
 export const permissionsByRole: Record<Permission, UserRole[]> = {
   INVITE_USERS: ["ADMIN"],
-  VIEW_COURSE: ["ADMIN", "TEACHER", "STUDENT"],
+  VIEW_COURSE: ["ADMIN", "TEACHER"],
   CREATE_COURSE: ["ADMIN", "TEACHER"],
   EDIT_COURSE: ["ADMIN", "TEACHER"],
 };

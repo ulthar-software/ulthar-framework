@@ -37,7 +37,6 @@ describe("Enrollment", () => {
       id: enrollmentId,
       userId,
       courseId,
-      active: true,
       version: 1n,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,

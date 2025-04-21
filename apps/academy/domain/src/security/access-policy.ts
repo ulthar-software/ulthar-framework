@@ -5,6 +5,10 @@ export const AccessPolicy = {
     isAuthRequired: false,
     requiredPermissions: [],
   }),
+  LoggedIn: () => ({
+    isAuthRequired: true,
+    requiredPermissions: [],
+  }),
   WithPermission: (perm: Permission) => ({
     isAuthRequired: true,
     requiredPermissions: [perm],

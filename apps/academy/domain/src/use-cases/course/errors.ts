@@ -20,3 +20,15 @@ export class UnitNotFoundError extends TaggedError<"UnitNotFoundError"> {
     this.message = `Unit with ID ${unitId} not found`;
   }
 }
+
+export class NotEnrolledInCourseError extends TaggedError<"NotEnrolledInCourseError"> {
+  constructor(
+    public readonly userId: UUID,
+    public readonly courseId: UUID,
+  ) {
+    super(
+      "NotEnrolledInCourseError",
+      `User with id ${userId} is not enrolled in course ${courseId}`,
+    );
+  }
+}

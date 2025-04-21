@@ -14,6 +14,7 @@ export const ModuleModel = new AggregateModel("modules", {
     targetModel: "courses",
   }),
   order: Field.integer({
+    hasArbitraryPrecision: false,
     isUnsigned: true,
   }),
   createdBy: Field.reference({
@@ -29,6 +30,7 @@ export const ModuleAddedEvent = new DomainEvent("ModuleAdded", {
   description: Field.string(),
   courseId: Field.uuid(),
   order: Field.integer({
+    hasArbitraryPrecision: false,
     isUnsigned: true,
   }),
   createdBy: Field.uuid(),
@@ -59,6 +61,7 @@ export type ModuleDescriptionChangedEvent = EventToType<
 
 export const ModuleOrderChangedEvent = new DomainEvent("ModuleOrderChanged", {
   order: Field.integer({
+    hasArbitraryPrecision: false,
     isUnsigned: true,
   }),
   updatedBy: Field.uuid(),

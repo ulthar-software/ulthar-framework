@@ -16,7 +16,6 @@ export const EnrollmentModel = new AggregateModel("enrollments", {
   courseId: Field.reference({
     targetModel: "courses",
   }),
-  active: Field.boolean(),
 });
 
 export type EnrollmentModel = typeof EnrollmentModel;
@@ -46,7 +45,6 @@ export const EnrollmentProjector = new AggregateProjector(
       EnrollmentModel.from(event, {
         userId: event.payload.userId,
         courseId: event.payload.courseId,
-        active: true,
       }),
   },
 );
