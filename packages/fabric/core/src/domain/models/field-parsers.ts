@@ -58,6 +58,9 @@ export const fieldParsers: FieldParsers = {
         (typeof v === "number" && Number.isInteger(v)) ||
         typeof v === "bigint"
       ) {
+        if (f.isUnsigned && v < 0) {
+          return Result.failWith(new InvalidFieldTypeError());
+        }
         return Result.ok(v);
       }
       return Result.failWith(new InvalidFieldTypeError());
