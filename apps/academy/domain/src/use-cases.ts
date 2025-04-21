@@ -3,6 +3,7 @@ import {
   AddUnitToModuleUseCase,
   ChangeCourseDescriptionUseCase,
   ChangeCourseTitleUseCase,
+  ChangeModuleOrderUseCase,
   CreateCourseUseCase,
   InviteUserUseCase,
   LoginUseCase,
@@ -16,6 +17,7 @@ export const UseCases = [
   AddUnitToModuleUseCase,
   ChangeCourseTitleUseCase,
   ChangeCourseDescriptionUseCase,
+  ChangeModuleOrderUseCase,
 ] as const;
 
 export type UseCases = typeof UseCases;
