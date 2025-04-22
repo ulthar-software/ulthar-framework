@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
+import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../models/user.js";
 import { Permission } from "../../../security/permission.js";
-import { UserRole } from "../../../security/user-role.js";
 import {
   createServiceMocks,
   type MockedDependencies,
 } from "../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../utils/use-case.js";
-import { CreateCourseUseCase } from "../create-course.js";
 import { CourseNotFoundError } from "../errors.js";
 import {
   EnrollStudentInCourseUseCase,
@@ -19,53 +18,27 @@ import {
 
 describe("Enroll Student In Course Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: User;
-  let teacherUser: User;
-  let studentUser: User;
+  let user: User;
   let existingCourseId: UUID;
 
   beforeEach(async () => {
     services = await createServiceMocks();
 
     // Create users with different roles
-    adminUser = await createUserMock(services, {
-      email: "admin@example.com",
-      role: UserRole.ADMIN,
-    });
-
-    teacherUser = await createUserMock(services, {
-      email: "teacher@example.com",
-      role: UserRole.TEACHER,
-    });
-
-    studentUser = await createUserMock(services, {
-      email: "student@example.com",
-      role: UserRole.STUDENT,
-    });
+    user = await createUserMock(services);
 
     // Create a test course
-    const courseResult = await CreateCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.CREATE_COURSE],
-        },
-      },
-      {
-        title: "Test Course",
-        description: "A course for testing enrollment",
-      },
-    ).runOrThrow();
-
-    existingCourseId = courseResult.courseId;
+    existingCourseId = await createCourseMock(services, user.id, {
+      title: "Test Course",
+      description: "A course for testing enrollment",
+    });
   });
 
   test("Admin should successfully enroll a student in a course", async () => {
     // Arrange
     const enrollmentData = {
       courseId: existingCourseId,
-      studentId: studentUser.id,
+      studentId: user.id,
     };
 
     // Act
@@ -73,7 +46,7 @@ describe("Enroll Student In Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.ENROLL_STUDENTS],
         },
       },
@@ -89,7 +62,7 @@ describe("Enroll Student In Course Use Case", () => {
     const enrollmentInDb = await services.state
       .from("enrollments")
       .where({
-        userId: studentUser.id,
+        userId: user.id,
         courseId: existingCourseId,
       })
       .selectOneOrFail()
@@ -97,7 +70,7 @@ describe("Enroll Student In Course Use Case", () => {
 
     expect(enrollmentInDb).toEqual(
       expect.objectContaining({
-        userId: studentUser.id,
+        userId: user.id,
         courseId: existingCourseId,
       }),
     );
@@ -107,7 +80,7 @@ describe("Enroll Student In Course Use Case", () => {
     // Arrange
     const enrollmentData = {
       courseId: existingCourseId,
-      studentId: studentUser.id,
+      studentId: user.id,
     };
 
     // Act
@@ -115,7 +88,7 @@ describe("Enroll Student In Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: teacherUser.id,
+          id: user.id,
           permissions: [Permission.ENROLL_STUDENTS],
         },
       },
@@ -131,7 +104,7 @@ describe("Enroll Student In Course Use Case", () => {
     const enrollmentInDb = await services.state
       .from("enrollments")
       .where({
-        userId: studentUser.id,
+        userId: user.id,
         courseId: existingCourseId,
       })
       .selectOneOrFail()
@@ -139,7 +112,7 @@ describe("Enroll Student In Course Use Case", () => {
 
     expect(enrollmentInDb).toEqual(
       expect.objectContaining({
-        userId: studentUser.id,
+        userId: user.id,
         courseId: existingCourseId,
       }),
     );
@@ -150,7 +123,7 @@ describe("Enroll Student In Course Use Case", () => {
     const nonExistentCourseId = "00000000-0000-0000-0000-000000000000";
     const enrollmentData = {
       courseId: nonExistentCourseId,
-      studentId: studentUser.id,
+      studentId: user.id,
     };
 
     // Act
@@ -158,7 +131,7 @@ describe("Enroll Student In Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.ENROLL_STUDENTS],
         },
       },
@@ -175,7 +148,7 @@ describe("Enroll Student In Course Use Case", () => {
     // Arrange
     const enrollmentData = {
       courseId: existingCourseId,
-      studentId: studentUser.id,
+      studentId: user.id,
     };
 
     // First enrollment
@@ -183,7 +156,7 @@ describe("Enroll Student In Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.ENROLL_STUDENTS],
         },
       },
@@ -195,7 +168,7 @@ describe("Enroll Student In Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.ENROLL_STUDENTS],
         },
       },
@@ -207,7 +180,7 @@ describe("Enroll Student In Course Use Case", () => {
     const error = result.unwrapErrorOrThrow();
     expect(error).toBeInstanceOf(StudentAlreadyEnrolledError);
     if (error instanceof StudentAlreadyEnrolledError) {
-      expect(error.userId).toBe(studentUser.id);
+      expect(error.userId).toBe(user.id);
       expect(error.courseId).toBe(existingCourseId);
     }
   });
@@ -216,7 +189,7 @@ describe("Enroll Student In Course Use Case", () => {
     // Arrange
     const enrollmentData = {
       courseId: existingCourseId,
-      studentId: studentUser.id,
+      studentId: user.id,
     };
 
     // Act
@@ -224,7 +197,7 @@ describe("Enroll Student In Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [], // No permissions
         },
       },

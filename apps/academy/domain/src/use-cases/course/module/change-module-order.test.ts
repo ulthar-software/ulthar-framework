@@ -1,24 +1,21 @@
 import { SchemaParsingError, type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
+import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
+import { createModuleMock } from "../../../models/mocks/create-module-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../models/user.js";
 import { Permission } from "../../../security/permission.js";
-import { UserRole } from "../../../security/user-role.js";
 import {
   createServiceMocks,
   type MockedDependencies,
 } from "../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../utils/use-case.js";
-import { CreateCourseUseCase } from "../create-course.js";
 import { ModuleNotFoundError } from "../errors.js";
-import { AddModuleToCourseUseCase } from "./add-module-to-course.js";
 import { ChangeModuleOrderUseCase } from "./change-module-order.js";
 
 describe("Change Module Order Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: User;
-  let teacherUser: User;
-  let studentUser: User;
+  let user: User;
   let existingCourseId: UUID;
   let existingModuleId: UUID;
 
@@ -26,55 +23,16 @@ describe("Change Module Order Use Case", () => {
     services = await createServiceMocks();
 
     // Create users with different roles
-    adminUser = await createUserMock(services, {
-      email: "admin@example.com",
-      role: UserRole.ADMIN,
-    });
-
-    teacherUser = await createUserMock(services, {
-      email: "teacher@example.com",
-      role: UserRole.TEACHER,
-    });
-
-    studentUser = await createUserMock(services, {
-      email: "student@example.com",
-      role: UserRole.STUDENT,
-    });
+    user = await createUserMock(services);
 
     // Create a test course
-    const courseResult = await CreateCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.CREATE_COURSE],
-        },
-      },
-      {
-        title: "Test Course",
-        description: "Test course description",
-      },
-    ).runOrThrow();
+    existingCourseId = await createCourseMock(services, user.id);
 
-    existingCourseId = courseResult.courseId;
-
-    // Add a module to the course
-    const moduleResult = await AddModuleToCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      {
-        courseId: existingCourseId,
-        title: "Original Module Title",
-        description: "Original module description",
-      },
-    ).runOrThrow();
-
-    existingModuleId = moduleResult.moduleId;
+    existingModuleId = await createModuleMock(
+      services,
+      user.id,
+      existingCourseId,
+    );
   });
 
   test("Admin should successfully change module order", async () => {
@@ -89,40 +47,7 @@ describe("Change Module Order Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      updateData,
-    ).runOrThrow();
-
-    // Verify the module was updated in the database
-    const updatedModule = await services.state
-      .from("modules")
-      .where({ id: existingModuleId })
-      .selectOneOrFail()
-      .runOrThrow();
-
-    expect(updatedModule).toEqual(
-      expect.objectContaining({
-        order: updateData.order,
-      }),
-    );
-  });
-
-  test("Teacher should successfully change module order", async () => {
-    // Arrange
-    const updateData = {
-      moduleId: existingModuleId,
-      order: 250,
-    };
-
-    // Act
-    await ChangeModuleOrderUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -156,7 +81,7 @@ describe("Change Module Order Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -181,7 +106,7 @@ describe("Change Module Order Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -206,7 +131,7 @@ describe("Change Module Order Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [], // No permissions
         },
       },

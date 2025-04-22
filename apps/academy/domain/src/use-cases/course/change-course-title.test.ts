@@ -1,5 +1,6 @@
 import { SchemaParsingError, type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
+import { createCourseMock } from "../../models/mocks/create-course-mock.js";
 import { createUserMock } from "../../models/mocks/create-user-mock.js";
 import type { User } from "../../models/user.js";
 import { Permission } from "../../security/permission.js";
@@ -10,51 +11,27 @@ import {
 } from "../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../utils/use-case.js";
 import { ChangeCourseTitleUseCase } from "./change-course-title.js";
-import { CreateCourseUseCase } from "./create-course.js";
 import { CourseNotFoundError } from "./errors.js";
 
 describe("Change Course Title Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: User;
-  let teacherUser: User;
-  let studentUser: User;
+  let user: User;
   let existingCourseId: UUID;
 
   beforeEach(async () => {
     services = await createServiceMocks();
 
     // Create users with different roles
-    adminUser = await createUserMock(services, {
+    user = await createUserMock(services, {
       email: "admin@example.com",
       role: UserRole.ADMIN,
     });
 
-    teacherUser = await createUserMock(services, {
-      email: "teacher@example.com",
-      role: UserRole.TEACHER,
-    });
-
-    studentUser = await createUserMock(services, {
-      email: "student@example.com",
-      role: UserRole.STUDENT,
-    });
-
     // Create a test course
-    const courseResult = await CreateCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.CREATE_COURSE],
-        },
-      },
-      {
-        title: "Original Course Title",
-        description: "Original course description",
-      },
-    ).runOrThrow();
-
-    existingCourseId = courseResult.courseId;
+    existingCourseId = await createCourseMock(services, user.id, {
+      title: "Original Course Title",
+      description: "Original course description",
+    });
   });
 
   test("Admin should successfully change course title", async () => {
@@ -69,7 +46,7 @@ describe("Change Course Title Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -91,39 +68,6 @@ describe("Change Course Title Use Case", () => {
     );
   });
 
-  test("Teacher should successfully change course title", async () => {
-    // Arrange
-    const updateData = {
-      courseId: existingCourseId,
-      title: "Teacher's Updated Title",
-    };
-
-    // Act
-    await ChangeCourseTitleUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      updateData,
-    ).runOrThrow();
-
-    // Verify the course was updated in the database
-    const updatedCourse = await services.state
-      .from("courses")
-      .where({ id: existingCourseId })
-      .selectOneOrFail()
-      .runOrThrow();
-
-    expect(updatedCourse).toEqual(
-      expect.objectContaining({
-        title: updateData.title,
-      }),
-    );
-  });
-
   test("Should fail when course doesn't exist", async () => {
     // Arrange
     const nonExistentCourseId = "00000000-0000-0000-0000-000000000000";
@@ -137,7 +81,7 @@ describe("Change Course Title Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -162,7 +106,7 @@ describe("Change Course Title Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -187,7 +131,7 @@ describe("Change Course Title Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [], // No permissions
         },
       },

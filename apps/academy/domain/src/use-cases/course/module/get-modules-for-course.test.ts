@@ -2,10 +2,10 @@ import type { UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { UserEnrolledEvent } from "../../../models/enrollment.js";
 import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
+import { createModuleMock } from "../../../models/mocks/create-module-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../models/user.js";
 import { Permission } from "../../../security/permission.js";
-import { UserRole } from "../../../security/user-role.js";
 import {
   createServiceMocks,
   type MockedDependencies,
@@ -16,21 +16,21 @@ import { GetModulesForCourseUseCase } from "./get-modules-for-course.js";
 
 describe("Get Modules For Course Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: User;
-  let studentUser: User;
+  let user: User;
+  let existingCourseId: UUID;
+  let moduleIds: UUID[] = [];
 
   beforeEach(async () => {
     services = await createServiceMocks();
 
-    adminUser = await createUserMock(services, {
-      email: "admin@example.com",
-      role: UserRole.ADMIN,
-    });
+    user = await createUserMock(services);
 
-    studentUser = await createUserMock(services, {
-      email: "student@example.com",
-      role: UserRole.STUDENT,
-    });
+    existingCourseId = await createCourseMock(services, user.id);
+    moduleIds = [
+      await createModuleMock(services, user.id, existingCourseId),
+      await createModuleMock(services, user.id, existingCourseId),
+      await createModuleMock(services, user.id, existingCourseId),
+    ];
   });
 
   // Helper function to create an enrollment
@@ -54,11 +54,6 @@ describe("Get Modules For Course Use Case", () => {
 
   test("Admin should successfully get all modules for a course", async () => {
     // Arrange
-    const [existingCourseId, moduleIds] = await createCourseMock(
-      services,
-      adminUser.id,
-    );
-
     const queryData = {
       courseId: existingCourseId,
     };
@@ -68,7 +63,7 @@ describe("Get Modules For Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.VIEW_COURSE],
         },
       },
@@ -93,35 +88,10 @@ describe("Get Modules For Course Use Case", () => {
     expect(result.modules).toEqual(orderedModules);
   });
 
-  test("Teacher should successfully get all modules for a course", async () => {
-    // Arrange
-    const [existingCourseId] = await createCourseMock(services, adminUser.id);
-    const queryData = {
-      courseId: existingCourseId,
-    };
-
-    // Act
-    const result = await GetModulesForCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: adminUser.id,
-          permissions: [Permission.VIEW_COURSE],
-        },
-      },
-      queryData,
-    ).runOrThrow();
-
-    // Assert
-    expect(result.modules).toHaveLength(3);
-  });
-
   test("Enrolled student should successfully get all modules for a course", async () => {
     // Arrange
-    const [existingCourseId] = await createCourseMock(services, adminUser.id);
-
     // Enroll the student in the course
-    await enrollStudentInCourse(studentUser.id, existingCourseId);
+    await enrollStudentInCourse(user.id, existingCourseId);
 
     const queryData = {
       courseId: existingCourseId,
@@ -132,7 +102,7 @@ describe("Get Modules For Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [Permission.VIEW_COURSE],
         },
       },
@@ -145,10 +115,6 @@ describe("Get Modules For Course Use Case", () => {
 
   test("Non-enrolled student should not be able to get modules for a course", async () => {
     // Arrange
-    const [existingCourseId] = await createCourseMock(services, adminUser.id);
-
-    // No enrollment created for this student
-
     const queryData = {
       courseId: existingCourseId,
     };
@@ -158,7 +124,7 @@ describe("Get Modules For Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [],
         },
       },
@@ -171,7 +137,7 @@ describe("Get Modules For Course Use Case", () => {
     if (!(error instanceof NotEnrolledInCourseError)) {
       throw new Error("Expected NotEnrolledInCourseError");
     }
-    expect(error.userId).toBe(studentUser.id);
+    expect(error.userId).toBe(user.id);
     expect(error.courseId).toBe(existingCourseId);
   });
 
@@ -181,7 +147,7 @@ describe("Get Modules For Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.CREATE_COURSE],
         },
       },
@@ -192,7 +158,7 @@ describe("Get Modules For Course Use Case", () => {
     ).runOrThrow();
 
     // Enroll the student in the course
-    await enrollStudentInCourse(studentUser.id, newCourseResult.courseId);
+    await enrollStudentInCourse(user.id, newCourseResult.courseId);
 
     const queryData = {
       courseId: newCourseResult.courseId,
@@ -203,7 +169,7 @@ describe("Get Modules For Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [],
         },
       },
@@ -226,7 +192,7 @@ describe("Get Modules For Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [Permission.VIEW_COURSE],
         },
       },

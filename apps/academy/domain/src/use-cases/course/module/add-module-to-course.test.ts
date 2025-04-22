@@ -1,61 +1,34 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { SchemaParsingError, type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
+import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../models/user.js";
 import { Permission } from "../../../security/permission.js";
-import { UserRole } from "../../../security/user-role.js";
 import {
   createServiceMocks,
   type MockedDependencies,
 } from "../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../utils/use-case.js";
-import { CreateCourseUseCase } from "../create-course.js";
 import { CourseNotFoundError } from "../errors.js";
 import { AddModuleToCourseUseCase } from "./add-module-to-course.js";
 
 describe("Add Module To Course Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: User;
-  let teacherUser: User;
-  let studentUser: User;
+  let user: User;
   let existingCourseId: UUID;
 
   beforeEach(async () => {
     services = await createServiceMocks();
 
     // Create users with different roles
-    adminUser = await createUserMock(services, {
-      email: "admin@example.com",
-      role: UserRole.ADMIN,
-    });
-
-    teacherUser = await createUserMock(services, {
-      email: "teacher@example.com",
-      role: UserRole.TEACHER,
-    });
-
-    studentUser = await createUserMock(services, {
-      email: "student@example.com",
-      role: UserRole.STUDENT,
-    });
+    user = await createUserMock(services);
 
     // Create a test course
-    const courseResult = await CreateCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.CREATE_COURSE],
-        },
-      },
-      {
-        title: "Test Course",
-        description: "A course for testing modules",
-      },
-    ).runOrThrow();
-
-    existingCourseId = courseResult.courseId;
+    existingCourseId = await createCourseMock(services, user.id, {
+      title: "Original Course Title",
+      description: "Original course description",
+    });
   });
 
   test("Admin should successfully add a module to a course", async () => {
@@ -71,7 +44,7 @@ describe("Add Module To Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -96,50 +69,7 @@ describe("Add Module To Course Use Case", () => {
         description: moduleData.description,
         courseId: existingCourseId,
         order: 100, // First module should have order 100
-        createdBy: adminUser.id,
-      }),
-    );
-  });
-
-  test("Teacher should successfully add a module to a course", async () => {
-    // Arrange
-    const moduleData = {
-      courseId: existingCourseId,
-      title: "Teacher's Module",
-      description: "A module created by a teacher",
-    };
-
-    // Act
-    const result = await AddModuleToCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      moduleData,
-    ).runOrThrow();
-
-    // Assert
-    expect(result).toEqual({
-      moduleId: expect.any(String),
-    });
-
-    // Verify the module was added to the database
-    const moduleInDb = await services.state
-      .from("modules")
-      .where({ id: result.moduleId })
-      .selectOneOrFail()
-      .runOrThrow();
-
-    expect(moduleInDb).toEqual(
-      expect.objectContaining({
-        title: moduleData.title,
-        description: moduleData.description,
-        courseId: existingCourseId,
-        order: 100, // First module should have order 100
-        createdBy: teacherUser.id,
+        createdBy: user.id,
       }),
     );
   });
@@ -150,7 +80,7 @@ describe("Add Module To Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -173,7 +103,7 @@ describe("Add Module To Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -208,7 +138,7 @@ describe("Add Module To Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -234,7 +164,7 @@ describe("Add Module To Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -260,7 +190,7 @@ describe("Add Module To Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: teacherUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -284,7 +214,7 @@ describe("Add Module To Course Use Case", () => {
         title: moduleData.title,
         description: "", // Description should be an empty string
         courseId: existingCourseId,
-        createdBy: teacherUser.id,
+        createdBy: user.id,
       }),
     );
   });
@@ -302,7 +232,7 @@ describe("Add Module To Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [], // No permissions
         },
       },

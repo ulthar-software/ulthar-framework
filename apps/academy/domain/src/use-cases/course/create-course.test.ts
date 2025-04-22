@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createUserMock } from "../../models/mocks/create-user-mock.js";
 import type { User } from "../../models/user.js";
 import { Permission } from "../../security/permission.js";
-import { UserRole } from "../../security/user-role.js";
 import {
   createServiceMocks,
   type MockedDependencies,
@@ -14,23 +13,12 @@ import { CreateCourseUseCase } from "./create-course.js";
 
 describe("Create Course Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: User;
-  let teacherUser: User;
+  let user: User;
 
   beforeEach(async () => {
     services = await createServiceMocks();
 
-    // Create an admin user with admin role
-    adminUser = await createUserMock(services, {
-      email: "admin@example.com",
-      role: UserRole.ADMIN,
-    });
-
-    // Create a teacher user
-    teacherUser = await createUserMock(services, {
-      email: "teacher@example.com",
-      role: UserRole.TEACHER,
-    });
+    user = await createUserMock(services);
   });
 
   test("Admin should successfully create a new course", async () => {
@@ -45,7 +33,7 @@ describe("Create Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.CREATE_COURSE],
         },
       },
@@ -68,47 +56,7 @@ describe("Create Course Use Case", () => {
       expect.objectContaining({
         title: courseData.title,
         description: courseData.description,
-        createdBy: adminUser.id,
-      }),
-    );
-  });
-
-  test("Teacher should successfully create a new course", async () => {
-    // Arrange
-    const courseData = {
-      title: "Introduction to JavaScript",
-      description: "Learn the basics of JavaScript programming",
-    };
-
-    // Act
-    const result = await CreateCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.CREATE_COURSE],
-        },
-      },
-      courseData,
-    ).runOrThrow();
-
-    // Assert
-    expect(result).toEqual({
-      courseId: expect.any(String),
-    });
-
-    // Verify the course is in the database
-    const courseInDb = await services.state
-      .from("courses")
-      .where({ id: result.courseId })
-      .selectOneOrFail()
-      .runOrThrow();
-
-    expect(courseInDb).toEqual(
-      expect.objectContaining({
-        title: courseData.title,
-        description: courseData.description,
-        createdBy: teacherUser.id,
+        createdBy: user.id,
       }),
     );
   });
@@ -125,7 +73,7 @@ describe("Create Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.CREATE_COURSE],
         },
       },
@@ -148,7 +96,7 @@ describe("Create Course Use Case", () => {
       expect.objectContaining({
         title: courseData.title,
         description: "", // Expect description to be empty
-        createdBy: adminUser.id,
+        createdBy: user.id,
       }),
     );
   });
@@ -165,7 +113,7 @@ describe("Create Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.CREATE_COURSE],
         },
       },
@@ -190,7 +138,7 @@ describe("Create Course Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [], // Empty permissions array
         },
       },
