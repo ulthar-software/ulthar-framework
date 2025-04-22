@@ -6,6 +6,14 @@ import type { TaggedVariant } from "../variant/variant.js";
 
 export class PosixDate {
   constructor(public readonly timestamp: number = Date.now()) {}
+
+  public getTimeString(): string {
+    return new Date(this.timestamp).toISOString().split("T")[1].split(".")[0];
+  }
+
+  public getDateString(): string {
+    return new Date(this.timestamp).toISOString().split("T")[0];
+  }
 }
 
 export interface TimeZone extends TaggedVariant<"TimeZone"> {
