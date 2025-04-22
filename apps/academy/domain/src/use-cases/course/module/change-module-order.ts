@@ -21,6 +21,7 @@ export const ChangeModuleOrderInputModel = new Schema({
   moduleId: Field.uuid(),
   order: Field.integer({
     isUnsigned: true,
+    hasArbitraryPrecision: false,
   }),
 });
 
