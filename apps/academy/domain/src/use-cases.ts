@@ -5,6 +5,7 @@ import {
   ChangeCourseTitleUseCase,
   ChangeModuleOrderUseCase,
   CreateCourseUseCase,
+  EnrollStudentInCourseUseCase,
   InviteUserUseCase,
   LoginUseCase,
 } from "./use-cases/index.js";
@@ -18,6 +19,7 @@ export const UseCases = [
   ChangeCourseTitleUseCase,
   ChangeCourseDescriptionUseCase,
   ChangeModuleOrderUseCase,
+  EnrollStudentInCourseUseCase,
 ] as const;
 
 export type UseCases = typeof UseCases;
