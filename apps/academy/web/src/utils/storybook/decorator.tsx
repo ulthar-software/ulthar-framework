@@ -5,6 +5,8 @@ import type { ReactRenderer } from "@storybook/react";
 import { useEffect } from "react";
 import { MemoryRouter, useLocation } from "react-router";
 import type { PartialStoryFn, StoryContext } from "storybook/internal/types";
+import type { ClientRPC } from "../rpc/rpc-context.ts";
+import { EmptyRPCContext, RpcProvider } from "../rpc/rpc-context.ts";
 
 const navigationAction = action("navigation");
 
@@ -22,14 +24,21 @@ export function Decorator(
   Story: PartialStoryFn<ReactRenderer, Record<string, any>>,
   { parameters }: StoryContext<ReactRenderer, Record<string, any>>,
 ) {
-  const { pageLayout } = parameters;
+  const { pageLayout, rpcContext } = parameters;
 
   switch (pageLayout) {
     case "page":
       return (
         <MemoryRouter>
-          <NavigationTracker />
-          <Story />
+          <RpcProvider
+            value={{
+              ...EmptyRPCContext,
+              ...(rpcContext as Partial<ClientRPC>),
+            }}
+          >
+            <NavigationTracker />
+            <Story />
+          </RpcProvider>
         </MemoryRouter>
       );
     case "simple-routing":
