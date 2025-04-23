@@ -44,8 +44,7 @@ export function Form<TSchema extends Schema>({
     const result = schema.parse(formState.value);
 
     if (result.isError()) {
-      console.error(result.value);
-      return;
+      console.error(result.value.errors);
     }
 
     if (result.isOk()) {

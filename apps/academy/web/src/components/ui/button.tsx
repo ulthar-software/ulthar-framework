@@ -57,32 +57,30 @@ export function Button({
     <button
       type={type}
       className={clx(
-        "p-2 flex justify-center items-center gap-2 rounded",
-        (flavor === "raised" || flavor === "outline") &&
-          "shadow-slate-300 hover:shadow-slate-400 hover:shadow-md",
-        flavor === "raised" &&
-          "shadow-md shadow-slate-300 hover:shadow-slate-400",
+        "p-2 flex justify-center items-center gap-2 rounded cursor-pointer",
+        (flavor === "raised" || flavor === "outline") && " hover:shadow-md",
+        flavor === "raised" && "shadow-md",
         flavor === "outline" && "border border-slate-600",
-        flavor === "raised" && color === "primary" && "bg-primary-400",
-        flavor === "raised" && color === "danger" && "bg-red-400",
-        flavor === "raised" && color === "success" && "bg-green-400",
-        flavor === "raised" && color === "warning" && "bg-yellow-400",
-        flavor === "clear" && color == "primary" && "text-primary-700",
-        flavor === "clear" && color === "danger" && "text-red-700",
-        flavor === "clear" && color === "success" && "text-green-700",
-        flavor === "clear" && color === "warning" && "text-yellow-700",
+        flavor === "raised" && color === "primary" && "bg-primary",
+        flavor === "raised" && color === "danger" && "bg-danger",
+        flavor === "raised" && color === "success" && "bg-success",
+        flavor === "raised" && color === "warning" && "bg-warning",
+        flavor === "clear" && color == "primary" && "text-primary",
+        flavor === "clear" && color === "danger" && "text-danger",
+        flavor === "clear" && color === "success" && "text-success",
+        flavor === "clear" && color === "warning" && "text-warning",
         flavor === "outline" &&
           color === "primary" &&
-          "text-primary-700 !border-primary-700",
+          "text-primary !border-primary",
         flavor === "outline" &&
           color === "danger" &&
-          `text-red-700 !border-red-700`,
+          "text-danger !border-danger",
         flavor === "outline" &&
           color === "success" &&
-          "text-green-700 !border-green-700",
+          "text-success !border-success",
         flavor === "outline" &&
           color === "warning" &&
-          "text-yellow-700 !border-yellow-700",
+          "text-warning !border-warning",
         disabled && "opacity-50 cursor-not-allowed",
         className,
       )}

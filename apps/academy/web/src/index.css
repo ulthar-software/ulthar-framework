@@ -2,10 +2,6 @@
 
 @theme {
   /* Color Palette */
-  /* Background colors */
-  --color-background: #121212;
-  --color-background-secondary: #1e1e1e;
-  --color-background-tertiary: #2d2d2d;
 
   /* Text colors */
   --color-text-primary: #f1f1f1;
@@ -19,7 +15,7 @@
   /* Status colors */
   --color-success: #22c55e;
   --color-warning: #eab308;
-  --color-error: #ef4444;
+  --color-danger: #ef4444;
   --color-info: #3b82f6;
 
   /* Typography */
