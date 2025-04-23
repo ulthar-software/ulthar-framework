@@ -1,16 +1,28 @@
 import type { LoginInput } from "@ulthar/academy-domain";
 import { LoginInputModel } from "@ulthar/academy-domain";
+import { useNavigate } from "react-router";
 import { UltharLogo } from "../components/academy/ulthar-logo.tsx";
 import { Form } from "../components/forms/form.tsx";
 import { FormButton, Input } from "../components/forms/index.ts";
 import { Anchor } from "../components/ui/index.ts";
+import { useAuthSetToken } from "../utils/auth/use-auth-set-token.ts";
+import { useRPC } from "../utils/rpc/use-rpc.ts";
 
 const loginSchema = LoginInputModel;
 
 export default function Login() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function onLogin(data: LoginInput): Promise<void> {
-    return Promise.resolve();
+  const login = useRPC("login");
+  const setToken = useAuthSetToken();
+  const navigate = useNavigate();
+
+  async function onLogin(data: LoginInput) {
+    const result = await login(data);
+
+    if (result.isOk()) {
+      const { accessToken } = result.value;
+      setToken(accessToken);
+      void navigate("/");
+    }
   }
 
   return (
