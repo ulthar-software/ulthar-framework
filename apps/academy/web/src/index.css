@@ -1,1 +1,47 @@
 @import "tailwindcss";
+
+@theme {
+  /* Color Palette */
+  /* Background colors */
+  --color-background: #121212;
+  --color-background-secondary: #1e1e1e;
+  --color-background-tertiary: #2d2d2d;
+
+  /* Text colors */
+  --color-text-primary: #f1f1f1;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #6e6e6e;
+
+  /* Brand colors */
+  --color-primary: #6366f1;
+  --color-primary-focus: #4f46e5;
+
+  /* Status colors */
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Typography */
+  --font-sans: "Noto Sans", sans-serif;
+  --font-mono: "Fira Code", monospace;
+}
+
+/* Apply dark theme base styles to the entire app */
+:root {
+  color-scheme: dark;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+/* Additional global styles */
+html,
+body {
+  min-height: 100%;
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
