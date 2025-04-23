@@ -1,11 +1,11 @@
 import type { CryptoService, Infer } from "@fabric/core";
-import { Field, Model, TaggedError } from "@fabric/core";
+import { Field, Schema, TaggedError } from "@fabric/core";
 import { AccessPolicy } from "../../security/access-policy.js";
 import type { AuthService } from "../../services/auth-service.js";
 import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
 
-export const LoginInputModel = new Model("LoginInput", {
+export const LoginInputModel = new Schema({
   email: Field.email(),
   password: Field.string(),
 });
