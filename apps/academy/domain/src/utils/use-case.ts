@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { Infer, Result, Schema, SchemaParsingError } from "@fabric/core";
-import { Effect, TaggedError } from "@fabric/core";
+import type { Infer, Schema, SchemaParsingError } from "@fabric/core";
+import { Effect, Result, TaggedError } from "@fabric/core";
 import type { Permission } from "../security/permission.js";
 import type { UserAccess } from "../services/auth-service.js";
 
@@ -54,7 +54,7 @@ export interface QueryUseCaseDefinition<
   type: UseCaseType;
   auth: UseCaseAuth;
   effect: UseCaseFunction<TDeps, Infer<TInputModel>, TOutput, TError>;
-  inputSchema: TInputModel;
+  inputSchema?: TInputModel;
 }
 
 export class UseCase<
@@ -90,7 +90,11 @@ export class UseCase<
     UnauthorizedError | SchemaParsingError<TInputModel> | TError
   > {
     return this.checkPermissions(deps.currentUser)
-      .mapResult(() => this.useCase.inputSchema.parse(input))
+      .mapResult(
+        () =>
+          this.useCase.inputSchema?.parse(input) ??
+          Result.ok(undefined as unknown as Infer<TInputModel>),
+      )
       .flatMap((parsedInput) => this.useCase.effect(deps, parsedInput));
   }
 
