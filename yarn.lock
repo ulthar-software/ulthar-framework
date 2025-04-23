@@ -3008,6 +3008,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ulthar/academy-api@workspace:apps/academy/api":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/academy-api@workspace:apps/academy/api"
+  dependencies:
+    "@fabric/core": "workspace:^"
+    "@fabric/testing": "workspace:^"
+    typescript: "npm:^5.7.3"
+    vitest: "npm:^3.0.6"
+  languageName: unknown
+  linkType: soft
+
 "@ulthar/academy-domain@workspace:^, @ulthar/academy-domain@workspace:apps/academy/domain":
   version: 0.0.0-use.local
   resolution: "@ulthar/academy-domain@workspace:apps/academy/domain"
@@ -3015,6 +3026,40 @@ __metadata:
     "@fabric/core": "workspace:^"
     "@fabric/testing": "workspace:^"
     typescript: "npm:^5.7.3"
+    vitest: "npm:^3.0.6"
+  languageName: unknown
+  linkType: soft
+
+"@ulthar/academy-web@workspace:apps/academy/web":
+  version: 0.0.0-use.local
+  resolution: "@ulthar/academy-web@workspace:apps/academy/web"
+  dependencies:
+    "@fabric/core": "workspace:^"
+    "@fabric/testing": "workspace:^"
+    "@storybook/addon-essentials": "npm:8.6.12"
+    "@storybook/addon-onboarding": "npm:8.6.12"
+    "@storybook/blocks": "npm:8.6.12"
+    "@storybook/experimental-addon-test": "npm:8.6.12"
+    "@storybook/react": "npm:8.6.12"
+    "@storybook/react-vite": "npm:8.6.12"
+    "@storybook/test": "npm:8.6.12"
+    "@tailwindcss/vite": "npm:^4.1.4"
+    "@types/react": "npm:^19.0.10"
+    "@types/react-dom": "npm:^19.0.4"
+    "@ulthar/academy-domain": "workspace:^"
+    "@vitejs/plugin-react": "npm:^4.3.4"
+    "@vitest/browser": "npm:3.0.6"
+    "@vitest/coverage-v8": "npm:3.0.6"
+    globals: "npm:^16.0.0"
+    playwright: "npm:^1.52.0"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
+    react-router: "npm:^7.5.1"
+    storybook: "npm:8.6.12"
+    tailwindcss: "npm:^4.1.4"
+    typescript: "npm:~5.7.2"
+    typescript-eslint: "npm:^8.26.1"
+    vite: "npm:^6.3.1"
     vitest: "npm:^3.0.6"
   languageName: unknown
   linkType: soft
@@ -8370,40 +8415,6 @@ __metadata:
     "@fabric/core": "workspace:^"
     "@fabric/weaver": "workspace:^"
     typescript: "npm:^5.7.3"
-    vitest: "npm:^3.0.6"
-  languageName: unknown
-  linkType: soft
-
-"web@workspace:apps/academy/web":
-  version: 0.0.0-use.local
-  resolution: "web@workspace:apps/academy/web"
-  dependencies:
-    "@fabric/core": "workspace:^"
-    "@fabric/testing": "workspace:^"
-    "@storybook/addon-essentials": "npm:8.6.12"
-    "@storybook/addon-onboarding": "npm:8.6.12"
-    "@storybook/blocks": "npm:8.6.12"
-    "@storybook/experimental-addon-test": "npm:8.6.12"
-    "@storybook/react": "npm:8.6.12"
-    "@storybook/react-vite": "npm:8.6.12"
-    "@storybook/test": "npm:8.6.12"
-    "@tailwindcss/vite": "npm:^4.1.4"
-    "@types/react": "npm:^19.0.10"
-    "@types/react-dom": "npm:^19.0.4"
-    "@ulthar/academy-domain": "workspace:^"
-    "@vitejs/plugin-react": "npm:^4.3.4"
-    "@vitest/browser": "npm:3.0.6"
-    "@vitest/coverage-v8": "npm:3.0.6"
-    globals: "npm:^16.0.0"
-    playwright: "npm:^1.52.0"
-    react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
-    react-router: "npm:^7.5.1"
-    storybook: "npm:8.6.12"
-    tailwindcss: "npm:^4.1.4"
-    typescript: "npm:~5.7.2"
-    typescript-eslint: "npm:^8.26.1"
-    vite: "npm:^6.3.1"
     vitest: "npm:^3.0.6"
   languageName: unknown
   linkType: soft

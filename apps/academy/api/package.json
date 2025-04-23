@@ -1,0 +1,23 @@
+{
+  "name": "@ulthar/academy-api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@fabric/testing": "workspace:^",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6"
+  },
+  "dependencies": {
+    "@fabric/core": "workspace:^"
+  },
+  "scripts": {
+    "dev": "tsc build --watch --preserveWatchOutput",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check": "tsc",
+    "build": "tsc -p tsconfig.build.json"
+  }
+}
