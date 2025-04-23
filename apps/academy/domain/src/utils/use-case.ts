@@ -28,6 +28,13 @@ export type UseCaseOutput<TUseCase extends UseCase<any, any, any, any, any>> =
     ? Promise<Result<TOutput, TError>>
     : never;
 
+export type UseCaseOkValue<TUseCase extends UseCase<any, any, any, any, any>> =
+  TUseCase extends UseCase<any, any, any, infer TOutput, any> ? TOutput : never;
+
+export type UseCaseErrorValue<
+  TUseCase extends UseCase<any, any, any, any, any>,
+> = TUseCase extends UseCase<any, any, any, any, infer TError> ? TError : never;
+
 export type UseCaseName<TUseCase extends UseCase<any, any, any, any, any>> =
   TUseCase extends UseCase<infer TName, any, any, any, any> ? TName : never;
 
