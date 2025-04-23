@@ -1,5 +1,5 @@
 import type { Effect, UnexpectedError, UUID } from "@fabric/core";
-import { Field, Model, type Infer } from "@fabric/core";
+import { Field, Schema, type Infer } from "@fabric/core";
 import { CourseCreatedEvent } from "../../models/course.js";
 import { AccessPolicy } from "../../security/access-policy.js";
 import { Permission } from "../../security/permission.js";
@@ -16,7 +16,7 @@ export interface CreateCourseDependencies {
   currentUser: UserAccess;
 }
 
-export const CreateCourseInputModel = new Model("CreateCourseInput", {
+export const CreateCourseInputModel = new Schema({
   title: Field.string({
     minLength: 3,
   }),
@@ -32,7 +32,7 @@ export interface CreateCourseOutput {
 }
 
 export const CreateCourseUseCase = new UseCase({
-  name: "CreateCourse",
+  name: "createCourse",
   type: "command",
   auth: AccessPolicy.WithPermission(Permission.CREATE_COURSE),
   inputSchema: CreateCourseInputModel,

@@ -28,7 +28,7 @@ export const ChangeModuleOrderInputModel = new Schema({
 export type ChangeModuleOrderInput = Infer<typeof ChangeModuleOrderInputModel>;
 
 export const ChangeModuleOrderUseCase = new UseCase({
-  name: "ChangeModuleOrder",
+  name: "changeModuleOrder",
   type: "command",
   auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: ChangeModuleOrderInputModel,

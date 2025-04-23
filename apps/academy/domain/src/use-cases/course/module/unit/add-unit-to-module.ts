@@ -1,5 +1,5 @@
 import type { Effect, UUID } from "@fabric/core";
-import { Field, Model, UnexpectedError, type Infer } from "@fabric/core";
+import { Field, Schema, UnexpectedError, type Infer } from "@fabric/core";
 import { UnitAddedEvent } from "../../../../models/unit.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
 import { Permission } from "../../../../security/permission.js";
@@ -17,7 +17,7 @@ export interface AddUnitToModuleDependencies {
   currentUser: UserAccess;
 }
 
-export const AddUnitToModuleInputModel = new Model("AddUnitToModuleInput", {
+export const AddUnitToModuleInputModel = new Schema({
   moduleId: Field.uuid(),
   title: Field.string({
     minLength: 3,
@@ -31,7 +31,7 @@ export interface AddUnitToModuleOutput {
 }
 
 export const AddUnitToModuleUseCase = new UseCase({
-  name: "AddUnitToModule",
+  name: "addUnitToModule",
   type: "command",
   auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: AddUnitToModuleInputModel,

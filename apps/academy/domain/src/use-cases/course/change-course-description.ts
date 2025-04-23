@@ -1,5 +1,5 @@
 import type { Effect, UnexpectedError } from "@fabric/core";
-import { Field, Model, type Infer } from "@fabric/core";
+import { Field, Schema, type Infer } from "@fabric/core";
 import { CourseDescriptionChangedEvent } from "../../models/course.js";
 import { AccessPolicy } from "../../security/access-policy.js";
 import { Permission } from "../../security/permission.js";
@@ -17,20 +17,17 @@ export interface ChangeCourseDescriptionDependencies {
   currentUser: UserAccess;
 }
 
-export const ChangeCourseDescriptionInputModel = new Model(
-  "ChangeCourseDescriptionInput",
-  {
-    courseId: Field.uuid(),
-    description: Field.string(),
-  },
-);
+export const ChangeCourseDescriptionInputModel = new Schema({
+  courseId: Field.uuid(),
+  description: Field.string(),
+});
 
 export type ChangeCourseDescriptionInput = Infer<
   typeof ChangeCourseDescriptionInputModel
 >;
 
 export const ChangeCourseDescriptionUseCase = new UseCase({
-  name: "ChangeCourseDescription",
+  name: "changeCourseDescription",
   type: "command",
   auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: ChangeCourseDescriptionInputModel,

@@ -1,4 +1,4 @@
-import { Field, Model, TaggedError, type Infer } from "@fabric/core";
+import { Field, Schema, TaggedError, type Infer } from "@fabric/core";
 import { UserInvitedEvent } from "../../models/user-invite.js";
 import { AccessPolicy } from "../../security/access-policy.js";
 import { Permission } from "../../security/permission.js";
@@ -9,7 +9,7 @@ import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
 
 // Input model for the invite user use case
-export const InviteUserInputModel = new Model("InviteUserInput", {
+export const InviteUserInputModel = new Schema({
   email: Field.email(),
   role: Field.enum({
     values: Object.values(UserRole),

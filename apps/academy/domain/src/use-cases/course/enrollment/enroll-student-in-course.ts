@@ -1,5 +1,5 @@
 import type { Effect, UUID, UnexpectedError } from "@fabric/core";
-import { Field, Model, TaggedError, type Infer } from "@fabric/core";
+import { Field, Schema, TaggedError, type Infer } from "@fabric/core";
 import { UserEnrolledEvent } from "../../../models/enrollment.js";
 import { AccessPolicy } from "../../../security/access-policy.js";
 import { Permission } from "../../../security/permission.js";
@@ -29,13 +29,10 @@ export interface EnrollStudentInCourseDependencies {
   currentUser: UserAccess;
 }
 
-export const EnrollStudentInCourseInputModel = new Model(
-  "EnrollStudentInCourseInput",
-  {
-    courseId: Field.uuid(),
-    studentId: Field.uuid(),
-  },
-);
+export const EnrollStudentInCourseInputModel = new Schema({
+  courseId: Field.uuid(),
+  studentId: Field.uuid(),
+});
 
 export type EnrollStudentInCourseInput = Infer<
   typeof EnrollStudentInCourseInputModel
@@ -46,7 +43,7 @@ export interface EnrollStudentInCourseOutput {
 }
 
 export const EnrollStudentInCourseUseCase = new UseCase({
-  name: "EnrollStudentInCourse",
+  name: "enrollStudentInCourse",
   type: "command",
   auth: AccessPolicy.WithPermission(Permission.ENROLL_STUDENTS),
   inputSchema: EnrollStudentInCourseInputModel,

@@ -1,5 +1,5 @@
 import type { Effect, UUID } from "@fabric/core";
-import { Field, Model, UnexpectedError, type Infer } from "@fabric/core";
+import { Field, Schema, UnexpectedError, type Infer } from "@fabric/core";
 import type { VideoSectionContent } from "../../../../../models/sections/video-section.js";
 import { VideoSectionAddedEvent } from "../../../../../models/sections/video-section.js";
 import { AccessPolicy } from "../../../../../security/access-policy.js";
@@ -18,16 +18,13 @@ export interface AddVideoSectionToUnitDependencies {
   currentUser: UserAccess;
 }
 
-export const AddVideoSectionToUnitInputModel = new Model(
-  "AddVideoSectionToUnitInput",
-  {
-    unitId: Field.uuid(),
-    title: Field.string({
-      minLength: 3,
-    }),
-    videoUrl: Field.url(),
-  },
-);
+export const AddVideoSectionToUnitInputModel = new Schema({
+  unitId: Field.uuid(),
+  title: Field.string({
+    minLength: 3,
+  }),
+  videoUrl: Field.url(),
+});
 
 export type AddVideoSectionToUnitInput = Infer<
   typeof AddVideoSectionToUnitInputModel
@@ -38,7 +35,7 @@ export interface AddVideoSectionToUnitOutput {
 }
 
 export const AddVideoSectionToUnitUseCase = new UseCase({
-  name: "AddVideoSectionToUnit",
+  name: "addVideoSectionToUnit",
   type: "command",
   auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: AddVideoSectionToUnitInputModel,

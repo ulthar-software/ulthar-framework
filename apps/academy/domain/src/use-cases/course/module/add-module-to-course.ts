@@ -1,5 +1,5 @@
 import type { Effect, UUID } from "@fabric/core";
-import { Field, Model, UnexpectedError, type Infer } from "@fabric/core";
+import { Field, Schema, UnexpectedError, type Infer } from "@fabric/core";
 import { ModuleAddedEvent } from "../../../models/module.js";
 import { AccessPolicy } from "../../../security/access-policy.js";
 import { Permission } from "../../../security/permission.js";
@@ -17,7 +17,7 @@ export interface AddModuleToCourseDependencies {
   currentUser: UserAccess;
 }
 
-export const AddModuleToCourseInputModel = new Model("AddModuleToCourseInput", {
+export const AddModuleToCourseInputModel = new Schema({
   courseId: Field.uuid(),
   title: Field.string({
     minLength: 3,
@@ -34,7 +34,7 @@ export interface AddModuleToCourseOutput {
 }
 
 export const AddModuleToCourseUseCase = new UseCase({
-  name: "AddModuleToCourse",
+  name: "addModuleToCourse",
   type: "command",
   auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: AddModuleToCourseInputModel,

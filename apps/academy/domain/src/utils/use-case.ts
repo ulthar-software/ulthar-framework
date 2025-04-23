@@ -1,4 +1,6 @@
-import type { Infer, Schema, SchemaParsingError } from "@fabric/core";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import type { Infer, Result, Schema, SchemaParsingError } from "@fabric/core";
 import { Effect, TaggedError } from "@fabric/core";
 import type { Permission } from "../security/permission.js";
 import type { UserAccess } from "../services/auth-service.js";
@@ -20,6 +22,19 @@ export type UseCaseType = "command" | "query";
 export interface DefaultDependencies {
   currentUser: UserAccess | undefined;
 }
+
+export type UseCaseOutput<TUseCase extends UseCase<any, any, any, any, any>> =
+  TUseCase extends UseCase<any, any, any, infer TOutput, infer TError>
+    ? Promise<Result<TOutput, TError>>
+    : never;
+
+export type UseCaseName<TUseCase extends UseCase<any, any, any, any, any>> =
+  TUseCase extends UseCase<infer TName, any, any, any, any> ? TName : never;
+
+export type UseCaseInput<TUseCase extends UseCase<any, any, any, any, any>> =
+  TUseCase extends UseCase<any, any, infer TInput, any, any>
+    ? Infer<TInput>
+    : never;
 
 export interface QueryUseCaseDefinition<
   TName extends string,

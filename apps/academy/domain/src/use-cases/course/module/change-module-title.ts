@@ -1,5 +1,5 @@
 import type { Effect, UnexpectedError } from "@fabric/core";
-import { Field, Model, type Infer } from "@fabric/core";
+import { Field, Schema, type Infer } from "@fabric/core";
 import { ModuleTitleChangedEvent } from "../../../models/module.js";
 import { AccessPolicy } from "../../../security/access-policy.js";
 import { Permission } from "../../../security/permission.js";
@@ -17,7 +17,7 @@ export interface ChangeModuleTitleDependencies {
   currentUser: UserAccess;
 }
 
-export const ChangeModuleTitleInputModel = new Model("ChangeModuleTitleInput", {
+export const ChangeModuleTitleInputModel = new Schema({
   moduleId: Field.uuid(),
   title: Field.string({
     minLength: 3,
@@ -27,7 +27,7 @@ export const ChangeModuleTitleInputModel = new Model("ChangeModuleTitleInput", {
 export type ChangeModuleTitleInput = Infer<typeof ChangeModuleTitleInputModel>;
 
 export const ChangeModuleTitleUseCase = new UseCase({
-  name: "ChangeModuleTitle",
+  name: "changeModuleTitle",
   type: "command",
   auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   inputSchema: ChangeModuleTitleInputModel,
