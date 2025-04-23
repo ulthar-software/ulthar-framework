@@ -2,6 +2,8 @@
 
 @theme {
   /* Color Palette */
+  /* --color-dark-alt: #1e293b; */
+  --color-dark-alt: #18191a;
 
   /* Text colors */
   --color-text-primary: #f1f1f1;

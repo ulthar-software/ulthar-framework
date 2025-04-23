@@ -12,6 +12,7 @@ export function useAuthGuard({
   const navigate = useNavigate();
 
   if (!user && isAuthRequired) {
+    console.warn("User is not authenticated. Redirecting to login page.");
     void navigate(`/login?redirect=${location.pathname}`, {
       replace: true,
     });
@@ -22,6 +23,9 @@ export function useAuthGuard({
   }
 
   if (!requiredPermissions.every((perm) => user.permissions.includes(perm))) {
+    console.warn(
+      "User does not have the required permissions, redirecting to home page.",
+    );
     void navigate(`/home`, {
       replace: true,
     });

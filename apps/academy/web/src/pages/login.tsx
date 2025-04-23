@@ -26,19 +26,29 @@ export default function Login() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center h-screen gap-4">
-      <UltharLogo size="large" className="mb-8" />
-      <Form schema={loginSchema} onSubmit={onLogin} className="w-full max-w-md">
-        <Input name="email" type="email" label="Email" />
-        <Input name="password" type="password" label="Contraseña" />
-        <Anchor
-          href="/forgot-password"
-          className="text-primary text-center mt-6"
-        >
-          ¿Olvidaste tu contraseña?
-        </Anchor>
-        <FormButton color="primary">Ingresar</FormButton>
-      </Form>
+    <main className="flex flex-col h-screen">
+      <section className="grow p-4 flex flex-col sm:items-center sm:justify-center">
+        <UltharLogo size="large" className="mb-8" />
+        <section className="w-full max-w-lg flex flex-col justify-center sm:bg-dark-alt rounded-lg shadow-md grow sm:grow-0 sm:p-4">
+          <Form schema={loginSchema} onSubmit={onLogin} className="w-full">
+            <Input name="email" type="email" label="Email" />
+            <Input name="password" type="password" label="Contraseña" />
+            <Anchor
+              href="/forgot-password"
+              className="text-primary text-center mt-6"
+            >
+              ¿Olvidaste tu contraseña?
+            </Anchor>
+            <FormButton color="primary">Ingresar</FormButton>
+          </Form>
+        </section>
+      </section>
+      <footer className="flex justify-center p-4 gap-4 w-full shadow bg-dark-alt text-sm">
+        <p className="text-center">
+          <span className="text-primary">Ulthar Academy</span> 2025 - All rights
+          reserved
+        </p>
+      </footer>
     </main>
   );
 }
