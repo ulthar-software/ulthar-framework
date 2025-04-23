@@ -1,25 +1,18 @@
-import type { Permission } from "@ulthar/academy-domain";
+import type { UseCaseAuth } from "@ulthar/academy-domain";
 import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { AuthContext } from "./auth-context.ts";
 
-export interface AuthPolicy {
-  permissions: Permission[];
-  requiresAuth: boolean;
-}
-
-export interface AuthGuardConfig {
-  auth: AuthPolicy;
-  redirectTo: string;
-}
-
-export function useAuthGuard({ auth, redirectTo }: AuthGuardConfig) {
+export function useAuthGuard({
+  isAuthRequired,
+  requiredPermissions,
+}: UseCaseAuth) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
 
-  if (!user && auth.requiresAuth) {
-    void navigate(`${redirectTo}?redirect=${location.pathname}`, {
+  if (!user && isAuthRequired) {
+    void navigate(`/login?redirect=${location.pathname}`, {
       replace: true,
     });
   }
@@ -28,11 +21,8 @@ export function useAuthGuard({ auth, redirectTo }: AuthGuardConfig) {
     return;
   }
 
-  const userPermissions = user.permissions;
-  const permissions = auth.permissions;
-
-  if (!permissions.every((perm) => userPermissions.includes(perm))) {
-    void navigate(`${redirectTo}?redirect=${location.pathname}`, {
+  if (!requiredPermissions.every((perm) => user.permissions.includes(perm))) {
+    void navigate(`/home`, {
       replace: true,
     });
   }
