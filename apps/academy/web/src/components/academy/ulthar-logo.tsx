@@ -55,7 +55,10 @@ export function UltharLogo({
       {/* Text */}
       {showText && (
         <span
-          className={clx("font-semibold text-primary", textSizeClasses[size])}
+          className={clx(
+            "font-semibold text-primary ml-4",
+            textSizeClasses[size],
+          )}
         >
           Ulthar Academy
         </span>
