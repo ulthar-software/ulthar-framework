@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { isBreakPointActive } from "./breakpoints.ts";
+import { describe, expect, it } from "@fabric/testing";
+import { isBreakPointActive } from "./breakpoints.js";
 
 describe("Is breakpoint active", () => {
   it("should return true if the target breakpoint is active", () => {

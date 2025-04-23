@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
-
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "@fabric/testing";
 import { clx } from "./clx.js";
 
 describe("clx", () => {
