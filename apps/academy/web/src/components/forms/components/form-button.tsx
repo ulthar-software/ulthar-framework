@@ -11,7 +11,7 @@ export function FormButton({
   flavor = "raised",
   color = "primary",
   ...buttonProps
-}: PropsWithChildren<ButtonProps>) {
+}: PropsWithChildren<Omit<ButtonProps, "onClick">>) {
   const { isLoading } = useContext(FormContext);
 
   return (
@@ -20,6 +20,7 @@ export function FormButton({
       type={type}
       flavor={flavor}
       color={color}
+      onClick={() => void 0}
       {...buttonProps}
     >
       {isLoading && <LoadingSpinner />}
