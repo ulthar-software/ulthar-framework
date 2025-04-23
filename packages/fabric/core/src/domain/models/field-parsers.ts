@@ -154,8 +154,8 @@ export type FieldParsingError =
  * An error that occurs when a field is invalid
  */
 export class InvalidFieldTypeError extends TaggedError<"InvalidField"> {
-  constructor() {
-    super("InvalidField");
+  constructor(message?: string) {
+    super("InvalidField", message);
   }
 }
 
@@ -163,8 +163,8 @@ export class InvalidFieldTypeError extends TaggedError<"InvalidField"> {
  * An error that occurs when a required field is missing
  */
 export class MissingRequiredFieldError extends TaggedError<"MissingRequiredField"> {
-  constructor() {
-    super("MissingRequiredField");
+  constructor(message?: string) {
+    super("MissingRequiredField", message);
   }
 }
 
@@ -173,10 +173,10 @@ function parseStringSize(
   value: string | undefined,
 ): Result<string | undefined, FieldParsingError> {
   if (field.minLength && !isNullish(value) && value.length < field.minLength) {
-    return Result.failWith(new InvalidFieldTypeError());
+    return Result.failWith(new InvalidFieldTypeError("Field is too short"));
   }
   if (field.maxLength && !isNullish(value) && value.length > field.maxLength) {
-    return Result.failWith(new InvalidFieldTypeError());
+    return Result.failWith(new InvalidFieldTypeError("Field is too long"));
   }
   return Result.ok(value);
 }
@@ -208,7 +208,7 @@ function parseOptionality<T>(
   withMapping?: (value: unknown) => Result<T, FieldParsingError>,
 ): Result<T | undefined, FieldParsingError> {
   if (!field.isOptional && value === undefined) {
-    return Result.failWith(new MissingRequiredFieldError());
+    return Result.failWith(new MissingRequiredFieldError("Field is required"));
   }
   if (value === undefined) {
     return Result.ok(value);
