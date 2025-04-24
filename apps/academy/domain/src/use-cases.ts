@@ -1,3 +1,4 @@
+import { GetCourseDetailsUseCase } from "./use-cases/course/get-course-details.js";
 import {
   AddModuleToCourseUseCase,
   AddUnitToModuleUseCase,
@@ -22,6 +23,7 @@ export const UseCases = [
   ChangeModuleOrderUseCase,
   EnrollStudentInCourseUseCase,
   GetAllCoursesUseCase,
+  GetCourseDetailsUseCase,
 ] as const;
 
 export type UseCases = typeof UseCases;

@@ -4,4 +4,5 @@ export * from "./create-course.js";
 export * from "./enrollment/index.js";
 export * from "./errors.js";
 export * from "./get-all-courses.js";
+export * from "./get-course-details.js";
 export * from "./module/index.js";
