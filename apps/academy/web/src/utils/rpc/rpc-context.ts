@@ -37,6 +37,9 @@ export const EmptyRPCContext: ClientRPC = {
   inviteUser: emptyMock<UseCaseRPC<"inviteUser">>(),
   login: emptyMock<UseCaseRPC<"login">>(),
   changeModuleOrder: emptyMock<UseCaseRPC<"changeModuleOrder">>(),
+  getAllCourses: emptyMock<UseCaseRPC<"getAllCourses">>(),
+  getCourseDetails: emptyMock<UseCaseRPC<"getCourseDetails">>(),
+  getUnitWithSections: emptyMock<UseCaseRPC<"getUnitWithSections">>(),
 };
 
 export const RpcContext = createContext<ClientRPC>(EmptyRPCContext);
