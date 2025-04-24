@@ -1,7 +1,7 @@
 import { exhaustiveCheck, type UUID } from "@fabric/core";
 import { AccessPolicy } from "@ulthar/academy-domain";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageTitle } from "../../../components/academy/page-title.tsx";
 import { PlatformFooter } from "../../../components/academy/platform-footer.tsx";
@@ -17,7 +17,10 @@ import { showErrorToast } from "../../../utils/toasts/show-error-toast.ts";
 export default function CourseView() {
   useAuthGuard(AccessPolicy.LoggedIn());
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const unitId = searchParams.get("unitId");
 
   // State for controlling the visibility of the module sidebar
   const [showModulesSidebar, setShowModulesSidebar] = useState(false);
@@ -29,6 +32,12 @@ export default function CourseView() {
       courseId: id as UUID,
     },
   );
+
+  // Fetch unit data
+  const [isLoadingUnit, unitData, unitError] = useQuery("getUnitWithSections", {
+    courseId: id as UUID,
+    unitId: unitId as UUID,
+  });
 
   if (courseError) {
     switch (courseError._tag) {
@@ -51,6 +60,37 @@ export default function CourseView() {
       }
       default: {
         exhaustiveCheck(courseError);
+      }
+    }
+    return;
+  }
+
+  if (unitError) {
+    switch (unitError._tag) {
+      case "UnitNotFoundError": {
+        showErrorToast("Esta unidad no está disponible.");
+        void navigate("/");
+        break;
+      }
+      case "UnexpectedError": {
+        showErrorToast(
+          "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.",
+        );
+        void navigate("/");
+        break;
+      }
+      case "CourseNotFoundError": {
+        showErrorToast("Este curso ya no está disponible.");
+        void navigate("/");
+        break;
+      }
+      case "NotEnrolledInCourseError": {
+        showErrorToast("No estás inscripto en este curso.");
+        void navigate("/");
+        break;
+      }
+      default: {
+        exhaustiveCheck(unitError);
       }
     }
     return;
@@ -128,42 +168,41 @@ export default function CourseView() {
               Ver módulos
             </Button>
 
-            <PageTitle>Título de la Unidad Actual</PageTitle>
-
-            <section className="mt-6 mb-8 text-gray-300">
-              <p>Descripción de la unidad actual</p>
-            </section>
-
-            {/* Current unit content */}
-            <section className="space-y-6">
-              <div className="bg-dark-alt p-6 rounded-lg">
-                <h3 className="text-lg font-medium text-white mb-3">
-                  Sección 1: Introducción
-                </h3>
-                <div className="text-gray-300">
-                  <p>
-                    Esta es una sección de ejemplo. El contenido real se cargará
-                    dinámicamente según la unidad seleccionada.
-                  </p>
-                </div>
+            {isLoadingUnit && (
+              <div className="flex-grow flex justify-center items-center">
+                <LoadingSpinner className="text-primary text-4xl sm:text-6xl" />
               </div>
+            )}
 
-              <div className="bg-dark-alt p-6 rounded-lg">
-                <h3 className="text-lg font-medium text-white mb-3">
-                  Sección 2: Contenido principal
-                </h3>
-                <div className="text-gray-300">
-                  <p>
-                    Aquí va el contenido principal de la sección. Podría ser
-                    texto, video u otros elementos interactivos.
-                  </p>
-                </div>
-              </div>
-            </section>
+            {unitData && (
+              <>
+                <PageTitle>{unitData.unit.title}</PageTitle>
+
+                {/* <section className="mt-6 mb-8 text-gray-300">
+                  <p> for when units have descriptions </p>
+                </section> */}
+
+                <section className="space-y-6">
+                  {unitData.sections.map((section) => (
+                    <div
+                      className="bg-dark-alt p-6 rounded-lg shadow-md"
+                      key={section.id}
+                    >
+                      <h3 className="text-lg font-medium text-white mb-3">
+                        {section.title}
+                      </h3>
+                      <div className="text-gray-300">
+                        <p>SECTION CONTENT</p>
+                      </div>
+                    </div>
+                  ))}
+                </section>
+              </>
+            )}
           </section>
 
           {/* Right sidebar for concepts - always visible */}
-          <aside className="hidden lg:block w-64 bg-dark-alt p-4 overflow-y-auto">
+          <aside className="hidden lg:block w-96 bg-dark-alt p-4 overflow-y-auto">
             <h2 className="text-lg font-semibold text-primary mb-4">
               Conceptos
             </h2>
