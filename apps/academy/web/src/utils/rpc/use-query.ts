@@ -1,17 +1,17 @@
-import type { Result } from "@fabric/core";
+import { UnexpectedError, type Result } from "@fabric/core";
 import type {
   UseCaseErrorValue,
   UseCaseInput,
   UseCaseOkValue,
 } from "@ulthar/academy-domain";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { UseCaseFromName, UseCaseNames } from "./rpc-context.ts";
 import { useRPC } from "./use-rpc.ts";
 
 export type QueryResult<TName extends UseCaseNames> = [
   boolean, //isLoading
   UseCaseOkValue<UseCaseFromName<TName>> | undefined, //isMaybeOK
-  UseCaseErrorValue<UseCaseFromName<TName>> | undefined, //isMaybeError
+  UseCaseErrorValue<UseCaseFromName<TName>> | UnexpectedError | undefined, //isMaybeError
 ];
 
 export function useQuery<TName extends UseCaseNames>(
@@ -24,28 +24,42 @@ export function useQuery<TName extends UseCaseNames>(
     undefined,
     undefined,
   ]);
+  const effectRan = useRef(false);
 
   async function callRPC() {
     setState([true, undefined, undefined]);
 
-    const result = (await rpc(input)) as Result<
-      UseCaseOkValue<UseCaseFromName<TName>>,
-      UseCaseErrorValue<UseCaseFromName<TName>>
-    >;
+    try {
+      const result = (await rpc(input)) as Result<
+        UseCaseOkValue<UseCaseFromName<TName>>,
+        UseCaseErrorValue<UseCaseFromName<TName>>
+      >;
 
-    if (result.isOk()) {
-      setState([false, result.value, undefined]);
-    } else {
+      if (result.isOk()) {
+        setState([false, result.value, undefined]);
+      } else {
+        setState([
+          false,
+          undefined,
+          result.value as UseCaseErrorValue<UseCaseFromName<TName>>,
+        ]);
+      }
+    } catch (error) {
       setState([
         false,
         undefined,
-        result.value as UseCaseErrorValue<UseCaseFromName<TName>>,
+        new UnexpectedError((error as Error).message),
       ]);
     }
   }
 
   useEffect(() => {
-    void callRPC();
+    if (!effectRan.current) {
+      void callRPC();
+    }
+    return () => {
+      effectRan.current = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(input)]);
 
