@@ -37,4 +37,13 @@ describe("generatePath", () => {
 
     expect(result).toBe(expectedPath);
   });
+
+  it("should handle paths with index.tsx", () => {
+    const path = "./pages/course/[id]/index.tsx";
+    const expectedPath = "/course/:id";
+
+    const result = generatePath(path);
+
+    expect(result).toBe(expectedPath);
+  });
 });

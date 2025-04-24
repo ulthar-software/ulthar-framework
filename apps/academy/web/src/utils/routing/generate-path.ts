@@ -4,6 +4,7 @@ export function generatePath(path: string): string {
     .replace(/\.tsx$/, "")
     .replace(/index$/, "")
     .replace(/\/$/, "")
+    .replace(/\[(.+?)\]/g, ":$1")
     .split("/")
     .filter((part) => part !== "pages" && part !== "src");
 
