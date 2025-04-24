@@ -10,6 +10,7 @@ import { FormButton, Input } from "../components/forms/index.ts";
 import { Anchor } from "../components/ui/index.ts";
 import { useAuthSetToken } from "../utils/auth/use-auth-set-token.ts";
 import { useRPC } from "../utils/rpc/use-rpc.ts";
+import { showErrorToast } from "../utils/toasts/show-error-toast.ts";
 
 const loginSchema = LoginInputModel;
 
@@ -25,6 +26,12 @@ export default function Login() {
       const { accessToken } = result.value;
       setToken(accessToken);
       void navigate("/");
+    }
+
+    if (result.isError()) {
+      showErrorToast(
+        "Credenciales inválidas. \nPor favor verifica los datos que ingresaste.",
+      );
     }
   }
 
@@ -42,7 +49,7 @@ export default function Login() {
             >
               ¿Olvidaste tu contraseña?
             </Anchor>
-            <FormButton color="primary">Ingresar</FormButton>
+            <FormButton className="bg-primary">Ingresar</FormButton>
           </Form>
         </section>
       </PageContent>
