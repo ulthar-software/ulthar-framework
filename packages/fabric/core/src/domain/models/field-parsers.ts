@@ -23,16 +23,20 @@ export const fieldParsers: FieldParsers = {
   },
   UUIDField: (f, v) => {
     return parseStringValue(f, v).flatMap((parsedString) =>
-      isUUID(parsedString)
-        ? Result.ok(parsedString)
-        : Result.failWith(new InvalidFieldTypeError()),
+      isNullish(parsedString)
+        ? Result.ok(undefined)
+        : isUUID(parsedString)
+          ? Result.ok(parsedString)
+          : Result.failWith(new InvalidFieldTypeError()),
     );
   },
   ReferenceField: (f, v) => {
     return parseStringValue(f, v).flatMap((parsedString) =>
-      isUUID(parsedString)
-        ? Result.ok(parsedString)
-        : Result.failWith(new InvalidFieldTypeError()),
+      isNullish(parsedString)
+        ? Result.ok(undefined)
+        : isUUID(parsedString)
+          ? Result.ok(parsedString)
+          : Result.failWith(new InvalidFieldTypeError()),
     );
   },
   PosixDateField: (f, v) => {
