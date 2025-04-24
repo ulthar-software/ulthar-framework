@@ -32,6 +32,8 @@ import type {
 import type { ValueStoreDriver } from "./value-store-driver.js";
 
 export class ValueStoreDriverMock implements ValueStoreDriver {
+  private data: Record<string, any[]> = {};
+
   count(
     model: Model,
     query: StoreReadOptions,
@@ -41,7 +43,22 @@ export class ValueStoreDriverMock implements ValueStoreDriver {
       return filter(data, query.where).length;
     });
   }
-  private data: Record<string, any[]> = {};
+
+  max(model: Model, query: StoreReadOptions): Effect<number, StoreQueryError> {
+    return Effect.from(() => {
+      const data = this.data[query.from];
+      const filteredData = filter(data, query.where);
+      if (filteredData.length === 0) {
+        return 0;
+      }
+      return (
+        filteredData
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          .map((item) => item[query.keys![0]] as number)
+          .reduce((max, value) => Math.max(max, value), -Infinity)
+      );
+    });
+  }
 
   get<T>(model: Model, query: StoreReadOptions): Effect<T[], StoreQueryError> {
     return Effect.from(() => {

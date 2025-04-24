@@ -33,6 +33,13 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
     return this.driver.count(this.model, this.query);
   }
 
+  max(key: Keyof<T>): Effect<number, StoreQueryError> {
+    return this.driver.max(this.model, {
+      ...this.query,
+      keys: [key],
+    });
+  }
+
   where(where: FilterOptions<T>): SortableStoreQuery<T> {
     return new StoreReadQueryBuilder(this.driver, this.model, {
       ...this.query,

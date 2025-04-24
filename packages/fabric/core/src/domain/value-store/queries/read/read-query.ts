@@ -31,6 +31,7 @@ export interface SelectableStoreQuery<T> {
   select<K extends Keyof<T>>(keys: K[]): Effect<Pick<T, K>[], StoreQueryError>;
 
   count(): Effect<number, StoreQueryError>;
+  max(key: Keyof<T>): Effect<number, StoreQueryError>;
 
   selectOne(): Effect<Option<T>, StoreQueryError>;
   selectOne<K extends Keyof<T>>(
