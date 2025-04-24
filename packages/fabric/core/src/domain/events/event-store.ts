@@ -61,6 +61,9 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
           ),
         ),
       )
+      .tapError((error) => {
+        console.error(error);
+      })
       .mapError((error) => new UnexpectedError(error.message))
       .map(() => event);
   }
