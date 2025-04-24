@@ -2,6 +2,7 @@ import { exhaustiveCheck, type UUID } from "@fabric/core";
 import { AccessPolicy } from "@ulthar/academy-domain";
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router";
+import { ContentSectionBlock } from "../../../components/academy/content-section.tsx";
 import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageTitle } from "../../../components/academy/page-title.tsx";
 import { PlatformFooter } from "../../../components/academy/platform-footer.tsx";
@@ -184,17 +185,7 @@ export default function CourseView() {
 
                 <section className="space-y-6">
                   {unitData.sections.map((section) => (
-                    <div
-                      className="bg-dark-alt p-6 rounded-lg shadow-md"
-                      key={section.id}
-                    >
-                      <h3 className="text-lg font-medium text-white mb-3">
-                        {section.title}
-                      </h3>
-                      <div className="text-gray-300">
-                        <p>SECTION CONTENT</p>
-                      </div>
-                    </div>
+                    <ContentSectionBlock key={section.id} section={section} />
                   ))}
                 </section>
               </>
