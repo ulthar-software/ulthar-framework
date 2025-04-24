@@ -41,9 +41,7 @@ describe("Add Video Section To Unit Use Case", () => {
     const sectionData = {
       unitId: existingUnitId,
       title: "Introduction Video",
-      videoUrl: "https://example.com/videos/intro",
-      description: "An introductory video to the course",
-      duration: 600, // 10 minutes
+      videoUrl: "https://example.com/videos/intro.mp4",
     };
 
     // Act
@@ -83,17 +81,15 @@ describe("Add Video Section To Unit Use Case", () => {
     );
   });
 
-  test("Section should be added with optional fields as defaults if not provided", async () => {
-    // Arrange
-    const sectionData = {
+  test("Section order should increment correctly when multiple sections are added", async () => {
+    // Arrange - Add first section
+    const firstSectionData = {
       unitId: existingUnitId,
-      title: "Minimal Video",
-      videoUrl: "https://example.com/videos/minimal",
-      // No description or duration provided
+      title: "First Video Section",
+      videoUrl: "https://example.com/videos/first.mp4",
     };
 
-    // Act
-    const result = await AddVideoSectionToUnitUseCase.call(
+    await AddVideoSectionToUnitUseCase.call(
       {
         ...services,
         currentUser: {
@@ -101,25 +97,35 @@ describe("Add Video Section To Unit Use Case", () => {
           permissions: [Permission.EDIT_COURSE],
         },
       },
-      sectionData,
+      firstSectionData,
     ).runOrThrow();
 
-    // Assert
-    // Verify the section was added to the database with default values
+    // Arrange - Add second section
+    const secondSectionData = {
+      unitId: existingUnitId,
+      title: "Second Video Section",
+      videoUrl: "https://example.com/videos/second.mp4",
+    };
+
+    await AddVideoSectionToUnitUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.EDIT_COURSE],
+        },
+      },
+      secondSectionData,
+    ).runOrThrow();
+
+    // Assert - Second section should have order = 200
     const sectionInDb = await services.state
       .from("videoSections")
-      .where({ id: result.sectionId })
-      .selectOneOrFail()
+      .where({ unitId: existingUnitId })
+      .select()
       .runOrThrow();
 
-    expect(sectionInDb).toEqual(
-      expect.objectContaining({
-        title: sectionData.title,
-        content: expect.objectContaining({
-          videoUrl: sectionData.videoUrl,
-        }),
-      }),
-    );
+    expect(sectionInDb.map((section) => section.order)).toEqual([100, 200]);
   });
 
   test("Should fail when adding a section to a non-existent unit", async () => {
@@ -128,7 +134,7 @@ describe("Add Video Section To Unit Use Case", () => {
     const sectionData = {
       unitId: invalidUnitId,
       title: "Invalid Unit Video",
-      videoUrl: "https://example.com/videos/invalid",
+      videoUrl: "https://example.com/videos/invalid.mp4",
     };
 
     // Act
@@ -148,12 +154,12 @@ describe("Add Video Section To Unit Use Case", () => {
     expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnitNotFoundError);
   });
 
-  test("Should fail when user lacks ADD_SECTION_TO_UNIT permission", async () => {
+  test("Should fail when user lacks EDIT_COURSE permission", async () => {
     // Arrange
     const sectionData = {
       unitId: existingUnitId,
       title: "Unauthorized Video",
-      videoUrl: "https://example.com/videos/unauthorized",
+      videoUrl: "https://example.com/videos/unauthorized.mp4",
     };
 
     // Act
@@ -178,7 +184,7 @@ describe("Add Video Section To Unit Use Case", () => {
     const invalidInput = {
       unitId: existingUnitId,
       title: "AB", // Too short (min 3 chars)
-      videoUrl: "invalid-url", // Invalid URL format
+      videoUrl: "not-a-valid-url", // Invalid URL
     };
 
     // Act

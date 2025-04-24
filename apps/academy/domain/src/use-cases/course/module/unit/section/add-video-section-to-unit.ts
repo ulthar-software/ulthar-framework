@@ -1,5 +1,5 @@
-import type { Effect, UUID } from "@fabric/core";
-import { Field, Schema, UnexpectedError, type Infer } from "@fabric/core";
+import type { Effect, UUID, UnexpectedError } from "@fabric/core";
+import { Field, Schema, type Infer } from "@fabric/core";
 import type { VideoSectionContent } from "../../../../../models/sections/video-section.js";
 import { VideoSectionAddedEvent } from "../../../../../models/sections/video-section.js";
 import { AccessPolicy } from "../../../../../security/access-policy.js";
@@ -10,6 +10,7 @@ import type { DomainEventStore } from "../../../../../services/event-store.js";
 import type { DomainStateStore } from "../../../../../services/state-store.js";
 import { UseCase } from "../../../../../utils/use-case.js";
 import { UnitNotFoundError } from "../../../errors.js";
+import { getMaxSectionOrder } from "./get-max-order.js";
 
 export interface AddVideoSectionToUnitDependencies {
   state: DomainStateStore;
@@ -51,37 +52,30 @@ export const AddVideoSectionToUnitUseCase = new UseCase({
       .where({ id: unitId })
       .selectOneOrFail()
       .mapError(() => new UnitNotFoundError(unitId))
-      .flatMap(() => {
-        // Get the count of existing sections for this unit to determine the order
-        return state
-          .from("videoSections")
-          .where({ unitId })
-          .count()
-          .mapError(() => new UnexpectedError())
-          .flatMap((count) => {
-            const sectionId = crypto.randomUUID();
-            const eventId = crypto.randomUUID();
-            const sectionOrder = count * 100 + 100; // Set order to 100 more than last section (maintains spacing of 100)
+      .flatMap(() => getMaxSectionOrder(state, unitId))
+      .flatMap((maxOrder) => {
+        const sectionId = crypto.randomUUID();
+        const eventId = crypto.randomUUID();
+        const sectionOrder = maxOrder + 100; // Set order to 100 more than last section
 
-            const videoSectionAddedEvent = VideoSectionAddedEvent.from({
-              id: eventId,
-              streamId: sectionId,
-              payload: {
-                title,
-                unitId,
-                order: sectionOrder,
-                createdBy: currentUser.id,
-                content: {
-                  videoUrl,
-                } as VideoSectionContent,
-              },
-              version: 1n,
-            });
+        const videoSectionAddedEvent = VideoSectionAddedEvent.from({
+          id: eventId,
+          streamId: sectionId,
+          payload: {
+            title,
+            unitId,
+            order: sectionOrder,
+            createdBy: currentUser.id,
+            content: {
+              videoUrl,
+            } as VideoSectionContent,
+          },
+          version: 1n,
+        });
 
-            return events
-              .append("videoSections", videoSectionAddedEvent)
-              .map(() => ({ sectionId }));
-          });
+        return events
+          .append("videoSections", videoSectionAddedEvent)
+          .map(() => ({ sectionId }));
       });
   },
 });

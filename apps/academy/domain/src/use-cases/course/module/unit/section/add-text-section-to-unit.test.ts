@@ -107,7 +107,7 @@ describe("Add Text Section To Unit Use Case", () => {
       text: "This is the second text section.",
     };
 
-    const result = await AddTextSectionToUnitUseCase.call(
+    await AddTextSectionToUnitUseCase.call(
       {
         ...services,
         currentUser: {
@@ -121,19 +121,11 @@ describe("Add Text Section To Unit Use Case", () => {
     // Assert - Second section should have order = 200
     const sectionInDb = await services.state
       .from("textSections")
-      .where({ id: result.sectionId })
-      .selectOneOrFail()
+      .where({ unitId: existingUnitId })
+      .select()
       .runOrThrow();
 
-    expect(sectionInDb).toEqual(
-      expect.objectContaining({
-        title: secondSectionData.title,
-        order: 200, // Second section should have order 200
-        content: expect.objectContaining({
-          text: secondSectionData.text,
-        }),
-      }),
-    );
+    expect(sectionInDb.map((section) => section.order)).toEqual([100, 200]);
   });
 
   test("Should fail when adding a section to a non-existent unit", async () => {
