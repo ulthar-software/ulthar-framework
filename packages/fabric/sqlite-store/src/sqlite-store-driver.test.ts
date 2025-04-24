@@ -19,6 +19,12 @@ describe("State Store", () => {
     optional: Field.string({ isOptional: true }),
   });
 
+  const NonReferenceModel = new Model("nonReferenceModel", {
+    id: Field.uuid({ isPrimaryKey: true }),
+    value: Field.float({}),
+    optional: Field.string({ isOptional: true }),
+  });
+
   const User = new Model("users", {
     id: Field.uuid({ isPrimaryKey: true }),
     name: Field.string({}),
@@ -43,7 +49,7 @@ describe("State Store", () => {
     },
   );
 
-  const DBSchema = [Demo, User, Events];
+  const DBSchema = [Demo, User, Events, NonReferenceModel];
 
   let store: WritableValueStore<(typeof DBSchema)[number]>;
 
@@ -308,5 +314,33 @@ describe("State Store", () => {
       .runOrThrow();
 
     expect(result).toBe(2);
+  });
+
+  //Test max operation
+  test("should find the maximum value", async () => {
+    await store
+      .insertInto("nonReferenceModel")
+      .manyValues([
+        {
+          id: crypto.randomUUID(),
+          value: 10.5,
+        },
+        {
+          id: crypto.randomUUID(),
+          value: 25.7,
+        },
+        {
+          id: crypto.randomUUID(),
+          value: 5.2,
+        },
+      ])
+      .runOrThrow();
+
+    const result = await store
+      .from("nonReferenceModel")
+      .max("value")
+      .runOrThrow();
+
+    expect(result).toBe(25.7);
   });
 });

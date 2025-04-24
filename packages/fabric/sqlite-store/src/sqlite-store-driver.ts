@@ -30,6 +30,19 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     this.db.pragma("foreign_keys = ON");
   }
 
+  max(model: Model, query: StoreReadOptions): Effect<number, StoreQueryError> {
+    return Effect.tryFrom(
+      () => {
+        const [sql, params] = this.getMaxStatement(model, query);
+        const result = this.allPrepared(sql, params);
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-non-null-assertion
+        return result[0][`MAX(${query.keys![0]})`] as number;
+      },
+      (error: Error) => new StoreQueryError(error.message),
+    );
+  }
+
   count(
     model: Model,
     query: StoreReadOptions,
@@ -159,6 +172,28 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
 
     const sql = [
       `SELECT COUNT(*)`,
+      `FROM ${query.from}`,
+      queryFilter,
+      limit,
+      offset,
+    ].join(" ");
+
+    return [sql, { ...filterToParams(model, query.where) }];
+  }
+
+  private getMaxStatement(
+    model: Model,
+    query: StoreReadOptions,
+  ): [string, Record<string, any>] {
+    const queryFilter = filterToSQL(query.where);
+    const limit = query.limit ? `LIMIT ${query.limit}` : "";
+    const offset = query.offset ? `OFFSET ${query.offset}` : "";
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const maxKey = query.keys![0];
+
+    const sql = [
+      `SELECT MAX(${maxKey})`,
       `FROM ${query.from}`,
       queryFilter,
       limit,
