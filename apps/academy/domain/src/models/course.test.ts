@@ -28,7 +28,7 @@ describe("Course", () => {
         description: "Learn the basics of programming",
         createdBy: services.crypto.randomUUID(),
       },
-      version: 1n,
+      version: 1,
     });
 
     const course = CourseProjector.project(event).unwrapOrThrow();
@@ -38,7 +38,7 @@ describe("Course", () => {
       title: "Introduction to Programming",
       description: "Learn the basics of programming",
       createdBy: event.payload.createdBy,
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });
@@ -56,7 +56,7 @@ describe("Course", () => {
         description: "Learn the basics of programming",
         createdBy: userId,
       },
-      version: 1n,
+      version: 1,
     });
 
     // Then change the title
@@ -68,7 +68,7 @@ describe("Course", () => {
           title: "Advanced Programming Concepts",
           updatedBy: userId,
         },
-        version: 2n,
+        version: 2,
       });
 
     // Project both events
@@ -85,7 +85,7 @@ describe("Course", () => {
       title: "Advanced Programming Concepts", // Title should be updated
       description: "Learn the basics of programming",
       createdBy: userId,
-      version: 2n, // Version should be incremented
+      version: 2, // Version should be incremented
       updatedAt: titleChangeEvent.timestamp, // Updated timestamp
       createdAt: createEvent.timestamp, // Original creation timestamp
     });
@@ -103,7 +103,7 @@ describe("Course", () => {
         description: "Learn the basics of programming",
         createdBy: userId,
       },
-      version: 1n,
+      version: 1,
     });
 
     // Then change the description
@@ -116,7 +116,7 @@ describe("Course", () => {
             "Comprehensive guide to programming fundamentals and advanced concepts",
           updatedBy: userId,
         },
-        version: 2n,
+        version: 2,
       });
 
     // Project both events
@@ -134,7 +134,7 @@ describe("Course", () => {
       description:
         "Comprehensive guide to programming fundamentals and advanced concepts", // Description should be updated
       createdBy: userId,
-      version: 2n, // Version should be incremented
+      version: 2, // Version should be incremented
       updatedAt: descriptionChangeEvent.timestamp, // Updated timestamp
       createdAt: createEvent.timestamp, // Original creation timestamp
     });

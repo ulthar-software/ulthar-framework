@@ -33,7 +33,7 @@ describe("Module", () => {
         order: 1,
         createdBy: createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const module = ModuleProjector.project(event).unwrapOrThrow();
@@ -45,7 +45,7 @@ describe("Module", () => {
       courseId: courseId,
       order: 1,
       createdBy: createdBy,
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });
@@ -67,7 +67,7 @@ describe("Module", () => {
         order: 1,
         createdBy: createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const module = ModuleProjector.project(addEvent).unwrapOrThrow();
@@ -83,7 +83,7 @@ describe("Module", () => {
         title: "Advanced JavaScript Concepts",
         updatedBy,
       },
-      version: 2n,
+      version: 2,
     });
 
     const titleUpdatedModule = ModuleProjector.project(
@@ -98,7 +98,7 @@ describe("Module", () => {
       courseId: courseId,
       order: 1,
       createdBy: createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: titleEvent.timestamp,
       createdAt: module.createdAt,
     });
@@ -119,7 +119,7 @@ describe("Module", () => {
         order: 1,
         createdBy: createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const module = ModuleProjector.project(addEvent).unwrapOrThrow();
@@ -133,7 +133,7 @@ describe("Module", () => {
         description: "Deep dive into advanced JavaScript features and patterns",
         updatedBy,
       },
-      version: 2n,
+      version: 2,
     });
 
     const descriptionUpdatedModule = ModuleProjector.project(
@@ -148,7 +148,7 @@ describe("Module", () => {
       courseId: courseId,
       order: 1,
       createdBy: createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: descriptionEvent.timestamp,
       createdAt: module.createdAt,
     });
@@ -169,7 +169,7 @@ describe("Module", () => {
         order: 1,
         createdBy: createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const module = ModuleProjector.project(addEvent).unwrapOrThrow();
@@ -183,7 +183,7 @@ describe("Module", () => {
         order: 2,
         updatedBy,
       },
-      version: 2n,
+      version: 2,
     });
 
     const orderUpdatedModule = ModuleProjector.project(
@@ -198,7 +198,7 @@ describe("Module", () => {
       courseId: courseId,
       order: 2,
       createdBy: createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: orderEvent.timestamp,
       createdAt: module.createdAt,
     });
@@ -221,7 +221,7 @@ describe("Module", () => {
         order: 1,
         createdBy: createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     // Create initial module
@@ -236,7 +236,7 @@ describe("Module", () => {
         title: "Advanced JavaScript Concepts",
         updatedBy,
       },
-      version: 2n,
+      version: 2,
     });
 
     const afterTitleUpdate = ModuleProjector.project(

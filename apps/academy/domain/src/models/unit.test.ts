@@ -28,7 +28,7 @@ describe("Unit", () => {
         order: 1,
         createdBy: services.crypto.randomUUID(),
       },
-      version: 1n,
+      version: 1,
     });
 
     const unit = UnitProjector.project(event).unwrapOrThrow();
@@ -39,7 +39,7 @@ describe("Unit", () => {
       moduleId: event.payload.moduleId,
       order: 1,
       createdBy: event.payload.createdBy,
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });
@@ -57,7 +57,7 @@ describe("Unit", () => {
         order: 1,
         createdBy: services.crypto.randomUUID(),
       },
-      version: 1n,
+      version: 1,
     });
 
     const unit = UnitProjector.project(addEvent).unwrapOrThrow();
@@ -72,7 +72,7 @@ describe("Unit", () => {
         title: "Updated Unit Name",
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedUnit = UnitProjector.project(
@@ -86,7 +86,7 @@ describe("Unit", () => {
       moduleId: unit.moduleId,
       order: unit.order,
       createdBy: unit.createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: titleChangedEvent.timestamp,
       createdAt: unit.createdAt,
     });
@@ -104,7 +104,7 @@ describe("Unit", () => {
         order: 1,
         createdBy: services.crypto.randomUUID(),
       },
-      version: 1n,
+      version: 1,
     });
 
     const unit = UnitProjector.project(addEvent).unwrapOrThrow();
@@ -120,7 +120,7 @@ describe("Unit", () => {
           order: 2,
           updatedBy: services.crypto.randomUUID(),
         },
-        version: 2n,
+        version: 2,
       },
     );
 
@@ -135,7 +135,7 @@ describe("Unit", () => {
       moduleId: unit.moduleId,
       order: 2,
       createdBy: unit.createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: orderChangedEvent.timestamp,
       createdAt: unit.createdAt,
     });

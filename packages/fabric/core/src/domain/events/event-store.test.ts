@@ -80,7 +80,7 @@ describe("EventStore", async () => {
     const createStateEvent = CreateStateEventModel.from({
       id: crypto.randomUUID(),
       streamId,
-      version: 1n,
+      version: 1,
       payload: { name: "test" },
     });
 
@@ -102,13 +102,13 @@ describe("EventStore", async () => {
       count: 0,
       createdAt: createStateEvent.timestamp,
       updatedAt: createStateEvent.timestamp,
-      version: 1n,
+      version: 1,
     });
 
     const updateStateEvent = UpdateStateEventModel.from({
       id: crypto.randomUUID(),
       streamId,
-      version: 2n,
+      version: 2,
       payload: { count: 1 },
     });
 
@@ -126,13 +126,13 @@ describe("EventStore", async () => {
       count: 1,
       createdAt: createStateEvent.timestamp,
       updatedAt: updateStateEvent.timestamp,
-      version: 2n,
+      version: 2,
     });
 
     const deleteStateEvent = DeleteStateEvent.from({
       id: crypto.randomUUID(),
       streamId,
-      version: 3n,
+      version: 3,
       payload: {},
     });
 

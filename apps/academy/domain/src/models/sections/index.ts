@@ -6,7 +6,23 @@ export * from "./video-section.js";
 
 // Union type that represents any type of section
 import type { QuestionnaireSection } from "./questionnaire-section.js";
+import type { SectionType } from "./section-base.js";
 import type { TextSection } from "./text-section.js";
 import type { VideoSection } from "./video-section.js";
 
 export type ContentSection = TextSection | VideoSection | QuestionnaireSection;
+
+export type TaggedVideoSection = {
+  type: typeof SectionType.VIDEO;
+} & TextSection;
+export type TaggedTextSection = {
+  type: typeof SectionType.TEXT;
+} & VideoSection;
+export type TaggedQuestionnaireSection = {
+  type: typeof SectionType.QUESTIONNAIRE;
+} & QuestionnaireSection;
+
+export type TaggedContentSection =
+  | TaggedVideoSection
+  | TaggedTextSection
+  | TaggedQuestionnaireSection;

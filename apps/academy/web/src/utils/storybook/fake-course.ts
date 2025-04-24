@@ -11,6 +11,6 @@ export function fakeCourse(course?: Partial<Course>): Course {
     createdAt: course?.createdAt ?? new PosixDate(faker.date.past().getTime()),
     updatedAt:
       course?.updatedAt ?? new PosixDate(faker.date.recent().getTime()),
-    version: course?.version ?? BigInt(faker.number.int({ min: 1, max: 100 })),
+    version: course?.version ?? faker.number.int({ min: 1, max: 100 }),
   };
 }

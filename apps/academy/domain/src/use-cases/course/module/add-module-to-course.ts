@@ -69,7 +69,7 @@ export const AddModuleToCourseUseCase = new UseCase({
                 order: moduleOrder,
                 createdBy: currentUser.id,
               },
-              version: 1n,
+              version: 1,
             });
 
             return events

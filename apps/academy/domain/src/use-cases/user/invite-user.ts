@@ -70,7 +70,7 @@ export const InviteUserUseCase = new UseCase({
         const inviteEvent = UserInvitedEvent.from({
           id,
           streamId: id,
-          version: 1n,
+          version: 1,
           payload: {
             email,
             role,

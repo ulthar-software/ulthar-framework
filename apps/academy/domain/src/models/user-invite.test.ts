@@ -28,7 +28,7 @@ describe("UserInvite", () => {
         role: UserRole.STUDENT,
         code: "invite-code-123",
       },
-      version: 1n,
+      version: 1,
     });
 
     const userInvite = UserInviteProjector.project(event).unwrapOrThrow();
@@ -38,7 +38,7 @@ describe("UserInvite", () => {
       email: "test@example.com",
       role: UserRole.STUDENT,
       code: "invite-code-123",
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });
@@ -55,7 +55,7 @@ describe("UserInvite", () => {
         role: UserRole.TEACHER,
         code: "invite-code-456",
       },
-      version: 1n,
+      version: 1,
     });
 
     const userInvite = UserInviteProjector.project(inviteEvent).unwrapOrThrow();
@@ -67,7 +67,7 @@ describe("UserInvite", () => {
       id: services.crypto.randomUUID(),
       streamId: inviteId,
       payload: {},
-      version: 2n,
+      version: 2,
     });
 
     const result = UserInviteProjector.project(

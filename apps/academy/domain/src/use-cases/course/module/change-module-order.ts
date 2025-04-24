@@ -51,7 +51,7 @@ export const ChangeModuleOrderUseCase = new UseCase({
             order,
             updatedBy: currentUser.id,
           },
-          version: module.version + 1n, // Increment the version
+          version: module.version + 1, // Increment the version
         });
 
         return events.append("modules", moduleOrderChangedEvent).discardValue();

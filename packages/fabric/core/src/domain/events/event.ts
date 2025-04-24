@@ -42,7 +42,7 @@ export const BaseEventFields = {
   id: Field.uuid({ isPrimaryKey: true }),
   type: Field.string(),
   streamId: Field.uuid(),
-  version: Field.integer({ hasArbitraryPrecision: true }),
+  version: Field.integer({ isUnsigned: true }),
   timestamp: Field.posixDate(),
 } as const;
 export type BaseEventFields = typeof BaseEventFields;

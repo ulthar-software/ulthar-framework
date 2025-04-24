@@ -40,7 +40,7 @@ export default {
           ProjectCreatedEvent.from({
             id: crypto.randomUUID(),
             streamId: crypto.randomUUID(),
-            version: 1n,
+            version: 1,
             payload: {
               name,
               description,

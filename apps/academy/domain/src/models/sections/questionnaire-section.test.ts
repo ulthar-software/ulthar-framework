@@ -55,7 +55,7 @@ describe("Questionnaire Section", () => {
         order: 3,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section =
@@ -88,7 +88,7 @@ describe("Questionnaire Section", () => {
       unitId,
       order: 3,
       createdBy,
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });
@@ -121,7 +121,7 @@ describe("Questionnaire Section", () => {
         order: 3,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section =
@@ -155,7 +155,7 @@ describe("Questionnaire Section", () => {
         },
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = QuestionnaireSectionProjector.project(
@@ -189,7 +189,7 @@ describe("Questionnaire Section", () => {
       unitId, // Unchanged
       order: 3, // Unchanged
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: contentChangeEvent.timestamp,
       createdAt: section.createdAt,
     });
@@ -222,7 +222,7 @@ describe("Questionnaire Section", () => {
         order: 3,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section =
@@ -237,7 +237,7 @@ describe("Questionnaire Section", () => {
         title: "Final Assessment",
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = QuestionnaireSectionProjector.project(
@@ -252,7 +252,7 @@ describe("Questionnaire Section", () => {
       unitId, // Unchanged
       order: 3, // Unchanged
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: titleChangeEvent.timestamp,
       createdAt: section.createdAt,
     });
@@ -285,7 +285,7 @@ describe("Questionnaire Section", () => {
         order: 3,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section =
@@ -300,7 +300,7 @@ describe("Questionnaire Section", () => {
         order: 6,
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = QuestionnaireSectionProjector.project(
@@ -315,7 +315,7 @@ describe("Questionnaire Section", () => {
       unitId, // Unchanged
       order: 6, // Changed
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: orderChangeEvent.timestamp,
       createdAt: section.createdAt,
     });

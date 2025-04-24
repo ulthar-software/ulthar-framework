@@ -40,7 +40,7 @@ export async function createUserMock(
           role: opts.role ?? UserRole.ADMIN,
           invitedBy: crypto.randomUUID(),
         },
-        version: 1n,
+        version: 1,
       }),
     )
     .runOrThrow();

@@ -41,7 +41,7 @@ export async function createUserMock(
             .hashPassword(opts.password ?? password)
             .runOrThrow(),
         },
-        version: 1n,
+        version: 1,
       }),
     )
     .runOrThrow();
@@ -57,7 +57,7 @@ export async function createUserMock(
             role: opts.role,
             changedBy: userId,
           },
-          version: 2n,
+          version: 2,
         }),
       )
       .runOrThrow();

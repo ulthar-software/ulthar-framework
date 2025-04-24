@@ -97,7 +97,7 @@ describe("Get Unit With Sections Use Case", () => {
           text: "This is an introduction to the course.",
         },
       },
-      version: 1n,
+      version: 1,
     });
 
     await services.events.append("textSections", textSectionEvent).runOrThrow();
@@ -119,7 +119,7 @@ describe("Get Unit With Sections Use Case", () => {
           videoUrl: "https://example.com/video",
         },
       },
-      version: 1n,
+      version: 1,
     });
 
     await services.events
@@ -152,7 +152,7 @@ describe("Get Unit With Sections Use Case", () => {
           passingScore: 80,
         },
       },
-      version: 1n,
+      version: 1,
     });
 
     await services.events

@@ -21,7 +21,7 @@ describe("Login Use Case", async () => {
     lastName: "Doe",
     createdAt: new PosixDate(),
     updatedAt: new PosixDate(),
-    version: 1n,
+    version: 1,
     hashedPassword: (
       await crypto.hashPassword(validPassword).run()
     ).unwrapOrThrow(),

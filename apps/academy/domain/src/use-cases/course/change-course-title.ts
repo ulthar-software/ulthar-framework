@@ -50,7 +50,7 @@ export const ChangeCourseTitleUseCase = new UseCase({
             title,
             updatedBy: currentUser.id,
           },
-          version: course.version + 1n, // Increment the version
+          version: course.version + 1, // Increment the version
         });
 
         return events.append("courses", courseTitleChangedEvent).discardValue();

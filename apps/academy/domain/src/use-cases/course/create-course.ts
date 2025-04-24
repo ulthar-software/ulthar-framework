@@ -51,7 +51,7 @@ export const CreateCourseUseCase = new UseCase({
         description: description ?? "",
         createdBy: currentUser.id,
       },
-      version: 1n,
+      version: 1,
     });
 
     return events

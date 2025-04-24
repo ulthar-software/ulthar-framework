@@ -31,7 +31,7 @@ export class AggregateModel<
   ): Infer<this> {
     return {
       id: event.streamId,
-      version: 1n,
+      version: 1,
       createdAt: event.timestamp,
       updatedAt: event.timestamp,
       ...initialState,
@@ -55,7 +55,7 @@ export class AggregateModel<
 export const BaseAggregateFields = {
   id: Field.uuid({ isPrimaryKey: true }),
   version: Field.integer({
-    hasArbitraryPrecision: true,
+    isUnsigned: true,
   }),
   createdAt: Field.posixDate(),
   updatedAt: Field.posixDate(),

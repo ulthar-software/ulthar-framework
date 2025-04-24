@@ -72,7 +72,7 @@ export const AddTextSectionToUnitUseCase = new UseCase({
               text,
             } as TextSectionContent,
           },
-          version: 1n,
+          version: 1,
         });
 
         return events

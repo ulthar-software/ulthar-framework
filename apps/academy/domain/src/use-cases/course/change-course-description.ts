@@ -51,7 +51,7 @@ export const ChangeCourseDescriptionUseCase = new UseCase({
               description,
               updatedBy: currentUser.id,
             },
-            version: course.version + 1n, // Increment the version
+            version: course.version + 1, // Increment the version
           });
 
         return events

@@ -26,7 +26,7 @@ describe("Enrollment", () => {
         userId,
         courseId,
       },
-      version: 1n,
+      version: 1,
     });
 
     // Project the event to create an enrollment
@@ -37,7 +37,7 @@ describe("Enrollment", () => {
       id: enrollmentId,
       userId,
       courseId,
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });

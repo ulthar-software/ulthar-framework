@@ -57,18 +57,29 @@ export const fieldParsers: FieldParsers = {
     });
   },
   IntegerField: (f, v) => {
-    return parseOptionality(f, v, (v) => {
-      if (
-        (typeof v === "number" && Number.isInteger(v)) ||
-        typeof v === "bigint"
-      ) {
-        if (f.isUnsigned && v < 0) {
-          return Result.failWith(new InvalidFieldTypeError());
+    return parseOptionality(
+      f,
+      v,
+      (v): Result<number, InvalidFieldTypeError> => {
+        if (
+          (typeof v === "number" && Number.isInteger(v)) ||
+          typeof v === "bigint"
+        ) {
+          if (f.isUnsigned && v < 0) {
+            return Result.failWith(new InvalidFieldTypeError());
+          }
+          if (f.hasArbitraryPrecision) {
+            return Result.ok(BigInt(v)) as unknown as Result<
+              number,
+              InvalidFieldTypeError
+            >;
+          }
+
+          return Result.ok(Number(v));
         }
-        return Result.ok(v);
-      }
-      return Result.failWith(new InvalidFieldTypeError());
-    });
+        return Result.failWith(new InvalidFieldTypeError());
+      },
+    );
   },
   FloatField: (f, v) => {
     return parseOptionality(f, v, (v) => {

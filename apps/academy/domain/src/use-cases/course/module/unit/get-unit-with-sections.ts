@@ -6,7 +6,8 @@ import {
   UnexpectedError,
   type Infer,
 } from "@fabric/core";
-import type { ContentSection } from "../../../../models/sections/index.js";
+import type { TaggedContentSection } from "../../../../models/sections/index.js";
+import { SectionType } from "../../../../models/sections/index.js";
 import type { Unit } from "../../../../models/unit.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
 import { Permission } from "../../../../security/permission.js";
@@ -36,7 +37,7 @@ export type GetUnitWithSectionsInput = Infer<
 
 export interface GetUnitWithSectionsOutput {
   unit: Unit;
-  sections: ContentSection[];
+  sections: TaggedContentSection[];
 }
 
 export const GetUnitWithSectionsUseCase = new UseCase({
@@ -132,6 +133,15 @@ function getUnitWithSections(
       .from("textSections")
       .where({ unitId: unit.id })
       .select()
+      .map((p) =>
+        p.map(
+          (q) =>
+            ({
+              ...q,
+              type: SectionType.TEXT,
+            }) as TaggedContentSection,
+        ),
+      )
       .mapError(() => new UnexpectedError()),
 
     // Fetch video sections
@@ -139,6 +149,15 @@ function getUnitWithSections(
       .from("videoSections")
       .where({ unitId: unit.id })
       .select()
+      .map((p) =>
+        p.map(
+          (q) =>
+            ({
+              ...q,
+              type: SectionType.VIDEO,
+            }) as TaggedContentSection,
+        ),
+      )
       .mapError(() => new UnexpectedError()),
 
     // Fetch questionnaire sections
@@ -146,6 +165,15 @@ function getUnitWithSections(
       .from("questionnaireSections")
       .where({ unitId: unit.id })
       .select()
+      .map((p) =>
+        p.map(
+          (q) =>
+            ({
+              ...q,
+              type: SectionType.QUESTIONNAIRE,
+            }) as TaggedContentSection,
+        ),
+      )
       .mapError(() => new UnexpectedError()),
   ]).map(([textSections, videoSections, questionnaireSections]) => {
     // Combine all sections into a single array

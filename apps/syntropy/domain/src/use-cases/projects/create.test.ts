@@ -43,7 +43,7 @@ describe("Create Project", () => {
         userId: currentUser.id,
       },
       timestamp: expect.any(PosixDate),
-      version: 1n,
+      version: 1,
     });
 
     const project = await services.state
@@ -60,7 +60,7 @@ describe("Create Project", () => {
       updatedAt: expect.any(PosixDate),
       repositoryId: null,
       repositoryProvider: null,
-      version: 1n,
+      version: 1,
     });
   });
 

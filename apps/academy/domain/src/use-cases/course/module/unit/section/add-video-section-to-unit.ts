@@ -70,7 +70,7 @@ export const AddVideoSectionToUnitUseCase = new UseCase({
               videoUrl,
             } as VideoSectionContent,
           },
-          version: 1n,
+          version: 1,
         });
 
         return events

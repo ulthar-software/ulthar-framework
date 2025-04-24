@@ -83,7 +83,7 @@ export const EnrollStudentInCourseUseCase = new UseCase({
             userId: studentId,
             courseId: courseId,
           },
-          version: 1n,
+          version: 1,
         });
 
         // Append the event to create the enrollment

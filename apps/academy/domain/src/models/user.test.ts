@@ -32,7 +32,7 @@ describe("User", () => {
         role: UserRole.STUDENT,
         invitedBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const user = UserProjector.project(event).unwrapOrThrow();
@@ -45,7 +45,7 @@ describe("User", () => {
       hashedPassword: "hashed_password_123",
       role: UserRole.STUDENT,
       invitedBy,
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });
@@ -66,7 +66,7 @@ describe("User", () => {
         role: UserRole.STUDENT,
         invitedBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const user = UserProjector.project(registerEvent).unwrapOrThrow();
@@ -82,7 +82,7 @@ describe("User", () => {
         role: UserRole.TEACHER,
         changedBy,
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedUser = UserProjector.project(
@@ -98,7 +98,7 @@ describe("User", () => {
       hashedPassword: "hashed_password_456",
       role: UserRole.TEACHER,
       invitedBy,
-      version: 2n,
+      version: 2,
       updatedAt: roleChangeEvent.timestamp,
       createdAt: user.createdAt,
     });
@@ -119,7 +119,7 @@ describe("User", () => {
         role: UserRole.ADMIN,
         invitedBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const user = UserProjector.project(registerEvent).unwrapOrThrow();
@@ -133,7 +133,7 @@ describe("User", () => {
       payload: {
         hashedPassword: "new_hashed_password",
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedUser = UserProjector.project(
@@ -149,7 +149,7 @@ describe("User", () => {
       hashedPassword: "new_hashed_password",
       role: UserRole.ADMIN,
       invitedBy,
-      version: 2n,
+      version: 2,
       updatedAt: passwordChangeEvent.timestamp,
       createdAt: user.createdAt,
     });

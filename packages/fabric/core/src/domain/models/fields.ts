@@ -105,9 +105,7 @@ export type FieldToType<TField> =
 //prettier-ignore
 type IntegerFieldToType<TField extends IntegerField> =
   TField["hasArbitraryPrecision"] extends true ? MaybeOptional<TField, bigint>
-    : TField["hasArbitraryPrecision"] extends false
-      ? MaybeOptional<TField, number>
-    : MaybeOptional<TField, number | bigint>;
+    : MaybeOptional<TField, number>;
 
 type MaybeOptional<TField, TType> = TField extends { isOptional: true }
   ? TType | undefined

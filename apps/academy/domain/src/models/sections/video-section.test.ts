@@ -39,7 +39,7 @@ describe("Video Section", () => {
         order: 2,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section = VideoSectionProjector.project(event).unwrapOrThrow();
@@ -55,7 +55,7 @@ describe("Video Section", () => {
       unitId,
       order: 2,
       createdBy,
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });
@@ -81,7 +81,7 @@ describe("Video Section", () => {
         order: 2,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section = VideoSectionProjector.project(addEvent).unwrapOrThrow();
@@ -99,7 +99,7 @@ describe("Video Section", () => {
         },
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = VideoSectionProjector.project(
@@ -118,7 +118,7 @@ describe("Video Section", () => {
       unitId, // Unchanged
       order: 2, // Unchanged
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: contentChangeEvent.timestamp,
       createdAt: section.createdAt,
     });
@@ -144,7 +144,7 @@ describe("Video Section", () => {
         order: 2,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section = VideoSectionProjector.project(addEvent).unwrapOrThrow();
@@ -158,7 +158,7 @@ describe("Video Section", () => {
         title: "New Video Title",
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = VideoSectionProjector.project(
@@ -173,7 +173,7 @@ describe("Video Section", () => {
       unitId,
       order: 2,
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: titleChangeEvent.timestamp,
       createdAt: section.createdAt,
     });
@@ -199,7 +199,7 @@ describe("Video Section", () => {
         order: 2,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section = VideoSectionProjector.project(addEvent).unwrapOrThrow();
@@ -213,7 +213,7 @@ describe("Video Section", () => {
         order: 5,
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = VideoSectionProjector.project(
@@ -228,7 +228,7 @@ describe("Video Section", () => {
       unitId, // Unchanged
       order: 5, // Changed
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: orderChangeEvent.timestamp,
       createdAt: section.createdAt,
     });

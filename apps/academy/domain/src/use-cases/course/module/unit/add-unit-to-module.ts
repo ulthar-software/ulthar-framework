@@ -65,7 +65,7 @@ export const AddUnitToModuleUseCase = new UseCase({
                 order: unitOrder,
                 createdBy: currentUser.id,
               },
-              version: 1n,
+              version: 1,
             });
 
             return events

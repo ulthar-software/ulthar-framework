@@ -37,7 +37,7 @@ describe("Text Section", () => {
         order: 1,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section = TextSectionProjector.project(event).unwrapOrThrow();
@@ -51,7 +51,7 @@ describe("Text Section", () => {
       unitId,
       order: 1,
       createdBy,
-      version: 1n,
+      version: 1,
       updatedAt: event.timestamp,
       createdAt: event.timestamp,
     });
@@ -75,7 +75,7 @@ describe("Text Section", () => {
         order: 1,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section = TextSectionProjector.project(addEvent).unwrapOrThrow();
@@ -91,7 +91,7 @@ describe("Text Section", () => {
         },
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = TextSectionProjector.project(
@@ -108,7 +108,7 @@ describe("Text Section", () => {
       unitId, // Unchanged
       order: 1, // Unchanged
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: contentChangeEvent.timestamp,
       createdAt: section.createdAt,
     });
@@ -132,7 +132,7 @@ describe("Text Section", () => {
         order: 1,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section = TextSectionProjector.project(addEvent).unwrapOrThrow();
@@ -146,7 +146,7 @@ describe("Text Section", () => {
         title: "New Title",
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = TextSectionProjector.project(
@@ -161,7 +161,7 @@ describe("Text Section", () => {
       unitId,
       order: 1,
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: titleChangeEvent.timestamp,
       createdAt: section.createdAt,
     });
@@ -185,7 +185,7 @@ describe("Text Section", () => {
         order: 1,
         createdBy,
       },
-      version: 1n,
+      version: 1,
     });
 
     const section = TextSectionProjector.project(addEvent).unwrapOrThrow();
@@ -199,7 +199,7 @@ describe("Text Section", () => {
         order: 4,
         updatedBy: services.crypto.randomUUID(),
       },
-      version: 2n,
+      version: 2,
     });
 
     const updatedSection = TextSectionProjector.project(
@@ -214,7 +214,7 @@ describe("Text Section", () => {
       unitId, // Unchanged
       order: 4, // Changed
       createdBy,
-      version: 2n,
+      version: 2,
       updatedAt: orderChangeEvent.timestamp,
       createdAt: section.createdAt,
     });

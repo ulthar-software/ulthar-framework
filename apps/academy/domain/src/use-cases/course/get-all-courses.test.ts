@@ -40,7 +40,7 @@ describe("Get All Courses Use Case", () => {
         userId,
         courseId,
       },
-      version: 1n,
+      version: 1,
     });
 
     await services.events.append("enrollments", enrollmentEvent).runOrThrow();
