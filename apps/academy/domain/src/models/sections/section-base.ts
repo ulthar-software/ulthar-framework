@@ -9,6 +9,7 @@ export const BaseSectionFields = {
   }),
   order: Field.integer({
     isUnsigned: true,
+    hasArbitraryPrecision: false,
   }),
   createdBy: Field.reference({
     targetModel: "users",
@@ -31,6 +32,7 @@ export const BaseSectionAddedEvent = {
   unitId: Field.uuid(),
   order: Field.integer({
     isUnsigned: true,
+    hasArbitraryPrecision: false,
   }),
   createdBy: Field.uuid(),
 };
@@ -48,6 +50,7 @@ export type SectionTitleChangedEvent = EventToType<
 export const SectionOrderChangedEvent = new DomainEvent("SectionOrderChanged", {
   order: Field.integer({
     isUnsigned: true,
+    hasArbitraryPrecision: false,
   }),
   updatedBy: Field.uuid(),
 });
