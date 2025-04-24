@@ -1,71 +1,34 @@
 import { SchemaParsingError, type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
+import { createCourseMock } from "../../../../models/mocks/create-course-mock.js";
+import { createModuleMock } from "../../../../models/mocks/create-module-mock.js";
 import { createUserMock } from "../../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../../models/user.js";
 import { Permission } from "../../../../security/permission.js";
-import { UserRole } from "../../../../security/user-role.js";
 import {
   createServiceMocks,
   type MockedDependencies,
 } from "../../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../../utils/use-case.js";
-import { CreateCourseUseCase } from "../../create-course.js";
 import { ModuleNotFoundError } from "../../errors.js";
-import { AddModuleToCourseUseCase } from "../add-module-to-course.js";
 import { AddUnitToModuleUseCase } from "./add-unit-to-module.js";
 
 describe("Add Unit To Module Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: User;
-  let teacherUser: User;
-  let studentUser: User;
+  let user: User;
   let existingModuleId: UUID;
 
   beforeEach(async () => {
     services = await createServiceMocks();
-    adminUser = await createUserMock(services, {
-      role: UserRole.ADMIN,
-    });
-    teacherUser = await createUserMock(services, {
-      role: UserRole.TEACHER,
-    });
-    studentUser = await createUserMock(services, {
-      role: UserRole.STUDENT,
-    });
 
-    // Create a course and module for testing
-    const courseResult = await CreateCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: adminUser.id,
-          permissions: [Permission.CREATE_COURSE],
-        },
-      },
-      {
-        title: "Test Course",
-        description: "Test Description",
-      },
-    ).runOrThrow();
+    // Create users with different roles
+    user = await createUserMock(services);
 
-    const courseId = courseResult.courseId;
+    // Create a test course
+    const courseId = await createCourseMock(services, user.id);
 
-    const moduleResult = await AddModuleToCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: adminUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      {
-        courseId,
-        title: "Test Module",
-        description: "Test Module Description",
-      },
-    ).runOrThrow();
-
-    existingModuleId = moduleResult.moduleId;
+    // Add a module to the course
+    existingModuleId = await createModuleMock(services, user.id, courseId);
   });
 
   test("Given a valid module ID and unit title, it should add a unit to the module", async () => {
@@ -80,7 +43,7 @@ describe("Add Unit To Module Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: teacherUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -105,7 +68,7 @@ describe("Add Unit To Module Use Case", () => {
         title: "Test Unit",
         moduleId: existingModuleId,
         order: 100, // First unit in the module
-        createdBy: teacherUser.id,
+        createdBy: user.id,
       }),
     );
   });
@@ -123,7 +86,7 @@ describe("Add Unit To Module Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: teacherUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -151,7 +114,7 @@ describe("Add Unit To Module Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [],
         },
       },
@@ -175,7 +138,7 @@ describe("Add Unit To Module Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: teacherUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },

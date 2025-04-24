@@ -1,93 +1,39 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { SchemaParsingError, type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
+import { createCourseMock } from "../../../../../models/mocks/create-course-mock.js";
+import { createModuleMock } from "../../../../../models/mocks/create-module-mock.js";
+import { createUnitMock } from "../../../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../../../models/user.js";
 import { Permission } from "../../../../../security/permission.js";
-import { UserRole } from "../../../../../security/user-role.js";
 import {
   createServiceMocks,
   type MockedDependencies,
 } from "../../../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../../../utils/use-case.js";
-import { CreateCourseUseCase } from "../../../create-course.js";
 import { UnitNotFoundError } from "../../../errors.js";
-import { AddModuleToCourseUseCase } from "../../add-module-to-course.js";
-import { AddUnitToModuleUseCase } from "../add-unit-to-module.js";
 import { AddVideoSectionToUnitUseCase } from "./add-video-section-to-unit.js";
 
 describe("Add Video Section To Unit Use Case", () => {
   let services: MockedDependencies;
-  let adminUser: User;
-  let teacherUser: User;
-  let studentUser: User;
+  let user: User;
   let existingUnitId: UUID;
 
   beforeEach(async () => {
     services = await createServiceMocks();
 
     // Create users with different roles
-    adminUser = await createUserMock(services, {
-      role: UserRole.ADMIN,
-    });
-    teacherUser = await createUserMock(services, {
-      role: UserRole.TEACHER,
-    });
-    studentUser = await createUserMock(services, {
-      role: UserRole.STUDENT,
-    });
+    user = await createUserMock(services);
 
     // Create a test course
-    const courseResult = await CreateCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: adminUser.id,
-          permissions: [Permission.CREATE_COURSE],
-        },
-      },
-      {
-        title: "Test Course",
-        description: "A course for testing video sections",
-      },
-    ).runOrThrow();
-
-    const courseId = courseResult.courseId;
+    const courseId = await createCourseMock(services, user.id);
 
     // Add a module to the course
-    const moduleResult = await AddModuleToCourseUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: adminUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      {
-        courseId,
-        title: "Test Module",
-        description: "A module for testing units",
-      },
-    ).runOrThrow();
-
-    const moduleId = moduleResult.moduleId;
+    const moduleId = await createModuleMock(services, user.id, courseId);
 
     // Add a unit to the module
-    const unitResult = await AddUnitToModuleUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: adminUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      {
-        moduleId,
-        title: "Test Unit",
-      },
-    ).runOrThrow();
-
-    existingUnitId = unitResult.unitId;
+    existingUnitId = await createUnitMock(services, user.id, moduleId);
   });
 
   test("Admin should successfully add a video section to a unit", async () => {
@@ -105,7 +51,7 @@ describe("Add Video Section To Unit Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -129,53 +75,7 @@ describe("Add Video Section To Unit Use Case", () => {
         title: sectionData.title,
         unitId: existingUnitId,
         order: 100, // First section should have order 100
-        createdBy: adminUser.id,
-        content: expect.objectContaining({
-          videoUrl: sectionData.videoUrl,
-        }),
-      }),
-    );
-  });
-
-  test("Teacher should successfully add a video section to a unit", async () => {
-    // Arrange
-    const sectionData = {
-      unitId: existingUnitId,
-      title: "Teacher's Video",
-      videoUrl: "https://example.com/videos/teacher",
-      description: "A video created by a teacher",
-      duration: 300, // 5 minutes
-    };
-
-    // Act
-    const result = await AddVideoSectionToUnitUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: teacherUser.id,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      sectionData,
-    ).runOrThrow();
-
-    // Assert
-    expect(result).toEqual({
-      sectionId: expect.any(String),
-    });
-
-    // Verify the section was added to the database
-    const sectionInDb = await services.state
-      .from("videoSections")
-      .where({ id: result.sectionId })
-      .selectOneOrFail()
-      .runOrThrow();
-
-    expect(sectionInDb).toEqual(
-      expect.objectContaining({
-        title: sectionData.title,
-        unitId: existingUnitId,
-        createdBy: teacherUser.id,
+        createdBy: user.id,
         content: expect.objectContaining({
           videoUrl: sectionData.videoUrl,
         }),
@@ -197,7 +97,7 @@ describe("Add Video Section To Unit Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -236,7 +136,7 @@ describe("Add Video Section To Unit Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
@@ -261,7 +161,7 @@ describe("Add Video Section To Unit Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: studentUser.id,
+          id: user.id,
           permissions: [], // No permissions
         },
       },
@@ -286,7 +186,7 @@ describe("Add Video Section To Unit Use Case", () => {
       {
         ...services,
         currentUser: {
-          id: adminUser.id,
+          id: user.id,
           permissions: [Permission.EDIT_COURSE],
         },
       },
