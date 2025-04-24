@@ -1,6 +1,10 @@
 import { AccessPolicy } from "@ulthar/academy-domain";
 import { CourseCard } from "../components/academy/course-card.tsx";
-import { UltharLogo } from "../components/academy/ulthar-logo.tsx";
+import { PageContainer } from "../components/academy/page-container.tsx";
+import { PageContent } from "../components/academy/page-content.tsx";
+import { PageTitle } from "../components/academy/page-title.tsx";
+import { PlatformFooter } from "../components/academy/platform-footer.tsx";
+import { PlatformHeader } from "../components/academy/platform-header.tsx";
 import { LoadingSpinner } from "../components/ui/loading-spinner.tsx";
 import { useAuthGuard } from "../utils/auth/use-auth-guard.ts";
 import { useQuery } from "../utils/rpc/use-query.ts";
@@ -17,14 +21,10 @@ export default function Home() {
     !isLoading && !error && coursesData && coursesData.courses.length > 0;
 
   return (
-    <main className="flex flex-col min-h-screen">
-      <header className="flex p-4 gap-4 w-full shadow bg-dark-alt">
-        <UltharLogo size="small" showText={false} />
-      </header>
-      <section className="grow w-full max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-primary mb-6">
-          Cursos disponibles
-        </h2>
+    <PageContainer>
+      <PlatformHeader />
+      <PageContent>
+        <PageTitle>Cursos disponibles</PageTitle>
 
         {isLoading && (
           <div className="flex justify-center items-center h-64">
@@ -59,12 +59,8 @@ export default function Home() {
             ))}
           </div>
         )}
-      </section>
-      <footer className="flex justify-center p-4 gap-4 w-full shadow bg-dark-alt text-sm">
-        <p className="text-center">
-          Ulthar Academy - 2025 - Todos los derechos reservados
-        </p>
-      </footer>
-    </main>
+      </PageContent>
+      <PlatformFooter />
+    </PageContainer>
   );
 }
