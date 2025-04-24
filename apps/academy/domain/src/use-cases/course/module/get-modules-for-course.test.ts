@@ -1,7 +1,7 @@
 import type { UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
-import { UserEnrolledEvent } from "../../../models/enrollment.js";
 import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
+import { createEnrollmentMock } from "../../../models/mocks/create-enrollment-mock.js";
 import { createModuleMock } from "../../../models/mocks/create-module-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../models/user.js";
@@ -32,25 +32,6 @@ describe("Get Modules For Course Use Case", () => {
       await createModuleMock(services, user.id, existingCourseId),
     ];
   });
-
-  // Helper function to create an enrollment
-  async function enrollStudentInCourse(userId: UUID, courseId: UUID) {
-    const enrollmentId = services.crypto.randomUUID();
-    const eventId = services.crypto.randomUUID();
-
-    const enrollmentEvent = UserEnrolledEvent.from({
-      id: eventId,
-      streamId: enrollmentId,
-      payload: {
-        userId,
-        courseId,
-      },
-      version: 1n,
-    });
-
-    await services.events.append("enrollments", enrollmentEvent).runOrThrow();
-    return enrollmentId;
-  }
 
   test("Admin should successfully get all modules for a course", async () => {
     // Arrange
@@ -91,7 +72,7 @@ describe("Get Modules For Course Use Case", () => {
   test("Enrolled student should successfully get all modules for a course", async () => {
     // Arrange
     // Enroll the student in the course
-    await enrollStudentInCourse(user.id, existingCourseId);
+    await createEnrollmentMock(services, user.id, existingCourseId);
 
     const queryData = {
       courseId: existingCourseId,
@@ -158,7 +139,7 @@ describe("Get Modules For Course Use Case", () => {
     ).runOrThrow();
 
     // Enroll the student in the course
-    await enrollStudentInCourse(user.id, newCourseResult.courseId);
+    await createEnrollmentMock(services, user.id, newCourseResult.courseId);
 
     const queryData = {
       courseId: newCourseResult.courseId,
