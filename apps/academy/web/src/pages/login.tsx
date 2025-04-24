@@ -26,7 +26,7 @@ export default function Login() {
   }
 
   return (
-    <main className="flex flex-col h-screen">
+    <main className="flex flex-col min-h-screen">
       <section className="grow p-4 flex flex-col sm:items-center sm:justify-center">
         <UltharLogo size="large" className="mb-8" />
         <section className="w-full max-w-lg flex flex-col justify-center sm:bg-dark-alt rounded-lg shadow-md grow sm:grow-0 sm:p-4">

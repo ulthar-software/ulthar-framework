@@ -32,13 +32,13 @@ export function UltharLogo({
   const logoSizeClasses = {
     small: "w-6 h-6",
     medium: "w-12 h-12",
-    large: "w-16 h-16",
+    large: "w-14 h-14",
   };
 
   const textSizeClasses = {
     small: "text-sm",
     medium: "text-2xl",
-    large: "text-4xl",
+    large: "text-3xl",
   };
 
   return (
