@@ -1,4 +1,4 @@
-import type { EventToType, Infer } from "@fabric/core";
+import type { EventToType, Infer, Schema } from "@fabric/core";
 import {
   AggregateModel,
   AggregateProjector,
@@ -19,6 +19,7 @@ export const TextSectionContentModel = {
     minLength: 1,
   }),
 };
+export type TextSectionContent = Infer<Schema<typeof TextSectionContentModel>>;
 
 // Text Section Model
 export const TextSectionModel = new AggregateModel("textSections", {
