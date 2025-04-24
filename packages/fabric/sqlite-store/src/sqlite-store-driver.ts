@@ -14,6 +14,7 @@ import {
 } from "@fabric/core";
 import Sqlite3, { type Database, type Statement } from "better-sqlite3";
 import { filterToParams, filterToSQL } from "./utils/filter-to-sql.js";
+import { identifierToSQL } from "./utils/identifier-to-sql.js";
 import { insertToSql } from "./utils/insert-to-sql.js";
 import { modelToSql } from "./utils/model-to-sql.js";
 import { transformRow } from "./utils/sql-to-value.js";
@@ -31,15 +32,19 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
   }
 
   max(model: Model, query: StoreReadOptions): Effect<number, StoreQueryError> {
+    const [sql, params] = this.getMaxStatement(model, query);
     return Effect.tryFrom(
       () => {
-        const [sql, params] = this.getMaxStatement(model, query);
         const result = this.allPrepared(sql, params);
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-non-null-assertion
-        return result[0][`MAX(${query.keys![0]})`] as number;
+        const value = result[0][`MAX(${identifierToSQL(query.keys![0])})`] as
+          | number
+          | undefined;
+
+        return value ?? 0;
       },
-      (error: Error) => new StoreQueryError(error.message),
+      (error: Error) => new StoreQueryError(error.message, sql, params),
     );
   }
 
@@ -47,14 +52,14 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     model: Model,
     query: StoreReadOptions,
   ): Effect<number, StoreQueryError> {
+    const [sql, params] = this.getCountStatement(model, query);
     return Effect.tryFrom(
       () => {
-        const [sql, params] = this.getCountStatement(model, query);
         const result = this.allPrepared(sql, params);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         return result[0]["COUNT(*)"] as number;
       },
-      (error: Error) => new StoreQueryError(error.message),
+      (error: Error) => new StoreQueryError(error.message, sql, params),
     );
   }
 
@@ -70,58 +75,62 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     ).tryMap(
       (sortedModels) => {
         sortedModels.map((model) => {
-          this.db.exec(modelToSql(model));
+          const sql = modelToSql(model);
+          try {
+            this.db.exec(sql);
+          } catch (error) {
+            throw new StoreQueryError((error as Error).message, sql);
+          }
         });
       },
-      (error: Error) => new StoreQueryError(error.message),
+      (error: StoreQueryError) => error,
     );
   }
 
   get<T>(model: Model, query: StoreReadOptions): Effect<T[], StoreQueryError> {
+    const [sql, params] = this.getSelectStatement(model, query);
     return Effect.tryFrom(
       () => {
-        const [sql, params] = this.getSelectStatement(model, query);
         return this.allPrepared(sql, params, transformRow(model)) as T[];
       },
-      (error: Error) => new StoreQueryError(error.message),
+      (error: Error) => new StoreQueryError(error.message, sql, params),
     );
   }
   insert(
     model: Model,
     query: StoreInsertOptions,
   ): Effect<void, StoreQueryError> {
+    const [sql, params] = insertToSql(model, query);
     return Effect.tryFrom(
       () => {
-        this.runPrepared(...insertToSql(model, query));
+        this.runPrepared(sql, params);
       },
-      (error: Error) => new StoreQueryError(error.message),
+      (error: Error) => new StoreQueryError(error.message, sql, params),
     );
   }
   update(
     model: Model,
     query: StoreUpdateOptions,
   ): Effect<void, StoreQueryError> {
+    const [sql, params] = updateToSql(model, query);
     return Effect.tryFrom(
       () => {
-        this.runPrepared(...updateToSql(model, query));
+        this.runPrepared(sql, params);
       },
-      (error: Error) => new StoreQueryError(error.message),
+      (error: Error) => new StoreQueryError(error.message, sql, params),
     );
   }
   delete(
     model: Model,
     query: StoreDeleteOptions,
   ): Effect<void, StoreQueryError> {
+    const sql = `DELETE FROM ${query.from} ${filterToSQL(query.where)}`;
+    const params = filterToParams(model, query.where);
     return Effect.tryFrom(
       () => {
-        this.runPrepared(
-          `DELETE FROM ${query.from} ${filterToSQL(query.where)}`,
-          {
-            ...filterToParams(model, query.where),
-          },
-        );
+        this.runPrepared(sql, params);
       },
-      (error: Error) => new StoreQueryError(error.message),
+      (error: Error) => new StoreQueryError(error.message, sql, params),
     );
   }
 
@@ -130,7 +139,8 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
       () => {
         this.db.close();
       },
-      (error: Error) => new StoreQueryError(error.message),
+      (error: Error) =>
+        new StoreQueryError(error.message, "[DB CLOSE]", undefined),
     );
   }
 
@@ -190,7 +200,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     const offset = query.offset ? `OFFSET ${query.offset}` : "";
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const maxKey = query.keys![0];
+    const maxKey = identifierToSQL(query.keys![0]);
 
     const sql = [
       `SELECT MAX(${maxKey})`,
