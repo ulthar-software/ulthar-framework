@@ -4,6 +4,7 @@ import { action } from "@storybook/addon-actions";
 import type { ReactRenderer } from "@storybook/react";
 import type { UserAccess } from "@ulthar/academy-domain";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import { MemoryRouter, useLocation } from "react-router";
 import type { PartialStoryFn, StoryContext } from "storybook/internal/types";
 import { AuthContext } from "../auth/auth-context.ts";
@@ -51,6 +52,7 @@ export function Decorator(
               <NavigationTracker />
               <Story />
             </RpcProvider>
+            <Toaster />
           </AuthContext.Provider>
         </MemoryRouter>
       );
@@ -59,6 +61,7 @@ export function Decorator(
         <MemoryRouter>
           <NavigationTracker />
           <Story />
+          <Toaster />
         </MemoryRouter>
       );
     default:
