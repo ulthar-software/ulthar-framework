@@ -7,8 +7,8 @@ export function fakeCourse(course?: Partial<Course>): Course {
     id: course?.id ?? (faker.string.uuid() as UUID),
     title: course?.title ?? faker.lorem.words(3),
     description: course?.description ?? faker.lorem.paragraph(),
-    createdAt: course?.createdAt ?? new PosixDate(faker.date.past().getTime()),
     createdBy: course?.createdBy ?? (faker.string.uuid() as UUID),
+    createdAt: course?.createdAt ?? new PosixDate(faker.date.past().getTime()),
     updatedAt:
       course?.updatedAt ?? new PosixDate(faker.date.recent().getTime()),
     version: course?.version ?? BigInt(faker.number.int({ min: 1, max: 100 })),

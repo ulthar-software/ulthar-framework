@@ -1,6 +1,11 @@
 import { PosixDate, type UUID } from "@fabric/core";
 import { faker } from "@faker-js/faker";
-import type { Unit } from "@ulthar/academy-domain";
+import type {
+  ContentSection,
+  GetUnitWithSectionsOutput,
+  Unit,
+} from "@ulthar/academy-domain";
+import { fakeVideoContentSection } from "./fake-content-section.ts";
 
 export function fakeUnitSummary(unit?: Partial<Unit>): Unit {
   return {
@@ -12,5 +17,19 @@ export function fakeUnitSummary(unit?: Partial<Unit>): Unit {
     createdBy: unit?.createdBy ?? (faker.string.uuid() as UUID),
     updatedAt: unit?.updatedAt ?? new PosixDate(faker.date.recent().getTime()),
     version: unit?.version ?? BigInt(faker.number.int({ min: 1, max: 100 })),
+  };
+}
+
+export function fakeUnitWithSections(
+  unit?: Partial<Unit>,
+  sections?: ContentSection[],
+): GetUnitWithSectionsOutput {
+  return {
+    unit: fakeUnitSummary(unit),
+    sections: sections ?? [
+      fakeVideoContentSection(),
+      fakeVideoContentSection(),
+      fakeVideoContentSection(),
+    ],
   };
 }
