@@ -1,5 +1,6 @@
 import { exhaustiveCheck } from "@fabric/core";
 import { SectionType, type TaggedContentSection } from "@ulthar/academy-domain";
+import { TextContentSectionBlock } from "./sections/text-section.tsx";
 import { VideoContentSectionBlock } from "./sections/video-section.tsx";
 
 export interface ContentSectionProps {
@@ -12,7 +13,7 @@ export function ContentSectionBlock({ section }: ContentSectionProps) {
       return <div></div>;
     }
     case SectionType.TEXT: {
-      return <div></div>;
+      return <TextContentSectionBlock section={section} />;
     }
     case SectionType.VIDEO: {
       return <VideoContentSectionBlock section={section} />;

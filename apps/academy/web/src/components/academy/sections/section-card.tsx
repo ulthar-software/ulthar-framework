@@ -11,7 +11,7 @@ export function SectionCard({
 }: PropsWithChildren<SectionCardProps>) {
   return (
     <div className="bg-dark-alt p-6 rounded-lg shadow-md">
-      <h3 className="text-xl font-medium text-white mb-3">{section.title}</h3>
+      <h3 className="text-2xl font-bold text-white mb-3">{section.title}</h3>
       {children}
     </div>
   );
