@@ -1,4 +1,4 @@
-import type { EventToType, Infer } from "@fabric/core";
+import type { EventToType, Infer, Schema } from "@fabric/core";
 import {
   AggregateModel,
   AggregateProjector,
@@ -37,6 +37,10 @@ export const QuestionnaireSectionContentModel = {
     isOptional: true,
   }),
 };
+
+export type QuestionnaireSectionContent = Infer<
+  Schema<typeof QuestionnaireSectionContentModel>
+>;
 
 // Questionnaire Section Model
 export const QuestionnaireSectionModel = new AggregateModel(
