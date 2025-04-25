@@ -5,7 +5,11 @@ import type {
   TaggedContentSection,
   Unit,
 } from "@ulthar/academy-domain";
-import { fakeVideoContentSection } from "./fake-content-section.ts";
+import {
+  fakeQuestionnaireContentSection,
+  fakeTextContentSection,
+  fakeVideoContentSection,
+} from "./fake-content-section.ts";
 
 export function fakeUnitSummary(unit?: Partial<Unit>): Unit {
   return {
@@ -28,8 +32,8 @@ export function fakeUnitWithSections(
     unit: fakeUnitSummary(unit),
     sections: sections ?? [
       fakeVideoContentSection(),
-      fakeVideoContentSection(),
-      fakeVideoContentSection(),
+      fakeQuestionnaireContentSection(),
+      fakeTextContentSection(),
     ],
   };
 }

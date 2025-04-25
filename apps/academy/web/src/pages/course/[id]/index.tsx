@@ -108,11 +108,11 @@ export default function CourseView() {
       )}
 
       {courseData && (
-        <div className="flex flex-grow">
+        <div className="flex flex-grow h-[calc(100vh-4rem)]">
           {/* Left sidebar for modules - hidden by default */}
           <aside
             className={clx(
-              `bg-dark-alt fixed inset-y-0 left-0 z-30 w-64 transform transition-transform duration-300 ease-in-out`,
+              `bg-dark-alt fixed inset-y-0 left-0 z-30 w-96 transform transition-transform duration-300 ease-in-out`,
               showModulesSidebar ? "translate-x-0" : "-translate-x-full",
             )}
           >
@@ -138,26 +138,28 @@ export default function CourseView() {
                   <div className="px-4 py-2 font-medium text-white bg-gray-800">
                     {module.title}
                   </div>
-                  <ul className="py-1">
-                    {/* This would be populated with units when we implement unit fetching */}
-                    {module.units.map((unit) => {
-                      return (
-                        <li
-                          key={unit.id}
-                          className="px-6 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
-                        >
-                          {unit.title}
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <nav>
+                    <ul className="py-1">
+                      {/* This would be populated with units when we implement unit fetching */}
+                      {module.units.map((unit) => {
+                        return (
+                          <li
+                            key={unit.id}
+                            className="px-6 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
+                          >
+                            {unit.title}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </nav>
                 </div>
               ))}
             </div>
           </aside>
 
-          {/* Main content */}
-          <section className="flex-grow p-6 md:p-8">
+          {/* Main content - now with overflow scroll */}
+          <section className="flex-grow p-6 md:p-8 overflow-y-auto">
             {/* Toggle button for sidebar on mobile */}
             <Button
               onClick={() => {
@@ -192,8 +194,8 @@ export default function CourseView() {
             )}
           </section>
 
-          {/* Right sidebar for concepts - always visible */}
-          <aside className="hidden lg:block w-96 bg-dark-alt p-4 overflow-y-auto">
+          {/* Right sidebar for concepts - always visible and fixed height */}
+          <aside className="hidden lg:block w-96 bg-dark-alt p-4 overflow-y-auto shrink-0 h-full">
             <h2 className="text-lg font-semibold text-primary mb-4">
               Conceptos
             </h2>
