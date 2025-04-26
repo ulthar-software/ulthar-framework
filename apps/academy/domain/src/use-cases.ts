@@ -6,6 +6,7 @@ import {
   ChangeCourseTitleUseCase,
   ChangeModuleOrderUseCase,
   CreateCourseUseCase,
+  CreateTagUseCase,
   EnrollStudentInCourseUseCase,
   GetAllCoursesUseCase,
   GetUnitWithSectionsUseCase,
@@ -26,6 +27,7 @@ export const UseCases = [
   GetAllCoursesUseCase,
   GetCourseDetailsUseCase,
   GetUnitWithSectionsUseCase,
+  CreateTagUseCase,
 ] as const;
 
 export type UseCases = typeof UseCases;

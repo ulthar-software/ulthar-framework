@@ -12,6 +12,7 @@ export const Permission = {
   CREATE_COURSE: "CREATE_COURSE",
   EDIT_COURSE: "EDIT_COURSE",
   ENROLL_STUDENTS: "ENROLL_STUDENTS",
+  MANAGE_TAGS: "MANAGE_TAGS",
 } as const;
 
 export type Permission = EnumToType<typeof Permission>;
@@ -22,6 +23,7 @@ export const permissionsByRole: Record<Permission, UserRole[]> = {
   CREATE_COURSE: ["ADMIN", "TEACHER"],
   EDIT_COURSE: ["ADMIN", "TEACHER"],
   ENROLL_STUDENTS: ["ADMIN", "TEACHER"],
+  MANAGE_TAGS: ["ADMIN", "TEACHER"],
 };
 
 export function getPermissionsForRole(role: UserRole): Permission[] {
