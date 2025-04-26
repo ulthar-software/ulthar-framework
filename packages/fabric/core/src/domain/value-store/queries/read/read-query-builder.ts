@@ -30,23 +30,6 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
     private query: StoreReadOptions,
   ) {}
 
-  selectAndMap<U>(fn: (values: T[]) => U[]): Effect<U[], StoreQueryError>;
-  selectAndMap<U, K extends Extract<keyof T, string>>(
-    fn: (values: Pick<T, K>[]) => U[],
-    keys: K[],
-  ): Effect<U[], StoreQueryError>;
-  selectAndMap<U>(
-    fn: (v: any[]) => U[],
-    keys?: string[],
-  ): Effect<U[], StoreQueryError> {
-    return this.driver
-      .get<any>(this.model, {
-        ...this.query,
-        keys: keys,
-      })
-      .map((values) => fn(values));
-  }
-
   count(): Effect<number, StoreQueryError> {
     return this.driver.count(this.model, this.query);
   }
