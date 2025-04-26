@@ -1,6 +1,10 @@
 import { exhaustiveCheck, type UUID } from "@fabric/core";
+import type {
+  GetCourseDetailsOutput,
+  ModuleSummary,
+} from "@ulthar/academy-domain";
 import { AccessPolicy } from "@ulthar/academy-domain";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { ContentSectionBlock } from "../../../components/academy/content-section.tsx";
 import { CourseSidebar } from "../../../components/academy/course-sidebar.tsx";
@@ -8,6 +12,7 @@ import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageTitle } from "../../../components/academy/page-title.tsx";
 import { PlatformFooter } from "../../../components/academy/platform-footer.tsx";
 import { PlatformHeader } from "../../../components/academy/platform-header.tsx";
+import { Anchor } from "../../../components/ui/anchor.tsx";
 import { Button } from "../../../components/ui/button.tsx";
 import { Icon } from "../../../components/ui/icon.tsx";
 import { LoadingSpinner } from "../../../components/ui/loading-spinner.tsx";
@@ -17,6 +22,7 @@ import { showErrorToast } from "../../../utils/toasts/show-error-toast.ts";
 
 export default function CourseView() {
   useAuthGuard(AccessPolicy.LoggedIn());
+
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -39,6 +45,17 @@ export default function CourseView() {
     courseId: id as UUID,
     unitId: unitId as UUID,
   });
+
+  const currentModule = useMemo(
+    () => getModuleSummary(courseData, unitData?.unit.moduleId),
+    [courseData, unitData],
+  );
+
+  // Use the extracted function in a useMemo hook
+  const nextAndPrevUnitIds = useMemo(
+    () => getPrevAndNextUnitIds(courseData, unitId as UUID),
+    [courseData, unitId],
+  );
 
   if (courseError) {
     switch (courseError._tag) {
@@ -142,17 +159,48 @@ export default function CourseView() {
 
             {unitData && (
               <>
+                {/* Module > Unit title */}
+                {currentModule && (
+                  <div className="text-gray-400 mb-2 text-sm">
+                    {currentModule.title}
+                  </div>
+                )}
                 <PageTitle>{unitData.unit.title}</PageTitle>
-
-                {/* <section className="mt-6 mb-8 text-gray-300">
-                  <p> for when units have descriptions </p>
-                </section> */}
 
                 <section className="space-y-6">
                   {unitData.sections.map((section) => (
                     <ContentSectionBlock key={section.id} section={section} />
                   ))}
                 </section>
+
+                {/* Navigation controls */}
+                <div className="mt-8 flex justify-between border-t border-gray-700 pt-4">
+                  {/* Previous unit button */}
+                  {nextAndPrevUnitIds.prevUnitId ? (
+                    <Anchor
+                      href={`/course/${id}?unitId=${nextAndPrevUnitIds.prevUnitId}`}
+                      className="flex items-center text-primary hover:text-primary-light transition-colors"
+                    >
+                      <Icon name="bx-chevron-left" className="text-xl mr-1" />
+                      Unidad anterior
+                    </Anchor>
+                  ) : (
+                    <div></div> // Empty div to maintain layout
+                  )}
+
+                  {/* Next unit button */}
+                  {nextAndPrevUnitIds.nextUnitId ? (
+                    <Anchor
+                      href={`/course/${id}?unitId=${nextAndPrevUnitIds.nextUnitId}`}
+                      className="flex items-center text-primary hover:text-primary-light transition-colors"
+                    >
+                      Siguiente unidad
+                      <Icon name="bx-chevron-right" className="text-xl ml-1" />
+                    </Anchor>
+                  ) : (
+                    <div></div> // Empty div to maintain layout
+                  )}
+                </div>
               </>
             )}
           </section>
@@ -189,4 +237,66 @@ export default function CourseView() {
       <PlatformFooter />
     </PageContainer>
   );
+}
+
+function getModuleSummary(
+  courseData: GetCourseDetailsOutput | undefined,
+  moduleId: UUID | undefined,
+): ModuleSummary | undefined {
+  if (!courseData || !moduleId) {
+    return undefined;
+  }
+
+  // Find the current module
+  const currentModule = courseData.modules.find(
+    (module) => module.id === moduleId,
+  );
+
+  return currentModule ?? undefined;
+}
+
+interface PrevAndNextUnitIds {
+  prevUnitId: UUID | undefined;
+  nextUnitId: UUID | undefined;
+}
+
+function getAllUnitIds(courseData: GetCourseDetailsOutput | undefined) {
+  if (!courseData) {
+    return [];
+  }
+
+  return courseData.modules.flatMap((module) =>
+    module.units.map((unit) => unit.id),
+  );
+}
+
+function getPrevAndNextUnitIds(
+  courseData: GetCourseDetailsOutput | undefined,
+  unitId: UUID | null,
+): PrevAndNextUnitIds {
+  if (!courseData || !unitId) {
+    return {
+      prevUnitId: undefined,
+      nextUnitId: undefined,
+    };
+  }
+
+  // Find the current module's units to determine previous and next units
+  let prevUnitId: UUID | undefined = undefined;
+  let nextUnitId: UUID | undefined = undefined;
+
+  const allUnitIds = getAllUnitIds(courseData);
+  const currentUnitIndex = allUnitIds.indexOf(unitId);
+
+  if (currentUnitIndex > 0) {
+    prevUnitId = allUnitIds[currentUnitIndex - 1];
+  }
+  if (currentUnitIndex < allUnitIds.length - 1) {
+    nextUnitId = allUnitIds[currentUnitIndex + 1];
+  }
+
+  return {
+    prevUnitId,
+    nextUnitId,
+  };
 }
