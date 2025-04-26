@@ -5,18 +5,23 @@ import {
   DomainEvent,
   EventStream,
   Field,
+  uniqueModelConstraint,
   type Infer,
 } from "@fabric/core";
 
 // Define the Enrollment aggregate model
-export const EnrollmentModel = new AggregateModel("enrollments", {
-  userId: Field.reference({
-    targetModel: "users",
-  }),
-  courseId: Field.reference({
-    targetModel: "courses",
-  }),
-});
+export const EnrollmentModel = new AggregateModel(
+  "enrollments",
+  {
+    userId: Field.uuid(), //This is not a reference because a userId can be a reference to an invited user that has not been created yet
+    courseId: Field.reference({
+      targetModel: "courses",
+    }),
+  },
+  {
+    constraints: [uniqueModelConstraint(["userId", "courseId"])],
+  },
+);
 
 export type EnrollmentModel = typeof EnrollmentModel;
 export type Enrollment = Infer<EnrollmentModel>;
