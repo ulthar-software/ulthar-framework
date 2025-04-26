@@ -1,4 +1,4 @@
-import type { EventToType, Infer } from "@fabric/core";
+import type { EnumToType, EventToType, Infer } from "@fabric/core";
 import {
   AggregateModel,
   AggregateProjector,
@@ -7,6 +7,18 @@ import {
   Field,
 } from "@fabric/core";
 
+// For categorizing resources, we'll define resource types
+export const ResourceType = {
+  REQUIRED_READING: "REQUIRED_READING",
+  RECOMMENDED_READING: "RECOMMENDED_READING",
+  VIDEO: "VIDEO",
+  CONCEPT: "CONCEPT",
+  DOCUMENTATION: "DOCUMENTATION",
+} as const;
+
+export const ResourceTypeValues = Object.values(ResourceType);
+export type ResourceType = EnumToType<typeof ResourceType>;
+
 export const ResourceModel = new AggregateModel("resources", {
   courseId: Field.reference({
     targetModel: "courses",
@@ -14,6 +26,9 @@ export const ResourceModel = new AggregateModel("resources", {
   title: Field.string(),
   description: Field.string(),
   url: Field.string(),
+  type: Field.enum({
+    values: ResourceTypeValues,
+  }),
   createdBy: Field.reference({
     targetModel: "users",
   }),
@@ -27,6 +42,9 @@ export const ResourceCreatedEvent = new DomainEvent("ResourceCreated", {
   title: Field.string(),
   description: Field.string(),
   url: Field.string(),
+  type: Field.enum({
+    values: ResourceTypeValues,
+  }),
   createdBy: Field.uuid(),
 });
 
