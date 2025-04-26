@@ -1,6 +1,7 @@
 import type { Effect } from "../../../../effect/effect.js";
 import type { Option } from "../../../../option/option.js";
 import type { Keyof } from "../../../../types/keyof.js";
+import type { Model } from "../../../models/model.js";
 import type {
   AlreadyExistsError,
   NotFoundError,
@@ -9,6 +10,7 @@ import type {
 import type { ValueStoreDriver } from "../../value-store-driver.js";
 import type { FilterOptions } from "../filter-options.js";
 import type { OrderByOptions } from "../order-by-options.js";
+import type { JoinedModel, JoinOptions } from "./join-types.js";
 
 export interface StoreReadQueryDeps {
   store: ValueStoreDriver;
@@ -16,6 +18,9 @@ export interface StoreReadQueryDeps {
 
 export interface StoreReadQuery<T> extends SortableStoreQuery<T> {
   where(where: FilterOptions<T>): SortableStoreQuery<T>;
+  leftJoin<TModel extends Model, TAsKey extends string>(
+    opts: JoinOptions<TModel, T, TAsKey>,
+  ): StoreReadQuery<T & JoinedModel<TModel, TAsKey>>;
 }
 
 export interface SortableStoreQuery<T> extends LimitableStoreQuery<T> {

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Model } from "../../models/model.js";
 import type { FilterOptions } from "./filter-options.js";
 import type { OrderByOptions } from "./order-by-options.js";
 
@@ -9,6 +10,17 @@ export interface StoreReadOptions {
   limit?: number;
   offset?: number;
   keys?: string[];
+  joins?: StoreJoinOptions[];
+}
+
+export interface StoreJoinOptions {
+  type: "left" | "inner";
+  model: Model;
+  as: string;
+  on: {
+    left: string;
+    right: string;
+  };
 }
 
 export interface StoreInsertOptions {

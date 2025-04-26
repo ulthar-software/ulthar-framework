@@ -13,6 +13,13 @@ describe("StoreReadQueryBuilder", () => {
   });
   type Demo = Infer<typeof Demo>;
 
+  const User = new Model("user", {
+    id: Field.string({}),
+    username: Field.string({}),
+    role: Field.string({}),
+  });
+  type User = Infer<typeof User>;
+
   test("given a query, when `select` is called, it should return an Effect", async () => {
     const driver = partialMock<ValueStoreDriver>({
       get: () => Effect.ok([]),
@@ -249,6 +256,108 @@ describe("StoreReadQueryBuilder", () => {
       from: "demo",
       limit: 10,
       offset: 0,
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([]);
+  });
+
+  test("Given a query with leftJoin, when `select` is called, it should return an Effect with the join configuration", async () => {
+    const driver = partialMock<ValueStoreDriver>({
+      get: () => Effect.ok([]),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .leftJoin({
+        model: User,
+        as: "user",
+        on: {
+          left: "name",
+          right: "username",
+        },
+      })
+      .select();
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      joins: [
+        {
+          type: "left",
+          model: User,
+          as: "user",
+          on: {
+            left: "name",
+            right: "username",
+          },
+        },
+      ],
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([]);
+  });
+
+  test("Given a query with multiple leftJoins, it should correctly accumulate all join configurations", async () => {
+    const driver = partialMock<ValueStoreDriver>({
+      get: () => Effect.ok([]),
+    });
+
+    const Role = new Model("role", {
+      id: Field.string({}),
+      name: Field.string({}),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .leftJoin({
+        model: User,
+        as: "user",
+        on: {
+          left: "name",
+          right: "username",
+        },
+      })
+      .leftJoin({
+        model: Role,
+        as: "role",
+        on: {
+          left: "user.role",
+          right: "id",
+        },
+      })
+      .select();
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      joins: [
+        {
+          type: "left",
+          model: User,
+          as: "user",
+          on: {
+            left: "name",
+            right: "username",
+          },
+        },
+        {
+          type: "left",
+          model: Role,
+          as: "role",
+          on: {
+            left: "user.role",
+            right: "id",
+          },
+        },
+      ],
     });
 
     expect(result.unwrapOrThrow()).toEqual([]);

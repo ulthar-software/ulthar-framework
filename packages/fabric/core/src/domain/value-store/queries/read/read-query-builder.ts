@@ -15,6 +15,7 @@ import type { ValueStoreDriver } from "../../value-store-driver.js";
 import type { FilterOptions } from "../filter-options.js";
 import type { OrderByOptions } from "../order-by-options.js";
 import type { StoreReadOptions } from "../query-options.js";
+import type { JoinedModel, JoinOptions } from "./join-types.js";
 import type {
   LimitableStoreQuery,
   SelectableStoreQuery,
@@ -45,6 +46,26 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
       ...this.query,
       where,
     });
+  }
+
+  leftJoin<TModel extends Model, TAsKey extends string>(
+    opts: JoinOptions<TModel, T, TAsKey>,
+  ): StoreReadQuery<T & JoinedModel<TModel, TAsKey>> {
+    return new StoreReadQueryBuilder(this.driver, this.model, {
+      ...this.query,
+      joins: [
+        ...(this.query.joins ?? []),
+        {
+          type: "left",
+          model: opts.model,
+          as: opts.as,
+          on: {
+            left: opts.on.left,
+            right: opts.on.right,
+          },
+        },
+      ],
+    }) as StoreReadQuery<T & JoinedModel<TModel, TAsKey>>;
   }
 
   orderBy(opts: OrderByOptions<T>): LimitableStoreQuery<T> {

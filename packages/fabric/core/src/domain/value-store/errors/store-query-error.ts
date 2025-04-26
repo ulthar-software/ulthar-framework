@@ -9,4 +9,10 @@ export class StoreQueryError extends TaggedError<"StoreQueryError"> {
   ) {
     super("StoreQueryError", message);
   }
+
+  toString(): string {
+    return `StoreQueryError: ${this.message} (statement: ${this.statement}, params: ${JSON.stringify(
+      this.params,
+    )})`;
+  }
 }
