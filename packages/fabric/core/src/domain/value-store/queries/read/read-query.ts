@@ -49,4 +49,10 @@ export interface SelectableStoreQuery<T> {
   ): Effect<Pick<T, K>, StoreQueryError | NotFoundError>;
 
   assertNone(): Effect<void, StoreQueryError | AlreadyExistsError>;
+
+  selectAndMap<U>(fn: (values: T[]) => U[]): Effect<U[], StoreQueryError>;
+  selectAndMap<U, K extends Keyof<T>>(
+    fn: (values: Pick<T, K>[]) => U[],
+    keys: K[],
+  ): Effect<U[], StoreQueryError>;
 }

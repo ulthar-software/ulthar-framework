@@ -362,4 +362,242 @@ describe("StoreReadQueryBuilder", () => {
 
     expect(result.unwrapOrThrow()).toEqual([]);
   });
+
+  test("Given a query with leftJoin, when `selectAndMap` is called, it should map values from the joined model", async () => {
+    const mockData = [
+      {
+        name: "John",
+        age: 30,
+        "user.id": "user-1",
+        "user.username": "john_doe",
+        "user.role": "admin",
+      },
+    ];
+
+    const driver = partialMock<ValueStoreDriver>({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      get: () => Effect.ok(mockData as any),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .leftJoin({
+        model: User,
+        as: "user",
+        on: {
+          left: "name",
+          right: "username",
+        },
+      })
+      .selectAndMap((results) => {
+        return results.map((item) => ({
+          name: item.name,
+          age: item.age,
+          user: {
+            id: item["user.id"],
+            username: item["user.username"],
+            role: item["user.role"],
+          },
+        }));
+      });
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      joins: [
+        {
+          type: "left",
+          model: User,
+          as: "user",
+          on: {
+            left: "name",
+            right: "username",
+          },
+        },
+      ],
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([
+      {
+        name: "John",
+        age: 30,
+        user: {
+          id: "user-1",
+          username: "john_doe",
+          role: "admin",
+        },
+      },
+    ]);
+  });
+
+  test("Given a query with multiple joined models, when `selectAndMap` is called, it should map values from all joined models", async () => {
+    const Role = new Model("role", {
+      id: Field.string({}),
+      name: Field.string({}),
+      permissions: Field.string({}),
+    });
+
+    const mockData = [
+      {
+        name: "John",
+        age: 30,
+        "user.id": "user-1",
+        "user.username": "john_doe",
+        "user.role": "admin",
+        "role.id": "role-1",
+        "role.name": "Administrator",
+        "role.permissions": "all",
+      },
+    ];
+
+    const driver = partialMock<ValueStoreDriver>({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      get: () => Effect.ok(mockData as any),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .leftJoin({
+        model: User,
+        as: "user",
+        on: {
+          left: "name",
+          right: "username",
+        },
+      })
+      .leftJoin({
+        model: Role,
+        as: "role",
+        on: {
+          left: "user.role",
+          right: "id",
+        },
+      })
+      .selectAndMap((results) => {
+        return results.map((item) => ({
+          name: item.name,
+          age: item.age,
+          user: {
+            id: item["user.id"],
+            username: item["user.username"],
+          },
+          role: {
+            id: item["role.id"],
+            name: item["role.name"],
+            permissions: item["role.permissions"],
+          },
+        }));
+      });
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      joins: [
+        {
+          type: "left",
+          model: User,
+          as: "user",
+          on: {
+            left: "name",
+            right: "username",
+          },
+        },
+        {
+          type: "left",
+          model: Role,
+          as: "role",
+          on: {
+            left: "user.role",
+            right: "id",
+          },
+        },
+      ],
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([
+      {
+        name: "John",
+        age: 30,
+        user: {
+          id: "user-1",
+          username: "john_doe",
+        },
+        role: {
+          id: "role-1",
+          name: "Administrator",
+          permissions: "all",
+        },
+      },
+    ]);
+  });
+
+  test("Given a query with a join, when `selectAndMap` is called with specific keys, it should map only those fields", async () => {
+    const mockData = [
+      {
+        name: "John",
+        "user.username": "john_doe",
+      },
+    ];
+
+    const driver = partialMock<ValueStoreDriver>({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      get: () => Effect.ok(mockData as any),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .leftJoin({
+        model: User,
+        as: "user",
+        on: {
+          left: "name",
+          right: "username",
+        },
+      })
+      .selectAndMap(
+        (results) => {
+          return results.map((item) => ({
+            name: item.name,
+            username: item["user.username"],
+          }));
+        },
+        ["name", "user.username"],
+      );
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      joins: [
+        {
+          type: "left",
+          model: User,
+          as: "user",
+          on: {
+            left: "name",
+            right: "username",
+          },
+        },
+      ],
+      keys: ["name", "user.username"],
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([
+      {
+        name: "John",
+        username: "john_doe",
+      },
+    ]);
+  });
 });
