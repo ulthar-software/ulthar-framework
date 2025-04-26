@@ -85,6 +85,26 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
     }) as StoreReadQuery<T & JoinedModel<TModel, TAsKey>>;
   }
 
+  innerJoin<TModel extends Model, TAsKey extends string>(
+    opts: JoinOptions<TModel, T, TAsKey>,
+  ): StoreReadQuery<T & JoinedModel<TModel, TAsKey>> {
+    return new StoreReadQueryBuilder(this.driver, this.model, {
+      ...this.query,
+      joins: [
+        ...(this.query.joins ?? []),
+        {
+          type: "inner",
+          model: opts.model,
+          as: opts.as,
+          on: {
+            left: opts.on.left,
+            right: opts.on.right,
+          },
+        },
+      ],
+    }) as StoreReadQuery<T & JoinedModel<TModel, TAsKey>>;
+  }
+
   orderBy(opts: OrderByOptions<T>): LimitableStoreQuery<T> {
     return new StoreReadQueryBuilder(this.driver, this.model, {
       ...this.query,
@@ -106,6 +126,18 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
     return this.driver.get<any>(this.model, {
       ...this.query,
       keys: keys!,
+    });
+  }
+
+  selectDistinct(): Effect<T[], StoreQueryError>;
+  selectDistinct<K extends Keyof<T>>(
+    keys: K[],
+  ): Effect<Pick<T, K>[], StoreQueryError>;
+  selectDistinct<K extends Keyof<T>>(keys?: K[]): Effect<any, StoreQueryError> {
+    return this.driver.get<any>(this.model, {
+      ...this.query,
+      keys: keys as string[],
+      distinct: true,
     });
   }
 

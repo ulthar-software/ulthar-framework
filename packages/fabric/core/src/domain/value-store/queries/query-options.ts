@@ -11,6 +11,7 @@ export interface StoreReadOptions {
   offset?: number;
   keys?: string[];
   joins?: StoreJoinOptions[];
+  distinct?: boolean;
 }
 
 export interface StoreJoinOptions {

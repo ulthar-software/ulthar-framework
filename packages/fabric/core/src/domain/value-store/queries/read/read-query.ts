@@ -21,6 +21,9 @@ export interface StoreReadQuery<T> extends SortableStoreQuery<T> {
   leftJoin<TModel extends Model, TAsKey extends string>(
     opts: JoinOptions<TModel, T, TAsKey>,
   ): StoreReadQuery<T & JoinedModel<TModel, TAsKey>>;
+  innerJoin<TModel extends Model, TAsKey extends string>(
+    opts: JoinOptions<TModel, T, TAsKey>,
+  ): StoreReadQuery<T & JoinedModel<TModel, TAsKey>>;
 }
 
 export interface SortableStoreQuery<T> extends LimitableStoreQuery<T> {
@@ -34,6 +37,11 @@ export interface LimitableStoreQuery<T> extends SelectableStoreQuery<T> {
 export interface SelectableStoreQuery<T> {
   select(): Effect<T[], StoreQueryError>;
   select<K extends Keyof<T>>(keys: K[]): Effect<Pick<T, K>[], StoreQueryError>;
+
+  selectDistinct(): Effect<T[], StoreQueryError>;
+  selectDistinct<K extends Keyof<T>>(
+    keys: K[],
+  ): Effect<Pick<T, K>[], StoreQueryError>;
 
   count(): Effect<number, StoreQueryError>;
   max(key: Keyof<T>): Effect<number, StoreQueryError>;

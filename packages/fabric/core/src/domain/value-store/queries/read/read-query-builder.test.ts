@@ -600,4 +600,159 @@ describe("StoreReadQueryBuilder", () => {
       },
     ]);
   });
+
+  test("Given a query, when `selectDistinct` is called, it should return an Effect with distinct set to true", async () => {
+    const driver = partialMock<ValueStoreDriver>({
+      get: () => Effect.ok([]),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .where({
+        name: "test",
+      })
+      .selectDistinct();
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      where: { name: "test" },
+      distinct: true,
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([]);
+  });
+
+  test("Given a query, when `selectDistinct` is called with keys, it should return an Effect with those keys and distinct set to true", async () => {
+    const driver = partialMock<ValueStoreDriver>({
+      get: () => Effect.ok([]),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .where({
+        name: "test",
+      })
+      .selectDistinct(["name"]);
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      where: { name: "test" },
+      keys: ["name"],
+      distinct: true,
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([]);
+  });
+
+  test("Given a query with innerJoin, when `select` is called, it should return an Effect with inner join configuration", async () => {
+    const driver = partialMock<ValueStoreDriver>({
+      get: () => Effect.ok([]),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .innerJoin({
+        model: User,
+        as: "user",
+        on: {
+          left: "name",
+          right: "username",
+        },
+      })
+      .select();
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      joins: [
+        {
+          type: "inner",
+          model: User,
+          as: "user",
+          on: {
+            left: "name",
+            right: "username",
+          },
+        },
+      ],
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([]);
+  });
+
+  test("Given a query with multiple joins including innerJoin, it should correctly accumulate all join configurations", async () => {
+    const driver = partialMock<ValueStoreDriver>({
+      get: () => Effect.ok([]),
+    });
+
+    const Role = new Model("role", {
+      id: Field.string({}),
+      name: Field.string({}),
+    });
+
+    const query = new StoreReadQueryBuilder<Demo>(driver, Demo, {
+      from: "demo",
+    })
+      .leftJoin({
+        model: User,
+        as: "user",
+        on: {
+          left: "name",
+          right: "username",
+        },
+      })
+      .innerJoin({
+        model: Role,
+        as: "role",
+        on: {
+          left: "user.role",
+          right: "id",
+        },
+      })
+      .select();
+
+    expect(query).toBeInstanceOf(Effect);
+
+    const result = await query.run();
+
+    expect(driver.get).toHaveBeenCalledWith(Demo, {
+      from: "demo",
+      joins: [
+        {
+          type: "left",
+          model: User,
+          as: "user",
+          on: {
+            left: "name",
+            right: "username",
+          },
+        },
+        {
+          type: "inner",
+          model: Role,
+          as: "role",
+          on: {
+            left: "user.role",
+            right: "id",
+          },
+        },
+      ],
+    });
+
+    expect(result.unwrapOrThrow()).toEqual([]);
+  });
 });
