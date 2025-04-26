@@ -36,6 +36,7 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   EnumField: (_, v) => v,
   UrlField: (_, v) => v,
   ObjectArrayField: (_, v) => JSONExt.stringify(v).unwrapOrThrow(),
+  ArrayField: (_, v) => JSONExt.stringify(v).unwrapOrThrow(),
 };
 
 export function fieldValueToSQL(field: FieldDefinition, value: any) {

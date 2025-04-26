@@ -71,6 +71,9 @@ const FieldSQLDefinitionMap: FieldSQLDefinitionMap = {
   ObjectArrayField: (n, f): string => {
     return [n, "TEXT", modifiersFromOpts(f)].join(" ");
   },
+  ArrayField: (n, f): string => {
+    return [n, "TEXT", modifiersFromOpts(f)].join(" ");
+  },
 };
 function fieldDefinitionToSQL(name: string, field: FieldDefinition) {
   return FieldSQLDefinitionMap[field[VariantTag]](name, field as any);

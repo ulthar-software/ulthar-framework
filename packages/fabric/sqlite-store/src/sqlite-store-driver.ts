@@ -102,6 +102,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
       (error: Error) => new StoreQueryError(error.message, sql, params),
     );
   }
+
   insert(
     model: Model,
     query: StoreInsertOptions,
@@ -262,8 +263,12 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     }
     const joinSql = joinClauses.length > 0 ? joinClauses.join(" ") : "";
 
+    const selectCommand = query.distinct
+      ? `SELECT DISTINCT ${selectFields}`
+      : `SELECT ${selectFields}`;
+
     const sql = [
-      `SELECT ${selectFields}`,
+      selectCommand,
       `FROM ${query.from}`,
       joinSql,
       queryFilter,

@@ -335,6 +335,60 @@ describe("State Store", () => {
     expect(result).toBe(25.7);
   });
 
+  test("should select distinct values", async () => {
+    // Insert test data with duplicate values
+    await store
+      .insertInto("nonReferenceModel")
+      .manyValues([
+        {
+          id: crypto.randomUUID(),
+          value: 10.5,
+          optional: "category1",
+        },
+        {
+          id: crypto.randomUUID(),
+          value: 25.7,
+          optional: "category2",
+        },
+        {
+          id: crypto.randomUUID(),
+          value: 15.3,
+          optional: "category1",
+        },
+        {
+          id: crypto.randomUUID(),
+          value: 30.0,
+          optional: "category2",
+        },
+      ])
+      .runOrThrow();
+
+    // Test selectDistinct on a single field
+    const distinctCategories = await store
+      .from("nonReferenceModel")
+      .selectDistinct(["optional"])
+      .runOrThrow();
+
+    // Should have exactly 2 distinct values for 'optional' field
+    expect(distinctCategories.length).toBe(2);
+    expect(distinctCategories).toEqual(
+      expect.arrayContaining([
+        { optional: "category1" },
+        { optional: "category2" },
+      ]),
+    );
+
+    // Test with a where condition
+    const filteredDistinct = await store
+      .from("nonReferenceModel")
+      .where({ optional: "category1" })
+      .selectDistinct(["optional"])
+      .runOrThrow();
+
+    expect(filteredDistinct.length).toBe(1);
+    expect(filteredDistinct[0].optional).toBe("category1");
+  });
+
   test("should perform joins when specified in query options", async () => {
     const userId = crypto.randomUUID();
     const demoId = crypto.randomUUID();

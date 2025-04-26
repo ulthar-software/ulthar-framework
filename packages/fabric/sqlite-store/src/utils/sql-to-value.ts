@@ -82,4 +82,5 @@ const FieldSQLInsertMap: FieldSQLInsertMap = {
   EnumField: (_, v) => v,
   UrlField: (_, v) => v,
   ObjectArrayField: (_, v: string) => JSONExt.parse<any>(v).unwrapOrThrow(),
+  ArrayField: (_, v: string) => JSONExt.parse<any>(v).unwrapOrThrow(),
 };
