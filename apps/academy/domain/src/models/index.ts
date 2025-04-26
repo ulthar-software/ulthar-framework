@@ -18,15 +18,15 @@ import {
 } from "./sections/index.js";
 
 import {
-  ReferenceTagModel,
-  ReferenceTagProjector,
-  ReferenceTagStream,
-} from "./reference-tag.js";
+  ResourceTagModel,
+  ResourceTagProjector,
+  ResourceTagStream,
+} from "./resource-tag.js";
 import {
-  ReferenceModel,
-  ReferenceProjector,
-  ReferenceStream,
-} from "./reference.js";
+  ResourceModel,
+  ResourceProjector,
+  ResourceStream,
+} from "./resource.js";
 import { TagModel, TagProjector, TagStream } from "./tag.js";
 import { UnitTagModel, UnitTagProjector, UnitTagStream } from "./unit-tag.js";
 import { UnitModel, UnitProjector, UnitStream } from "./unit.js";
@@ -40,8 +40,8 @@ import { UserModel, UserProjector, UserStream } from "./user.js";
 export * from "./course.js";
 export * from "./enrollment.js";
 export * from "./module.js";
-export * from "./reference-tag.js";
-export * from "./reference.js";
+export * from "./resource-tag.js";
+export * from "./resource.js";
 export * from "./sections/index.js";
 export * from "./tag.js";
 export * from "./unit-tag.js";
@@ -59,9 +59,9 @@ export const DomainModels = [
   VideoSectionModel,
   QuestionnaireSectionModel,
   EnrollmentModel,
-  ReferenceModel,
+  ResourceModel,
   TagModel,
-  ReferenceTagModel,
+  ResourceTagModel,
   UnitTagModel,
 ] as const;
 
@@ -75,9 +75,9 @@ export const DomainStreams = [
   VideoSectionStream,
   QuestionnaireSectionStream,
   EnrollmentStream,
-  ReferenceStream,
+  ResourceStream,
   TagStream,
-  ReferenceTagStream,
+  ResourceTagStream,
   UnitTagStream,
 ] as const;
 
@@ -91,8 +91,8 @@ export const DomainProjectors = [
   VideoSectionProjector,
   QuestionnaireSectionProjector,
   EnrollmentProjector,
-  ReferenceProjector,
+  ResourceProjector,
   TagProjector,
-  ReferenceTagProjector,
+  ResourceTagProjector,
   UnitTagProjector,
 ] as const;

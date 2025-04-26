@@ -4,14 +4,14 @@ import {
   type MockedDependencies,
 } from "../services/mocks/create-mock-services.js";
 import {
-  ReferenceCreatedEvent,
-  ReferenceDescriptionChangedEvent,
-  ReferenceProjector,
-  ReferenceTitleChangedEvent,
-  ReferenceUrlChangedEvent,
-} from "./reference.js";
+  ResourceCreatedEvent,
+  ResourceDescriptionChangedEvent,
+  ResourceProjector,
+  ResourceTitleChangedEvent,
+  ResourceUrlChangedEvent,
+} from "./resource.js";
 
-describe("Reference", () => {
+describe("Resource", () => {
   let services: MockedDependencies;
 
   beforeEach(async () => {
@@ -20,7 +20,7 @@ describe("Reference", () => {
 
   test("Creating a reference", () => {
     const referenceId = services.crypto.randomUUID();
-    const event: ReferenceCreatedEvent = ReferenceCreatedEvent.from({
+    const event: ResourceCreatedEvent = ResourceCreatedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: referenceId,
       payload: {
@@ -33,7 +33,7 @@ describe("Reference", () => {
       version: 1,
     });
 
-    const reference = ReferenceProjector.project(event).unwrapOrThrow();
+    const reference = ResourceProjector.project(event).unwrapOrThrow();
 
     expect(reference).toEqual({
       id: referenceId,
@@ -51,7 +51,7 @@ describe("Reference", () => {
   test("Changing a reference title", () => {
     // First create a reference
     const referenceId = services.crypto.randomUUID();
-    const createEvent: ReferenceCreatedEvent = ReferenceCreatedEvent.from({
+    const createEvent: ResourceCreatedEvent = ResourceCreatedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: referenceId,
       payload: {
@@ -64,13 +64,13 @@ describe("Reference", () => {
       version: 1,
     });
 
-    const reference = ReferenceProjector.project(createEvent).unwrapOrThrow();
+    const reference = ResourceProjector.project(createEvent).unwrapOrThrow();
 
-    if (!reference) throw new Error("Reference was not created");
+    if (!reference) throw new Error("Resource was not created");
 
     // Then update the reference title
-    const titleChangedEvent: ReferenceTitleChangedEvent =
-      ReferenceTitleChangedEvent.from({
+    const titleChangedEvent: ResourceTitleChangedEvent =
+      ResourceTitleChangedEvent.from({
         id: services.crypto.randomUUID(),
         streamId: referenceId,
         payload: {
@@ -80,12 +80,12 @@ describe("Reference", () => {
         version: 2,
       });
 
-    const updatedReference = ReferenceProjector.project(
+    const updatedResource = ResourceProjector.project(
       titleChangedEvent,
       reference,
     ).unwrapOrThrow();
 
-    expect(updatedReference).toEqual({
+    expect(updatedResource).toEqual({
       id: referenceId,
       courseId: reference.courseId,
       title: "Clean Code: A Handbook of Agile Software Craftsmanship",
@@ -101,7 +101,7 @@ describe("Reference", () => {
   test("Changing a reference description", () => {
     // First create a reference
     const referenceId = services.crypto.randomUUID();
-    const createEvent: ReferenceCreatedEvent = ReferenceCreatedEvent.from({
+    const createEvent: ResourceCreatedEvent = ResourceCreatedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: referenceId,
       payload: {
@@ -114,13 +114,13 @@ describe("Reference", () => {
       version: 1,
     });
 
-    const reference = ReferenceProjector.project(createEvent).unwrapOrThrow();
+    const reference = ResourceProjector.project(createEvent).unwrapOrThrow();
 
-    if (!reference) throw new Error("Reference was not created");
+    if (!reference) throw new Error("Resource was not created");
 
     // Then update the reference description
-    const descriptionChangedEvent: ReferenceDescriptionChangedEvent =
-      ReferenceDescriptionChangedEvent.from({
+    const descriptionChangedEvent: ResourceDescriptionChangedEvent =
+      ResourceDescriptionChangedEvent.from({
         id: services.crypto.randomUUID(),
         streamId: referenceId,
         payload: {
@@ -131,12 +131,12 @@ describe("Reference", () => {
         version: 2,
       });
 
-    const updatedReference = ReferenceProjector.project(
+    const updatedResource = ResourceProjector.project(
       descriptionChangedEvent,
       reference,
     ).unwrapOrThrow();
 
-    expect(updatedReference).toEqual({
+    expect(updatedResource).toEqual({
       id: referenceId,
       courseId: reference.courseId,
       title: reference.title,
@@ -152,7 +152,7 @@ describe("Reference", () => {
   test("Changing a reference URL", () => {
     // First create a reference
     const referenceId = services.crypto.randomUUID();
-    const createEvent: ReferenceCreatedEvent = ReferenceCreatedEvent.from({
+    const createEvent: ResourceCreatedEvent = ResourceCreatedEvent.from({
       id: services.crypto.randomUUID(),
       streamId: referenceId,
       payload: {
@@ -165,13 +165,13 @@ describe("Reference", () => {
       version: 1,
     });
 
-    const reference = ReferenceProjector.project(createEvent).unwrapOrThrow();
+    const reference = ResourceProjector.project(createEvent).unwrapOrThrow();
 
-    if (!reference) throw new Error("Reference was not created");
+    if (!reference) throw new Error("Resource was not created");
 
     // Then update the reference URL
-    const urlChangedEvent: ReferenceUrlChangedEvent =
-      ReferenceUrlChangedEvent.from({
+    const urlChangedEvent: ResourceUrlChangedEvent =
+      ResourceUrlChangedEvent.from({
         id: services.crypto.randomUUID(),
         streamId: referenceId,
         payload: {
@@ -181,12 +181,12 @@ describe("Reference", () => {
         version: 2,
       });
 
-    const updatedReference = ReferenceProjector.project(
+    const updatedResource = ResourceProjector.project(
       urlChangedEvent,
       reference,
     ).unwrapOrThrow();
 
-    expect(updatedReference).toEqual({
+    expect(updatedResource).toEqual({
       id: referenceId,
       courseId: reference.courseId,
       title: reference.title,

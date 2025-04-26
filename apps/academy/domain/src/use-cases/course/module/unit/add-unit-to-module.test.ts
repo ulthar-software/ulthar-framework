@@ -246,7 +246,6 @@ describe("Add Unit To Module Use Case", () => {
     ).run();
 
     // Assert
-    expect(result.isOk()).toBe(true);
     const { unitId } = result.unwrapOrThrow();
     expect(unitId).toBeDefined();
 

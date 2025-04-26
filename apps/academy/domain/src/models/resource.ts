@@ -1,0 +1,100 @@
+import type { EventToType, Infer } from "@fabric/core";
+import {
+  AggregateModel,
+  AggregateProjector,
+  DomainEvent,
+  EventStream,
+  Field,
+} from "@fabric/core";
+
+export const ResourceModel = new AggregateModel("resources", {
+  courseId: Field.reference({
+    targetModel: "courses",
+  }),
+  title: Field.string(),
+  description: Field.string(),
+  url: Field.string(),
+  createdBy: Field.reference({
+    targetModel: "users",
+  }),
+});
+
+export type ResourceModel = typeof ResourceModel;
+export type Resource = Infer<ResourceModel>;
+
+export const ResourceCreatedEvent = new DomainEvent("ResourceCreated", {
+  courseId: Field.uuid(),
+  title: Field.string(),
+  description: Field.string(),
+  url: Field.string(),
+  createdBy: Field.uuid(),
+});
+
+export type ResourceCreatedEvent = EventToType<typeof ResourceCreatedEvent>;
+
+export const ResourceTitleChangedEvent = new DomainEvent(
+  "ResourceTitleChanged",
+  {
+    title: Field.string(),
+    updatedBy: Field.uuid(),
+  },
+);
+
+export type ResourceTitleChangedEvent = EventToType<
+  typeof ResourceTitleChangedEvent
+>;
+
+export const ResourceDescriptionChangedEvent = new DomainEvent(
+  "ResourceDescriptionChanged",
+  {
+    description: Field.string(),
+    updatedBy: Field.uuid(),
+  },
+);
+
+export type ResourceDescriptionChangedEvent = EventToType<
+  typeof ResourceDescriptionChangedEvent
+>;
+
+export const ResourceUrlChangedEvent = new DomainEvent("ResourceUrlChanged", {
+  url: Field.string(),
+  updatedBy: Field.uuid(),
+});
+
+export type ResourceUrlChangedEvent = EventToType<
+  typeof ResourceUrlChangedEvent
+>;
+
+export const ResourceEvents = [
+  ResourceCreatedEvent,
+  ResourceTitleChangedEvent,
+  ResourceDescriptionChangedEvent,
+  ResourceUrlChangedEvent,
+] as const;
+
+export const ResourceStream = new EventStream(
+  ResourceModel.name,
+  ResourceEvents,
+);
+
+export const ResourceProjector = new AggregateProjector(
+  ResourceStream.name,
+  ResourceModel,
+  ResourceEvents,
+  {
+    ResourceCreated: (event): Resource =>
+      ResourceModel.from(event, event.payload),
+    ResourceTitleChanged: (event, reference): Resource =>
+      ResourceModel.update(reference, event, {
+        title: event.payload.title,
+      }),
+    ResourceDescriptionChanged: (event, reference): Resource =>
+      ResourceModel.update(reference, event, {
+        description: event.payload.description,
+      }),
+    ResourceUrlChanged: (event, reference): Resource =>
+      ResourceModel.update(reference, event, {
+        url: event.payload.url,
+      }),
+  },
+);
