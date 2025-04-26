@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Decimal } from "../../decimal/decimal.js";
 import { TaggedError } from "../../error/tagged-error.js";
 import { Result } from "../../result/result.js";
@@ -100,10 +104,8 @@ export const fieldParsers: FieldParsers = {
   EmbeddedField: function (f, v) {
     return parseOptionality(f, v, (v) => {
       if (typeof v === "object" && v !== null) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const result = parseSubModel(f.subModel, v);
         return result.errorMap(() => new InvalidFieldTypeError()) as Result<
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           any,
           InvalidFieldTypeError
         >;
@@ -137,13 +139,30 @@ export const fieldParsers: FieldParsers = {
     return parseOptionality(f, v, (v) => {
       if (Array.isArray(v)) {
         const result = Result.fromArray(
-          v.map((value) =>
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            parseSubModel(f.subModel, value),
+          v.map((value) => parseSubModel(f.subModel, value)),
+        );
+
+        return result as Result<any[], InvalidFieldTypeError>;
+      }
+      return Result.failWith(new InvalidFieldTypeError());
+    });
+  },
+  ArrayField: function (f, v) {
+    return parseOptionality(f, v, (v) => {
+      if (Array.isArray(v)) {
+        const itemField = f.itemType;
+
+        const parser = fieldParsers[
+          itemField._tag as FieldDefinition["_tag"]
+        ] as FieldParser<FieldDefinition>;
+        const result = Result.fromArray(
+          v.map(
+            (value) =>
+              parser(itemField, value) as Result<any, InvalidFieldTypeError>,
           ),
         );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return result as Result<any[], InvalidFieldTypeError>;
+
+        return result;
       }
       return Result.failWith(new InvalidFieldTypeError());
     });

@@ -59,4 +59,67 @@ describe("FieldParsers", () => {
       ).toBeInstanceOf(MissingRequiredFieldError);
     });
   });
+  describe("ArrayField", () => {
+    it("should parse arrays of simple types", () => {
+      const field = Field.array(Field.string());
+      const result = fieldParsers.ArrayField(field, ["one", "two", "three"]);
+      expect(result.unwrapOrThrow()).toEqual(["one", "two", "three"]);
+    });
+
+    it("should validate each item in the array", () => {
+      const field = Field.array(Field.integer({ isUnsigned: true }));
+      const validResult = fieldParsers.ArrayField(field, [1, 2, 3]);
+      expect(validResult.unwrapOrThrow()).toEqual([1, 2, 3]);
+
+      const invalidResult = fieldParsers.ArrayField(field, [1, -2, 3]);
+      expect(invalidResult.unwrapErrorOrThrow()).toBeInstanceOf(
+        InvalidFieldTypeError,
+      );
+    });
+
+    it("should handle optional arrays", () => {
+      const field = Field.array(Field.string(), { isOptional: true });
+
+      // Valid array
+      const validResult = fieldParsers.ArrayField(field, ["test"]);
+      expect(validResult.unwrapOrThrow()).toEqual(["test"]);
+
+      // Undefined is acceptable for optional fields
+      const undefinedResult = fieldParsers.ArrayField(field, undefined);
+      expect(undefinedResult.unwrapOrThrow()).toBeUndefined();
+
+      // Non-array values should fail
+      const invalidResult = fieldParsers.ArrayField(field, "not an array");
+      expect(invalidResult.unwrapErrorOrThrow()).toBeInstanceOf(
+        InvalidFieldTypeError,
+      );
+    });
+
+    it("should require non-optional arrays", () => {
+      const field = Field.array(Field.string());
+      const result = fieldParsers.ArrayField(field, undefined);
+      expect(result.unwrapErrorOrThrow()).toBeInstanceOf(
+        MissingRequiredFieldError,
+      );
+    });
+
+    it("should work with complex typed items", () => {
+      const field = Field.array(
+        Field.embedded({
+          subModel: {
+            name: Field.string(),
+            age: Field.integer(),
+          },
+        }),
+      );
+
+      const validData = [
+        { name: "John", age: 25 },
+        { name: "Jane", age: 30 },
+      ];
+
+      const result = fieldParsers.ArrayField(field, validData);
+      expect(result.unwrapOrThrow()).toEqual(validData);
+    });
+  });
 });

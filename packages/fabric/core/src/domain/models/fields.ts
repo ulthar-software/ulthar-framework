@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Decimal } from "../../decimal/decimal.js";
@@ -37,7 +38,6 @@ export const Field = {
   },
   objectArray: <
     T extends Record<string, FieldDefinition>,
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
     TOpts extends Omit<ObjectArrayField<T>, VariantTag | "subModel">,
   >(
     subModel: T,
@@ -45,6 +45,17 @@ export const Field = {
   ) =>
     variantConstructor<ObjectArrayField<T>>("ObjectArrayField")({
       subModel,
+      ...opts,
+    }),
+  array: <
+    TField extends FieldDefinition,
+    TOpts extends Omit<ArrayField<TField>, VariantTag | "itemType">,
+  >(
+    itemType: TField,
+    opts?: TOpts,
+  ) =>
+    variantConstructor<ArrayField<TField>>("ArrayField")({
+      itemType,
       ...opts,
     }),
 } as const satisfies Record<FieldShortName, any>;
@@ -62,7 +73,8 @@ export type FieldDefinition =
   | BooleanField
   | EnumField<string>
   | UrlField
-  | ObjectArrayField<any>;
+  | ObjectArrayField<any>
+  | ArrayField<any>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FieldShortNames = {
@@ -79,6 +91,7 @@ const FieldShortNames = {
   EnumField: "enum",
   UrlField: "url",
   ObjectArrayField: "objectArray",
+  ArrayField: "array",
 } as const satisfies Record<FieldDefinition["_tag"], string>;
 type FieldShortName = (typeof FieldShortNames)[keyof typeof FieldShortNames];
 
@@ -100,6 +113,7 @@ export type FieldToType<TField> =
   : TField extends UrlField ? MaybeOptional<TField, string>
   : TField extends EmbeddedField<infer TSubModel> ? MaybeOptional<TField, Infer<Model<string, TSubModel>>>
   : TField extends ObjectArrayField<infer TSubModel> ? MaybeOptional<TField, Infer<Model<string, TSubModel>>[]>
+  : TField extends ArrayField<infer TItemType> ? MaybeOptional<TField, FieldToType<TItemType>[]>
   : never;
 
 //prettier-ignore
@@ -174,4 +188,10 @@ export interface ObjectArrayField<T extends Record<string, FieldDefinition>>
   extends TaggedVariant<"ObjectArrayField">,
     BaseField {
   subModel: T;
+}
+
+export interface ArrayField<TField extends FieldDefinition>
+  extends TaggedVariant<"ArrayField">,
+    BaseField {
+  itemType: TField;
 }

@@ -9,6 +9,15 @@ export interface UniqueModelConstraint<TName extends string = string> {
   fields: TName[];
 }
 
+export function uniqueModelConstraint<TName extends string>(
+  fields: TName[],
+): UniqueModelConstraint<TName> {
+  return {
+    type: "unique",
+    fields,
+  };
+}
+
 export type ModelConstraint<TName extends string = string> =
   UniqueModelConstraint<TName>;
 
