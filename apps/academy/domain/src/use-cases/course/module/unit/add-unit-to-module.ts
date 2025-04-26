@@ -1,5 +1,12 @@
-import type { Effect, UUID } from "@fabric/core";
-import { Field, Schema, UnexpectedError, type Infer } from "@fabric/core";
+import type { UUID } from "@fabric/core";
+import {
+  Effect,
+  Field,
+  Schema,
+  UnexpectedError,
+  type Infer,
+} from "@fabric/core";
+import { UnitTagCreatedEvent } from "../../../../models/unit-tag.js";
 import { UnitAddedEvent } from "../../../../models/unit.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
 import { Permission } from "../../../../security/permission.js";
@@ -22,6 +29,9 @@ export const AddUnitToModuleInputModel = new Schema({
   title: Field.string({
     minLength: 3,
   }),
+  tagIds: Field.array(Field.uuid(), {
+    isOptional: true,
+  }),
 });
 
 export type AddUnitToModuleInput = Infer<typeof AddUnitToModuleInputModel>;
@@ -37,7 +47,7 @@ export const AddUnitToModuleUseCase = new UseCase({
   inputSchema: AddUnitToModuleInputModel,
   effect: (
     { state, events, crypto, currentUser }: AddUnitToModuleDependencies,
-    { moduleId, title }: AddUnitToModuleInput,
+    { moduleId, title, tagIds }: AddUnitToModuleInput,
   ): Effect<AddUnitToModuleOutput, ModuleNotFoundError | UnexpectedError> => {
     return state
       .from("modules")
@@ -68,9 +78,37 @@ export const AddUnitToModuleUseCase = new UseCase({
               version: 1,
             });
 
-            return events
-              .append("units", unitAddedEvent)
-              .map(() => ({ unitId }));
+            // First create the unit
+            return events.append("units", unitAddedEvent).flatMap(() => {
+              // If there are tagIds, create associations for each tag
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              if (tagIds && tagIds.length > 0) {
+                return Effect.all(() =>
+                  tagIds.map((tagId) => {
+                    const unitTagId = crypto.randomUUID();
+                    const unitTagEventId = crypto.randomUUID();
+
+                    const unitTagEvent = UnitTagCreatedEvent.from({
+                      id: unitTagEventId,
+                      streamId: unitTagId,
+                      payload: {
+                        unitId,
+                        tagId,
+                        createdBy: currentUser.id,
+                      },
+                      version: 1,
+                    });
+
+                    return events.append("unit_tags", unitTagEvent);
+                  }),
+                ).map(() => ({
+                  unitId,
+                }));
+              }
+
+              // If no tags, just return the unit ID
+              return Effect.ok({ unitId });
+            });
           });
       });
   },

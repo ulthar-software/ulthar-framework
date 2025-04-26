@@ -2,6 +2,7 @@ import { SchemaParsingError, type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createCourseMock } from "../../../../models/mocks/create-course-mock.js";
 import { createModuleMock } from "../../../../models/mocks/create-module-mock.js";
+import { createTagMock } from "../../../../models/mocks/create-tag-mock.js";
 import { createUserMock } from "../../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../../models/user.js";
 import { Permission } from "../../../../security/permission.js";
@@ -148,5 +149,137 @@ describe("Add Unit To Module Use Case", () => {
     // Assert
     expect(result.isError()).toBe(true);
     expect(result.unwrapErrorOrThrow()).toBeInstanceOf(SchemaParsingError);
+  });
+
+  test("Given a valid module ID, unit title, and a tag ID, it should add a unit to the module with the tag", async () => {
+    // Arrange
+    // Create a tag first
+    const tagId = await createTagMock(services, user.id, {
+      name: "JavaScript",
+    });
+
+    const input = {
+      moduleId: existingModuleId,
+      title: "JavaScript Basics",
+      tagIds: [tagId],
+    };
+
+    // Act
+    const result = await AddUnitToModuleUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.EDIT_COURSE],
+        },
+      },
+      input,
+    ).run();
+
+    // Assert
+    expect(result.isOk()).toBe(true);
+    const { unitId } = result.unwrapOrThrow();
+    expect(unitId).toBeDefined();
+
+    // Verify the unit was created correctly in the state store
+    const unit = await services.state
+      .from("units")
+      .where({ id: unitId })
+      .selectOneOrFail()
+      .run();
+
+    expect(unit.unwrapOrThrow()).toEqual(
+      expect.objectContaining({
+        id: unitId,
+        title: "JavaScript Basics",
+        moduleId: existingModuleId,
+        createdBy: user.id,
+      }),
+    );
+
+    // Verify that the unit-tag association was created
+    const unitTag = await services.state
+      .from("unit_tags")
+      .where({ unitId, tagId })
+      .selectOneOrFail()
+      .run();
+
+    expect(unitTag.isOk()).toBe(true);
+    expect(unitTag.unwrapOrThrow()).toEqual(
+      expect.objectContaining({
+        unitId,
+        tagId,
+        createdBy: user.id,
+      }),
+    );
+  });
+
+  test("Given a valid module ID, unit title, and multiple tag IDs, it should add a unit to the module with all tags", async () => {
+    // Arrange
+    // Create multiple tags
+    const javascriptTagId = await createTagMock(services, user.id, {
+      name: "JavaScript",
+    });
+    const typescriptTagId = await createTagMock(services, user.id, {
+      name: "TypeScript",
+    });
+    const frontendTagId = await createTagMock(services, user.id, {
+      name: "Frontend",
+    });
+
+    const input = {
+      moduleId: existingModuleId,
+      title: "Modern Web Development",
+      tagIds: [javascriptTagId, typescriptTagId, frontendTagId],
+    };
+
+    // Act
+    const result = await AddUnitToModuleUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.EDIT_COURSE],
+        },
+      },
+      input,
+    ).run();
+
+    // Assert
+    expect(result.isOk()).toBe(true);
+    const { unitId } = result.unwrapOrThrow();
+    expect(unitId).toBeDefined();
+
+    // Verify the unit was created correctly in the state store
+    const unit = await services.state
+      .from("units")
+      .where({ id: unitId })
+      .selectOneOrFail()
+      .run();
+
+    expect(unit.unwrapOrThrow()).toEqual(
+      expect.objectContaining({
+        id: unitId,
+        title: "Modern Web Development",
+        moduleId: existingModuleId,
+        createdBy: user.id,
+      }),
+    );
+
+    // Verify that all unit-tag associations were created
+    const unitTags = await services.state
+      .from("unit_tags")
+      .where({ unitId })
+      .select()
+      .run();
+
+    const unitTagsResult = unitTags.unwrapOrThrow();
+    expect(unitTagsResult).toHaveLength(3);
+
+    // Check that each tag was properly associated
+    const tagIds = unitTagsResult.map((ut) => ut.tagId);
+    expect(tagIds).toContain(javascriptTagId);
+    expect(tagIds).toContain(typescriptTagId);
+    expect(tagIds).toContain(frontendTagId);
   });
 });
