@@ -4,15 +4,46 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { FieldDefinition, FieldToType, Model } from "@fabric/core";
+import type {
+  FieldDefinition,
+  FieldToType,
+  Model,
+  StoreReadOptions,
+} from "@fabric/core";
 import { JSONExt, PosixDate, VariantTag } from "@fabric/core";
 
-export function transformRow(model: Model) {
+export function transformRow(model: Model, opts: StoreReadOptions) {
+  const modelDict: Record<string, Model> = {
+    [model.name]: model,
+    ...opts.joins?.reduce(
+      (acc, j) => {
+        acc[j.as] = j.model;
+        return acc;
+      },
+      {} as Record<string, Model>,
+    ),
+  };
   return (row: Record<string, any>) => {
     const result: Record<string, any> = {};
     for (const key in row) {
-      const field = model.fields[key] as FieldDefinition;
-      result[key] = valueFromSQL(field, row[key]);
+      const [modelName, fieldKey] = key.split(".");
+      const targetModel = modelDict[modelName];
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (!targetModel) {
+        throw new Error(`Model ${modelName} not found in query options`);
+      }
+      const field = targetModel.fields[fieldKey] as FieldDefinition;
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (!field) {
+        throw new Error(
+          `Field ${fieldKey} not found in model ${targetModel.name}`,
+        );
+      }
+      if (modelName === model.name) {
+        result[fieldKey] = valueFromSQL(field, row[key]);
+      } else {
+        result[key] = valueFromSQL(field, row[key]);
+      }
     }
     return result;
   };

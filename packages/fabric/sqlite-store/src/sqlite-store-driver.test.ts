@@ -125,13 +125,6 @@ describe("State Store", () => {
       .select()
       .runOrThrow();
 
-    // expectTypeOf(result).toEqualTypeOf<
-    //   {
-    //     id: UUID;
-    //     name: string;
-    //   }[]
-    // >();
-
     expect(result).toEqual([
       {
         id: newId,
@@ -283,7 +276,6 @@ describe("State Store", () => {
     expect(result.length).toBe(1);
   });
 
-  //Test count operation
   test("should count records", async () => {
     const newId = crypto.randomUUID();
 
@@ -316,7 +308,6 @@ describe("State Store", () => {
     expect(result).toBe(2);
   });
 
-  //Test max operation
   test("should find the maximum value", async () => {
     await store
       .insertInto("nonReferenceModel")
@@ -342,5 +333,76 @@ describe("State Store", () => {
       .runOrThrow();
 
     expect(result).toBe(25.7);
+  });
+
+  test("should perform joins when specified in query options", async () => {
+    const userId = crypto.randomUUID();
+    const demoId = crypto.randomUUID();
+
+    // Insert test data
+    await Run.seqOrThrow(
+      () =>
+        store.insertInto("users").value({
+          id: userId,
+          name: "test user",
+        }),
+      () =>
+        store.insertInto("demo").value({
+          id: demoId,
+          value: 42.0,
+          owner: userId,
+        }),
+    );
+
+    // Test joins using store API directly, similar to other tests
+    const joinedResult = await store
+      .from("demo")
+      .leftJoin({
+        model: User,
+        as: "u",
+        on: {
+          left: "owner",
+          right: "id",
+        },
+      })
+      .select()
+      .runOrThrow();
+
+    // Check that we got a result with joined data
+    expect(joinedResult.length).toBe(1);
+    expect(joinedResult[0]).toMatchObject({
+      id: demoId,
+      value: 42.0,
+      owner: userId,
+      "u.id": userId,
+      "u.name": "test user",
+    });
+
+    // Test with select specific fields
+    const specificFields = await store
+      .from("demo")
+      .leftJoin({
+        model: User,
+        as: "u",
+        on: {
+          left: "owner",
+          right: "id",
+        },
+      })
+      .select(["id", "value", "u.name"])
+      .runOrThrow();
+
+    // Check that we got only the requested fields
+    expect(specificFields.length).toBe(1);
+    expect(specificFields[0]).toMatchObject({
+      id: demoId,
+      value: 42.0,
+      "u.name": "test user",
+    });
+
+    //@ts-expect-error owner is not in the selected fields
+    expect(specificFields[0].owner).toBeUndefined();
+    //@ts-expect-error owner is not in the selected fields
+    expect(specificFields[0]["user.id"]).toBeUndefined();
   });
 });

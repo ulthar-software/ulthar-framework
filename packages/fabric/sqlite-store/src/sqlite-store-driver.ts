@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import type { StoreJoinOptions } from "@fabric/core";
 import {
   Effect,
   sortByDependencies,
@@ -35,12 +36,10 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     const [sql, params] = this.getMaxStatement(model, query);
     return Effect.tryFrom(
       () => {
-        const result = this.allPrepared(sql, params);
+        const result = this.allPrepared(sql, ["x"], params);
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-non-null-assertion
-        const value = result[0][`MAX(${identifierToSQL(query.keys![0])})`] as
-          | number
-          | undefined;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const value = result[0].x as number | undefined;
 
         return value ?? 0;
       },
@@ -55,9 +54,11 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     const [sql, params] = this.getCountStatement(model, query);
     return Effect.tryFrom(
       () => {
-        const result = this.allPrepared(sql, params);
+        const result = this.allPrepared(sql, ["x"], params);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        return result[0]["COUNT(*)"] as number;
+        const value = result[0].x as number | undefined;
+
+        return value ?? 0;
       },
       (error: Error) => new StoreQueryError(error.message, sql, params),
     );
@@ -88,10 +89,15 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
   }
 
   get<T>(model: Model, query: StoreReadOptions): Effect<T[], StoreQueryError> {
-    const [sql, params] = this.getSelectStatement(model, query);
+    const [sql, params, columns] = this.getSelectStatement(model, query);
     return Effect.tryFrom(
       () => {
-        return this.allPrepared(sql, params, transformRow(model)) as T[];
+        return this.allPrepared(
+          sql,
+          columns,
+          params,
+          transformRow(model, query),
+        ) as T[];
       },
       (error: Error) => new StoreQueryError(error.message, sql, params),
     );
@@ -151,14 +157,31 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
 
   private allPrepared(
     sql: string,
+    columns: string[],
     params?: Record<string, any>,
     transformer?: (row: any) => any,
   ): any[] {
     const cachedStmt = this.getCachedStatement(sql);
 
+    cachedStmt.raw(true);
+
     const result = cachedStmt.all(params);
 
-    return transformer ? result.map(transformer) : result;
+    const parsedColumns = columns.map((col) => col.replaceAll(/`/g, ""));
+
+    return result.map((resultRow): any => {
+      const parsedRow: Record<string, any> = {};
+      for (let i = 0; i < parsedColumns.length; i++) {
+        const columnName = parsedColumns[i];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        parsedRow[columnName] = (resultRow as any[])[i];
+      }
+      if (transformer) {
+        return transformer(parsedRow);
+      } else {
+        return parsedRow;
+      }
+    });
   }
 
   private getCachedStatement(sql: string) {
@@ -181,7 +204,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     const offset = query.offset ? `OFFSET ${query.offset}` : "";
 
     const sql = [
-      `SELECT COUNT(*)`,
+      `SELECT COUNT(*) as x`,
       `FROM ${query.from}`,
       queryFilter,
       limit,
@@ -203,7 +226,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     const maxKey = identifierToSQL(query.keys![0]);
 
     const sql = [
-      `SELECT MAX(${maxKey})`,
+      `SELECT MAX(${maxKey}) as x`,
       `FROM ${query.from}`,
       queryFilter,
       limit,
@@ -216,26 +239,76 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
   private getSelectStatement(
     model: Model,
     query: StoreReadOptions,
-  ): [string, Record<string, any>] {
-    const selectFields = query.keys ? query.keys.join(", ") : "*";
+  ): [string, Record<string, any>, string[]] {
+    const columns = query.keys
+      ? transformManualKeys(model, query.keys)
+      : getKeysFromModel(model, query.joins ?? []);
+
+    const selectFields = columns.join(", ");
 
     const queryFilter = filterToSQL(query.where);
     const limit = query.limit ? `LIMIT ${query.limit}` : "";
     const offset = query.offset ? `OFFSET ${query.offset}` : "";
 
+    // Handle joins if they exist
+    const joinClauses = [];
+    if (query.joins && query.joins.length > 0) {
+      for (const join of query.joins) {
+        const joinType = join.type === "left" ? "LEFT JOIN" : "INNER JOIN";
+        joinClauses.push(
+          `${joinType} ${join.model.name} ${join.as} ON ${join.on.left} = ${join.as}.${join.on.right}`,
+        );
+      }
+    }
+    const joinSql = joinClauses.length > 0 ? joinClauses.join(" ") : "";
+
     const sql = [
       `SELECT ${selectFields}`,
       `FROM ${query.from}`,
+      joinSql,
       queryFilter,
       limit,
       offset,
-    ].join(" ");
+    ]
+      .filter((x) => x)
+      .join(" ");
 
     return [
       sql,
       {
         ...filterToParams(model, query.where),
       },
+      columns,
     ];
   }
+}
+
+function getKeysFromModel(model: Model, joins: StoreJoinOptions[]): string[] {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const keys = Object.keys(model.fields).map(
+    (key) => `${identifierToSQL(model.name)}.${identifierToSQL(key)}`,
+  );
+  for (const join of joins) {
+    const joinModel = join.model;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const joinKeys = Object.keys(joinModel.fields).map(
+      (key) => `${identifierToSQL(join.as)}.${identifierToSQL(key)}`,
+    );
+    keys.push(...joinKeys);
+  }
+  return keys;
+}
+
+function transformManualKeys(model: Model, keys: string[]): string[] {
+  const transformedKeys = keys.map((key) => {
+    const parts = key.split(".");
+    if (parts.length === 1) {
+      return `${identifierToSQL(model.name)}.${identifierToSQL(parts[0])}`;
+    } else if (parts.length === 2) {
+      return `${identifierToSQL(parts[0])}.${identifierToSQL(parts[1])}`;
+    } else {
+      throw new Error(`Invalid key format: ${key}`);
+    }
+  });
+  return transformedKeys;
 }
