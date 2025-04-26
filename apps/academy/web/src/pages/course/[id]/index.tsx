@@ -3,6 +3,7 @@ import { AccessPolicy } from "@ulthar/academy-domain";
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { ContentSectionBlock } from "../../../components/academy/content-section.tsx";
+import { CourseSidebar } from "../../../components/academy/course-sidebar.tsx";
 import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageTitle } from "../../../components/academy/page-title.tsx";
 import { PlatformFooter } from "../../../components/academy/platform-footer.tsx";
@@ -12,7 +13,6 @@ import { Icon } from "../../../components/ui/icon.tsx";
 import { LoadingSpinner } from "../../../components/ui/loading-spinner.tsx";
 import { useAuthGuard } from "../../../utils/auth/use-auth-guard.ts";
 import { useQuery } from "../../../utils/rpc/use-query.ts";
-import { clx } from "../../../utils/styles/clx.ts";
 import { showErrorToast } from "../../../utils/toasts/show-error-toast.ts";
 
 export default function CourseView() {
@@ -109,54 +109,17 @@ export default function CourseView() {
 
       {courseData && (
         <div className="flex flex-grow h-[calc(100vh-4rem)]">
-          {/* Left sidebar for modules - hidden by default */}
-          <aside
-            className={clx(
-              `bg-dark-alt fixed inset-y-0 left-0 z-30 w-96 transform transition-transform duration-300 ease-in-out`,
-              showModulesSidebar ? "translate-x-0" : "-translate-x-full",
-            )}
-          >
-            <div className="p-4 border-b border-gray-700">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-primary">
-                  {courseData.course.title}
-                </h2>
-                <Button
-                  onClick={() => {
-                    setShowModulesSidebar(false);
-                  }}
-                  className="text-gray-400 hover:text-primary"
-                >
-                  <Icon name="bx-x" className="text-xl" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="overflow-y-auto h-full pb-20">
-              {courseData.modules.map((module) => (
-                <div key={module.id} className="mb-4">
-                  <div className="px-4 py-2 font-medium text-white bg-gray-800">
-                    {module.title}
-                  </div>
-                  <nav>
-                    <ul className="py-1">
-                      {/* This would be populated with units when we implement unit fetching */}
-                      {module.units.map((unit) => {
-                        return (
-                          <li
-                            key={unit.id}
-                            className="px-6 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
-                          >
-                            {unit.title}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </nav>
-                </div>
-              ))}
-            </div>
-          </aside>
+          {/* Course sidebar component */}
+          <CourseSidebar
+            courseData={courseData}
+            showSidebar={showModulesSidebar}
+            onCloseSidebar={() => {
+              setShowModulesSidebar(false);
+            }}
+            currentModuleId={unitData?.unit.moduleId}
+            currentUnitId={unitId as UUID}
+            courseId={id as UUID}
+          />
 
           {/* Main content - now with overflow scroll */}
           <section className="flex-grow p-6 md:p-8 overflow-y-auto">

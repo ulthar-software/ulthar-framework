@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
-import {
-  Effect,
-  Field,
-  Schema,
-  UnexpectedError,
-  isIn,
-  type Infer,
-} from "@fabric/core";
+import type { Infer, UUID } from "@fabric/core";
+import { Effect, Field, Schema, UnexpectedError, isIn } from "@fabric/core";
 import type { Course } from "../../models/course.js";
 import type { Module } from "../../models/module.js";
 import type { Unit } from "../../models/unit.js";
@@ -29,12 +23,12 @@ export const GetCourseDetailsInputModel = new Schema({
 export type GetCourseDetailsInput = Infer<typeof GetCourseDetailsInputModel>;
 
 export interface UnitSummary {
-  id: string;
+  id: UUID;
   title: string;
 }
 
 export interface ModuleSummary {
-  id: string;
+  id: UUID;
   title: string;
   units: UnitSummary[];
 }

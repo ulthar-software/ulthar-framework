@@ -11,10 +11,6 @@ const meta: Meta<typeof CourseView> = {
   parameters: {
     layout: "fullscreen",
     pageLayout: "page",
-    route: {
-      path: "/course/:id",
-      params: { id: "mock-course-id" },
-    },
   },
 };
 export default meta;
@@ -41,7 +37,21 @@ export const Default: Story = {
       },
       getUnitWithSections: async () => {
         await timeout(seconds(2));
-        return Result.ok(fakeUnitWithSections());
+        return Result.ok(
+          fakeUnitWithSections({
+            id: mockCourseData.modules[0].units[0].id,
+            moduleId: mockCourseData.modules[0].id,
+          }),
+        );
+      },
+    },
+    route: {
+      path: "/course/:id",
+      params: {
+        id: mockCourseData.course.id,
+      },
+      query: {
+        unitId: mockCourseData.modules[0].units[0].id,
       },
     },
     user: {

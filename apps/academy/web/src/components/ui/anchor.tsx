@@ -5,6 +5,7 @@ export interface AnchorProps extends PropsWithChildren {
   href: string;
   className?: string;
   external?: boolean;
+  onClick?: () => void;
 }
 
 /**
@@ -14,6 +15,7 @@ export interface AnchorProps extends PropsWithChildren {
 export function Anchor({
   href,
   children,
+  onClick,
   className = "",
   external = false,
 }: AnchorProps) {
@@ -24,6 +26,7 @@ export function Anchor({
         className={className}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={onClick}
       >
         {children}
       </Link>
@@ -31,7 +34,7 @@ export function Anchor({
   }
 
   return (
-    <Link to={href} className={className}>
+    <Link to={href} className={className} onClick={onClick}>
       {children}
     </Link>
   );

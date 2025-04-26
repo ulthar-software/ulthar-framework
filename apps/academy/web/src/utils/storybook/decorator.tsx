@@ -42,12 +42,16 @@ export function Decorator(
       return acc.replace(`:${key}`, value);
     }, route?.path ?? "") ?? "/";
 
-  console.log(currentPath);
+  const currentQuery = new URLSearchParams(route?.query ?? {}).toString();
+
+  const currentPathWithQuery = currentQuery
+    ? `${currentPath}?${currentQuery}`
+    : currentPath;
 
   switch (pageLayout) {
     case "page":
       return (
-        <MemoryRouter initialEntries={["/", currentPath]}>
+        <MemoryRouter initialEntries={["/", currentPathWithQuery]}>
           <AuthContext.Provider
             value={{
               accessToken: user ? JSON.stringify(user) : undefined,
