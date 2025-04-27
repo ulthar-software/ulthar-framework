@@ -8,7 +8,7 @@ import {
 } from "@fabric/core";
 
 // Define the Unit-Tag pivot model
-export const UnitTagModel = new AggregateModel("unit_tags", {
+export const UnitTagModel = new AggregateModel("unitTags", {
   unitId: Field.reference({
     targetModel: "units",
   }),

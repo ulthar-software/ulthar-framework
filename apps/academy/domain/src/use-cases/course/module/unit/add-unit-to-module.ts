@@ -99,7 +99,7 @@ export const AddUnitToModuleUseCase = new UseCase({
                       version: 1,
                     });
 
-                    return events.append("unit_tags", unitTagEvent);
+                    return events.append("unitTags", unitTagEvent);
                   }),
                 ).map(() => ({
                   unitId,

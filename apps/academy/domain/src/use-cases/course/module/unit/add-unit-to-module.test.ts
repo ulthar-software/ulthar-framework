@@ -199,7 +199,7 @@ describe("Add Unit To Module Use Case", () => {
 
     // Verify that the unit-tag association was created
     const unitTag = await services.state
-      .from("unit_tags")
+      .from("unitTags")
       .where({ unitId, tagId })
       .selectOneOrFail()
       .run();
@@ -267,7 +267,7 @@ describe("Add Unit To Module Use Case", () => {
 
     // Verify that all unit-tag associations were created
     const unitTags = await services.state
-      .from("unit_tags")
+      .from("unitTags")
       .where({ unitId })
       .select()
       .run();

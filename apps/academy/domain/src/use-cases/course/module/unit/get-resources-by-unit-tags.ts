@@ -78,7 +78,7 @@ function getResourcesByUnitTags(
 ): Effect<GetResourcesByUnitTagsOutput, UnexpectedError> {
   // First get all tags associated with this unit
   return state
-    .from("unit_tags")
+    .from("unitTags")
     .where({ unitId: unitId })
     .select()
     .mapError(() => new UnexpectedError())

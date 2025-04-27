@@ -8,7 +8,7 @@ import {
 } from "@fabric/core";
 
 // Define the Resource-Tag pivot model
-export const ResourceTagModel = new AggregateModel("resource_tags", {
+export const ResourceTagModel = new AggregateModel("resourceTags", {
   resourceId: Field.reference({
     targetModel: "resources",
   }),

@@ -130,7 +130,7 @@ describe("Get Resources By Unit Tags Use Case", () => {
         version: 1,
       });
 
-      await services.events.append("resource_tags", rtEvent).runOrThrow();
+      await services.events.append("resourceTags", rtEvent).runOrThrow();
     }
   });
 
@@ -156,7 +156,7 @@ describe("Get Resources By Unit Tags Use Case", () => {
         version: 1,
       });
 
-      await services.events.append("unit_tags", utEvent).runOrThrow();
+      await services.events.append("unitTags", utEvent).runOrThrow();
     }
 
     // Arrange
@@ -240,7 +240,7 @@ describe("Get Resources By Unit Tags Use Case", () => {
       version: 1,
     });
 
-    await services.events.append("unit_tags", utEvent).runOrThrow();
+    await services.events.append("unitTags", utEvent).runOrThrow();
 
     // Arrange
     const queryData = {
@@ -280,7 +280,7 @@ describe("Get Resources By Unit Tags Use Case", () => {
       version: 1,
     });
 
-    await services.events.append("unit_tags", utEvent).runOrThrow();
+    await services.events.append("unitTags", utEvent).runOrThrow();
 
     // Arrange
     const queryData = {
@@ -324,7 +324,7 @@ describe("Get Resources By Unit Tags Use Case", () => {
       version: 1,
     });
 
-    await services.events.append("unit_tags", utEvent).runOrThrow();
+    await services.events.append("unitTags", utEvent).runOrThrow();
 
     const queryData = {
       courseId: existingCourseId,
@@ -364,7 +364,7 @@ describe("Get Resources By Unit Tags Use Case", () => {
       version: 1,
     });
 
-    await services.events.append("unit_tags", utEvent).runOrThrow();
+    await services.events.append("unitTags", utEvent).runOrThrow();
 
     // Arrange
     const queryData = {
