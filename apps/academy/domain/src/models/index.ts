@@ -18,6 +18,11 @@ import {
 } from "./sections/index.js";
 
 import {
+  QuestionnaireResponseModel,
+  QuestionnaireResponseProjector,
+  QuestionnaireResponseStream,
+} from "./questionnaire-response.js";
+import {
   ResourceTagModel,
   ResourceTagProjector,
   ResourceTagStream,
@@ -63,6 +68,7 @@ export const DomainModels = [
   TagModel,
   ResourceTagModel,
   UnitTagModel,
+  QuestionnaireResponseModel,
 ] as const;
 
 export const DomainStreams = [
@@ -79,6 +85,7 @@ export const DomainStreams = [
   TagStream,
   ResourceTagStream,
   UnitTagStream,
+  QuestionnaireResponseStream,
 ] as const;
 
 export const DomainProjectors = [
@@ -95,4 +102,5 @@ export const DomainProjectors = [
   TagProjector,
   ResourceTagProjector,
   UnitTagProjector,
+  QuestionnaireResponseProjector,
 ] as const;
