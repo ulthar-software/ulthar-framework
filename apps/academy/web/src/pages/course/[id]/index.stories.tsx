@@ -2,6 +2,7 @@ import { Result, seconds, timeout, UnexpectedError } from "@fabric/core";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fakeCourse } from "../../../utils/storybook/fake-course.ts";
 import { fakeModuleSummary } from "../../../utils/storybook/fake-module.ts";
+import { fakeResource } from "../../../utils/storybook/fake-resource.ts";
 import { fakeUnitWithSections } from "../../../utils/storybook/fake-unit.ts";
 import CourseView from "./index.tsx";
 
@@ -28,6 +29,35 @@ const mockCourseData = {
   ],
 };
 
+const mockResources = {
+  resources: [
+    fakeResource({
+      title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+      description:
+        "This book is a must read for any developer looking to improve the readability and maintainability of their code.",
+    }),
+    fakeResource({
+      title: "Introduction to React",
+      description:
+        "A comprehensive video tutorial covering the basic concepts of React.",
+    }),
+    fakeResource({
+      title: "TypeScript Documentation",
+      description: "Official TypeScript documentation reference.",
+    }),
+    fakeResource({
+      title: "Functional Programming Principles",
+      description:
+        "Key concepts in functional programming that every developer should know.",
+    }),
+    fakeResource({
+      title: "Closure in JavaScript",
+      description:
+        "Understanding the closure concept in JavaScript and how it affects scoping.",
+    }),
+  ],
+};
+
 export const Default: Story = {
   parameters: {
     rpcContext: {
@@ -43,6 +73,10 @@ export const Default: Story = {
             moduleId: mockCourseData.modules[0].id,
           }),
         );
+      },
+      getResourcesByUnitTags: async () => {
+        await timeout(seconds(1));
+        return Result.ok(mockResources);
       },
     },
     route: {
@@ -70,6 +104,9 @@ export const Loading: Story = {
       getUnitWithSections: async () => {
         return new Promise(() => void 0);
       },
+      getResourcesByUnitTags: async () => {
+        return new Promise(() => void 0);
+      },
     },
     user: {
       user: "id",
@@ -92,6 +129,10 @@ export const Error: Story = {
         return Result.failWith(
           new UnexpectedError("Error fetching unit details"),
         );
+      },
+      getResourcesByUnitTags: async () => {
+        await timeout(seconds(1));
+        return Result.failWith(new UnexpectedError("Error fetching resources"));
       },
     },
     user: {

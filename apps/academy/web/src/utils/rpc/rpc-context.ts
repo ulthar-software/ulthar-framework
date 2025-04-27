@@ -40,6 +40,8 @@ export const EmptyRPCContext: ClientRPC = {
   getAllCourses: emptyMock<UseCaseRPC<"getAllCourses">>(),
   getCourseDetails: emptyMock<UseCaseRPC<"getCourseDetails">>(),
   getUnitWithSections: emptyMock<UseCaseRPC<"getUnitWithSections">>(),
+  createTag: emptyMock<UseCaseRPC<"createTag">>(),
+  getResourcesByUnitTags: emptyMock<UseCaseRPC<"getResourcesByUnitTags">>(),
 };
 
 export const RpcContext = createContext<ClientRPC>(EmptyRPCContext);

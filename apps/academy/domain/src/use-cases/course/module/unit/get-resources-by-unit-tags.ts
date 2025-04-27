@@ -8,6 +8,7 @@ import {
   type Infer,
 } from "@fabric/core";
 import { ResourceTagModel } from "../../../../models/resource-tag.js";
+import type { ResourceType } from "../../../../models/resource.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
 import type { UserAccess } from "../../../../services/auth-service.js";
 import type { DomainStateStore } from "../../../../services/state-store.js";
@@ -34,9 +35,9 @@ export type GetResourcesByUnitTagsInput = Infer<
 >;
 
 export interface ResourceDetails {
-  id: string;
+  id: UUID;
   title: string;
-  type: string;
+  type: ResourceType;
   url: string;
   description: string;
 }

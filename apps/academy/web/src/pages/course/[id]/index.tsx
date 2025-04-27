@@ -12,6 +12,7 @@ import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageTitle } from "../../../components/academy/page-title.tsx";
 import { PlatformFooter } from "../../../components/academy/platform-footer.tsx";
 import { PlatformHeader } from "../../../components/academy/platform-header.tsx";
+import { ResourceSidebar } from "../../../components/academy/resource-sidebar.tsx";
 import { Anchor } from "../../../components/ui/anchor.tsx";
 import { Button } from "../../../components/ui/button.tsx";
 import { Icon } from "../../../components/ui/icon.tsx";
@@ -206,31 +207,9 @@ export default function CourseView() {
           </section>
 
           {/* Right sidebar for concepts - always visible and fixed height */}
-          <aside className="hidden lg:block w-96 bg-dark-alt p-4 overflow-y-auto shrink-0 h-full">
-            <h2 className="text-lg font-semibold text-primary mb-4">
-              Conceptos
-            </h2>
-            <div className="space-y-4">
-              <div className="p-3 bg-gray-800 rounded-md">
-                <h3 className="font-medium text-white">Concepto 1</h3>
-                <p className="text-sm text-gray-300 mt-1">
-                  Breve descripción del concepto relacionado con esta unidad.
-                </p>
-              </div>
-              <div className="p-3 bg-gray-800 rounded-md">
-                <h3 className="font-medium text-white">Concepto 2</h3>
-                <p className="text-sm text-gray-300 mt-1">
-                  Breve descripción del concepto relacionado con esta unidad.
-                </p>
-              </div>
-              <div className="p-3 bg-gray-800 rounded-md">
-                <h3 className="font-medium text-white">Concepto 3</h3>
-                <p className="text-sm text-gray-300 mt-1">
-                  Breve descripción del concepto relacionado con esta unidad.
-                </p>
-              </div>
-            </div>
-          </aside>
+          {id && unitId && unitData && (
+            <ResourceSidebar courseId={id as UUID} unitId={unitId as UUID} />
+          )}
         </div>
       )}
 
