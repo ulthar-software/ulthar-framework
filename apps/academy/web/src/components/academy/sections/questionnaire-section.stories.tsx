@@ -1,6 +1,25 @@
+import type { UUID } from "@fabric/core";
+import { Result, seconds, timeout } from "@fabric/core";
+import { action } from "@storybook/addon-actions";
 import type { Meta, StoryObj } from "@storybook/react";
+import type {
+  AddQuestionnaireResponseInput,
+  GetQuestionnaireResponseOutput,
+} from "@ulthar/academy-domain";
+import {
+  QuestionnaireResponseNotFoundError,
+  QuestionnaireVersionMismatchError,
+} from "@ulthar/academy-domain";
 import { fakeQuestionnaireContentSection } from "../../../utils/storybook/fake-content-section";
 import { QuestionnaireContentSectionBlock } from "./questionnaire-section";
+
+const completeQuestionnaire = fakeQuestionnaireContentSection({
+  title: "Knowledge Check Quiz",
+});
+
+const userId = "user-id" as UUID;
+
+const onQuestionnaireResponse = action("onQuestionnaireResponse");
 
 const meta: Meta<typeof QuestionnaireContentSectionBlock> = {
   component: QuestionnaireContentSectionBlock,
@@ -11,6 +30,22 @@ const meta: Meta<typeof QuestionnaireContentSectionBlock> = {
       default: "dark",
     },
     pageLayout: "full-providers",
+    rpcContext: {
+      getQuestionnaireResponse: async () => {
+        await timeout(seconds(1));
+        return Result.failWith(
+          new QuestionnaireResponseNotFoundError(
+            completeQuestionnaire.id,
+            userId,
+          ),
+        );
+      },
+      addQuestionnaireResponse: async (data: AddQuestionnaireResponseInput) => {
+        await timeout(seconds(1));
+        onQuestionnaireResponse(data);
+        return Result.ok();
+      },
+    },
   },
 };
 
@@ -19,9 +54,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    section: fakeQuestionnaireContentSection({
-      title: "Knowledge Check Quiz",
-    }),
+    section: completeQuestionnaire,
   },
 };
 
@@ -221,5 +254,90 @@ export const WithLimitedQuestions: Story = {
         passingScore: 50,
       },
     }),
+  },
+};
+
+const smallQuestionnaire = fakeQuestionnaireContentSection({
+  title: "Quiz with Previous Response",
+  content: {
+    questions: [
+      {
+        questionText: "What is the capital of Spain?",
+        options: [
+          { text: "Madrid", isCorrect: true },
+          { text: "Barcelona", isCorrect: false },
+          { text: "Valencia", isCorrect: false },
+          { text: "Seville", isCorrect: false },
+        ],
+      },
+      {
+        questionText: "Which planet is known as the Red Planet?",
+        options: [
+          { text: "Mars", isCorrect: true },
+          { text: "Earth", isCorrect: false },
+          { text: "Jupiter", isCorrect: false },
+          { text: "Saturn", isCorrect: false },
+        ],
+      },
+    ],
+    passingScore: 50,
+  },
+});
+
+export const WithPreviousResponse: Story = {
+  args: {
+    section: smallQuestionnaire,
+  },
+  parameters: {
+    rpcContext: {
+      getQuestionnaireResponse: async () => {
+        await timeout(seconds(1));
+        return Result.ok({
+          response: {
+            id: "response-id" as UUID,
+            questionnaireId: completeQuestionnaire.id,
+            userId,
+            answers: [0, 1],
+            score: 50,
+            questionnaireVersion: smallQuestionnaire.version,
+            version: 1,
+          },
+        } as GetQuestionnaireResponseOutput);
+      },
+      addQuestionnaireResponse: async (data: AddQuestionnaireResponseInput) => {
+        await timeout(seconds(1));
+        onQuestionnaireResponse(data);
+        return Result.ok();
+      },
+    },
+  },
+};
+
+export const WithErrorSendingResponse: Story = {
+  args: {
+    section: smallQuestionnaire,
+  },
+  parameters: {
+    rpcContext: {
+      getQuestionnaireResponse: async () => {
+        await timeout(seconds(1));
+        return Result.failWith(
+          new QuestionnaireResponseNotFoundError(
+            completeQuestionnaire.id,
+            userId,
+          ),
+        );
+      },
+      addQuestionnaireResponse: async () => {
+        await timeout(seconds(1));
+        return Result.failWith(
+          new QuestionnaireVersionMismatchError(
+            completeQuestionnaire.id,
+            10,
+            1,
+          ),
+        );
+      },
+    },
   },
 };

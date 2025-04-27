@@ -22,7 +22,7 @@ import { useQuery } from "../../../utils/rpc/use-query.ts";
 import { showErrorToast } from "../../../utils/toasts/show-error-toast.ts";
 
 export default function CourseView() {
-  useAuthGuard(AccessPolicy.LoggedIn());
+  useAuthGuard(AccessPolicy.Authenticated());
 
   const { id } = useParams();
   const [searchParams] = useSearchParams();

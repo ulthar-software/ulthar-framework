@@ -82,7 +82,7 @@ export function fakeQuestionnaireContentSection(
     title: section?.title ?? faker.lorem.words(3),
     order: section?.order ?? faker.number.int({ min: 0, max: 100 }),
     unitId: section?.unitId ?? (faker.string.uuid() as UUID),
-    version: section?.version ?? faker.number.int({ min: 0, max: 100 }),
+    version: section?.version ?? faker.number.int({ min: 1, max: 100 }),
     type: SectionType.QUESTIONNAIRE,
     content:
       section?.content ??

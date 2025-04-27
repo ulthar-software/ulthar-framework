@@ -10,7 +10,7 @@ import { useAuthGuard } from "../utils/auth/use-auth-guard.ts";
 import { useQuery } from "../utils/rpc/use-query.ts";
 
 export default function Home() {
-  useAuthGuard(AccessPolicy.LoggedIn());
+  useAuthGuard(AccessPolicy.Authenticated());
 
   const [isLoading, coursesData, error] = useQuery("getAllCourses", {});
 
