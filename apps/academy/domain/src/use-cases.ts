@@ -10,6 +10,7 @@ import {
   EnrollStudentInCourseUseCase,
   GetAllCoursesUseCase,
   GetCourseDetailsUseCase,
+  GetQuestionnaireResponseUseCase,
   GetResourcesByUnitTagsUseCase,
   GetUnitWithSectionsUseCase,
   InviteUserUseCase,
@@ -32,6 +33,7 @@ export const UseCases = [
   CreateTagUseCase,
   GetResourcesByUnitTagsUseCase,
   AddQuestionnaireResponseUseCase,
+  GetQuestionnaireResponseUseCase,
 ] as const;
 
 export type UseCases = typeof UseCases;

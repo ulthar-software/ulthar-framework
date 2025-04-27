@@ -65,3 +65,15 @@ export class IncompleteQuestionnaireResponseError extends TaggedError<"Incomplet
     );
   }
 }
+
+export class QuestionnaireResponseNotFoundError extends TaggedError<"QuestionnaireResponseNotFoundError"> {
+  constructor(
+    public readonly questionnaireId: UUID,
+    public readonly userId: UUID,
+  ) {
+    super(
+      "QuestionnaireResponseNotFoundError",
+      `No response found for questionnaire ${questionnaireId} by user ${userId}`,
+    );
+  }
+}
