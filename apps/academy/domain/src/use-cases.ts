@@ -1,5 +1,6 @@
 import {
   AddModuleToCourseUseCase,
+  AddQuestionnaireResponseUseCase,
   AddUnitToModuleUseCase,
   ChangeCourseDescriptionUseCase,
   ChangeCourseTitleUseCase,
@@ -30,6 +31,7 @@ export const UseCases = [
   GetUnitWithSectionsUseCase,
   CreateTagUseCase,
   GetResourcesByUnitTagsUseCase,
+  AddQuestionnaireResponseUseCase,
 ] as const;
 
 export type UseCases = typeof UseCases;

@@ -32,3 +32,36 @@ export class NotEnrolledInCourseError extends TaggedError<"NotEnrolledInCourseEr
     );
   }
 }
+
+export class QuestionnaireVersionMismatchError extends TaggedError<"QuestionnaireVersionMismatchError"> {
+  constructor(
+    public readonly questionnaireId: UUID,
+    public readonly expectedVersion: number,
+    public readonly actualVersion: number,
+  ) {
+    super(
+      "QuestionnaireVersionMismatchError",
+      `Questionnaire version mismatch: expected ${expectedVersion}, but got ${actualVersion}`,
+    );
+  }
+}
+
+export class QuestionnaireSectionNotFoundError extends TaggedError<"QuestionnaireSectionNotFoundError"> {
+  constructor(public readonly questionnaireId: UUID) {
+    super("QuestionnaireSectionNotFoundError");
+    this.message = `Questionnaire section with ID ${questionnaireId} not found`;
+  }
+}
+
+export class IncompleteQuestionnaireResponseError extends TaggedError<"IncompleteQuestionnaireResponseError"> {
+  constructor(
+    public readonly questionnaireId: UUID,
+    public readonly providedAnswers: number,
+    public readonly requiredAnswers: number,
+  ) {
+    super(
+      "IncompleteQuestionnaireResponseError",
+      `Incomplete questionnaire response: ${providedAnswers} answers provided, but ${requiredAnswers} questions need to be answered`,
+    );
+  }
+}

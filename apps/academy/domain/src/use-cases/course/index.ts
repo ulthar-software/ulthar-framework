@@ -1,3 +1,4 @@
+export * from "./add-questionnaire-response.js";
 export * from "./change-course-description.js";
 export * from "./change-course-title.js";
 export * from "./create-course.js";
