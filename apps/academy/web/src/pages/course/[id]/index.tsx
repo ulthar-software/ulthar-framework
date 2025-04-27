@@ -174,34 +174,11 @@ export default function CourseView() {
                   ))}
                 </section>
 
-                {/* Navigation controls */}
-                <div className="mt-8 flex justify-between border-t border-gray-700 pt-4">
-                  {/* Previous unit button */}
-                  {nextAndPrevUnitIds.prevUnitId ? (
-                    <Anchor
-                      href={`/course/${id}?unitId=${nextAndPrevUnitIds.prevUnitId}`}
-                      className="flex items-center text-primary hover:text-primary-light transition-colors"
-                    >
-                      <Icon name="bx-chevron-left" className="text-xl mr-1" />
-                      Unidad anterior
-                    </Anchor>
-                  ) : (
-                    <div></div> // Empty div to maintain layout
-                  )}
-
-                  {/* Next unit button */}
-                  {nextAndPrevUnitIds.nextUnitId ? (
-                    <Anchor
-                      href={`/course/${id}?unitId=${nextAndPrevUnitIds.nextUnitId}`}
-                      className="flex items-center text-primary hover:text-primary-light transition-colors"
-                    >
-                      Siguiente unidad
-                      <Icon name="bx-chevron-right" className="text-xl ml-1" />
-                    </Anchor>
-                  ) : (
-                    <div></div> // Empty div to maintain layout
-                  )}
-                </div>
+                <NavigationControls
+                  id={id as UUID}
+                  prevUnitId={nextAndPrevUnitIds.prevUnitId}
+                  nextUnitId={nextAndPrevUnitIds.nextUnitId}
+                />
               </>
             )}
           </section>
@@ -215,6 +192,44 @@ export default function CourseView() {
 
       <PlatformFooter />
     </PageContainer>
+  );
+}
+
+function NavigationControls({
+  prevUnitId,
+  nextUnitId,
+  id,
+}: PrevAndNextUnitIds & { id: UUID }) {
+  return (
+    <>
+      <div className="mt-8 flex justify-between border-t border-gray-700 pt-4">
+        {/* Previous unit button */}
+        {prevUnitId ? (
+          <Anchor
+            href={`/course/${id}?unitId=${prevUnitId}`}
+            className="flex items-center text-primary hover:text-primary-light transition-colors"
+          >
+            <Icon name="bx-chevron-left" className="text-xl mr-1" />
+            Unidad anterior
+          </Anchor>
+        ) : (
+          <div></div> // Empty div to maintain layout
+        )}
+
+        {/* Next unit button */}
+        {nextUnitId ? (
+          <Anchor
+            href={`/course/${id}?unitId=${nextUnitId}`}
+            className="flex items-center text-primary hover:text-primary-light transition-colors"
+          >
+            Siguiente unidad
+            <Icon name="bx-chevron-right" className="text-xl ml-1" />
+          </Anchor>
+        ) : (
+          <div></div> // Empty div to maintain layout
+        )}
+      </div>
+    </>
   );
 }
 
