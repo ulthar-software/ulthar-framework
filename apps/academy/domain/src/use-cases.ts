@@ -1,4 +1,3 @@
-import { GetCourseDetailsUseCase } from "./use-cases/course/get-course-details.js";
 import {
   AddModuleToCourseUseCase,
   AddUnitToModuleUseCase,
@@ -9,6 +8,8 @@ import {
   CreateTagUseCase,
   EnrollStudentInCourseUseCase,
   GetAllCoursesUseCase,
+  GetCourseDetailsUseCase,
+  GetResourcesByUnitTagsUseCase,
   GetUnitWithSectionsUseCase,
   InviteUserUseCase,
   LoginUseCase,
@@ -28,6 +29,7 @@ export const UseCases = [
   GetCourseDetailsUseCase,
   GetUnitWithSectionsUseCase,
   CreateTagUseCase,
+  GetResourcesByUnitTagsUseCase,
 ] as const;
 
 export type UseCases = typeof UseCases;
