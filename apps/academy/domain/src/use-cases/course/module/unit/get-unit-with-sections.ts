@@ -40,7 +40,7 @@ export interface GetUnitWithSectionsOutput {
 export const GetUnitWithSectionsUseCase = new UseCase({
   name: "getUnitWithSections",
   type: "query",
-  auth: AccessPolicy.LoggedIn(),
+  auth: AccessPolicy.Authenticated(),
   inputSchema: GetUnitWithSectionsInputModel,
   effect: (
     { state, currentUser }: GetUnitWithSectionsDependencies,

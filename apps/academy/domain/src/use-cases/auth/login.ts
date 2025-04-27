@@ -25,7 +25,7 @@ export interface LoginDependencies {
 export const LoginUseCase = new UseCase({
   name: "login",
   type: "query",
-  auth: AccessPolicy.ANONYMOUS(),
+  auth: AccessPolicy.Anonymous(),
   inputSchema: LoginInputModel,
   effect: ({ state, crypto, auth }: LoginDependencies, input: LoginInput) =>
     state

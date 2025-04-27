@@ -41,7 +41,7 @@ export interface GetCourseDetailsOutput {
 export const GetCourseDetailsUseCase = new UseCase({
   name: "getCourseDetails",
   type: "query",
-  auth: AccessPolicy.LoggedIn(),
+  auth: AccessPolicy.Authenticated(),
   inputSchema: GetCourseDetailsInputModel,
   effect: (
     { state, currentUser }: GetCourseDetailsDependencies,

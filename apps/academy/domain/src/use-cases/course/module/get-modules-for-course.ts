@@ -33,7 +33,7 @@ export interface GetModulesForCourseOutput {
 export const GetModulesForCourseUseCase = new UseCase({
   name: "getModulesForCourse",
   type: "query",
-  auth: AccessPolicy.LoggedIn(),
+  auth: AccessPolicy.Authenticated(),
   inputSchema: GetModulesForCourseInputModel,
   effect: (
     { state, currentUser }: GetModulesForCourseDependencies,

@@ -2,11 +2,11 @@ import type { UseCaseAuth } from "../utils/use-case.js";
 import type { Permission } from "./permission.js";
 
 export const AccessPolicy = {
-  ANONYMOUS: () => ({
+  Anonymous: () => ({
     isAuthRequired: false,
     requiredPermissions: [],
   }),
-  LoggedIn: () => ({
+  Authenticated: () => ({
     isAuthRequired: true,
     requiredPermissions: [],
   }),

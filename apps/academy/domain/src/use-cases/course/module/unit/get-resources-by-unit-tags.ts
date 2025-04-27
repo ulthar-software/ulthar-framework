@@ -49,7 +49,7 @@ export interface GetResourcesByUnitTagsOutput {
 export const GetResourcesByUnitTagsUseCase = new UseCase({
   name: "getResourcesByUnitTags",
   type: "query",
-  auth: AccessPolicy.LoggedIn(),
+  auth: AccessPolicy.Authenticated(),
   inputSchema: GetResourcesByUnitTagsInputModel,
   effect: (
     { state, currentUser }: GetResourcesByUnitTagsDependencies,

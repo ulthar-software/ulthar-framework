@@ -18,7 +18,7 @@ export interface GetAllCoursesOutput {
 export const GetAllCoursesUseCase = new UseCase({
   name: "getAllCourses",
   type: "query",
-  auth: AccessPolicy.LoggedIn(),
+  auth: AccessPolicy.Authenticated(),
   effect: ({
     state,
     currentUser,
