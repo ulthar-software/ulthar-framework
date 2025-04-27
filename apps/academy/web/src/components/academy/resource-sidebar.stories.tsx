@@ -8,7 +8,7 @@ const meta: Meta<typeof ResourceSidebar> = {
   component: ResourceSidebar,
   parameters: {
     layout: "centered",
-    pageLayout: "page",
+    pageLayout: "full-providers",
   },
 };
 

@@ -13,6 +13,7 @@ import { Toaster } from "react-hot-toast";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import type { PartialStoryFn, StoryContext } from "storybook/internal/types";
 import { AuthContext } from "../auth/auth-context.ts";
+import { ModalProvider } from "../modal/modal-provider.tsx";
 import type { ClientRPC } from "../rpc/rpc-context.ts";
 import { EmptyRPCContext, RpcProvider } from "../rpc/rpc-context.ts";
 import { MockErrorPage } from "./mock-error-page.tsx";
@@ -49,7 +50,7 @@ export function Decorator(
     : currentPath;
 
   switch (pageLayout) {
-    case "page":
+    case "full-providers":
       return (
         <MemoryRouter initialEntries={["/", currentPathWithQuery]}>
           <AuthContext.Provider
@@ -66,22 +67,24 @@ export function Decorator(
                 ...(rpcContext as Partial<ClientRPC>),
               }}
             >
-              <NavigationTracker />
-              <Routes>
-                {route && (
-                  <Route path={route.path as string} element={<Story />} />
-                )}
-                <Route
-                  path="/*"
-                  element={
-                    !route ? (
-                      <Story />
-                    ) : (
-                      <MockErrorPage originalLocation={currentPath} />
-                    )
-                  }
-                />
-              </Routes>
+              <ModalProvider>
+                <NavigationTracker />
+                <Routes>
+                  {route && (
+                    <Route path={route.path as string} element={<Story />} />
+                  )}
+                  <Route
+                    path="/*"
+                    element={
+                      !route ? (
+                        <Story />
+                      ) : (
+                        <MockErrorPage originalLocation={currentPath} />
+                      )
+                    }
+                  />
+                </Routes>
+              </ModalProvider>
             </RpcProvider>
             <Toaster />
           </AuthContext.Provider>

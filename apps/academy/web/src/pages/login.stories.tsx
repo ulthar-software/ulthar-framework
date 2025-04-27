@@ -8,7 +8,7 @@ const meta: Meta<typeof Login> = {
   title: "Pages/Login",
   parameters: {
     layout: "fullscreen",
-    pageLayout: "page",
+    pageLayout: "full-providers",
   },
 };
 export default meta;
