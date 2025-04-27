@@ -1,13 +1,14 @@
 import type { Effect } from "../../effect/effect.js";
 import { TaggedError } from "../../error/tagged-error.js";
+import type { UnexpectedError } from "../../error/unexpected-error.js";
 import type { UUID } from "../../types/uuid.js";
 
 export interface CryptoService {
-  hashPassword(password: string): Effect<string, InvalidPrivateKeyError>;
+  hashPassword(password: string): Effect<string, UnexpectedError>;
   verifyPassword(
     password: string,
     hash: string,
-  ): Effect<void, InvalidPasswordError | InvalidPrivateKeyError>;
+  ): Effect<void, InvalidPasswordError | UnexpectedError>;
   randomUUID(): UUID;
 }
 
@@ -16,15 +17,6 @@ export class InvalidPasswordError extends TaggedError<"InvalidPasswordError"> {
     super(
       "InvalidPasswordError",
       "The password is invalid or was not provided.",
-    );
-  }
-}
-
-export class InvalidPrivateKeyError extends TaggedError<"InvalidPrivateKeyError"> {
-  constructor() {
-    super(
-      "InvalidPrivateKeyError",
-      "The private key is invalid or was not provided.",
     );
   }
 }

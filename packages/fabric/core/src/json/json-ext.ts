@@ -15,7 +15,7 @@ import type {
 export const JSONExt = {
   parse<T>(json: string): Result<T, JSONParsingError> {
     try {
-      return Result.ok(JSON.parse(json, reviver));
+      return Result.ok(JSON.parse(json, JSONExtReviver));
     } catch (e: unknown) {
       return Result.failWith(new JSONParsingError((e as Error).message));
     }
@@ -32,7 +32,7 @@ export const JSONExt = {
 
   stringify<T>(value: T): Result<string, JSONStringifyError> {
     try {
-      return Result.ok(JSON.stringify(value, replacer));
+      return Result.ok(JSON.stringify(value, JSONExtSerializer));
     } catch (e: unknown) {
       return Result.failWith(new JSONStringifyError((e as Error).message));
     }
@@ -50,7 +50,7 @@ export const JSONExt = {
   },
 } as const;
 
-export function reviver(_key: string, value: unknown): any {
+export function JSONExtReviver(_key: string, value: unknown): any {
   if (isJSONSerializedType(value)) {
     const transformer = transformers.get(value._type);
     if (!transformer) {
@@ -61,7 +61,7 @@ export function reviver(_key: string, value: unknown): any {
   return value;
 }
 
-export function replacer(_key: string, value: any): any {
+export function JSONExtSerializer(_key: string, value: any): any {
   for (const transformer of transformers.values()) {
     if (transformer.typeMatches(value)) {
       return transformer.serialize(value);

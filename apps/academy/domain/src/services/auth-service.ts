@@ -1,4 +1,4 @@
-import type { Effect, UUID } from "@fabric/core";
+import type { Effect, UnexpectedError, UUID } from "@fabric/core";
 import { TaggedError } from "@fabric/core";
 import type { User } from "../models/user.js";
 import type { Permission } from "../security/permission.js";
@@ -14,7 +14,7 @@ export interface AuthService {
    * @param user The user for whom to generate the access token.
    * @returns An effect that resolves to the generated access token.
    */
-  generateAccessToken(user: User): Effect<string>;
+  generateAccessToken(user: User): Effect<string, UnexpectedError>;
 
   /**
    * Validates the given access token.

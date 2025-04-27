@@ -23,6 +23,10 @@ export interface DefaultDependencies {
   currentUser: UserAccess | undefined;
 }
 
+export type UseCaseDependencies<
+  TUseCase extends UseCase<any, any, any, any, any>,
+> = TUseCase extends UseCase<any, infer TDeps, any, any, any> ? TDeps : never;
+
 export type UseCaseOutput<TUseCase extends UseCase<any, any, any, any, any>> =
   TUseCase extends UseCase<any, any, any, infer TOutput, infer TError>
     ? Promise<Result<TOutput, TError>>

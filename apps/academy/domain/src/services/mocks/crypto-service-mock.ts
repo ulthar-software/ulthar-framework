@@ -1,4 +1,3 @@
-import type { InvalidPrivateKeyError } from "@fabric/core";
 import { Effect, InvalidPasswordError, Result } from "@fabric/core";
 import crypto, { type UUID } from "node:crypto";
 import { type DomainCryptoService } from "../crypto-service.js";
@@ -8,7 +7,7 @@ export class CryptoServiceMock implements DomainCryptoService {
     return crypto.randomUUID();
   }
 
-  hashPassword(password: string): Effect<string, InvalidPrivateKeyError> {
+  hashPassword(password: string): Effect<string> {
     return Effect.from(() => {
       return `%%${password}%%`;
     });
@@ -17,7 +16,7 @@ export class CryptoServiceMock implements DomainCryptoService {
   verifyPassword(
     password: string,
     hash: string,
-  ): Effect<void, InvalidPasswordError | InvalidPrivateKeyError> {
+  ): Effect<void, InvalidPasswordError> {
     return Effect.fromResult(() => {
       if (hash === `%%${password}%%`) {
         return Result.ok();

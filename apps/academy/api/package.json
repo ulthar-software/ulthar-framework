@@ -6,14 +6,26 @@
   "main": "dist/index.js",
   "devDependencies": {
     "@fabric/testing": "workspace:^",
+    "@types/bcrypt": "^5",
+    "@types/cors": "^2",
+    "@types/express": "^5",
+    "@types/jsonwebtoken": "^9",
+    "@types/morgan": "^1",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3",
     "vitest": "^3.0.6"
   },
   "dependencies": {
-    "@fabric/core": "workspace:^"
+    "@fabric/core": "workspace:^",
+    "@fabric/sqlite-store": "workspace:^",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0"
   },
   "scripts": {
-    "dev": "tsc build --watch --preserveWatchOutput",
+    "dev": "tsx watch src/main.ts",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:coverage": "vitest run --coverage",

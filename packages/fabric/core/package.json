@@ -28,5 +28,8 @@
     "test:coverage": "vitest run --coverage",
     "check": "tsc",
     "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@ulthar/academy-domain": "workspace:^"
   }
 }

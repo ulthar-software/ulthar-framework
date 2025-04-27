@@ -5,4 +5,5 @@ export * from "./keyof.js";
 export * from "./maybe-promise.js";
 export * from "./record.js";
 export * from "./semver.js";
+export * from "./union-to-intersection.js";
 export * from "./uuid.js";
