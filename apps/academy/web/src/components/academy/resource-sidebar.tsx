@@ -37,7 +37,6 @@ const resourceTypeDisplayMap: ResourceTypeDisplay = {
     label: "Videos",
     className: "bg-purple-900 text-white",
   },
-
   DOCUMENTATION: {
     label: "Documentación",
     className: "bg-amber-900 text-white",
