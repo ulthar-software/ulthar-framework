@@ -45,8 +45,9 @@ export function Button({
     <button
       type={type}
       className={clx(
-        "p-2 flex justify-center items-center gap-2 rounded cursor-pointer hover:shadow-md",
+        "p-2 flex justify-center items-center gap-2 rounded hover:shadow-md",
         disabled && "opacity-50 cursor-not-allowed",
+        !disabled && "cursor-pointer",
         className,
       )}
       disabled={disabled}

@@ -72,7 +72,7 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
   const hasFilteredResources = filteredResources.length > 0;
 
   return (
-    <aside className="hidden lg:block w-96 bg-dark-alt p-4 shrink-0 h-full flex flex-col">
+    <aside className="hidden w-96 bg-dark-alt p-4 shrink-0 h-full md:flex flex-col">
       <h2 className="text-lg font-semibold text-primary mb-4">Recursos</h2>
 
       {isLoading && (

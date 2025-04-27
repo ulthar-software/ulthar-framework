@@ -3,11 +3,11 @@ import type {
   QuestionnaireSectionContent,
 } from "@ulthar/academy-domain";
 import { useState } from "react";
-import { MarkdownHooks } from "react-markdown";
-import rehypeStarryNight from "rehype-starry-night";
-import remarkGfm from "remark-gfm";
+import { useModal } from "../../../utils/modal/modal-hooks.tsx";
 import { Button } from "../../ui/button.tsx";
 import "./dark.css";
+import { QuestionnaireModal } from "./questionnaire-modal.tsx";
+import { QuestionnaireResultsModal } from "./questionnaire-results-modal.tsx";
 import { SectionCard } from "./section-card.tsx";
 
 export interface QuestionnaireContentSectionProps {
@@ -17,12 +17,16 @@ export interface QuestionnaireContentSectionProps {
 export function QuestionnaireContentSectionBlock({
   section,
 }: QuestionnaireContentSectionProps) {
-  const [quizState, setQuizState] = useState<
-    "initial" | "in-progress" | "completed"
-  >("initial");
-  const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [showCorrectAnswers, setShowCorrectAnswers] = useState(false);
-  const [score, setScore] = useState({ correct: 0, total: 0, percentage: 0 });
+  const { showModal } = useModal();
+  const [answers, setAnswers] = useState<Record<number, number> | null>(null);
+  const [score, setScore] = useState({
+    correct: 0,
+    total: 0,
+    percentage: 0,
+    isPassing: false,
+  });
+
+  const answersSubmitted = answers !== null;
 
   const content = section.content as QuestionnaireSectionContent;
 
@@ -40,220 +44,123 @@ export function QuestionnaireContentSectionBlock({
     ? [...questionsToShow].sort(() => Math.random() - 0.5)
     : questionsToShow;
 
+  const isPerfectScore = score.percentage === 100;
+
   const handleStartQuiz = () => {
-    setQuizState("in-progress");
-    setAnswers({});
-    setShowCorrectAnswers(false);
-    setScore({ correct: 0, total: 0, percentage: 0 });
+    setAnswers(null);
+    const [closeModal] = showModal(
+      <QuestionnaireModal
+        questions={questions}
+        onCancel={() => {
+          closeModal();
+        }}
+        onSubmit={(answers) => {
+          closeModal();
+          let correctCount = 0;
+
+          questions.forEach((question, questionIndex) => {
+            const selectedOptionIndex = answers[questionIndex];
+            if (question.options[selectedOptionIndex].isCorrect) {
+              correctCount++;
+            }
+          });
+
+          const totalQuestions = questions.length;
+          const percentage = Math.round((correctCount / totalQuestions) * 100);
+
+          const newScore = {
+            correct: correctCount,
+            total: totalQuestions,
+            percentage,
+            isPassing: percentage >= passingScore,
+          };
+          setAnswers(answers);
+          setScore(newScore);
+        }}
+      />,
+    );
   };
 
-  const handleSelectOption = (questionIndex: number, optionIndex: number) => {
-    setAnswers((prev) => ({ ...prev, [questionIndex]: optionIndex }));
-  };
+  function showCorrectAnswers() {
+    if (!answersSubmitted) return;
 
-  const handleSubmitQuiz = () => {
-    let correctCount = 0;
-
-    questions.forEach((question, questionIndex) => {
-      const selectedOptionIndex = answers[questionIndex];
-      if (question.options[selectedOptionIndex].isCorrect) {
-        correctCount++;
-      }
-    });
-
-    const totalQuestions = questions.length;
-    const percentage = Math.round((correctCount / totalQuestions) * 100);
-
-    setScore({
-      correct: correctCount,
-      total: totalQuestions,
-      percentage,
-    });
-
-    setQuizState("completed");
-  };
-
-  const isQuizComplete = Object.keys(answers).length === questions.length;
-  const isPassing = score.percentage >= passingScore;
-
-  const renderMarkdown = (content: string) => (
-    <MarkdownHooks
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeStarryNight]}
-    >
-      {content}
-    </MarkdownHooks>
-  );
+    const [closeModal] = showModal(
+      <QuestionnaireResultsModal
+        questions={questions}
+        answers={answers}
+        closeModal={() => {
+          closeModal();
+        }}
+      />,
+    );
+  }
 
   return (
     <SectionCard section={section}>
       <div className="text-gray-200">
-        {quizState === "initial" && (
-          <div className="flex flex-col items-center p-4 bg-gray-800 rounded-md text-center">
-            <p className="text-xl font-semibold mb-4">
-              Este cuestionario tiene{" "}
-              {content.questionsToShow ?? questions.length} preguntas.
-              {content.passingScore && (
-                <span> Puntaje mínimo: {passingScore}%</span>
-              )}
-            </p>
-            <Button
-              onClick={handleStartQuiz}
-              className="bg-primary hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition-colors"
-            >
-              Iniciar cuestionario
-            </Button>
-          </div>
-        )}
-
-        {quizState === "in-progress" && (
-          <div className="space-y-6">
-            {questions.map((question, questionIndex) => (
-              <div key={questionIndex} className="p-4 bg-gray-800 rounded-md">
-                <div className="mb-3 font-semibold">
-                  <span className="mr-2">Pregunta {questionIndex + 1}:</span>
-                  <span className="markdown-content">
-                    {renderMarkdown(question.questionText)}
-                  </span>
-                </div>
-                <div className="space-y-2 ml-4">
-                  {question.options.map((option, optionIndex) => (
-                    <div key={optionIndex} className="flex items-center">
-                      <input
-                        type="radio"
-                        id={`q${questionIndex}-o${optionIndex}`}
-                        name={`question-${questionIndex}`}
-                        checked={answers[questionIndex] === optionIndex}
-                        onChange={() => {
-                          handleSelectOption(questionIndex, optionIndex);
-                        }}
-                        className="mr-3"
-                      />
-                      <label
-                        htmlFor={`q${questionIndex}-o${optionIndex}`}
-                        className="markdown-content cursor-pointer"
-                      >
-                        {renderMarkdown(option.text)}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-
-            <div className="mt-6 flex justify-center">
+        <div className="flex flex-col items-center p-4 bg-gray-800 rounded-md text-center">
+          {!answersSubmitted && (
+            <>
+              <p className="text-xl font-semibold mb-4">
+                Este cuestionario tiene{" "}
+                {content.questionsToShow ?? questions.length} preguntas.
+                {content.passingScore && (
+                  <span> Puntaje mínimo: {passingScore}%</span>
+                )}
+              </p>
               <Button
-                onClick={handleSubmitQuiz}
-                disabled={!isQuizComplete}
-                className={`py-2 px-4 rounded-md transition-colors ${
-                  isQuizComplete
-                    ? "bg-green-600 hover:bg-green-700 text-white"
-                    : "bg-gray-600 text-gray-400 cursor-not-allowed"
-                }`}
+                onClick={handleStartQuiz}
+                className="bg-primary hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition-colors"
               >
-                Enviar cuestionario
+                Iniciar cuestionario
               </Button>
-            </div>
-          </div>
-        )}
+            </>
+          )}
 
-        {quizState === "completed" && (
-          <div className="space-y-6">
-            <div className="p-4 bg-gray-800 rounded-md text-center">
-              <h4 className="text-xl font-semibold mb-2">
+          {answersSubmitted && (
+            <>
+              <p className="text-xl font-semibold mb-4">
                 Resultado del cuestionario: {score.correct} de {score.total}{" "}
                 correctas
-              </h4>
+              </p>
               <div className="text-lg mb-4">
                 Tu puntaje:{" "}
-                <span className={isPassing ? "text-green-400" : "text-red-400"}>
+                <span
+                  className={
+                    score.isPassing ? "text-green-400" : "text-red-400"
+                  }
+                >
                   {score.percentage}%
                 </span>
-                {isPassing
-                  ? " - ¡Felicidades! Aprobaste."
-                  : " - No alcanzaste el puntaje mínimo."}
+                {isPerfectScore && " - ¡Felicitaciones! Lo hiciste muy bien."}
+                {!isPerfectScore &&
+                  score.isPassing &&
+                  " - Todavía se puede mejorar. Consultá los materiales y volvé a intentarlo."}
+                {!score.isPassing &&
+                  " - Aún no alcanzaste el puntaje mínimo. Consultá los materiales y volvé a intentarlo."}
               </div>
 
               <div className="flex justify-center gap-4">
-                <button
-                  onClick={() => {
-                    setShowCorrectAnswers(!showCorrectAnswers);
-                  }}
+                <Button
                   className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition-colors"
+                  onClick={showCorrectAnswers}
                 >
-                  {showCorrectAnswers
-                    ? "Ocultar respuestas"
-                    : "Mostrar respuestas correctas"}
-                </button>
-                <button
-                  onClick={handleStartQuiz}
+                  Mostrar respuestas correctas
+                </Button>
+                <Button
                   className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition-colors"
+                  onClick={handleStartQuiz}
                 >
                   Reintentar cuestionario
-                </button>
+                </Button>
               </div>
-            </div>
-
-            {showCorrectAnswers && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold">Revisar respuestas:</h4>
-                {questions.map((question, questionIndex) => (
-                  <div
-                    key={questionIndex}
-                    className="p-4 bg-gray-800 rounded-md"
-                  >
-                    <div className="mb-3 font-semibold">
-                      <span className="mr-2">
-                        Pregunta {questionIndex + 1}:
-                      </span>
-                      <span className="markdown-content">
-                        {renderMarkdown(question.questionText)}
-                      </span>
-                    </div>
-                    <div className="space-y-2 ml-4">
-                      {question.options.map((option, optionIndex) => {
-                        const isSelected =
-                          answers[questionIndex] === optionIndex;
-                        const selectedColor = isSelected
-                          ? option.isCorrect
-                            ? "border-green-500 bg-green-900/20"
-                            : "border-red-500 bg-red-900/20"
-                          : "";
-
-                        const correctHighlight = option.isCorrect
-                          ? "border-green-500"
-                          : "";
-
-                        return (
-                          <div
-                            key={optionIndex}
-                            className={`flex items-center p-2 border ${
-                              isSelected ? selectedColor : correctHighlight
-                            } rounded-md ${option.isCorrect ? "font-medium" : ""}`}
-                          >
-                            <span className="markdown-content">
-                              {renderMarkdown(option.text)}
-                            </span>
-                            {option.isCorrect && (
-                              <span className="ml-auto text-green-400">
-                                ✓ Correcta
-                              </span>
-                            )}
-                            {isSelected && !option.isCorrect && (
-                              <span className="ml-auto text-red-400">
-                                ✗ Incorrecta
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+              <p className="text-sm text-gray-400 mt-2">
+                Si tienes dudas, revisá los recursos de estudio o consultá por
+                discord.
+              </p>
+            </>
+          )}
+        </div>
       </div>
     </SectionCard>
   );

@@ -10,6 +10,7 @@ const meta: Meta<typeof QuestionnaireContentSectionBlock> = {
     backgrounds: {
       default: "dark",
     },
+    pageLayout: "full-providers",
   },
 };
 
