@@ -126,7 +126,7 @@ export default function CourseView() {
       )}
 
       {courseData && (
-        <div className="flex flex-grow h-[calc(100vh-4rem)]">
+        <section className="flex flex-grow h-[calc(100vh-8rem)]">
           {/* Course sidebar component */}
           <CourseSidebar
             courseData={courseData}
@@ -187,7 +187,7 @@ export default function CourseView() {
           {id && unitId && unitData && (
             <ResourceSidebar courseId={id as UUID} unitId={unitId as UUID} />
           )}
-        </div>
+        </section>
       )}
 
       <PlatformFooter />

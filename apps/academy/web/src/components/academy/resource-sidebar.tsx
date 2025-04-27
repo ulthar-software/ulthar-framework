@@ -72,7 +72,7 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
   const hasFilteredResources = filteredResources.length > 0;
 
   return (
-    <aside className="hidden lg:block w-96 bg-dark-alt p-4 shrink-0 h-full">
+    <aside className="hidden lg:block w-96 bg-dark-alt p-4 shrink-0 h-full flex flex-col">
       <h2 className="text-lg font-semibold text-primary mb-4">Recursos</h2>
 
       {isLoading && (
@@ -88,7 +88,7 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
       )}
 
       {hasResources && !isLoading && !errors && (
-        <>
+        <div className="flex flex-col h-full overflow-hidden">
           <div className="mb-4">
             <div className="relative">
               <input
@@ -142,45 +142,49 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
             </button>
           </div>
 
-          {hasFilteredResources ? (
-            <div className="space-y-4">
-              {filteredResources.map((resource) => (
-                <div key={resource.id} className="p-3 bg-gray-800 rounded-md">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-white">{resource.title}</h3>
-                    {activeTab === "ALL" && (
-                      <span
-                        className={clx(
-                          "text-xs px-2 py-1 rounded",
-                          resourceTypeDisplayMap[resource.type].className,
-                        )}
+          <div className="overflow-y-auto flex-grow">
+            {hasFilteredResources ? (
+              <div className="space-y-4">
+                {filteredResources.map((resource) => (
+                  <div key={resource.id} className="p-3 bg-gray-800 rounded-md">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium text-white">
+                        {resource.title}
+                      </h3>
+                      {activeTab === "ALL" && (
+                        <span
+                          className={clx(
+                            "text-xs px-2 py-1 rounded",
+                            resourceTypeDisplayMap[resource.type].className,
+                          )}
+                        >
+                          {resourceTypeDisplayMap[resource.type].label}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-300 mb-2">
+                      {resource.description}
+                    </p>
+                    <div className="mt-2">
+                      <Anchor
+                        href={resource.url}
+                        className="text-primary hover:text-primary-light text-sm"
+                        external
                       >
-                        {resourceTypeDisplayMap[resource.type].label}
-                      </span>
-                    )}
+                        Ver recurso{" "}
+                        <Icon name="bx-link-external" className="inline" />
+                      </Anchor>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-300 mb-2">
-                    {resource.description}
-                  </p>
-                  <div className="mt-2">
-                    <Anchor
-                      href={resource.url}
-                      className="text-primary hover:text-primary-light text-sm"
-                      external
-                    >
-                      Ver recurso{" "}
-                      <Icon name="bx-link-external" className="inline" />
-                    </Anchor>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 bg-gray-800 rounded-md text-gray-300">
-              No hay recursos que coincidan con los filtros seleccionados.
-            </div>
-          )}
-        </>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 bg-gray-800 rounded-md text-gray-300">
+                No hay recursos que coincidan con los filtros seleccionados.
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {!isLoading && !errors && !hasResources && (
