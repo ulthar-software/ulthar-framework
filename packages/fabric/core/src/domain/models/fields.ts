@@ -188,6 +188,7 @@ export interface ObjectArrayField<T extends Record<string, FieldDefinition>>
   extends TaggedVariant<"ObjectArrayField">,
     BaseField {
   subModel: T;
+  minLength?: number;
 }
 
 export interface ArrayField<TField extends FieldDefinition>

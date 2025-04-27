@@ -138,6 +138,10 @@ export const fieldParsers: FieldParsers = {
   ObjectArrayField: function (f, v) {
     return parseOptionality(f, v, (v) => {
       if (Array.isArray(v)) {
+        if (f.minLength && v.length < f.minLength) {
+          return Result.failWith(new InvalidFieldTypeError());
+        }
+
         const result = Result.fromArray(
           v.map((value) => parseSubModel(f.subModel, value)),
         );
