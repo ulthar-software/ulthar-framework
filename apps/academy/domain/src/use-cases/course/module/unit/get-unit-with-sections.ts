@@ -10,15 +10,12 @@ import type { TaggedContentSection } from "../../../../models/sections/index.js"
 import { SectionType } from "../../../../models/sections/index.js";
 import type { Unit } from "../../../../models/unit.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
-import { Permission } from "../../../../security/permission.js";
 import type { UserAccess } from "../../../../services/auth-service.js";
 import type { DomainStateStore } from "../../../../services/state-store.js";
 import { UseCase } from "../../../../utils/use-case.js";
-import {
-  CourseNotFoundError,
-  NotEnrolledInCourseError,
-  UnitNotFoundError,
-} from "../../errors.js";
+import type { NotEnrolledInCourseError } from "../../errors.js";
+import { CourseNotFoundError, UnitNotFoundError } from "../../errors.js";
+import { assertValidatedInCourse } from "../../utils/assert-validated-in-course.js";
 
 export interface GetUnitWithSectionsDependencies {
   state: DomainStateStore;
@@ -66,26 +63,6 @@ export const GetUnitWithSectionsUseCase = new UseCase({
       .flatMap((unit) => getUnitWithSections(state, unit));
   },
 });
-
-function assertValidatedInCourse(
-  state: DomainStateStore,
-  currentUser: UserAccess,
-  courseId: UUID,
-): Effect<void, NotEnrolledInCourseError> {
-  // If user doesn't have VIEW_COURSE permission, check if they're enrolled
-  if (!currentUser.permissions.includes(Permission.VIEW_COURSE)) {
-    return state
-      .from("enrollments")
-      .where({
-        userId: currentUser.id,
-        courseId,
-      })
-      .selectOneOrFail()
-      .discardValue()
-      .mapError(() => new NotEnrolledInCourseError(currentUser.id, courseId));
-  }
-  return Effect.ok();
-}
 
 function getUnitFromMaybeId(
   state: DomainStateStore,
