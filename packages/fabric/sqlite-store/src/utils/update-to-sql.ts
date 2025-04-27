@@ -17,7 +17,7 @@ export function updateToSql(
       ...recordToSqlParamRecord(model, {
         ...query.set,
       }),
-      ...filterToParams(model, query.where),
+      ...filterToParams(model, [], query.where),
     },
   ];
 }

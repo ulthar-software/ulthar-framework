@@ -17,6 +17,7 @@ import {
   FILTER_OPTION_TYPE_KEY,
   FILTER_OPTION_VALUE_KEY,
 } from "@fabric/core";
+import type { JoinOptions } from "../../../core/dist/domain/value-store/queries/read/join-types.js";
 import { identifierToSQL } from "./identifier-to-sql.js";
 import { keyToParamKey } from "./record-utils.js";
 import { fieldValueToSQL } from "./value-to-sql.js";
@@ -33,15 +34,21 @@ export function filterToSQL(filterOptions?: FilterOptions) {
 
 export function filterToParams(
   collection: Model,
+  joins: JoinOptions<any, any, any>[] = [],
   filterOptions?: FilterOptions,
 ) {
   if (!filterOptions) return {};
 
+  const joinsMap = joins.reduce<Record<string, Model>>((acc, join) => {
+    acc[join.as] = join.model;
+    return acc;
+  }, {});
+
   if (Array.isArray(filterOptions)) {
-    return getParamsFromMultiFilterOption(collection, filterOptions);
+    return getParamsFromMultiFilterOption(collection, joinsMap, filterOptions);
   }
 
-  return getParamsFromSingleFilterOption(collection, filterOptions);
+  return getParamsFromSingleFilterOption(collection, joinsMap, filterOptions);
 }
 
 function getWhereFromMultiOption(filterOptions: MultiFilterOption) {
@@ -69,7 +76,7 @@ function getWhereParamKey(key: string, opts: { postfix?: string } = {}) {
 }
 
 function getWhereKeyForParamKey(key: string, opts: { postfix?: string } = {}) {
-  return `${WHERE_KEY_PREFIX}${key}${opts.postfix ?? ""}`;
+  return `${WHERE_KEY_PREFIX}${key}${opts.postfix ?? ""}`.replace(/\./g, "_");
 }
 
 function getWhereFromKeyValue(
@@ -107,12 +114,13 @@ function getWhereFromKeyValue(
 
 function getParamsFromMultiFilterOption(
   collection: Model,
+  joins: Record<string, Model>,
   filterOptions: MultiFilterOption,
 ) {
   return filterOptions.reduce(
     (acc, filterOption, i) => ({
       ...acc,
-      ...getParamsFromSingleFilterOption(collection, filterOption, {
+      ...getParamsFromSingleFilterOption(collection, joins, filterOption, {
         postfix: `_${i}`,
       }),
     }),
@@ -122,6 +130,7 @@ function getParamsFromMultiFilterOption(
 
 function getParamsFromSingleFilterOption(
   collection: Model,
+  joins: Record<string, Model>,
   filterOptions: SingleFilterOption,
   opts: { postfix?: string } = {},
 ) {
@@ -132,8 +141,13 @@ function getParamsFromSingleFilterOption(
     .reduce(
       (acc, [key, value]) => ({
         ...acc,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        ...getParamsForFilterKeyValue(collection.fields[key], key, value, opts),
+
+        ...getParamsForFilterKeyValue(
+          getField(collection, joins, key),
+          key,
+          value,
+          opts,
+        ),
       }),
       {},
     );
@@ -181,4 +195,34 @@ function getParamsForFilterKeyValue(
       value,
     ),
   };
+}
+function getField(
+  collection: Model,
+  joins: Record<string, Model>,
+  key: string,
+): FieldDefinition {
+  if (key.includes(".")) {
+    return getFieldFromJoin(joins, key);
+  } else {
+    return collection.fields[key];
+  }
+}
+function getFieldFromJoin(
+  joins: Record<string, Model>,
+  key: string,
+): FieldDefinition {
+  const [joinKey, fieldKey] = key.split(".");
+
+  const model = joins[joinKey];
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (!model) {
+    throw new Error(`Join not found for key: ${key}`);
+  }
+
+  if (!model.fields[fieldKey]) {
+    throw new Error(`Field not found for key: ${key}`);
+  }
+
+  return model.fields[fieldKey];
 }

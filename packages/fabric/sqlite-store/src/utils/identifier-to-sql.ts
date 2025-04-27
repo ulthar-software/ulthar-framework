@@ -1,3 +1,6 @@
 export function identifierToSQL(name: string) {
-  return `\`${name}\``;
+  return name
+    .split(".")
+    .map((part) => `\`${part}\``)
+    .join(".");
 }

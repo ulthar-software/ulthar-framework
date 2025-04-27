@@ -70,5 +70,5 @@ export function recordToSqlSet(record: Record<string, any>) {
 }
 
 export function keyToParamKey(key: string) {
-  return `$${key}`;
+  return `$${key}`.replace(/\./g, "_");
 }

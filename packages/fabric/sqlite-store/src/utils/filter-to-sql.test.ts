@@ -31,10 +31,39 @@ describe("SQL where clause from filter options", () => {
     };
     const result = filterToSQL(opts);
 
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
 
     expect(result).toEqual("WHERE `name` IN ($where_name_0,$where_name_1)");
     expect(params).toEqual({ where_name_0: "John", where_name_1: "Jane" });
+  });
+
+  test("should work properly when fields have '.' in their names", () => {
+    const opts = {
+      "t.option": 25,
+    };
+    const result = filterToSQL(opts);
+
+    const jointModel = new Model("test", {
+      option: Field.integer({}),
+    });
+
+    const params = filterToParams(
+      col,
+      [
+        {
+          model: jointModel,
+          as: "t",
+          on: {
+            left: "users.id",
+            right: "t.user_id",
+          },
+        },
+      ],
+      opts,
+    );
+
+    expect(result).toEqual("WHERE `t`.`option` = $where_t_option");
+    expect(params).toEqual({ where_t_option: 25 });
   });
 
   test("should create a where clause from options with LIKE option", () => {
@@ -42,7 +71,7 @@ describe("SQL where clause from filter options", () => {
       name: isLike("%John%"),
     };
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `name` LIKE $where_name");
     expect(params).toEqual({ where_name: "%John%" });
   });
@@ -52,7 +81,7 @@ describe("SQL where clause from filter options", () => {
       age: 25,
     };
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `age` = $where_age");
     expect(params).toEqual({ where_age: 25 });
   });
@@ -62,7 +91,7 @@ describe("SQL where clause from filter options", () => {
       status: isNotEqualTo("inactive"),
     };
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `status` <> $where_status");
     expect(params).toEqual({ where_status: "inactive" });
   });
@@ -72,7 +101,7 @@ describe("SQL where clause from filter options", () => {
       salary: isGreaterThan(50000),
     };
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `salary` > $where_salary");
     expect(params).toEqual({ where_salary: 50000 });
   });
@@ -82,7 +111,7 @@ describe("SQL where clause from filter options", () => {
       rating: isLessThan(4.5),
     };
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `rating` < $where_rating");
     expect(params).toEqual({ where_rating: 4.5 });
   });
@@ -92,7 +121,7 @@ describe("SQL where clause from filter options", () => {
       quantity: isGreaterOrEqualTo(10),
     };
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `quantity` >= $where_quantity");
     expect(params).toEqual({ where_quantity: 10 });
   });
@@ -102,7 +131,7 @@ describe("SQL where clause from filter options", () => {
       price: isLessOrEqualTo(100),
     };
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `price` <= $where_price");
     expect(params).toEqual({ where_price: 100 });
   });
@@ -112,7 +141,7 @@ describe("SQL where clause from filter options", () => {
       price: undefined,
     };
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `price` IS NULL");
     expect(params).toEqual({});
   });
@@ -133,7 +162,7 @@ describe("SQL where clause from filter options", () => {
       },
     ];
     const result = filterToSQL(opts);
-    const params = filterToParams(col, opts);
+    const params = filterToParams(col, [], opts);
     expect(result).toEqual(
       "WHERE (`name` IN ($where_name_0_0,$where_name_0_1) AND `age` > $where_age_0) OR (`status` <> $where_status_1 AND `salary` > $where_salary_1) OR (`rating` < $where_rating_2 AND `quantity` >= $where_quantity_2)",
     );

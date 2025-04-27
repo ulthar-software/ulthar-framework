@@ -132,7 +132,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     query: StoreDeleteOptions,
   ): Effect<void, StoreQueryError> {
     const sql = `DELETE FROM ${query.from} ${filterToSQL(query.where)}`;
-    const params = filterToParams(model, query.where);
+    const params = filterToParams(model, [], query.where);
     return Effect.tryFrom(
       () => {
         this.runPrepared(sql, params);
@@ -212,7 +212,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
       offset,
     ].join(" ");
 
-    return [sql, { ...filterToParams(model, query.where) }];
+    return [sql, { ...filterToParams(model, query.joins, query.where) }];
   }
 
   private getMaxStatement(
@@ -234,7 +234,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
       offset,
     ].join(" ");
 
-    return [sql, { ...filterToParams(model, query.where) }];
+    return [sql, { ...filterToParams(model, query.joins, query.where) }];
   }
 
   private getSelectStatement(
@@ -257,7 +257,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
       for (const join of query.joins) {
         const joinType = join.type === "left" ? "LEFT JOIN" : "INNER JOIN";
         joinClauses.push(
-          `${joinType} ${join.model.name} ${join.as} ON ${join.on.left} = ${join.as}.${join.on.right}`,
+          `${joinType} ${join.model.name} ${join.as} ON ${transformManualKey(model, join.on.left)} = ${join.as}.${join.on.right}`,
         );
       }
     }
@@ -281,7 +281,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     return [
       sql,
       {
-        ...filterToParams(model, query.where),
+        ...filterToParams(model, query.joins, query.where),
       },
       columns,
     ];
@@ -305,15 +305,17 @@ function getKeysFromModel(model: Model, joins: StoreJoinOptions[]): string[] {
 }
 
 function transformManualKeys(model: Model, keys: string[]): string[] {
-  const transformedKeys = keys.map((key) => {
-    const parts = key.split(".");
-    if (parts.length === 1) {
-      return `${identifierToSQL(model.name)}.${identifierToSQL(parts[0])}`;
-    } else if (parts.length === 2) {
-      return `${identifierToSQL(parts[0])}.${identifierToSQL(parts[1])}`;
-    } else {
-      throw new Error(`Invalid key format: ${key}`);
-    }
-  });
+  const transformedKeys = keys.map((key) => transformManualKey(model, key));
   return transformedKeys;
+}
+
+function transformManualKey(model: Model, key: string): string {
+  const parts = key.split(".");
+  if (parts.length === 1) {
+    return `${identifierToSQL(model.name)}.${identifierToSQL(parts[0])}`;
+  } else if (parts.length === 2) {
+    return `${identifierToSQL(parts[0])}.${identifierToSQL(parts[1])}`;
+  } else {
+    throw new Error(`Invalid key format: ${key}`);
+  }
 }
