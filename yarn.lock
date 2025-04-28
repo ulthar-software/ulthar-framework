@@ -3224,7 +3224,6 @@ __metadata:
     "@vitejs/plugin-react": "npm:^4.3.4"
     "@vitest/browser": "npm:3.0.6"
     "@vitest/coverage-v8": "npm:3.0.6"
-    "@wooorm/starry-night": "npm:^3.7.0"
     globals: "npm:^16.0.0"
     playwright: "npm:^1.52.0"
     react: "npm:^19.0.0"
@@ -3232,7 +3231,7 @@ __metadata:
     react-hot-toast: "npm:^2.5.2"
     react-markdown: "npm:^10.1.0"
     react-router: "npm:^7.5.1"
-    rehype-starry-night: "npm:^2.2.0"
+    rehype-highlight: "npm:^7.0.2"
     remark-gfm: "npm:^4.0.1"
     storybook: "npm:8.6.12"
     tailwindcss: "npm:^4.1.4"
@@ -3458,18 +3457,6 @@ __metadata:
     loupe: "npm:^3.1.2"
     tinyrainbow: "npm:^1.2.0"
   checksum: 10c0/81a346cd72b47941f55411f5df4cc230e5f740d1e97e0d3f771b27f007266fc1f28d0438582f6409ea571bc0030ed37f684c64c58d1947d6298d770c21026fdf
-  languageName: node
-  linkType: hard
-
-"@wooorm/starry-night@npm:^3.0.0, @wooorm/starry-night@npm:^3.7.0":
-  version: 3.7.0
-  resolution: "@wooorm/starry-night@npm:3.7.0"
-  dependencies:
-    "@types/hast": "npm:^3.0.0"
-    import-meta-resolve: "npm:^4.0.0"
-    vscode-oniguruma: "npm:^2.0.0"
-    vscode-textmate: "npm:^9.0.0"
-  checksum: 10c0/69e98f155dc455e0cf4371876243a3fc9b4071c1c2dc2835ef69419efd1fc80ab7cc84e70515123562503e4ef4bd9c8c6266b3cbbc6d13935d5ef1af7eec438a
   languageName: node
   linkType: hard
 
@@ -5836,6 +5823,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hast-util-is-element@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "hast-util-is-element@npm:3.0.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+  checksum: 10c0/f5361e4c9859c587ca8eb0d8343492f3077ccaa0f58a44cd09f35d5038f94d65152288dcd0c19336ef2c9491ec4d4e45fde2176b05293437021570aa0bc3613b
+  languageName: node
+  linkType: hard
+
 "hast-util-to-jsx-runtime@npm:^2.0.0":
   version: 2.3.6
   resolution: "hast-util-to-jsx-runtime@npm:2.3.6"
@@ -5859,12 +5855,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hast-util-to-string@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "hast-util-to-string@npm:3.0.1"
+"hast-util-to-text@npm:^4.0.0":
+  version: 4.0.2
+  resolution: "hast-util-to-text@npm:4.0.2"
   dependencies:
     "@types/hast": "npm:^3.0.0"
-  checksum: 10c0/b5fa1912a6ba6131affae52a0f4394406c4c0d23c2b0307f1d69988f1030c7bb830289303e67c5ad8f674f5f23a454c1dcd492c39e45a22c1f46d3c9bce5bd0c
+    "@types/unist": "npm:^3.0.0"
+    hast-util-is-element: "npm:^3.0.0"
+    unist-util-find-after: "npm:^5.0.0"
+  checksum: 10c0/93ecc10e68fe5391c6e634140eb330942e71dea2724c8e0c647c73ed74a8ec930a4b77043b5081284808c96f73f2bee64ee416038ece75a63a467e8d14f09946
   languageName: node
   linkType: hard
 
@@ -5881,6 +5880,13 @@ __metadata:
   version: 4.0.3
   resolution: "headers-polyfill@npm:4.0.3"
   checksum: 10c0/53e85b2c6385f8d411945fb890c5369f1469ce8aa32a6e8d28196df38568148de640c81cf88cbc7c67767103dd9acba48f4f891982da63178fc6e34560022afe
+  languageName: node
+  linkType: hard
+
+"highlight.js@npm:~11.11.0":
+  version: 11.11.1
+  resolution: "highlight.js@npm:11.11.1"
+  checksum: 10c0/40f53ac19dac079891fcefd5bd8a21cf2e8931fd47da5bd1dca73b7e4375c1defed0636fc39120c639b9c44119b7d110f7f0c15aa899557a5a1c8910f3c0144c
   languageName: node
   linkType: hard
 
@@ -5994,13 +6000,6 @@ __metadata:
     parent-module: "npm:^1.0.0"
     resolve-from: "npm:^4.0.0"
   checksum: 10c0/bf8cc494872fef783249709385ae883b447e3eb09db0ebd15dcead7d9afe7224dad7bd7591c6b73b0b19b3c0f9640eb8ee884f01cfaf2887ab995b0b36a0cbec
-  languageName: node
-  linkType: hard
-
-"import-meta-resolve@npm:^4.0.0":
-  version: 4.1.0
-  resolution: "import-meta-resolve@npm:4.1.0"
-  checksum: 10c0/42f3284b0460635ddf105c4ad99c6716099c3ce76702602290ad5cbbcd295700cbc04e4bdf47bacf9e3f1a4cec2e1ff887dabc20458bef398f9de22ddff45ef5
   languageName: node
   linkType: hard
 
@@ -6470,15 +6469,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"levenshtein-edit-distance@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "levenshtein-edit-distance@npm:3.0.1"
-  bin:
-    levenshtein-edit-distance: cli.js
-  checksum: 10c0/7d443d4f76bc89d2ccea49ebb6e32d0fa9a003c3511a21d5749d9af17b5bbcf92b9c2f513662535093bae465101bdfb1e7f1f067de4d3f8f9c1fab1b480728ff
-  languageName: node
-  linkType: hard
-
 "levn@npm:^0.4.1":
   version: 0.4.1
   resolution: "levn@npm:0.4.1"
@@ -6853,6 +6843,17 @@ __metadata:
   version: 3.1.3
   resolution: "loupe@npm:3.1.3"
   checksum: 10c0/f5dab4144254677de83a35285be1b8aba58b3861439ce4ba65875d0d5f3445a4a496daef63100ccf02b2dbc25bf58c6db84c9cb0b96d6435331e9d0a33b48541
+  languageName: node
+  linkType: hard
+
+"lowlight@npm:^3.0.0":
+  version: 3.3.0
+  resolution: "lowlight@npm:3.3.0"
+  dependencies:
+    "@types/hast": "npm:^3.0.0"
+    devlop: "npm:^1.0.0"
+    highlight.js: "npm:~11.11.0"
+  checksum: 10c0/9b796fa8443b0334ebf18bc57387c9ee31432d8c263cf2089d23e1087c653d708447284e0647bf993cb2cdc810e0b268a28f51ea27b4a624893b97bdd3f025f4
   languageName: node
   linkType: hard
 
@@ -8759,17 +8760,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rehype-starry-night@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "rehype-starry-night@npm:2.2.0"
+"rehype-highlight@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "rehype-highlight@npm:7.0.2"
   dependencies:
     "@types/hast": "npm:^3.0.0"
-    "@wooorm/starry-night": "npm:^3.0.0"
-    hast-util-to-string: "npm:^3.0.0"
-    levenshtein-edit-distance: "npm:^3.0.0"
-    unist-util-visit-parents: "npm:^6.0.0"
+    hast-util-to-text: "npm:^4.0.0"
+    lowlight: "npm:^3.0.0"
+    unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.0"
-  checksum: 10c0/e9ace74155b63789d6b90dc9f7d5702c76c86f545f99877063c2dca3cc55426c894d426a2365432e057d093764cf0bde8359b5947e0a2e24398a4c7a2438ffce
+  checksum: 10c0/b62effff554f9a3f2ad8688c675bc7580e6dcf20a6988f86a25e95f1adea2f4900f8a13f96ec7db6a543314aed28267e4057f8dbc71c02a76a9511a716e88da2
   languageName: node
   linkType: hard
 
@@ -10148,6 +10148,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unist-util-find-after@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "unist-util-find-after@npm:5.0.0"
+  dependencies:
+    "@types/unist": "npm:^3.0.0"
+    unist-util-is: "npm:^6.0.0"
+  checksum: 10c0/a7cea473c4384df8de867c456b797ff1221b20f822e1af673ff5812ed505358b36f47f3b084ac14c3622cb879ed833b71b288e8aa71025352a2aab4c2925a6eb
+  languageName: node
+  linkType: hard
+
 "unist-util-is@npm:^6.0.0":
   version: 6.0.0
   resolution: "unist-util-is@npm:6.0.0"
@@ -10481,20 +10491,6 @@ __metadata:
   bin:
     vitest: vitest.mjs
   checksum: 10c0/e50a08f8508a7dbda1ea985b2ba05483ab6f87e100a9388c6c4bc47ee76fcdebe89b33db320df177ea6d198fc50e98eb4b9650bb9d314dd8a7bfe885659b3d42
-  languageName: node
-  linkType: hard
-
-"vscode-oniguruma@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "vscode-oniguruma@npm:2.0.1"
-  checksum: 10c0/8d44354ad038f5ba10edf6fc3e3fd6dbacf0db6ecbe924a632b8c0a2929dbdad451c619164e48539b5a80ff112fc51d368b4637db2ed202a4fd5504621275289
-  languageName: node
-  linkType: hard
-
-"vscode-textmate@npm:^9.0.0":
-  version: 9.2.0
-  resolution: "vscode-textmate@npm:9.2.0"
-  checksum: 10c0/b518438a2355dfc16852d4079c7cf47acf1c0f38b21fbf5c22f6008fa7461d08be32610133632be78e533ab68a8387624daa04c69242e0bea2029c32015ffeea
   languageName: node
   linkType: hard
 

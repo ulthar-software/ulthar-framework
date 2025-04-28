@@ -1,6 +1,6 @@
 import type { QuestionnaireSectionContent } from "@ulthar/academy-domain";
 import { MarkdownHooks } from "react-markdown";
-import rehypeStarryNight from "rehype-starry-night";
+import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import { Button } from "../../ui/button.tsx";
 
@@ -18,7 +18,7 @@ export function QuestionnaireResultsModal({
   const renderMarkdown = (content: string) => (
     <MarkdownHooks
       remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeStarryNight]}
+      rehypePlugins={[rehypeHighlight]}
     >
       {content}
     </MarkdownHooks>

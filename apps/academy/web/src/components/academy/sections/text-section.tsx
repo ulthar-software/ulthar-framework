@@ -1,6 +1,6 @@
 import type { TextSection } from "@ulthar/academy-domain";
 import { MarkdownHooks } from "react-markdown";
-import rehypeStarryNight from "rehype-starry-night";
+import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import "./dark.css";
 import { SectionCard } from "./section-card.tsx";
@@ -17,7 +17,7 @@ export function TextContentSectionBlock({ section }: TextContentSectionProps) {
       <div className="markdown-content text-gray-200">
         <MarkdownHooks
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeStarryNight]}
+          rehypePlugins={[rehypeHighlight]}
         >
           {text}
         </MarkdownHooks>
