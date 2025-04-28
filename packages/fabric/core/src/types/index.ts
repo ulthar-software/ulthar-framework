@@ -1,3 +1,4 @@
+export * from "./class-constructor.js";
 export * from "./email.js";
 export * from "./enum.js";
 export * from "./fn.js";
@@ -5,5 +6,6 @@ export * from "./keyof.js";
 export * from "./maybe-promise.js";
 export * from "./record.js";
 export * from "./semver.js";
+export * from "./type-of-class.js";
 export * from "./union-to-intersection.js";
 export * from "./uuid.js";
