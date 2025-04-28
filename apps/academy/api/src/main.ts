@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 import { JSONExtReviver } from "@fabric/core";
-import { UseCases } from "@ulthar/academy-domain";
+import { DomainUseCases } from "@ulthar/academy-domain";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
@@ -18,7 +18,6 @@ app.listen(PORT, () => {
 });
 
 app.use(morgan("common"));
-app.use(morgan("dev"));
 
 app.use(
   cors({
@@ -33,4 +32,4 @@ app.use(
   }),
 );
 
-createHTTPEndpoints<AppDependencies>(app, buildDependencies(), UseCases);
+createHTTPEndpoints<AppDependencies>(app, buildDependencies(), DomainUseCases);

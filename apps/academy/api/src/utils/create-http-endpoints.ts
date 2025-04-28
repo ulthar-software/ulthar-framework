@@ -28,7 +28,10 @@ export function createHTTPEndpoints<TDeps extends BaseDependencies>(
             req.body,
           )
           .runOrThrow();
-        res.status(200).send(JSONExt.stringify(result));
+        res
+          .status(200)
+          .header("Content-Type", "application/json")
+          .send(JSONExt.stringify(result).unwrapOrThrow());
         return;
       } catch (error) {
         if (error instanceof TaggedError) {
@@ -39,14 +42,16 @@ export function createHTTPEndpoints<TDeps extends BaseDependencies>(
           }
           res
             .header("Content-Type", "application/json")
-            .send(JSONExt.stringify(error));
+            .send(JSONExt.stringify(error).unwrapOrThrow());
           return;
         } else {
           res
             .status(500)
             .header("Content-Type", "application/json")
             .send(
-              JSONExt.stringify(new UnexpectedError((error as Error).message)),
+              JSONExt.stringify(
+                new UnexpectedError((error as Error).message),
+              ).unwrapOrThrow(),
             );
           return;
         }

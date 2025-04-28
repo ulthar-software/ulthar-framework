@@ -1,6 +1,9 @@
 import type { Environment } from "@fabric/core";
 import { Field, Schema, type UnionToIntersection } from "@fabric/core";
-import type { UseCaseDependencies, UseCases } from "@ulthar/academy-domain";
+import type {
+  DomainUseCases,
+  UseCaseDependencies,
+} from "@ulthar/academy-domain";
 import type { AuthDependencies } from "./utils/parse-access-token.js";
 
 export const EnvSchema = new Schema({
@@ -25,7 +28,7 @@ export type BaseDependencies = AuthDependencies & {
 };
 
 export type AppDependencies = Omit<
-  UnionToIntersection<UseCaseDependencies<UseCases[number]>>,
+  UnionToIntersection<UseCaseDependencies<DomainUseCases[number]>>,
   "currentUser"
 > &
   BaseDependencies;
