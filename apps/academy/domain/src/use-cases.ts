@@ -2,7 +2,10 @@ import { UnexpectedError, type ClassConstructor } from "@fabric/core";
 import {
   AddModuleToCourseUseCase,
   AddQuestionnaireResponseUseCase,
+  AddQuestionnaireSectionToUnitUseCase,
+  AddTextSectionToUnitUseCase,
   AddUnitToModuleUseCase,
+  AddVideoSectionToUnitUseCase,
   BatchEnrollmentFailedError,
   ChangeCourseDescriptionUseCase,
   ChangeCourseTitleUseCase,
@@ -52,6 +55,9 @@ export const DomainUseCases = [
   GetResourcesByUnitTagsUseCase,
   AddQuestionnaireResponseUseCase,
   GetQuestionnaireResponseUseCase,
+  AddTextSectionToUnitUseCase,
+  AddVideoSectionToUnitUseCase,
+  AddQuestionnaireSectionToUnitUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
