@@ -33,6 +33,10 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
     }
   }
 
+  close(): Effect<void, StoreQueryError> {
+    return this.storageDriver.close();
+  }
+
   sync(): Effect<void, CircularDependencyError | StoreQueryError> {
     return this.storageDriver.sync(Object.values(this.streamModels));
   }

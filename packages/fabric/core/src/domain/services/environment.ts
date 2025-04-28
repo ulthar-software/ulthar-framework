@@ -1,7 +1,6 @@
-import type { Model } from "../models/model.js";
-import type { Infer } from "../models/schema.js";
+import type { Infer, Schema } from "../models/schema.js";
 
-export class Environment<TEnv extends Model> {
+export class Environment<TEnv extends Schema> {
   private env: Infer<TEnv>;
   constructor(
     private model: TEnv,

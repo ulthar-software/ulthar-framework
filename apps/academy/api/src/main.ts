@@ -1,20 +1,12 @@
-import type { UnionToIntersection } from "@fabric/core";
+import "dotenv/config";
+
 import { JSONExtReviver } from "@fabric/core";
-import { SQLiteStoreDriver } from "@fabric/sqlite-store";
-import type { UseCaseDependencies } from "@ulthar/academy-domain";
-import {
-  DomainEventStore,
-  DomainProjectors,
-  DomainStateStore,
-  DomainStreams,
-  UseCases,
-} from "@ulthar/academy-domain";
+import { UseCases } from "@ulthar/academy-domain";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
-import { ConcreteAuthService } from "./services/auth-service.js";
-import { ConcreteCryptoService } from "./services/crypto-service.js";
-import type { BaseDependencies } from "./utils/create-http-endpoints.js";
+import type { AppDependencies } from "./dependencies.js";
+import { buildDependencies } from "./services/build-dependencies.js";
 import { createHTTPEndpoints } from "./utils/create-http-endpoints.js";
 
 const app = express();
@@ -41,29 +33,4 @@ app.use(
   }),
 );
 
-type AppDependencies = Omit<
-  UnionToIntersection<UseCaseDependencies<UseCases[number]>>,
-  "currentUser"
-> &
-  BaseDependencies;
-const eventStoreDriver = new SQLiteStoreDriver("./storage/events.db");
-const eventStore = new DomainEventStore(eventStoreDriver, DomainStreams);
-
-const stateStoreDriver = new SQLiteStoreDriver("./storage/state.db");
-const stateStore = new DomainStateStore(
-  stateStoreDriver,
-  eventStore,
-  DomainProjectors,
-);
-
-createHTTPEndpoints<AppDependencies>(
-  app,
-  {
-    auth: new ConcreteAuthService("los gatitos son lo mejor"),
-    crypto: new ConcreteCryptoService(),
-    events: eventStore,
-    state: stateStore,
-    logger: console,
-  },
-  UseCases,
-);
+createHTTPEndpoints<AppDependencies>(app, buildDependencies(), UseCases);

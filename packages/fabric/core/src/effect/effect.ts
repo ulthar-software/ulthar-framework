@@ -234,6 +234,18 @@ export class Effect<
     });
   }
 
+  flatMapError<TNewError extends TaggedError>(
+    fn: (error: TError) => Effect<TValue, TNewError>,
+  ): Effect<TValue, TNewError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isOk()) {
+        return result;
+      }
+      return await fn(result.value as TError).fn();
+    });
+  }
+
   tapError(
     fn: (error: TError) => MaybePromise<void>,
   ): Effect<TValue, TError, TDeps> {
