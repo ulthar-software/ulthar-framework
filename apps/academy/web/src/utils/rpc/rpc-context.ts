@@ -3,23 +3,23 @@
 import { createContext } from "react";
 
 import type {
+  DomainUseCases,
   UseCaseInput,
   UseCaseName,
   UseCaseOutput,
-  UseCases,
 } from "@ulthar/academy-domain";
 
-export type UseCaseNames = UseCaseName<UseCases[number]>;
+export type UseCaseNames = UseCaseName<DomainUseCases[number]>;
 
 export type UseCaseFromName<TName extends UseCaseNames> = {
-  [T in UseCases[number] as T["name"]]: T;
+  [T in DomainUseCases[number] as T["name"]]: T;
 }[TName];
 
 export type UseCaseRPC<TName extends UseCaseNames> = (
   input: UseCaseInput<UseCaseFromName<TName>>,
 ) => UseCaseOutput<UseCaseFromName<TName>>;
 
-export type ClientRPC = {
+export type RpcClient = {
   [TName in UseCaseNames]: UseCaseRPC<TName>;
 };
 
@@ -27,7 +27,7 @@ function emptyMock<T extends Function>(): T {
   return (() => void 0) as unknown as T;
 }
 
-export const EmptyRPCContext: ClientRPC = {
+export const EmptyRPCContext: RpcClient = {
   addModuleToCourse: emptyMock<UseCaseRPC<"addModuleToCourse">>(),
   addUnitToModule: emptyMock<UseCaseRPC<"addUnitToModule">>(),
   changeCourseDescription: emptyMock<UseCaseRPC<"changeCourseDescription">>(),
@@ -44,7 +44,8 @@ export const EmptyRPCContext: ClientRPC = {
   getResourcesByUnitTags: emptyMock<UseCaseRPC<"getResourcesByUnitTags">>(),
   addQuestionnaireResponse: emptyMock<UseCaseRPC<"addQuestionnaireResponse">>(),
   getQuestionnaireResponse: emptyMock<UseCaseRPC<"getQuestionnaireResponse">>(),
+  enrollUsersByEmail: emptyMock<UseCaseRPC<"enrollUsersByEmail">>(),
 };
 
-export const RpcContext = createContext<ClientRPC>(EmptyRPCContext);
+export const RpcContext = createContext<RpcClient>(EmptyRPCContext);
 export const RpcProvider = RpcContext.Provider;

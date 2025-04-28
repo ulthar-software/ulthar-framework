@@ -14,7 +14,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import type { PartialStoryFn, StoryContext } from "storybook/internal/types";
 import { AuthContext } from "../auth/auth-context.ts";
 import { ModalProvider } from "../modal/modal-provider.tsx";
-import type { ClientRPC } from "../rpc/rpc-context.ts";
+import type { RpcClient } from "../rpc/rpc-context.ts";
 import { EmptyRPCContext, RpcProvider } from "../rpc/rpc-context.ts";
 import { MockErrorPage } from "./mock-error-page.tsx";
 
@@ -64,7 +64,7 @@ export function Decorator(
             <RpcProvider
               value={{
                 ...EmptyRPCContext,
-                ...(rpcContext as Partial<ClientRPC>),
+                ...(rpcContext as Partial<RpcClient>),
               }}
             >
               <ModalProvider>

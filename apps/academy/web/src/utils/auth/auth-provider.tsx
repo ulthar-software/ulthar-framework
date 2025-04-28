@@ -5,8 +5,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "./auth-context.ts";
 import { decodeJWT } from "./decode-jwt.ts";
 
-const LOCAL_STORAGE_TOKEN_KEY = "academy_access_token";
-const LOCAL_STORAGE_USER_KEY = "academy_access_user";
+export const LOCAL_STORAGE_TOKEN_KEY = "academy_access_token";
+export const LOCAL_STORAGE_USER_KEY = "academy_access_user";
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<UserAccess | undefined>(getStoredUser());
@@ -66,7 +66,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setAccessToken,
       removeAccessToken,
     }),
-    [user, accessToken, setAccessToken, removeAccessToken],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, accessToken],
   );
 
   return (
