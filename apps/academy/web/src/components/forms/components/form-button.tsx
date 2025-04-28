@@ -8,8 +8,6 @@ import { FormContext } from "../form-context.ts";
 export function FormButton({
   children,
   type = "submit",
-  flavor = "raised",
-  color = "primary",
   ...buttonProps
 }: PropsWithChildren<Omit<ButtonProps, "onClick">>) {
   const { isLoading } = useContext(FormContext);
@@ -18,8 +16,6 @@ export function FormButton({
     <Button
       disabled={isLoading}
       type={type}
-      flavor={flavor}
-      color={color}
       onClick={() => void 0}
       {...buttonProps}
     >
