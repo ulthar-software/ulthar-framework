@@ -31,7 +31,17 @@ function buildClient(host: string): RpcClient {
         useCase.name,
         async (input: any = {}) => {
           try {
-            const response = await fetch(`${host}/${useCase.name}`, {
+            let url = `${host}/${useCase.name}`;
+            if (useCase.type === "query" && Object.keys(input).length > 0) {
+              const queryParams: Record<string, string> = Object.fromEntries(
+                Object.entries(input)
+                  .filter(([, v]) => v)
+                  .map(([k, v]) => [k, String(v)]),
+              );
+              const params = new URLSearchParams(queryParams).toString();
+              url += `?${params}`;
+            }
+            const response = await fetch(url, {
               method: useCase.type === "query" ? "GET" : "POST",
               headers: headers,
               body:
