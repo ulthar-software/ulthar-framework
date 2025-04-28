@@ -23,7 +23,7 @@ export function CourseCard({ course }: CourseCardProps) {
         </p>
         <div className="mt-4 flex justify-end">
           <Anchor
-            href={`/academy/courses/${course.id}`}
+            href={`/course/${course.id}`}
             className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors duration-300"
           >
             Ver curso
