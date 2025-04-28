@@ -1,10 +1,13 @@
+import { UnexpectedError, type ClassConstructor } from "@fabric/core";
 import {
   AddModuleToCourseUseCase,
   AddQuestionnaireResponseUseCase,
   AddUnitToModuleUseCase,
+  BatchEnrollmentFailedError,
   ChangeCourseDescriptionUseCase,
   ChangeCourseTitleUseCase,
   ChangeModuleOrderUseCase,
+  CourseNotFoundError,
   CreateCourseUseCase,
   CreateTagUseCase,
   EnrollStudentInCourseUseCase,
@@ -14,11 +17,24 @@ import {
   GetQuestionnaireResponseUseCase,
   GetResourcesByUnitTagsUseCase,
   GetUnitWithSectionsUseCase,
+  IncompleteQuestionnaireResponseError,
+  InvalidCredentialsError,
   InviteUserUseCase,
   LoginUseCase,
+  ModuleNotFoundError,
+  NotEnrolledInCourseError,
+  QuestionnaireResponseNotFoundError,
+  QuestionnaireSectionNotFoundError,
+  QuestionnaireVersionMismatchError,
+  StudentAlreadyEnrolledError,
+  TagAlreadyExistsError,
+  UnitNotFoundError,
+  UserAlreadyExistsError,
+  UserAlreadyInvitedError,
 } from "./use-cases/index.js";
+import type { UseCaseErrorValue } from "./utils/use-case.js";
 
-export const UseCases = [
+export const DomainUseCases = [
   LoginUseCase,
   InviteUserUseCase,
   CreateCourseUseCase,
@@ -38,4 +54,28 @@ export const UseCases = [
   GetQuestionnaireResponseUseCase,
 ] as const;
 
-export type UseCases = typeof UseCases;
+export type DomainUseCases = typeof DomainUseCases;
+
+export type DomainUseCaseErrors = UseCaseErrorValue<DomainUseCases[number]>;
+
+export const DomainUseCaseErrorsMap = {
+  UnexpectedError: UnexpectedError,
+  InvalidCredentialsError: InvalidCredentialsError,
+  UserAlreadyExistsError: UserAlreadyExistsError,
+  UserAlreadyInvitedError: UserAlreadyInvitedError,
+  CourseNotFoundError: CourseNotFoundError,
+  ModuleNotFoundError: ModuleNotFoundError,
+  StudentAlreadyEnrolledError: StudentAlreadyEnrolledError,
+  BatchEnrollmentFailedError: BatchEnrollmentFailedError,
+  NotEnrolledInCourseError: NotEnrolledInCourseError,
+  UnitNotFoundError: UnitNotFoundError,
+  TagAlreadyExistsError: TagAlreadyExistsError,
+  QuestionnaireSectionNotFoundError: QuestionnaireSectionNotFoundError,
+  QuestionnaireVersionMismatchError: QuestionnaireVersionMismatchError,
+  IncompleteQuestionnaireResponseError: IncompleteQuestionnaireResponseError,
+  QuestionnaireResponseNotFoundError: QuestionnaireResponseNotFoundError,
+} as const satisfies Record<
+  DomainUseCaseErrors["_tag"],
+  ClassConstructor<DomainUseCaseErrors>
+>;
+export type DomainUseCaseErrorsMap = typeof DomainUseCaseErrorsMap;
