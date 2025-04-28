@@ -25,7 +25,10 @@ export function createHTTPEndpoints<TDeps extends BaseDependencies>(
               ...deps,
               currentUser: userAccess,
             },
-            req.body,
+            {
+              ...req.query,
+              ...req.body,
+            },
           )
           .runOrThrow();
         res
@@ -34,6 +37,8 @@ export function createHTTPEndpoints<TDeps extends BaseDependencies>(
           .send(JSONExt.stringify(result).unwrapOrThrow());
         return;
       } catch (error) {
+        console.error(error);
+        console.log(req.body, req.query);
         if (error instanceof TaggedError) {
           if (error instanceof UnexpectedError) {
             res.status(500);
