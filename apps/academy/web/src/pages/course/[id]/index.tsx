@@ -4,7 +4,7 @@ import type {
   ModuleSummary,
 } from "@ulthar/academy-domain";
 import { AccessPolicy } from "@ulthar/academy-domain";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { ContentSectionBlock } from "../../../components/academy/content-section.tsx";
 import { CourseSidebar } from "../../../components/academy/course-sidebar.tsx";
@@ -58,62 +58,65 @@ export default function CourseView() {
     [courseData, unitId],
   );
 
-  if (courseError) {
-    switch (courseError._tag) {
-      case "CourseNotFoundError": {
-        showErrorToast("Este curso ya no está disponible.");
-        void navigate("/");
-        break;
+  useEffect(() => {
+    if (courseError) {
+      switch (courseError._tag) {
+        case "CourseNotFoundError": {
+          showErrorToast("Este curso ya no está disponible.");
+          void navigate("/");
+          break;
+        }
+        case "NotEnrolledInCourseError": {
+          showErrorToast("No estás inscripto en este curso.");
+          void navigate("/");
+          break;
+        }
+        case "UnexpectedError": {
+          showErrorToast(
+            "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.",
+          );
+          void navigate("/");
+          break;
+        }
+        default: {
+          exhaustiveCheck(courseError);
+        }
       }
-      case "NotEnrolledInCourseError": {
-        showErrorToast("No estás inscripto en este curso.");
-        void navigate("/");
-        break;
-      }
-      case "UnexpectedError": {
-        showErrorToast(
-          "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.",
-        );
-        void navigate("/");
-        break;
-      }
-      default: {
-        exhaustiveCheck(courseError);
-      }
+      return;
     }
-    return;
-  }
 
-  if (unitError) {
-    switch (unitError._tag) {
-      case "UnitNotFoundError": {
-        showErrorToast("Esta unidad no está disponible.");
-        void navigate("/");
-        break;
+    if (unitError) {
+      switch (unitError._tag) {
+        case "UnitNotFoundError": {
+          showErrorToast("Esta unidad no está disponible.");
+          void navigate("/");
+          break;
+        }
+        case "UnexpectedError": {
+          showErrorToast(
+            "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.",
+          );
+          void navigate("/");
+          break;
+        }
+        case "CourseNotFoundError": {
+          showErrorToast("Este curso ya no está disponible.");
+          void navigate("/");
+          break;
+        }
+        case "NotEnrolledInCourseError": {
+          showErrorToast("No estás inscripto en este curso.");
+          void navigate("/");
+          break;
+        }
+        default: {
+          exhaustiveCheck(unitError);
+        }
       }
-      case "UnexpectedError": {
-        showErrorToast(
-          "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.",
-        );
-        void navigate("/");
-        break;
-      }
-      case "CourseNotFoundError": {
-        showErrorToast("Este curso ya no está disponible.");
-        void navigate("/");
-        break;
-      }
-      case "NotEnrolledInCourseError": {
-        showErrorToast("No estás inscripto en este curso.");
-        void navigate("/");
-        break;
-      }
-      default: {
-        exhaustiveCheck(unitError);
-      }
+      return;
     }
-    return;
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseError, unitError]);
 
   // When we have the course data
   return (
