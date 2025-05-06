@@ -1,8 +1,15 @@
+import type { Email, UnexpectedError, UUID } from "@fabric/core";
 import { Effect, TaggedError } from "@fabric/core";
 import type {
   DomainEventStore,
   DomainStateStore,
   UserInvitedEvent,
+} from "@ulthar/academy-domain";
+import {
+  EmailFailedEvent,
+  EmailQueuedEvent,
+  EmailQueueStatus,
+  EmailSentEvent,
 } from "@ulthar/academy-domain";
 import type { Transporter } from "nodemailer";
 import type {
@@ -21,7 +28,7 @@ export interface EmailServiceDeps {
 }
 
 export interface SendMailOptions {
-  recipient: string;
+  recipient: Email;
   subject: string;
   body: string;
 }
@@ -37,20 +44,128 @@ export const EmailSubscriptions: EventSubscriptionRecord = {
   UserInvited: sendInviteEmail,
 };
 
-export function subscribeToEmailEvents(deps: EmailServiceDeps) {
-  const { events, templates } = deps;
-  const eventNames = Object.keys(templates) as EventNamesWithEmails[];
-  for (const eventName of eventNames) {
-    events.subscribe(eventName, (event) =>
-      Effect.fromGen(function* () {
-        const sendMailOptions = yield* EmailSubscriptions[eventName](
-          deps,
-          event,
-        );
-        yield* sendMail(deps, sendMailOptions);
-      }),
-    );
+export class EmailQueueService {
+  private emailProcessingTimeoutId: NodeJS.Timeout | null = null;
+  constructor(private deps: EmailServiceDeps) {
+    const { events, templates } = deps;
+    const eventNames = Object.keys(templates) as EventNamesWithEmails[];
+    const scheduleBatchEmailProcessing =
+      this.scheduleBatchEmailProcessing.bind(this);
+    for (const eventName of eventNames) {
+      events.subscribe(
+        eventName,
+        (event) =>
+          EmailSubscriptions[eventName](deps, event)
+            .flatMap((sendMailOptions) =>
+              queueEmail(deps, event.type, event.id, sendMailOptions),
+            )
+            .map(() => {
+              scheduleBatchEmailProcessing(deps);
+            }),
+        {
+          callOnReplay: false,
+        },
+      );
+    }
   }
+
+  private scheduleBatchEmailProcessing(deps: EmailServiceDeps) {
+    const delayMs = deps.env.get("EMAIL_DELAY_MS");
+
+    // Clear existing timeout if it exists
+    if (this.emailProcessingTimeoutId) {
+      clearTimeout(this.emailProcessingTimeoutId);
+    }
+
+    // Set a new timeout
+    this.emailProcessingTimeoutId = setTimeout(() => {
+      this.emailProcessingTimeoutId = null;
+      void processQueuedEmails(deps).runOrThrow();
+    }, delayMs);
+  }
+
+  stop() {
+    if (this.emailProcessingTimeoutId) {
+      clearTimeout(this.emailProcessingTimeoutId);
+      this.emailProcessingTimeoutId = null;
+    }
+  }
+}
+
+export function queueEmail(
+  { events }: EmailServiceDeps,
+  eventType: string,
+  eventId: UUID,
+  { recipient, subject, body }: SendMailOptions,
+): Effect<void, UnexpectedError> {
+  return events
+    .append(
+      "emailQueue",
+      EmailQueuedEvent.from({
+        id: crypto.randomUUID(),
+        streamId: crypto.randomUUID(),
+        payload: {
+          eventId,
+          eventType,
+          recipient,
+          subject,
+          body,
+        },
+        version: 1,
+      }),
+    )
+    .discardValue();
+}
+
+export function processQueuedEmails(
+  deps: EmailServiceDeps,
+): Effect<void, EmailSendError | UnexpectedError> {
+  return Effect.fromGen(function* () {
+    const { state } = deps;
+
+    // Get all queued emails
+    const queuedEmails = yield* state
+      .from("emailQueue")
+      .where({
+        status: EmailQueueStatus.QUEUED,
+      })
+      .select();
+
+    for (const email of queuedEmails) {
+      yield* sendMail(deps, {
+        recipient: email.recipient,
+        subject: email.subject,
+        body: email.body,
+      })
+        .flatMap(() =>
+          deps.events
+            .append(
+              "emailQueue",
+              EmailSentEvent.from({
+                id: crypto.randomUUID(),
+                streamId: email.id,
+                payload: {},
+                version: email.version + 1,
+              }),
+            )
+            .discardValue(),
+        )
+        .catchWithEffect((error) => {
+          // Handle email send failure
+          return deps.events
+            .append(
+              "emailQueue",
+              EmailFailedEvent.from({
+                id: crypto.randomUUID(),
+                streamId: email.id,
+                payload: { reason: error.message },
+                version: email.version + 1,
+              }),
+            )
+            .discardValue();
+        });
+    }
+  });
 }
 
 export function sendInviteEmail(

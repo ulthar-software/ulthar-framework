@@ -20,6 +20,8 @@ export const EmailQueueModel = new AggregateModel("emailQueue", {
   eventId: Field.uuid(),
   eventType: Field.string(),
   recipient: Field.email(),
+  subject: Field.string(),
+  body: Field.string(),
   status: Field.enum({
     values: EmailQueueStatusValues,
   }),
@@ -33,6 +35,8 @@ export const EmailQueuedEvent = new DomainEvent("EmailQueued", {
   eventId: Field.uuid(),
   eventType: Field.string(),
   recipient: Field.email(),
+  subject: Field.string(),
+  body: Field.string(),
 });
 export type EmailQueuedEvent = EventToType<typeof EmailQueuedEvent>;
 
@@ -66,6 +70,8 @@ export const EmailQueueProjector = new AggregateProjector(
         eventType: event.payload.eventType,
         eventId: event.payload.eventId,
         recipient: event.payload.recipient,
+        subject: event.payload.subject,
+        body: event.payload.body,
       }),
     EmailSent: (event, email): EmailQueue =>
       EmailQueueModel.update(email, event, {
