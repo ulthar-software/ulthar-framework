@@ -1,5 +1,10 @@
 import { CourseModel, CourseProjector, CourseStream } from "./course.js";
 import {
+  EmailQueueModel,
+  EmailQueueProjector,
+  EmailQueueStream,
+} from "./email-queue.js";
+import {
   EnrollmentModel,
   EnrollmentProjector,
   EnrollmentStream,
@@ -43,6 +48,7 @@ import {
 import { UserModel, UserProjector, UserStream } from "./user.js";
 
 export * from "./course.js";
+export * from "./email-queue.js";
 export * from "./enrollment.js";
 export * from "./module.js";
 export * from "./resource-tag.js";
@@ -53,6 +59,7 @@ export * from "./unit-tag.js";
 export * from "./unit.js";
 export * from "./user-invite.js";
 export * from "./user.js";
+export * from "./utils/index.js";
 
 export const DomainModels = [
   UserModel,
@@ -69,6 +76,7 @@ export const DomainModels = [
   ResourceTagModel,
   UnitTagModel,
   QuestionnaireResponseModel,
+  EmailQueueModel,
 ] as const;
 
 export const DomainStreams = [
@@ -86,7 +94,10 @@ export const DomainStreams = [
   ResourceTagStream,
   UnitTagStream,
   QuestionnaireResponseStream,
+  EmailQueueStream,
 ] as const;
+
+export type DomainEvents = (typeof DomainStreams)[number]["events"][number];
 
 export const DomainProjectors = [
   UserProjector,
@@ -103,4 +114,5 @@ export const DomainProjectors = [
   ResourceTagProjector,
   UnitTagProjector,
   QuestionnaireResponseProjector,
+  EmailQueueProjector,
 ] as const;
