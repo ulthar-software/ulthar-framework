@@ -6,7 +6,8 @@ import {
   DomainStateStore,
   DomainStreams,
 } from "@ulthar/academy-domain";
-import { EnvSchema, type AppDependencies } from "../dependencies.js";
+import { type AppDependencies } from "../dependencies.js";
+import { EnvSchema } from "../environment.js";
 import { ConcreteAuthService } from "./auth-service.js";
 import { ConcreteCryptoService } from "./crypto-service.js";
 
