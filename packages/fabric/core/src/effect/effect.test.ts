@@ -428,4 +428,56 @@ describe("Effect", () => {
     expect(result.isOk()).toBe(true);
     expect(result.unwrapOrThrow()).toBe(42);
   });
+
+  test("Effect.fromGen should run effects yielded by a generator function in sequence", async () => {
+    const effect = Effect.fromGen(function* () {
+      const a = yield* Effect.ok(1);
+      const b = yield* Effect.ok(2);
+      const c = yield* Effect.ok(3);
+      return a + b + c;
+    });
+
+    const result = await effect.run();
+    expect(result.unwrapOrThrow()).toBe(6);
+  });
+
+  test("Effect.fromGen should stop execution and return error when an effect fails", async () => {
+    const mockFn = fnMock<() => number>();
+
+    const effect = Effect.fromGen(function* () {
+      const a = yield* Effect.ok(1);
+      yield* Effect.failWith(
+        new UnexpectedError("generator failure"),
+      ) as Effect<number, UnexpectedError>;
+
+      mockFn(); // Should not be called
+
+      return a;
+    });
+
+    const result = await effect.run();
+    expect(result.isError()).toBe(true);
+    expect(result.unwrapErrorOrThrow()).toBeInstanceOf(UnexpectedError);
+    expect(result.unwrapErrorOrThrow().message).toBe("generator failure");
+    expect(mockFn).not.toHaveBeenCalled();
+  });
+
+  test("Effect.fromGen should work with effects that have dependencies", async () => {
+    const effect = Effect.fromGen(function* () {
+      const a = yield* Effect.fromResult(({ x }: { x: number }) =>
+        Result.ok(x * 2),
+      );
+      const b = yield* Effect.fromResult(({ y }: { y: number }) =>
+        Result.ok(y * 3),
+      );
+      return a + b;
+    });
+
+    const result = await effect.run({ x: 2, y: 3 });
+    expect(result.unwrapOrThrow()).toBe(13); // (2*2) + (3*3) = 4 + 9 = 13
+
+    // Verify that dependency types are correctly inferred
+    type Deps = ExtractEffectDependencies<typeof effect>;
+    expectTypeOf<Deps>().toEqualTypeOf<{ x: number } & { y: number }>();
+  });
 });

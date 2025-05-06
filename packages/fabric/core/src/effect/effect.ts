@@ -1,5 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaggedError } from "../error/tagged-error.js";
+import type { UnionToIntersection } from "../index.js";
 import { UnexpectedError } from "../index.js";
 import { Result } from "../result/result.js";
 import type { MaybePromise } from "../types/maybe-promise.js";
@@ -202,7 +206,7 @@ export class Effect<
 
   async run(deps: TDeps): Promise<Result<TValue, TError | UnexpectedError>> {
     try {
-      return await this.fn(deps);
+      return (await this.fn(deps)) as Result<TValue, TError | UnexpectedError>;
     } catch (error: unknown) {
       return Result.failWith(new UnexpectedError((error as Error).message));
     }
@@ -282,6 +286,71 @@ export class Effect<
     });
   }
 
+  /**
+   * Creates an Effect from an async generator function that yields Effects.
+   * Each yielded Effect's successful result is passed back to the generator.
+   * If any Effect fails, the generator stops and the error is returned.
+   *
+   * Dependencies from all yielded effects are merged into the resulting effect.
+   *
+   * This method supports both direct yield of Effects and yield* syntax.
+   */
+  static fromGen<
+    TValue,
+    TError extends TaggedError = never,
+    TDeps = void,
+    TYieldedEffects extends Effect<any, any, any> = Effect<any, TError, TDeps>,
+  >(
+    genFn: () => Generator<TYieldedEffects, TValue>,
+  ): Effect<
+    TValue,
+    TError | UnexpectedError,
+    UnionToIntersection<
+      TYieldedEffects extends Effect<any, any, infer TEDeps>
+        ? UnionToIntersection<TEDeps>
+        : TDeps
+    >
+  > {
+    return new Effect(
+      async (
+        deps: TDeps,
+      ): Promise<Result<TValue, TError | UnexpectedError>> => {
+        try {
+          const generator = genFn();
+          let lastValue: any = undefined;
+
+          while (true) {
+            const result = generator.next(lastValue);
+
+            if (result.done) {
+              return Result.ok(result.value);
+            }
+
+            // Get the effect from the yielded value
+            const effect = result.value;
+            const effectResult = await effect.fn(deps);
+
+            if (effectResult.isError()) {
+              return effectResult;
+            }
+
+            lastValue = effectResult.value;
+          }
+        } catch (error: unknown) {
+          return Result.failWith(new UnexpectedError((error as Error).message));
+        }
+      },
+    ) as Effect<
+      TValue,
+      TError | UnexpectedError,
+      UnionToIntersection<
+        TYieldedEffects extends Effect<any, any, infer TEDeps>
+          ? UnionToIntersection<TEDeps>
+          : TDeps
+      >
+    >;
+  }
+
   static seq<T1, TE1 extends TaggedError, T2, TE2 extends TaggedError>(
     fn1: () => Effect<T1, TE1>,
     fn2: (value: T1) => Effect<T2, TE2>,
@@ -327,6 +396,27 @@ export class Effect<
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return result;
+  }
+
+  /**
+   * Implements the iterator protocol to allow using yield* with proper type inference
+   * and actual execution of the effect
+   */
+  [Symbol.iterator](): Iterator<Effect<TValue, TError, TDeps>, TValue, TValue> {
+    let isFirst = true;
+
+    return {
+      next: (input?: TValue) => {
+        if (isFirst) {
+          isFirst = false;
+          // Return this effect to be executed by fromGen
+          return { done: false, value: this };
+        }
+        // On subsequent calls, we've received the resolved value from the effect
+        // and we can return it as the final result
+        return { done: true, value: input as TValue };
+      },
+    };
   }
 }
 
