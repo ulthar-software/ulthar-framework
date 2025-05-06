@@ -14,7 +14,7 @@ import type { EventToType } from "./event.js";
 import { DomainEvent } from "./event.js";
 
 export class EventStore<TEventStreams extends readonly EventStream[]> {
-  private eventSubscriptions: EventSubscriptions = {};
+  private eventSubscriptions: SubscriptionMap = {};
   private streamModels: Record<string, DomainEvent> = {};
 
   constructor(
@@ -60,7 +60,7 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
       })
       .flatMap(() =>
         Effect.all(() =>
-          this.eventSubscriptions[streamName][event.type].map((subscription) =>
+          this.eventSubscriptions[event.type].map((subscription) =>
             subscription.subscriber(event),
           ),
         ),
@@ -73,42 +73,36 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
   }
 
   subscribe<
-    TStreamName extends TEventStreams[number]["name"],
-    TEventName extends PossibleEvents<
-      EventStreamFromName<TEventStreams[number], TStreamName>
-    >["name"],
+    const TEventName extends TEventStreams[number]["events"][number]["name"],
+    const TEvent extends Extract<
+      PossibleEvents<TEventStreams[number]>,
+      { name: TEventName }
+    >,
   >(
-    streamName: TStreamName,
     eventName: TEventName,
-    subscriber: EventSubscriber<TEventName>,
+    subscriber: EventSubscriber<TEvent>,
     opts?: SubscriptionOptions,
   ): void {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (this.eventSubscriptions[streamName] === undefined) {
-      this.eventSubscriptions[streamName] = {};
+    if (this.eventSubscriptions[eventName] === undefined) {
+      this.eventSubscriptions[eventName] = [];
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (this.eventSubscriptions[streamName][eventName] === undefined) {
-      this.eventSubscriptions[streamName][eventName] = [];
-    }
-
-    this.eventSubscriptions[streamName][eventName].push({
+    this.eventSubscriptions[eventName].push({
       opts: opts ?? {},
-      subscriber: subscriber as EventSubscriber<string>,
+      subscriber: subscriber as EventSubscriber<DomainEvent>,
     });
   }
 }
 
-export type EventSubscriptions = Record<string, SubscriptionMap>;
 export type SubscriptionMap = Record<string, Subscription[]>;
 export interface Subscription {
   opts: SubscriptionOptions;
-  subscriber: EventSubscriber<string>;
+  subscriber: EventSubscriber<DomainEvent>;
 }
 
-export type EventSubscriber<TEventName extends string> = (
-  event: EventToType<DomainEvent<TEventName>>,
+export type EventSubscriber<TEvent extends DomainEvent> = (
+  event: EventToType<TEvent>,
 ) => Effect<void, TaggedError>;
 
 export interface SubscriptionOptions {
