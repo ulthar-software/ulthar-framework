@@ -18,12 +18,15 @@
   "dependencies": {
     "@fabric/core": "workspace:^",
     "@fabric/sqlite-store": "workspace:^",
+    "@types/nodemailer": "^6.4.17",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "nodemailer": "^7.0.2"
   },
   "scripts": {
     "dev": "tsx watch src/main.ts",
