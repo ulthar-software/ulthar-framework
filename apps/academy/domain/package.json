@@ -2,7 +2,8 @@
   "name": "@ulthar/academy-domain",
   "version": "0.0.1",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./mocks": "./dist/mocks.js"
   },
   "files": [
     "dist"
