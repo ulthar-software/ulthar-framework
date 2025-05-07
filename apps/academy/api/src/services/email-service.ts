@@ -41,7 +41,7 @@ export type EventSubscriptionRecord = {
 };
 
 export const EmailSubscriptions: EventSubscriptionRecord = {
-  UserInvited: sendInviteEmail,
+  UserInvited: generateInviteEmail,
 };
 
 export class EmailQueueService {
@@ -168,7 +168,7 @@ export function processQueuedEmails(
   });
 }
 
-export function sendInviteEmail(
+export function generateInviteEmail(
   { templates, env }: EmailServiceDeps,
   event: UserInvitedEvent,
 ) {
