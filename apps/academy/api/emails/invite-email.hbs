@@ -3,22 +3,117 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invitación a Ulthar Academy</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        border-bottom: 2px solid #6a26cd;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      h1 {
+        color: #6a26cd;
+        font-size: 24px;
+        margin-bottom: 15px;
+      }
+      .code-block {
+        background-color: #f0e6ff;
+        border-radius: 4px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+        border: 1px solid #d9c4ff;
+      }
+      .code {
+        font-size: 20px;
+        font-weight: bold;
+        color: #6a26cd;
+        letter-spacing: 1px;
+      }
+      .info {
+        margin: 20px 0;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #6a26cd;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+      .footer {
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #e0e0e0;
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+      }
+      .note {
+        background-color: #f8f8f8;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        margin: 20px 0;
+      }
+      a {
+        color: #6a26cd;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
-    <h1>¡Bienvenido a la academy Ulthar!</h1>
-    <p>Fuiste invitado a unirte a nuestra plataforma.</p>
-    <p>Tu código de invitación es: <strong>{{code}}</strong></p>
-    <p>Por favor, utiliza este código para completar tu registro.</p>
+    <div class="container">
+      <div class="header">
+        <h1>¡Bienvenido a la Academy Ulthar!</h1>
+      </div>
 
-    <p>Para más información, visita nuestro sitio web en
-      <a href="{{env.FRONTEND_HOST}}">{{env.FRONTEND_HOST}}</a>
-    </p>
+      <p>Fuiste invitado a unirte a nuestra plataforma.</p>
 
-    <p>Nota: Este es un correo electrónico automático, por favor no respondas.</p>
-    <p>Si necesitas asistencia, por favor contacta a nuestro soporte en
-      <a href="mailto:{{env.SUPPORT_EMAIL}}">{{env.SUPPORT_EMAIL}}</a></p>
-    <p>¡Gracias por ser parte de nuestra comunidad!</p>
-    <p>Atentamente,</p>
-    <p>El equipo de Ulthar Academy</p>
+      <div class="code-block">
+        <p>Tu código de invitación es:</p>
+        <p class="code">{{code}}</p>
+      </div>
+
+      <p>Por favor, utilizá este código para completar tu registro.</p>
+
+      <div class="info">
+        <p>Para más información, visita nuestro sitio web en
+          <a href="{{env.FRONTEND_HOST}}">{{env.FRONTEND_HOST}}</a>
+        </p>
+      </div>
+
+      <div class="note">
+        <p>Nota: Este es un correo electrónico automático, por favor no
+          respondas.</p>
+        <p>Si necesitas asistencia, por favor contacta a nuestro soporte en
+          <a href="mailto:{{env.SUPPORT_EMAIL}}">{{env.SUPPORT_EMAIL}}</a></p>
+      </div>
+
+      <div class="footer">
+        <p>¡Gracias por ser parte de nuestra comunidad!</p>
+        <p>Atentamente,</p>
+        <p>El equipo de Ulthar Academy</p>
+      </div>
+    </div>
   </body>
 </html>
