@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { compile, type TemplateDelegate } from "handlebars";
+import Handlebars, { type TemplateDelegate } from "handlebars";
 
 export async function compileFileTemplate(
   fileName: string,
@@ -9,7 +9,7 @@ export async function compileFileTemplate(
 }
 
 export function compileTemplate(template: string): TemplateDelegate {
-  return compile(template, {
+  return Handlebars.compile(template, {
     strict: true,
   });
 }
