@@ -65,6 +65,13 @@ export const fieldParsers: FieldParsers = {
       f,
       v,
       (v): Result<number, InvalidFieldTypeError> => {
+        if (typeof v === "string") {
+          const parsedValue = Number(parseAndSanitizeString(v));
+          if (isNaN(parsedValue)) {
+            return Result.failWith(new InvalidFieldTypeError());
+          }
+          v = parsedValue;
+        }
         if (
           (typeof v === "number" && Number.isInteger(v)) ||
           typeof v === "bigint"
