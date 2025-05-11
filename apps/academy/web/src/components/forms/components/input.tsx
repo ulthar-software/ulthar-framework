@@ -33,7 +33,7 @@ export function Input({
   } = useControls(name);
 
   return (
-    <div className={`flex flex-col items-stretch ${className}`}>
+    <div className={clx(`flex flex-col items-stretch`, className)}>
       <label htmlFor={name} className={clx(shouldShowError && "text-red-700")}>
         {label}
       </label>
