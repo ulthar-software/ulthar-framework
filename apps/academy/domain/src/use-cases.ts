@@ -22,6 +22,7 @@ import {
   GetUnitWithSectionsUseCase,
   IncompleteQuestionnaireResponseError,
   InvalidCredentialsError,
+  InvalidInviteCodeError,
   InviteUserUseCase,
   LoginUseCase,
   ModuleNotFoundError,
@@ -29,6 +30,7 @@ import {
   QuestionnaireResponseNotFoundError,
   QuestionnaireSectionNotFoundError,
   QuestionnaireVersionMismatchError,
+  RegisterUserUseCase,
   StudentAlreadyEnrolledError,
   TagAlreadyExistsError,
   UnitNotFoundError,
@@ -58,6 +60,7 @@ export const DomainUseCases = [
   AddTextSectionToUnitUseCase,
   AddVideoSectionToUnitUseCase,
   AddQuestionnaireSectionToUnitUseCase,
+  RegisterUserUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
@@ -80,6 +83,7 @@ export const DomainUseCaseErrorsMap = {
   QuestionnaireVersionMismatchError: QuestionnaireVersionMismatchError,
   IncompleteQuestionnaireResponseError: IncompleteQuestionnaireResponseError,
   QuestionnaireResponseNotFoundError: QuestionnaireResponseNotFoundError,
+  InvalidInviteCodeError: InvalidInviteCodeError,
 } as const satisfies Record<
   DomainUseCaseErrors["_tag"],
   ClassConstructor<DomainUseCaseErrors>

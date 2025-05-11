@@ -1,3 +1,4 @@
+import type { UnexpectedError, UUID } from "@fabric/core";
 import { Effect, Field, Schema, TaggedError, type Infer } from "@fabric/core";
 import { UserInviteAcceptedEvent } from "../../models/user-invite.js";
 import { UserRegisteredByInvitationEvent } from "../../models/user.js";
@@ -15,7 +16,6 @@ export const RegisterUserInputModel = new Schema({
   password: Field.string(),
   inviteCode: Field.string(),
 });
-
 export type RegisterUserInput = Infer<typeof RegisterUserInputModel>;
 
 // Dependencies needed for the register user use case
@@ -35,6 +35,10 @@ export class InvalidInviteCodeError extends TaggedError<"InvalidInviteCodeError"
   }
 }
 
+export interface RegisterUserOutput {
+  userId: UUID;
+}
+
 // Define the use case
 export const RegisterUserUseCase = new UseCase({
   name: "registerUser",
@@ -44,7 +48,7 @@ export const RegisterUserUseCase = new UseCase({
   effect: (
     { state, events, crypto }: RegisterUserDependencies,
     { firstName, lastName, email, password, inviteCode }: RegisterUserInput,
-  ) => {
+  ): Effect<RegisterUserOutput, UnexpectedError | InvalidInviteCodeError> => {
     return Effect.fromGen(function* () {
       yield* state.from("users").where({ email }).assertNone();
 
