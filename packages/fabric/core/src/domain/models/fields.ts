@@ -153,6 +153,8 @@ export interface EmailField extends TaggedVariant<"EmailField">, BaseField {}
 export interface IntegerField extends TaggedVariant<"IntegerField">, BaseField {
   isUnsigned?: boolean;
   hasArbitraryPrecision?: boolean;
+  minValue?: number;
+  maxValue?: number;
 }
 
 export interface FloatField extends TaggedVariant<"FloatField">, BaseField {}

@@ -77,7 +77,19 @@ export const fieldParsers: FieldParsers = {
           typeof v === "bigint"
         ) {
           if (f.isUnsigned && v < 0) {
-            return Result.failWith(new InvalidFieldTypeError());
+            return Result.failWith(
+              new InvalidFieldTypeError("Negative value not allowed"),
+            );
+          }
+          if (!isNullish(f.minValue) && v < f.minValue) {
+            return Result.failWith(
+              new InvalidFieldTypeError("Minimum value exceeded"),
+            );
+          }
+          if (!isNullish(f.maxValue) && v > f.maxValue) {
+            return Result.failWith(
+              new InvalidFieldTypeError("Maximum value exceeded"),
+            );
           }
           if (f.hasArbitraryPrecision) {
             return Result.ok(BigInt(v)) as unknown as Result<
