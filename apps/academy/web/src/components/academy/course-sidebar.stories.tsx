@@ -9,7 +9,7 @@ const meta: Meta<typeof CourseSidebar> = {
   component: CourseSidebar,
   parameters: {
     layout: "centered",
-    pageLayout: "simple-routing",
+    decoratorType: "simple-routing",
   },
 };
 

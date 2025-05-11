@@ -36,7 +36,7 @@ export function Decorator(
   Story: PartialStoryFn<ReactRenderer, Record<string, any>>,
   { parameters }: StoryContext<ReactRenderer, Record<string, any>>,
 ) {
-  const { pageLayout, rpcContext, user, route } = parameters;
+  const { decoratorType, rpcContext, user, route } = parameters;
 
   const currentPath =
     Object.entries(route?.params ?? {}).reduce((acc, [key, value]) => {
@@ -49,7 +49,7 @@ export function Decorator(
     ? `${currentPath}?${currentQuery}`
     : currentPath;
 
-  switch (pageLayout) {
+  switch (decoratorType) {
     case "full-providers":
       return (
         <MemoryRouter initialEntries={["/", currentPathWithQuery]}>

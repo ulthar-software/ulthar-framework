@@ -29,7 +29,7 @@ const meta: Meta<typeof QuestionnaireContentSectionBlock> = {
     backgrounds: {
       default: "dark",
     },
-    pageLayout: "full-providers",
+    decoratorType: "full-providers",
     rpcContext: {
       getQuestionnaireResponse: async () => {
         await timeout(seconds(1));

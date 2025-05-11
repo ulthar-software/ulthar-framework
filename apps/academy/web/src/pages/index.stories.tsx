@@ -9,7 +9,7 @@ const meta: Meta<typeof Home> = {
   title: "Pages/Home",
   parameters: {
     layout: "fullscreen",
-    pageLayout: "full-providers",
+    decoratorType: "full-providers",
   },
 };
 export default meta;

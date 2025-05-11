@@ -11,7 +11,7 @@ const meta: Meta<typeof CourseView> = {
   title: "Pages/CourseView",
   parameters: {
     layout: "fullscreen",
-    pageLayout: "full-providers",
+    decoratorType: "full-providers",
   },
 };
 export default meta;
