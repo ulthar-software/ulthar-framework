@@ -11,6 +11,7 @@ import { Anchor } from "../ui/anchor.tsx";
 import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
 import { AddModuleModal } from "./add-module-modal";
+import { AddUnitModal } from "./add-unit-modal";
 import { EditCourseTitleModal } from "./edit-course-title-modal";
 
 interface CourseSidebarProps {
@@ -82,29 +83,27 @@ export function CourseSidebar({
     >
       <div className="p-4 border-b border-gray-700">
         <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <h2 className="text-lg font-semibold text-primary">
-              {courseData.course.title}
-            </h2>
-            {isEditable && (
-              <>
-                <Button
-                  onClick={handleEditCourseTitle}
-                  className="text-gray-400 hover:text-primary ml-2"
-                  title="Editar título del curso"
-                >
-                  <Icon name="bx-edit" className="text-xl" />
-                </Button>
-                <Button
-                  onClick={handleAddModule}
-                  className="text-gray-400 hover:text-primary ml-2"
-                  title="Agregar módulo"
-                >
-                  <Icon name="bx-plus" className="text-xl" />
-                </Button>
-              </>
-            )}
-          </div>
+          <h2 className="text-lg font-semibold text-primary">
+            {courseData.course.title}
+          </h2>
+          {isEditable && (
+            <div className="flex items-center">
+              <Button
+                onClick={handleEditCourseTitle}
+                className="text-gray-400 hover:text-primary"
+                title="Editar título del curso"
+              >
+                <Icon name="bx-edit" className="text-xl" />
+              </Button>
+              <Button
+                onClick={handleAddModule}
+                className="text-gray-400 hover:text-primary"
+                title="Agregar módulo"
+              >
+                <Icon name="bx-plus" className="text-xl" />
+              </Button>
+            </div>
+          )}
           <Button
             onClick={onCloseSidebar}
             className="text-gray-400 hover:text-primary"
@@ -133,11 +132,31 @@ export function CourseSidebar({
               >
                 <div className="flex justify-between items-center">
                   <span>{module.title}</span>
-                  {isExpanded ? (
-                    <Icon name="bx-chevron-up" className="text-xl" />
-                  ) : (
-                    <Icon name="bx-chevron-down" className="text-xl" />
-                  )}
+                  <div className="flex items-center gap-2">
+                    {isEditable && (
+                      <Button
+                        onClick={() => {
+                          const [closeModal] = showModal(
+                            <AddUnitModal
+                              moduleId={module.id}
+                              closeModal={() => {
+                                closeModal();
+                              }}
+                            />,
+                          );
+                        }}
+                        className="text-gray-400 hover:text-primary"
+                        title="Agregar unidad"
+                      >
+                        <Icon name="bx-plus" className="text-xl" />
+                      </Button>
+                    )}
+                    {isExpanded ? (
+                      <Icon name="bx-chevron-up" className="text-xl" />
+                    ) : (
+                      <Icon name="bx-chevron-down" className="text-xl" />
+                    )}
+                  </div>
                 </div>
               </div>
 
