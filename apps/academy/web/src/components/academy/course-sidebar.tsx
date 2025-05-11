@@ -10,6 +10,7 @@ import { clx } from "../../utils/styles/clx.ts";
 import { Anchor } from "../ui/anchor.tsx";
 import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
+import { AddModuleModal } from "./add-module-modal";
 import { EditCourseTitleModal } from "./edit-course-title-modal";
 
 interface CourseSidebarProps {
@@ -61,6 +62,17 @@ export function CourseSidebar({
     );
   };
 
+  const handleAddModule = () => {
+    const [closeModal] = showModal(
+      <AddModuleModal
+        courseId={courseId}
+        closeModal={() => {
+          closeModal();
+        }}
+      />,
+    );
+  };
+
   return (
     <aside
       className={clx(
@@ -70,17 +82,29 @@ export function CourseSidebar({
     >
       <div className="p-4 border-b border-gray-700">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-primary">
-            {courseData.course.title}
-          </h2>
-          {isEditable && (
-            <Button
-              onClick={handleEditCourseTitle}
-              className="text-gray-400 hover:text-primary ml-2"
-            >
-              <Icon name="bx-edit" className="text-xl" />
-            </Button>
-          )}
+          <div className="flex items-center">
+            <h2 className="text-lg font-semibold text-primary">
+              {courseData.course.title}
+            </h2>
+            {isEditable && (
+              <>
+                <Button
+                  onClick={handleEditCourseTitle}
+                  className="text-gray-400 hover:text-primary ml-2"
+                  title="Editar título del curso"
+                >
+                  <Icon name="bx-edit" className="text-xl" />
+                </Button>
+                <Button
+                  onClick={handleAddModule}
+                  className="text-gray-400 hover:text-primary ml-2"
+                  title="Agregar módulo"
+                >
+                  <Icon name="bx-plus" className="text-xl" />
+                </Button>
+              </>
+            )}
+          </div>
           <Button
             onClick={onCloseSidebar}
             className="text-gray-400 hover:text-primary"
