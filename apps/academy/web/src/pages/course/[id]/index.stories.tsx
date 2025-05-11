@@ -1,5 +1,6 @@
 import { Result, seconds, timeout, UnexpectedError } from "@fabric/core";
 import type { Meta, StoryObj } from "@storybook/react";
+import { Permission } from "@ulthar/academy-domain";
 import { fakeCourse } from "../../../utils/storybook/fake-course.ts";
 import { fakeModuleSummary } from "../../../utils/storybook/fake-module.ts";
 import { fakeResource } from "../../../utils/storybook/fake-resource.ts";
@@ -91,6 +92,43 @@ export const Default: Story = {
     user: {
       user: "id",
       permissions: ["VIEW_COURSE"],
+    },
+  },
+};
+
+export const IsAdmin: Story = {
+  parameters: {
+    rpcContext: {
+      getCourseDetails: async () => {
+        await timeout(seconds(1));
+        return Result.ok(mockCourseData);
+      },
+      getUnitWithSections: async () => {
+        await timeout(seconds(2));
+        return Result.ok(
+          fakeUnitWithSections({
+            id: mockCourseData.modules[0].units[0].id,
+            moduleId: mockCourseData.modules[0].id,
+          }),
+        );
+      },
+      getResourcesByUnitTags: async () => {
+        await timeout(seconds(1));
+        return Result.ok(mockResources);
+      },
+    },
+    route: {
+      path: "/course/:id",
+      params: {
+        id: mockCourseData.course.id,
+      },
+      query: {
+        unitId: mockCourseData.modules[0].units[0].id,
+      },
+    },
+    user: {
+      user: "id",
+      permissions: ["VIEW_COURSE", Permission.EDIT_COURSE],
     },
   },
 };

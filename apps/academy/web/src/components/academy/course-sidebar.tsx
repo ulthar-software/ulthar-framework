@@ -1,10 +1,16 @@
 import { type UUID } from "@fabric/core";
-import type { GetCourseDetailsOutput } from "@ulthar/academy-domain";
+import {
+  Permission,
+  type GetCourseDetailsOutput,
+} from "@ulthar/academy-domain";
 import { useEffect, useState } from "react";
+import { useAuthHasPerm } from "../../utils/auth/use-auth-has-perm";
+import { useModal } from "../../utils/modal/modal-hooks";
 import { clx } from "../../utils/styles/clx.ts";
 import { Anchor } from "../ui/anchor.tsx";
 import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
+import { EditCourseTitleModal } from "./edit-course-title-modal";
 
 interface CourseSidebarProps {
   courseData: GetCourseDetailsOutput;
@@ -40,6 +46,21 @@ export function CourseSidebar({
     setExpandedModuleId(expandedModuleId === moduleId ? undefined : moduleId);
   };
 
+  const isEditable = useAuthHasPerm(Permission.EDIT_COURSE);
+  const { showModal } = useModal();
+
+  const handleEditCourseTitle = () => {
+    const [closeModal] = showModal(
+      <EditCourseTitleModal
+        courseId={courseId}
+        currentTitle={courseData.course.title}
+        closeModal={() => {
+          closeModal();
+        }}
+      />,
+    );
+  };
+
   return (
     <aside
       className={clx(
@@ -52,6 +73,14 @@ export function CourseSidebar({
           <h2 className="text-lg font-semibold text-primary">
             {courseData.course.title}
           </h2>
+          {isEditable && (
+            <Button
+              onClick={handleEditCourseTitle}
+              className="text-gray-400 hover:text-primary ml-2"
+            >
+              <Icon name="bx-edit" className="text-xl" />
+            </Button>
+          )}
           <Button
             onClick={onCloseSidebar}
             className="text-gray-400 hover:text-primary"
