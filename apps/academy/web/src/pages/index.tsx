@@ -1,16 +1,23 @@
-import { AccessPolicy } from "@ulthar/academy-domain";
+import { AccessPolicy, Permission } from "@ulthar/academy-domain";
 import { CourseCard } from "../components/academy/course-card.tsx";
+import { CreateCourseModal } from "../components/academy/create-course-modal";
 import { PageContainer } from "../components/academy/page-container.tsx";
 import { PageContent } from "../components/academy/page-content.tsx";
 import { PageTitle } from "../components/academy/page-title.tsx";
 import { PlatformFooter } from "../components/academy/platform-footer.tsx";
 import { PlatformHeader } from "../components/academy/platform-header.tsx";
+import { Button } from "../components/ui/button";
 import { LoadingSpinner } from "../components/ui/loading-spinner.tsx";
 import { useAuthGuard } from "../utils/auth/use-auth-guard.ts";
+import { useAuthHasPerm } from "../utils/auth/use-auth-has-perm.ts";
+import { useModal } from "../utils/modal/modal-hooks";
 import { useQuery } from "../utils/rpc/use-query.ts";
 
 export default function Home() {
   useAuthGuard(AccessPolicy.Authenticated());
+
+  const isAdmin = useAuthHasPerm(Permission.CREATE_COURSE);
+  const { showModal } = useModal();
 
   const [isLoading, coursesData, error] = useQuery("getAllCourses", {});
 
@@ -20,11 +27,33 @@ export default function Home() {
   const hasCourses =
     !isLoading && !error && coursesData && coursesData.courses.length > 0;
 
+  const handleCreateCourse = () => {
+    const [closeModal] = showModal(
+      <CreateCourseModal
+        closeModal={() => {
+          closeModal();
+        }}
+      />,
+    );
+  };
+
   return (
     <PageContainer>
       <PlatformHeader />
+
       <PageContent>
         <PageTitle>Cursos disponibles</PageTitle>
+
+        {isAdmin && (
+          <div className="absolute top-4 right-4">
+            <Button
+              onClick={handleCreateCourse}
+              className="bg-primary text-white"
+            >
+              Crea un nuevo curso
+            </Button>
+          </div>
+        )}
 
         {isLoading && (
           <div className="flex justify-center items-center h-64">

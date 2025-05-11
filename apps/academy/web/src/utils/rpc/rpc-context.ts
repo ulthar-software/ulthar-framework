@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { createContext } from "react";
 
+import { Result, UnexpectedError } from "@fabric/core";
 import type {
   DomainUseCases,
   UseCaseInput,
@@ -24,7 +25,10 @@ export type RpcClient = {
 };
 
 function emptyMock<T extends Function>(): T {
-  return (() => void 0) as unknown as T;
+  return (() =>
+    Promise.resolve(
+      Result.failWith(new UnexpectedError("RPC method not found")),
+    )) as unknown as T;
 }
 
 export const EmptyRPCContext: RpcClient = {
@@ -45,6 +49,11 @@ export const EmptyRPCContext: RpcClient = {
   addQuestionnaireResponse: emptyMock<UseCaseRPC<"addQuestionnaireResponse">>(),
   getQuestionnaireResponse: emptyMock<UseCaseRPC<"getQuestionnaireResponse">>(),
   enrollUsersByEmail: emptyMock<UseCaseRPC<"enrollUsersByEmail">>(),
+  addTextSectionToUnit: emptyMock<UseCaseRPC<"addTextSectionToUnit">>(),
+  addVideoSectionToUnit: emptyMock<UseCaseRPC<"addVideoSectionToUnit">>(),
+  addQuestionnaireSectionToUnit:
+    emptyMock<UseCaseRPC<"addQuestionnaireSectionToUnit">>(),
+  registerUser: emptyMock<UseCaseRPC<"registerUser">>(),
 };
 
 export const RpcContext = createContext<RpcClient>(EmptyRPCContext);

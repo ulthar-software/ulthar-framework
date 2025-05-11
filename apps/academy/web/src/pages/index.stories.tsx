@@ -33,6 +33,23 @@ export const Default: Story = {
   },
 };
 
+export const IsAdmin: Story = {
+  parameters: {
+    rpcContext: {
+      getAllCourses: async () => {
+        await timeout(seconds(1));
+        return Result.ok({
+          courses: [fakeCourse(), fakeCourse(), fakeCourse()],
+        } as GetAllCoursesOutput);
+      },
+    },
+    user: {
+      user: "id",
+      permissions: ["VIEW_COURSE", "CREATE_COURSE"],
+    },
+  },
+};
+
 export const Loading: Story = {
   parameters: {
     rpcContext: {

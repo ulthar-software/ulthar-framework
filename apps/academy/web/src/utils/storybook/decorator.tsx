@@ -53,18 +53,18 @@ export function Decorator(
     case "full-providers":
       return (
         <MemoryRouter initialEntries={["/", currentPathWithQuery]}>
-          <AuthContext.Provider
+          <RpcProvider
             value={{
-              accessToken: user ? JSON.stringify(user) : undefined,
-              user: user as UserAccess,
-              removeAccessToken: removeAccessTokenAction,
-              setAccessToken: setAccessTokenAction,
+              ...EmptyRPCContext,
+              ...(rpcContext as Partial<RpcClient>),
             }}
           >
-            <RpcProvider
+            <AuthContext.Provider
               value={{
-                ...EmptyRPCContext,
-                ...(rpcContext as Partial<RpcClient>),
+                accessToken: user ? JSON.stringify(user) : undefined,
+                user: user as UserAccess,
+                removeAccessToken: removeAccessTokenAction,
+                setAccessToken: setAccessTokenAction,
               }}
             >
               <ModalProvider>
@@ -85,9 +85,9 @@ export function Decorator(
                   />
                 </Routes>
               </ModalProvider>
-            </RpcProvider>
-            <Toaster />
-          </AuthContext.Provider>
+              <Toaster />
+            </AuthContext.Provider>
+          </RpcProvider>
         </MemoryRouter>
       );
     case "simple-routing":
