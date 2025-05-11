@@ -47,6 +47,7 @@
       }
       .info {
         margin: 20px 0;
+        text-align: center; /* Center the button */
       }
       .button {
         display: inline-block;
@@ -56,6 +57,7 @@
         text-decoration: none;
         border-radius: 4px;
         margin: 10px 0;
+        text-align: center;
       }
       .footer {
         margin-top: 30px;
@@ -89,12 +91,14 @@
 
       <p>Fuiste invitado a unirte a nuestra plataforma.</p>
 
-      <div class="code-block">
-        <p>Tu código de invitación es:</p>
-        <p class="code">{{code}}</p>
+      <div class="info">
+        <p>Por favor, haz clic en el siguiente enlace para completar tu
+          registro:</p>
+        <a
+          class="button"
+          href="{{env.FRONTEND_HOST}}/register?email={{email}}&code={{code}}"
+        >Completar Registro</a>
       </div>
-
-      <p>Por favor, utilizá este código para completar tu registro.</p>
 
       <div class="info">
         <p>Para más información, visita nuestro sitio web en

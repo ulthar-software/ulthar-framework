@@ -74,7 +74,7 @@ Example: yarn test-email UserInvited
   } catch (error) {
     console.error(
       "Error rendering template:",
-      error instanceof Error ? error.message : String(error),
+      error instanceof Error ? error : String(error),
     );
     process.exit(1);
   }

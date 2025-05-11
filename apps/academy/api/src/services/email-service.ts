@@ -175,6 +175,7 @@ export function generateInviteEmail(
   const template = templates.UserInvited;
   const payload = {
     code: event.payload.code,
+    email: event.payload.email,
     env: getEnvForEmails(env),
   };
 
