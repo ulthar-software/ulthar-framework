@@ -1,4 +1,5 @@
 import { AccessPolicy, Permission } from "@ulthar/academy-domain";
+import { useNavigate } from "react-router";
 import { CourseCard } from "../components/academy/course-card.tsx";
 import { CreateCourseModal } from "../components/academy/create-course-modal";
 import { PageContainer } from "../components/academy/page-container.tsx";
@@ -27,12 +28,15 @@ export default function Home() {
   const hasCourses =
     !isLoading && !error && coursesData && coursesData.courses.length > 0;
 
+  const navigate = useNavigate();
+
   const handleCreateCourse = () => {
     const [closeModal] = showModal(
       <CreateCourseModal
         closeModal={() => {
           closeModal();
         }}
+        navigate={navigate}
       />,
     );
   };

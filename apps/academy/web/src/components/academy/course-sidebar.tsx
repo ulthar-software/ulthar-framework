@@ -4,6 +4,7 @@ import {
   type GetCourseDetailsOutput,
 } from "@ulthar/academy-domain";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { useAuthHasPerm } from "../../utils/auth/use-auth-has-perm";
 import { useModal } from "../../utils/modal/modal-hooks";
 import { clx } from "../../utils/styles/clx.ts";
@@ -21,6 +22,7 @@ interface CourseSidebarProps {
   courseId: UUID;
   currentModuleId?: UUID;
   currentUnitId?: UUID;
+  refreshCourse: () => Promise<void>;
 }
 
 export function CourseSidebar({
@@ -30,6 +32,7 @@ export function CourseSidebar({
   courseId,
   currentModuleId,
   currentUnitId,
+  refreshCourse,
 }: CourseSidebarProps) {
   // State to track which module is expanded
   const [expandedModuleId, setExpandedModuleId] = useState<UUID | undefined>(
@@ -50,10 +53,12 @@ export function CourseSidebar({
 
   const isEditable = useAuthHasPerm(Permission.EDIT_COURSE);
   const { showModal } = useModal();
+  const navigate = useNavigate();
 
   const handleEditCourseTitle = () => {
     const [closeModal] = showModal(
       <EditCourseTitleModal
+        refreshCourse={refreshCourse}
         courseId={courseId}
         currentTitle={courseData.course.title}
         closeModal={() => {
@@ -66,6 +71,7 @@ export function CourseSidebar({
   const handleAddModule = () => {
     const [closeModal] = showModal(
       <AddModuleModal
+        refreshCourse={refreshCourse}
         courseId={courseId}
         closeModal={() => {
           closeModal();
@@ -138,7 +144,10 @@ export function CourseSidebar({
                         onClick={() => {
                           const [closeModal] = showModal(
                             <AddUnitModal
+                              navigate={navigate}
+                              courseId={courseId}
                               moduleId={module.id}
+                              refreshCourse={refreshCourse}
                               closeModal={() => {
                                 closeModal();
                               }}

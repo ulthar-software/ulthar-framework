@@ -9,6 +9,7 @@ export interface EditCourseTitleModalProps {
   courseId: UUID;
   currentTitle: string;
   closeModal: () => void;
+  refreshCourse: () => Promise<void>;
 }
 
 const editCourseTitleSchema = new Schema({
@@ -19,6 +20,7 @@ export function EditCourseTitleModal({
   courseId,
   currentTitle,
   closeModal,
+  refreshCourse,
 }: EditCourseTitleModalProps) {
   const editCourseTitleCommand = useRPC("changeCourseTitle");
 
@@ -37,6 +39,7 @@ export function EditCourseTitleModal({
       return;
     }
 
+    void refreshCourse();
     closeModal();
   };
 

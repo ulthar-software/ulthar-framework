@@ -8,13 +8,18 @@ import { Button } from "../ui/button";
 export interface AddModuleModalProps {
   courseId: UUID;
   closeModal: () => void;
+  refreshCourse: () => Promise<void>;
 }
 
 const addModuleSchema = new Schema({
   title: Field.string({ minLength: 3 }),
 });
 
-export function AddModuleModal({ courseId, closeModal }: AddModuleModalProps) {
+export function AddModuleModal({
+  courseId,
+  closeModal,
+  refreshCourse,
+}: AddModuleModalProps) {
   const addModuleCommand = useRPC("addModuleToCourse");
 
   const handleAddModule = async (data: { title: string }): Promise<void> => {
@@ -30,6 +35,7 @@ export function AddModuleModal({ courseId, closeModal }: AddModuleModalProps) {
       return;
     }
 
+    void refreshCourse();
     closeModal();
   };
 

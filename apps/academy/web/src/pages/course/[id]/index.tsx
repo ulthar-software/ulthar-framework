@@ -33,8 +33,10 @@ export default function CourseView() {
   // State for controlling the visibility of the module sidebar
   const [showModulesSidebar, setShowModulesSidebar] = useState(false);
 
+  const [courseHasNoUnits, setCourseHasNoUnits] = useState(false);
+
   // Fetch course data
-  const [isLoadingCourse, courseData, courseError] = useQuery(
+  const [isLoadingCourse, courseData, courseError, refreshCourse] = useQuery(
     "getCourseDetails",
     {
       courseId: id as UUID,
@@ -109,6 +111,10 @@ export default function CourseView() {
           void navigate("/");
           break;
         }
+        case "EmptyCourseError": {
+          setCourseHasNoUnits(true);
+          break;
+        }
         default: {
           exhaustiveCheck(unitError);
         }
@@ -134,6 +140,7 @@ export default function CourseView() {
           <CourseSidebar
             courseData={courseData}
             showSidebar={showModulesSidebar}
+            refreshCourse={refreshCourse}
             onCloseSidebar={() => {
               setShowModulesSidebar(false);
             }}
@@ -158,6 +165,14 @@ export default function CourseView() {
             {isLoadingUnit && (
               <div className="flex-grow flex justify-center items-center">
                 <LoadingSpinner className="text-primary text-4xl sm:text-6xl" />
+              </div>
+            )}
+
+            {courseHasNoUnits && (
+              <div className="bg-dark-alt p-8 rounded-lg text-center">
+                <p className="text-gray-400 mb-4">
+                  No hay unidades disponibles en este curso.
+                </p>
               </div>
             )}
 

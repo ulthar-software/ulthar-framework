@@ -1,20 +1,30 @@
 import type { UUID } from "@fabric/core";
 import { Field, Schema } from "@fabric/core";
+import type { NavigateFunction } from "react-router";
 import { useRPC } from "../../utils/rpc/use-rpc.ts";
 import { showErrorToast } from "../../utils/toasts/show-error-toast.ts";
 import { Form, FormButton, Input } from "../forms/index";
 import { Button } from "../ui/button";
 
 export interface AddUnitModalProps {
+  navigate: NavigateFunction;
+  courseId: UUID;
   moduleId: UUID;
   closeModal: () => void;
+  refreshCourse: () => Promise<void>;
 }
 
 const addUnitSchema = new Schema({
   title: Field.string({ minLength: 3 }),
 });
 
-export function AddUnitModal({ moduleId, closeModal }: AddUnitModalProps) {
+export function AddUnitModal({
+  courseId,
+  moduleId,
+  closeModal,
+  navigate,
+  refreshCourse,
+}: AddUnitModalProps) {
   const addUnitCommand = useRPC("addUnitToModule");
 
   const handleAddUnit = async (data: { title: string }): Promise<void> => {
@@ -30,6 +40,13 @@ export function AddUnitModal({ moduleId, closeModal }: AddUnitModalProps) {
       );
       return;
     }
+
+    const unitId = result.unwrapOrThrow().unitId;
+
+    // Navigate to the new unit page
+    void navigate(`/course/${courseId}?unitId=${unitId}`);
+
+    void refreshCourse();
 
     closeModal();
   };

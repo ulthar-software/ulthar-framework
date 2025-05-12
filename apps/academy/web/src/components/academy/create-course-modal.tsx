@@ -1,11 +1,12 @@
 import { exhaustiveCheck, Field, Schema } from "@fabric/core";
-import { useNavigate } from "react-router";
+import type { NavigateFunction } from "react-router";
 import { useRPC } from "../../utils/rpc/use-rpc.ts";
 import { showErrorToast } from "../../utils/toasts/show-error-toast.ts";
 import { Form, FormButton, Input } from "../forms/index";
 import { Button } from "../ui/button";
 
 export interface CreateCourseModalProps {
+  navigate: NavigateFunction;
   closeModal: () => void;
 }
 
@@ -14,8 +15,10 @@ const createCourseSchema = new Schema({
   description: Field.string({ isOptional: true }),
 });
 
-export function CreateCourseModal({ closeModal }: CreateCourseModalProps) {
-  const navigate = useNavigate();
+export function CreateCourseModal({
+  closeModal,
+  navigate,
+}: CreateCourseModalProps) {
   const createCourseCommand = useRPC("createCourse");
 
   const handleCreateCourse = async (data: {
@@ -42,7 +45,7 @@ export function CreateCourseModal({ closeModal }: CreateCourseModalProps) {
       }
     }
     const { courseId } = result.unwrapOrThrow(); // Replace with actual logic
-    void navigate(`/courses/${courseId}`);
+    void navigate(`/course/${courseId}`);
     closeModal();
   };
 
