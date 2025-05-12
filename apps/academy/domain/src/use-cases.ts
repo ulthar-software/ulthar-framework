@@ -1,5 +1,9 @@
 import { UnexpectedError, type ClassConstructor } from "@fabric/core";
 import {
+  ExpiredTokenError,
+  InvalidTokenError,
+} from "./services/auth-service.js";
+import {
   AddModuleToCourseUseCase,
   AddQuestionnaireResponseUseCase,
   AddQuestionnaireSectionToUnitUseCase,
@@ -13,6 +17,7 @@ import {
   CourseNotFoundError,
   CreateCourseUseCase,
   CreateTagUseCase,
+  EmptyCourseError,
   EnrollStudentInCourseUseCase,
   EnrollUsersByEmailUseCase,
   GetAllCoursesUseCase,
@@ -38,6 +43,7 @@ import {
   UserAlreadyInvitedError,
 } from "./use-cases/index.js";
 import type { UseCaseErrorValue } from "./utils/use-case.js";
+import { UnauthorizedError } from "./utils/use-case.js";
 
 export const DomainUseCases = [
   LoginUseCase,
@@ -65,7 +71,11 @@ export const DomainUseCases = [
 
 export type DomainUseCases = typeof DomainUseCases;
 
-export type DomainUseCaseErrors = UseCaseErrorValue<DomainUseCases[number]>;
+export type DomainUseCaseErrors =
+  | UseCaseErrorValue<DomainUseCases[number]>
+  | InvalidTokenError
+  | UnauthorizedError
+  | ExpiredTokenError;
 
 export const DomainUseCaseErrorsMap = {
   UnexpectedError: UnexpectedError,
@@ -84,6 +94,10 @@ export const DomainUseCaseErrorsMap = {
   IncompleteQuestionnaireResponseError: IncompleteQuestionnaireResponseError,
   QuestionnaireResponseNotFoundError: QuestionnaireResponseNotFoundError,
   InvalidInviteCodeError: InvalidInviteCodeError,
+  InvalidTokenError: InvalidTokenError,
+  ExpiredTokenError: ExpiredTokenError,
+  UnauthorizedError: UnauthorizedError,
+  EmptyCourseError: EmptyCourseError,
 } as const satisfies Record<
   DomainUseCaseErrors["_tag"],
   ClassConstructor<DomainUseCaseErrors>

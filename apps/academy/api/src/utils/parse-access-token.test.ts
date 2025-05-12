@@ -1,14 +1,10 @@
 import { type UUID } from "@fabric/core";
+import { beforeEach, describe, expect, it, partialMock } from "@fabric/testing";
+import type { User } from "@ulthar/academy-domain";
 import {
-  beforeEach,
-  describe,
-  expect,
-  fnMock,
-  it,
-  partialMock,
-} from "@fabric/testing";
-import type { Logger, User } from "@ulthar/academy-domain";
-import { getPermissionsForRole } from "@ulthar/academy-domain";
+  getPermissionsForRole,
+  InvalidTokenError,
+} from "@ulthar/academy-domain";
 import { ConcreteAuthService } from "../services/auth-service.js";
 import {
   parseAccessToken,
@@ -20,9 +16,6 @@ describe("parseAccessToken", () => {
 
   beforeEach(() => {
     deps = {
-      logger: partialMock<Logger>({
-        error: fnMock(),
-      }),
       auth: new ConcreteAuthService("los gatitos son lo mejor"),
     };
   });
@@ -38,9 +31,12 @@ describe("parseAccessToken", () => {
     const result = await parseAccessToken(deps, mockToken);
 
     // Verify the function returns the expected user access object
-    expect(result).toBeDefined();
-    expect(result?.id).toBe(user.id);
-    expect(result?.permissions).toEqual(getPermissionsForRole("ADMIN"));
+    if (!result) {
+      throw new Error("Expected result to be defined");
+    }
+    const value = result.unwrapOrThrow();
+    expect(value.id).toBe(user.id);
+    expect(value.permissions).toEqual(getPermissionsForRole("ADMIN"));
   });
 
   it("should return undefined when token is undefined", async () => {
@@ -51,10 +47,11 @@ describe("parseAccessToken", () => {
 
   it("should return undefined when token validation fails", async () => {
     const result = await parseAccessToken(deps, "invalid-token");
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(deps.logger.error).toHaveBeenCalledWith(
-      `Tried parsing invalid token: invalid-token`,
-    );
-    expect(result).toBeUndefined();
+
+    if (!result) {
+      throw new Error("Expected result to be defined");
+    }
+    const error = result.unwrapErrorOrThrow();
+    expect(error).toBeInstanceOf(InvalidTokenError);
   });
 });

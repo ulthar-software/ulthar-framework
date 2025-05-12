@@ -3,19 +3,28 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JSONExt, Result, UnexpectedError } from "@fabric/core";
-import { deserializeError, DomainUseCases } from "@ulthar/academy-domain";
+import {
+  deserializeError,
+  DomainUseCases,
+  ExpiredTokenError,
+  InvalidTokenError,
+} from "@ulthar/academy-domain";
 import type { PropsWithChildren } from "react";
 import { LOCAL_STORAGE_TOKEN_KEY } from "../auth/auth-provider.tsx";
+import { useAuthLogout } from "../auth/use-auth-logout.ts";
 import { useEnv } from "../env/use-env.ts";
 import type { RpcClient } from "./rpc-context.ts";
 import { RpcProvider } from "./rpc-context.ts";
 
 export function ConcreteRpcProvider({ children }: PropsWithChildren) {
   const API_URL = useEnv("API_URL");
-  return <RpcProvider value={buildClient(API_URL)}>{children}</RpcProvider>;
+  const logout = useAuthLogout();
+  return (
+    <RpcProvider value={buildClient(API_URL, logout)}>{children}</RpcProvider>
+  );
 }
 
-function buildClient(host: string): RpcClient {
+function buildClient(host: string, logout: () => void): RpcClient {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
@@ -48,9 +57,19 @@ function buildClient(host: string): RpcClient {
                 useCase.type === "command" ? JSON.stringify(input) : undefined,
             });
             const textResult = await response.text();
+            if (response.ok && !textResult) {
+              return Result.ok(undefined);
+            }
             const result = JSONExt.parse<any>(textResult).unwrapOrThrow();
             if (!response.ok) {
-              return Result.failWith(deserializeError(result));
+              const error = deserializeError(result);
+              if (
+                error instanceof InvalidTokenError ||
+                error instanceof ExpiredTokenError
+              ) {
+                logout();
+              }
+              return Result.failWith(error);
             }
             return Result.ok(result);
           } catch (e: any) {

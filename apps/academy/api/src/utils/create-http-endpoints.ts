@@ -19,11 +19,22 @@ export function createHTTPEndpoints<TDeps extends BaseDependencies>(
       try {
         const token = req.headers.authorization;
         const userAccess = await parseAccessToken(deps, token);
+        if (userAccess?.isError()) {
+          res.status(401);
+          res
+            .header("Content-Type", "application/json")
+            .send(
+              JSONExt.stringify(
+                userAccess.unwrapErrorOrThrow(),
+              ).unwrapOrThrow(),
+            );
+          return;
+        }
         const result: any = await useCase
           .call(
             {
               ...deps,
-              currentUser: userAccess,
+              currentUser: userAccess?.unwrapOrThrow(),
             },
             {
               ...req.query,

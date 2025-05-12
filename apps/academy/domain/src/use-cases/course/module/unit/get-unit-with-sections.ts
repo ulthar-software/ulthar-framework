@@ -3,6 +3,7 @@ import {
   Effect,
   Field,
   Schema,
+  TaggedError,
   UnexpectedError,
   type Infer,
 } from "@fabric/core";
@@ -50,6 +51,7 @@ export const GetUnitWithSectionsUseCase = new UseCase({
     | CourseNotFoundError
     | NotEnrolledInCourseError
     | UnitNotFoundError
+    | EmptyCourseError
     | UnexpectedError
   > => {
     // First check if the course exists
@@ -68,7 +70,7 @@ function getUnitFromMaybeId(
   state: DomainStateStore,
   courseId: UUID,
   unitId?: UUID,
-): Effect<Unit, UnexpectedError | UnitNotFoundError> {
+): Effect<Unit, UnitNotFoundError | EmptyCourseError> {
   // If unitId is provided, use it; otherwise find the first unit in the first module
   if (unitId) {
     return state
@@ -85,7 +87,7 @@ function getUnitFromMaybeId(
     .orderBy({ order: "ASC" })
     .limit(1)
     .selectOneOrFail()
-    .mapError(() => new UnexpectedError())
+    .mapError(() => new EmptyCourseError())
     .flatMap((firstModule) => {
       // Find the first unit in that module
       return state
@@ -94,7 +96,7 @@ function getUnitFromMaybeId(
         .orderBy({ order: "ASC" })
         .limit(1)
         .selectOneOrFail()
-        .mapError(() => new UnexpectedError());
+        .mapError(() => new EmptyCourseError());
     });
 }
 
@@ -168,4 +170,10 @@ function getUnitWithSections(
       sections: sortedSections,
     };
   });
+}
+
+export class EmptyCourseError extends TaggedError<"EmptyCourseError"> {
+  constructor() {
+    super("EmptyCourseError", "The course has no units.");
+  }
 }

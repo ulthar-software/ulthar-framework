@@ -8,10 +8,17 @@ import { useEffect, useRef, useState } from "react";
 import type { UseCaseFromName, UseCaseNames } from "./rpc-context.ts";
 import { useRPC } from "./use-rpc.ts";
 
+export type QueryState<TName extends UseCaseNames> = [
+  boolean, //isLoading
+  UseCaseOkValue<UseCaseFromName<TName>> | undefined, //isMaybeOK
+  UseCaseErrorValue<UseCaseFromName<TName>> | UnexpectedError | undefined, //isMaybeError
+];
+
 export type QueryResult<TName extends UseCaseNames> = [
   boolean, //isLoading
   UseCaseOkValue<UseCaseFromName<TName>> | undefined, //isMaybeOK
   UseCaseErrorValue<UseCaseFromName<TName>> | UnexpectedError | undefined, //isMaybeError
+  () => Promise<void>, //refetch function
 ];
 
 export function useQuery<TName extends UseCaseNames>(
@@ -19,12 +26,12 @@ export function useQuery<TName extends UseCaseNames>(
   input: UseCaseInput<UseCaseFromName<TName>>,
 ): QueryResult<TName> {
   const rpc = useRPC(name);
-  const [state, setState] = useState<QueryResult<TName>>([
+  const [state, setState] = useState<QueryState<TName>>([
     true,
     undefined,
     undefined,
   ]);
-  const effectRan = useRef(false);
+  const runEffect = useRef(false);
 
   async function callRPC() {
     setState([true, undefined, undefined]);
@@ -54,14 +61,15 @@ export function useQuery<TName extends UseCaseNames>(
   }
 
   useEffect(() => {
-    if (!effectRan.current) {
+    if (runEffect.current) {
       void callRPC();
     }
+    runEffect.current = true;
     return () => {
-      effectRan.current = true;
+      runEffect.current = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(input)]);
 
-  return state;
+  return [...state, callRPC];
 }
