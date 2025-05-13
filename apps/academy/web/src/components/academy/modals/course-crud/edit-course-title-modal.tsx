@@ -1,9 +1,9 @@
 import type { UUID } from "@fabric/core";
-import { Field, Schema } from "@fabric/core";
-import { useRPC } from "../../utils/rpc/use-rpc.ts";
-import { showErrorToast } from "../../utils/toasts/show-error-toast.ts";
-import { Form, FormButton, Input } from "../forms/index";
-import { Button } from "../ui/button";
+import { useRPC } from "../../../../utils/rpc/use-rpc.ts";
+import { showErrorToast } from "../../../../utils/toasts/show-error-toast.ts";
+import { Form, FormButton, Input } from "../../../forms/index";
+import { Button } from "../../../ui/button.tsx";
+import { courseSchema } from "./schemas.ts";
 
 export interface EditCourseTitleModalProps {
   courseId: UUID;
@@ -11,10 +11,6 @@ export interface EditCourseTitleModalProps {
   closeModal: () => void;
   refreshCourse: () => Promise<void>;
 }
-
-const editCourseTitleSchema = new Schema({
-  title: Field.string(),
-});
 
 export function EditCourseTitleModal({
   courseId,
@@ -47,7 +43,7 @@ export function EditCourseTitleModal({
     <div className="bg-dark-alt rounded p-4 flex flex-col gap-4 max-w-md w-11/12">
       <h2 className="text-lg font-bold">Edit Course Title</h2>
       <Form
-        schema={editCourseTitleSchema}
+        schema={courseSchema}
         onSubmit={handleEditCourseTitle}
         className="flex flex-col gap-4"
         initialValue={{ title: currentTitle }}

@@ -15,25 +15,19 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    section: fakeTextContentSection({
-      title: "Introduction to Markdown",
-    }),
+    section: fakeTextContentSection({}),
   },
 };
 
 export const WithLongTitle: Story = {
   args: {
-    section: fakeTextContentSection({
-      title:
-        "This is a very long text section title that might wrap to multiple lines in the UI",
-    }),
+    section: fakeTextContentSection({}),
   },
 };
 
 export const WithComplexMarkdown: Story = {
   args: {
     section: fakeTextContentSection({
-      title: "Complex Markdown Example",
       content: {
         text: `
 
@@ -87,7 +81,6 @@ function getUserInfo(user: User) {
 export const WithSimpleText: Story = {
   args: {
     section: fakeTextContentSection({
-      title: "Simple Text Content",
       content: {
         text: "This is a simple text section without any markdown formatting. It's just plain text content for when you don't need any special formatting.",
       },

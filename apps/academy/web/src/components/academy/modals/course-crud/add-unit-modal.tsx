@@ -1,11 +1,11 @@
 import type { UUID } from "@fabric/core";
-import { Field, Schema } from "@fabric/core";
 import type { NavigateFunction } from "react-router";
-import { useRPC } from "../../utils/rpc/use-rpc.ts";
-import { showErrorToast } from "../../utils/toasts/show-error-toast.ts";
-import { TagSelect } from "../forms/components/tag-select.tsx";
-import { Form, FormButton, Input } from "../forms/index";
-import { Button } from "../ui/button";
+import { useRPC } from "../../../../utils/rpc/use-rpc.ts";
+import { showErrorToast } from "../../../../utils/toasts/show-error-toast.ts";
+import { TagSelect } from "../../../forms/components/tag-select.tsx";
+import { Form, FormButton, Input } from "../../../forms/index";
+import { Button } from "../../../ui/button.tsx";
+import { unitSchema } from "./schemas.ts";
 
 export interface AddUnitModalProps {
   navigate: NavigateFunction;
@@ -14,10 +14,6 @@ export interface AddUnitModalProps {
   closeModal: () => void;
   refreshCourse: () => Promise<void>;
 }
-
-const addUnitSchema = new Schema({
-  title: Field.string({ minLength: 3 }),
-});
 
 export function AddUnitModal({
   courseId,
@@ -56,7 +52,7 @@ export function AddUnitModal({
     <div className="bg-dark-alt rounded p-4 flex flex-col gap-4 max-w-md w-11/12">
       <h2 className="text-lg font-bold">Agregar nueva unidad</h2>
       <Form
-        schema={addUnitSchema}
+        schema={unitSchema}
         onSubmit={handleAddUnit}
         className="flex flex-col gap-4"
       >

@@ -1,7 +1,7 @@
 import { AccessPolicy, Permission } from "@ulthar/academy-domain";
 import { useNavigate } from "react-router";
 import { CourseCard } from "../components/academy/course-card.tsx";
-import { CreateCourseModal } from "../components/academy/create-course-modal";
+import { CreateCourseModal } from "../components/academy/modals/course-crud/create-course-modal.tsx";
 import { PageContainer } from "../components/academy/page-container.tsx";
 import { PageContent } from "../components/academy/page-content.tsx";
 import { PageTitle } from "../components/academy/page-title.tsx";

@@ -1,19 +1,15 @@
 import type { UUID } from "@fabric/core";
-import { Field, Schema } from "@fabric/core";
-import { useRPC } from "../../utils/rpc/use-rpc.ts";
-import { showErrorToast } from "../../utils/toasts/show-error-toast.ts";
-import { Form, FormButton, Input } from "../forms/index";
-import { Button } from "../ui/button";
+import { useRPC } from "../../../../utils/rpc/use-rpc.ts";
+import { showErrorToast } from "../../../../utils/toasts/show-error-toast.ts";
+import { Form, FormButton, Input } from "../../../forms/index.ts";
+import { Button } from "../../../ui/button.tsx";
+import { moduleSchema } from "./schemas.ts";
 
 export interface AddModuleModalProps {
   courseId: UUID;
   closeModal: () => void;
   refreshCourse: () => Promise<void>;
 }
-
-const addModuleSchema = new Schema({
-  title: Field.string({ minLength: 3 }),
-});
 
 export function AddModuleModal({
   courseId,
@@ -43,7 +39,7 @@ export function AddModuleModal({
     <div className="bg-dark-alt rounded p-4 flex flex-col gap-4 max-w-md w-11/12">
       <h2 className="text-lg font-bold">Agregar nuevo módulo</h2>
       <Form
-        schema={addModuleSchema}
+        schema={moduleSchema}
         onSubmit={handleAddModule}
         className="flex flex-col gap-4"
       >

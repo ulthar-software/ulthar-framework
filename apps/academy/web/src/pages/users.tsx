@@ -2,7 +2,7 @@ import { exhaustiveCheck } from "@fabric/core";
 import { AccessPolicy, UserRole } from "@ulthar/academy-domain";
 import { useState } from "react";
 import type { ListUsersOutput } from "../../../domain/dist/use-cases/user/list-users";
-import { InviteUserModal } from "../components/academy/invite-single-user-modal.tsx";
+import { InviteUserModal } from "../components/academy/modals/course-crud/invite-single-user-modal.tsx";
 import { PageContainer } from "../components/academy/page-container.tsx";
 import { PageContent } from "../components/academy/page-content.tsx";
 import { PageTitle } from "../components/academy/page-title.tsx";

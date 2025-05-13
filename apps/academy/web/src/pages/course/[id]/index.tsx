@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { ContentSectionBlock } from "../../../components/academy/content-section.tsx";
 import { CourseSidebar } from "../../../components/academy/course-sidebar.tsx";
+import { AddSectionModal } from "../../../components/academy/modals/course-crud/add-section-modal.tsx";
 import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageTitle } from "../../../components/academy/page-title.tsx";
 import { PlatformFooter } from "../../../components/academy/platform-footer.tsx";
@@ -18,6 +19,8 @@ import { Button } from "../../../components/ui/button.tsx";
 import { Icon } from "../../../components/ui/icon.tsx";
 import { LoadingSpinner } from "../../../components/ui/loading-spinner.tsx";
 import { useAuthGuard } from "../../../utils/auth/use-auth-guard.ts";
+import { useAuthHasPerm } from "../../../utils/auth/use-auth-has-perm.ts";
+import { useModal } from "../../../utils/modal/modal-hooks.tsx";
 import { useQuery } from "../../../utils/rpc/use-query.ts";
 import { showErrorToast } from "../../../utils/toasts/show-error-toast.ts";
 
@@ -27,6 +30,10 @@ export default function CourseView() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const { showModal } = useModal();
+
+  const canEditCourse = useAuthHasPerm("EDIT_COURSE");
 
   const unitId = searchParams.get("unitId");
 
@@ -44,10 +51,13 @@ export default function CourseView() {
   );
 
   // Fetch unit data
-  const [isLoadingUnit, unitData, unitError] = useQuery("getUnitWithSections", {
-    courseId: id as UUID,
-    unitId: unitId as UUID,
-  });
+  const [isLoadingUnit, unitData, unitError, refreshUnit] = useQuery(
+    "getUnitWithSections",
+    {
+      courseId: id as UUID,
+      unitId: unitId as UUID,
+    },
+  );
 
   const currentModule = useMemo(
     () => getModuleSummary(courseData, unitData?.unit.moduleId),
@@ -184,7 +194,30 @@ export default function CourseView() {
                     {currentModule.title}
                   </div>
                 )}
-                <PageTitle>{unitData.unit.title}</PageTitle>
+                <div className="flex justify-between items-center mb-4">
+                  <PageTitle>{unitData.unit.title}</PageTitle>
+
+                  {canEditCourse && (
+                    <Button
+                      onClick={() => {
+                        const [close] = showModal(
+                          <AddSectionModal
+                            unitId={unitId as UUID}
+                            courseId={id as UUID}
+                            closeModal={() => {
+                              close();
+                            }}
+                            refreshUnit={refreshUnit}
+                          />,
+                        );
+                      }}
+                      className="bg-primary text-white px-3 py-2 flex items-center"
+                    >
+                      <Icon name="bx-plus" className="mr-1" />
+                      Agregar Sección
+                    </Button>
+                  )}
+                </div>
 
                 <section className="space-y-6">
                   {unitData.sections.map((section) => (

@@ -11,9 +11,9 @@ import { clx } from "../../utils/styles/clx.ts";
 import { Anchor } from "../ui/anchor.tsx";
 import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
-import { AddModuleModal } from "./add-module-modal";
-import { AddUnitModal } from "./add-unit-modal";
-import { EditCourseTitleModal } from "./edit-course-title-modal";
+import { AddModuleModal } from "./modals/course-crud/add-module-modal.tsx";
+import { AddUnitModal } from "./modals/course-crud/add-unit-modal.tsx";
+import { EditCourseTitleModal } from "./modals/course-crud/edit-course-title-modal.tsx";
 
 interface CourseSidebarProps {
   courseData: GetCourseDetailsOutput;

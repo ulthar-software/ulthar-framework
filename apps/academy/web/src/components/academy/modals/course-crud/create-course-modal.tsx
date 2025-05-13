@@ -1,9 +1,9 @@
 import { exhaustiveCheck, Field, Schema } from "@fabric/core";
 import type { NavigateFunction } from "react-router";
-import { useRPC } from "../../utils/rpc/use-rpc.ts";
-import { showErrorToast } from "../../utils/toasts/show-error-toast.ts";
-import { Form, FormButton, Input } from "../forms/index";
-import { Button } from "../ui/button";
+import { useRPC } from "../../../../utils/rpc/use-rpc.ts";
+import { showErrorToast } from "../../../../utils/toasts/show-error-toast.ts";
+import { Form, FormButton, Input } from "../../../forms/index";
+import { Button } from "../../../ui/button.tsx";
 
 export interface CreateCourseModalProps {
   navigate: NavigateFunction;
