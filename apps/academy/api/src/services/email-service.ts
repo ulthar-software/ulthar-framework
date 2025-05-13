@@ -79,7 +79,6 @@ export class EmailQueueService {
 
     // Set a new timeout
     this.emailProcessingTimeoutId = setTimeout(() => {
-      this.emailProcessingTimeoutId = null;
       void processQueuedEmails(deps).runOrThrow();
     }, delayMs);
   }

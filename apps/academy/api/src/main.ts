@@ -44,22 +44,23 @@ async function gracefulShutdown() {
   console.log("Received shutdown signal, closing connections...");
 
   try {
+    // Close HTTP server
+    await new Promise<void>((resolve) => {
+      server.close(() => {
+        console.log("HTTP server closed");
+        resolve();
+      });
+    });
+
     // Close all connections
     await dependencies.state.close().runOrThrow();
     await dependencies.events.close().runOrThrow();
     console.log("Database connections closed");
 
-    // Close HTTP server
-    server.close(() => {
-      console.log("HTTP server closed");
-      process.exit(0);
-    });
+    dependencies.emails.stop();
+    console.log("Email service stopped");
 
-    // Force exit after 5 seconds if server hasn't closed
-    setTimeout(() => {
-      console.log("Forcing exit after timeout");
-      process.exit(1);
-    }, 5000);
+    process.exit(0);
   } catch (error) {
     console.error("Error during graceful shutdown:", error);
     process.exit(1);
