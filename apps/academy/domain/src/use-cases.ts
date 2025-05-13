@@ -14,6 +14,7 @@ import {
   ChangeCourseDescriptionUseCase,
   ChangeCourseTitleUseCase,
   ChangeModuleOrderUseCase,
+  ChangeModuleTitleUseCase,
   CourseNotFoundError,
   CreateCourseUseCase,
   CreateTagUseCase,
@@ -24,6 +25,7 @@ import {
   GetCourseDetailsUseCase,
   GetQuestionnaireResponseUseCase,
   GetResourcesByUnitTagsUseCase,
+  GetTagsUseCase,
   GetUnitWithSectionsUseCase,
   IncompleteQuestionnaireResponseError,
   InvalidCredentialsError,
@@ -67,6 +69,8 @@ export const DomainUseCases = [
   AddVideoSectionToUnitUseCase,
   AddQuestionnaireSectionToUnitUseCase,
   RegisterUserUseCase,
+  GetTagsUseCase,
+  ChangeModuleTitleUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
