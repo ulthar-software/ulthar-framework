@@ -3,7 +3,7 @@ import {
   Permission,
   type GetCourseDetailsOutput,
 } from "@ulthar/academy-domain";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuthHasPerm } from "../../utils/auth/use-auth-has-perm";
 import { useModal } from "../../utils/modal/modal-hooks";
@@ -39,12 +39,34 @@ export function CourseSidebar({
     currentModuleId,
   );
 
+  // Ref to track sidebar element
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
   // Update expanded module when currentModuleId changes
   useEffect(() => {
     if (currentModuleId) {
       setExpandedModuleId(currentModuleId);
     }
   }, [currentModuleId]);
+
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    if (!showSidebar) return; // Only add listener when sidebar is open
+
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        onCloseSidebar();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSidebar, onCloseSidebar]);
 
   // Toggle module expansion
   const toggleModule = (moduleId: UUID) => {
@@ -82,6 +104,7 @@ export function CourseSidebar({
 
   return (
     <aside
+      ref={sidebarRef}
       className={clx(
         `bg-dark-alt fixed inset-y-0 left-0 z-30 w-96 transform transition-transform duration-300 ease-in-out`,
         showSidebar ? "translate-x-0" : "-translate-x-full",
