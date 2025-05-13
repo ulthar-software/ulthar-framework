@@ -10,9 +10,9 @@ export const AccessPolicy = {
     isAuthRequired: true,
     requiredPermissions: [],
   }),
-  WithPermission: (...perms: Permission[]) => ({
+  WithPermission: (perm: Permission, ...perms: Permission[]) => ({
     isAuthRequired: true,
-    requiredPermissions: perms,
+    requiredPermissions: [perm, ...perms],
   }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as const satisfies Record<string, (...args: any) => UseCaseAuth>;
