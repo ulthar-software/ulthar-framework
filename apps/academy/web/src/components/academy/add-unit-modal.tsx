@@ -3,6 +3,7 @@ import { Field, Schema } from "@fabric/core";
 import type { NavigateFunction } from "react-router";
 import { useRPC } from "../../utils/rpc/use-rpc.ts";
 import { showErrorToast } from "../../utils/toasts/show-error-toast.ts";
+import { TagSelect } from "../forms/components/tag-select.tsx";
 import { Form, FormButton, Input } from "../forms/index";
 import { Button } from "../ui/button";
 
@@ -60,6 +61,9 @@ export function AddUnitModal({
         className="flex flex-col gap-4"
       >
         <Input name="title" type="text" label="Título de la unidad" />
+
+        <TagSelect name="tagIds" label="Etiquetas" />
+
         <div className="flex justify-end gap-2">
           <Button onClick={closeModal} className="bg-gray-500 text-white">
             Cancelar
