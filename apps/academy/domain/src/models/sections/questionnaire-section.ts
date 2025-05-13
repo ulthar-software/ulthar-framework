@@ -47,6 +47,7 @@ export const QuestionnaireSectionModel = new AggregateModel(
   "questionnaireSections",
   {
     ...BaseSectionFields,
+    title: Field.string(),
     content: Field.embedded({
       subModel: QuestionnaireSectionContentModel,
     }),
@@ -61,6 +62,7 @@ export const QuestionnaireSectionAddedEvent = new DomainEvent(
   "QuestionnaireSectionAdded",
   {
     ...BaseSectionAddedEvent,
+    title: Field.string(),
     content: Field.embedded({
       subModel: QuestionnaireSectionContentModel,
     }),

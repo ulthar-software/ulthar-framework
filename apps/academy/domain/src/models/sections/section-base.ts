@@ -3,7 +3,6 @@ import { DomainEvent, Field } from "@fabric/core";
 
 // Common fields that all section types share
 export const BaseSectionFields = {
-  title: Field.string(),
   unitId: Field.reference({
     targetModel: "units",
   }),
@@ -28,7 +27,6 @@ export type SectionType = EnumToType<typeof SectionType>;
 
 // Base Section Added Event (holds common fields)
 export const BaseSectionAddedEvent = {
-  title: Field.string(),
   unitId: Field.uuid(),
   order: Field.integer({
     isUnsigned: true,
@@ -42,10 +40,6 @@ export const SectionTitleChangedEvent = new DomainEvent("SectionTitleChanged", {
   title: Field.string(),
   updatedBy: Field.uuid(),
 });
-
-export type SectionTitleChangedEvent = EventToType<
-  typeof SectionTitleChangedEvent
->;
 
 export const SectionOrderChangedEvent = new DomainEvent("SectionOrderChanged", {
   order: Field.integer({

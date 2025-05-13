@@ -21,9 +21,6 @@ export interface AddTextSectionToUnitDependencies {
 
 export const AddTextSectionToUnitInputModel = new Schema({
   unitId: Field.uuid(),
-  title: Field.string({
-    minLength: 3,
-  }),
   text: Field.string({
     minLength: 1,
   }),
@@ -44,7 +41,7 @@ export const AddTextSectionToUnitUseCase = new UseCase({
   inputSchema: AddTextSectionToUnitInputModel,
   effect: (
     { state, events, crypto, currentUser }: AddTextSectionToUnitDependencies,
-    { unitId, title, text }: AddTextSectionToUnitInput,
+    { unitId, text }: AddTextSectionToUnitInput,
   ): Effect<
     AddTextSectionToUnitOutput,
     UnitNotFoundError | UnexpectedError
@@ -64,7 +61,6 @@ export const AddTextSectionToUnitUseCase = new UseCase({
           id: eventId,
           streamId: sectionId,
           payload: {
-            title,
             unitId,
             order: sectionOrder,
             createdBy: currentUser.id,

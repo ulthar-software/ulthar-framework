@@ -10,7 +10,6 @@ import {
   BaseSectionAddedEvent,
   BaseSectionFields,
   SectionOrderChangedEvent,
-  SectionTitleChangedEvent,
 } from "./section-base.js";
 
 // Text Section Content Model
@@ -60,7 +59,6 @@ export type TextSectionContentChangedEvent = EventToType<
 // Event streams for text section
 export const TextSectionEvents = [
   TextSectionAddedEvent,
-  SectionTitleChangedEvent,
   TextSectionContentChangedEvent,
   SectionOrderChangedEvent,
 ] as const;
@@ -78,15 +76,10 @@ export const TextSectionProjector = new AggregateProjector(
   {
     TextSectionAdded: (event): TextSection =>
       TextSectionModel.from(event, {
-        title: event.payload.title,
         unitId: event.payload.unitId,
         order: event.payload.order,
         createdBy: event.payload.createdBy,
         content: event.payload.content,
-      }),
-    SectionTitleChanged: (event, section): TextSection =>
-      TextSectionModel.update(section, event, {
-        title: event.payload.title,
       }),
     TextSectionContentChanged: (event, section): TextSection =>
       TextSectionModel.update(section, event, {

@@ -40,7 +40,6 @@ describe("Add Text Section To Unit Use Case", () => {
     // Arrange
     const sectionData = {
       unitId: existingUnitId,
-      title: "Introduction Text",
       text: "This is an introduction to the course. Welcome to our course!",
     };
 
@@ -70,7 +69,6 @@ describe("Add Text Section To Unit Use Case", () => {
 
     expect(sectionInDb).toEqual(
       expect.objectContaining({
-        title: sectionData.title,
         unitId: existingUnitId,
         order: 100, // First section should have order 100
         createdBy: user.id,

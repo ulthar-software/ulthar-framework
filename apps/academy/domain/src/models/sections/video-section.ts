@@ -25,6 +25,7 @@ export type VideoSectionContent = Infer<
 // Video Section Model
 export const VideoSectionModel = new AggregateModel("videoSections", {
   ...BaseSectionFields,
+  title: Field.string(),
   content: Field.embedded({
     subModel: VideoSectionContentModel,
   }),
@@ -36,6 +37,7 @@ export type VideoSection = Infer<VideoSectionModel>;
 // Video Section Added Event
 export const VideoSectionAddedEvent = new DomainEvent("VideoSectionAdded", {
   ...BaseSectionAddedEvent,
+  title: Field.string(),
   content: Field.embedded({
     subModel: VideoSectionContentModel,
   }),
