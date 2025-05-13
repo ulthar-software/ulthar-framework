@@ -48,7 +48,9 @@ function buildClient(host: string, logout: () => void): RpcClient {
                   .map(([k, v]) => [k, String(v)]),
               );
               const params = new URLSearchParams(queryParams).toString();
-              url += `?${params}`;
+              if (params.length > 0) {
+                url += `?${params}`;
+              }
             }
             const response = await fetch(url, {
               method: useCase.type === "query" ? "GET" : "POST",
