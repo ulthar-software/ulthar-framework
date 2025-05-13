@@ -1,7 +1,13 @@
-import type { StoreReadQuery, UnexpectedError } from "@fabric/core";
+import type {
+  Email,
+  StoreReadQuery,
+  UnexpectedError,
+  UUID,
+} from "@fabric/core";
 import { Effect, Field, isLike, Schema, type Infer } from "@fabric/core";
 import type { User } from "../../models/user.js";
 import { AccessPolicy } from "../../security/access-policy.js";
+import type { UserRole } from "../../security/user-role.js";
 import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
 
@@ -21,11 +27,11 @@ export interface ListUsersDependencies {
 // Output model for the list users use case
 export interface ListUsersOutput {
   users: {
-    id: string;
+    id: UUID;
     firstName: string;
     lastName: string;
-    email: string;
-    role: string;
+    email: Email;
+    role: UserRole;
   }[];
 }
 
