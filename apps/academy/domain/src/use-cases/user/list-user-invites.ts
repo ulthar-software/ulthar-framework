@@ -7,22 +7,20 @@ import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
 
 // Input model for the list user invitations use case
-export const ListUserInvitationsInputModel = new Schema({
+export const ListUserInvitesInputModel = new Schema({
   page: Field.integer({ isOptional: true }),
   pageSize: Field.integer({ isOptional: true }),
   filter: Field.string({ isOptional: true }),
 });
-export type ListUserInvitationsInput = Infer<
-  typeof ListUserInvitationsInputModel
->;
+export type ListUserInvitesInput = Infer<typeof ListUserInvitesInputModel>;
 
 // Dependencies needed for the list user invitations use case
-export interface ListUserInvitationsDependencies {
+export interface ListUserInvitesDependencies {
   state: DomainStateStore;
 }
 
 // Output model for the list user invitations use case
-export interface ListUserInvitationsOutput {
+export interface ListUserInvitesOutput {
   invitations: {
     id: string;
     email: string;
@@ -35,11 +33,11 @@ export const ListUserInvitesUseCase = new UseCase({
   name: "listUserInvites",
   type: "query",
   auth: AccessPolicy.WithPermission(Permission.LIST_USERS),
-  inputSchema: ListUserInvitationsInputModel,
+  inputSchema: ListUserInvitesInputModel,
   effect: (
-    { state }: ListUserInvitationsDependencies,
-    { page = 1, pageSize = 10, filter }: ListUserInvitationsInput,
-  ): Effect<ListUserInvitationsOutput, UnexpectedError> => {
+    { state }: ListUserInvitesDependencies,
+    { page = 1, pageSize = 10, filter }: ListUserInvitesInput,
+  ): Effect<ListUserInvitesOutput, UnexpectedError> => {
     return Effect.fromGen(function* () {
       const offset = (page - 1) * pageSize;
 

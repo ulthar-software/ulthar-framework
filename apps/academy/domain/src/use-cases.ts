@@ -44,6 +44,12 @@ import {
   UserAlreadyExistsError,
   UserAlreadyInvitedError,
 } from "./use-cases/index.js";
+import {
+  GetCurrentUserUseCase,
+  UserNotFoundError,
+} from "./use-cases/user/get-current-user.js";
+import { ListUserInvitesUseCase } from "./use-cases/user/list-user-invites.js";
+import { ListUsersUseCase } from "./use-cases/user/list-users.js";
 import type { UseCaseErrorValue } from "./utils/use-case.js";
 import { UnauthorizedError } from "./utils/use-case.js";
 
@@ -71,6 +77,9 @@ export const DomainUseCases = [
   RegisterUserUseCase,
   GetTagsUseCase,
   ChangeModuleTitleUseCase,
+  GetCurrentUserUseCase,
+  ListUsersUseCase,
+  ListUserInvitesUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
@@ -102,6 +111,7 @@ export const DomainUseCaseErrorsMap = {
   ExpiredTokenError: ExpiredTokenError,
   UnauthorizedError: UnauthorizedError,
   EmptyCourseError: EmptyCourseError,
+  UserNotFoundError: UserNotFoundError,
 } as const satisfies Record<
   DomainUseCaseErrors["_tag"],
   ClassConstructor<DomainUseCaseErrors>
