@@ -18,6 +18,7 @@ export const EmailQueueStatusValues = Object.values(EmailQueueStatus);
 
 export const EmailQueueModel = new AggregateModel("emailQueue", {
   eventId: Field.uuid(),
+  streamId: Field.uuid(),
   eventType: Field.string(),
   recipient: Field.email(),
   subject: Field.string(),
@@ -33,6 +34,7 @@ export type EmailQueue = Infer<EmailQueueModel>;
 
 export const EmailQueuedEvent = new DomainEvent("EmailQueued", {
   eventId: Field.uuid(),
+  streamId: Field.uuid(),
   eventType: Field.string(),
   recipient: Field.email(),
   subject: Field.string(),
@@ -67,6 +69,7 @@ export const EmailQueueProjector = new AggregateProjector(
     EmailQueued: (event): EmailQueue =>
       EmailQueueModel.from(event, {
         status: EmailQueueStatus.QUEUED,
+        streamId: event.payload.streamId,
         eventType: event.payload.eventType,
         eventId: event.payload.eventId,
         recipient: event.payload.recipient,

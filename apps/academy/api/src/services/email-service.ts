@@ -1,4 +1,9 @@
-import type { Email, UnexpectedError, UUID } from "@fabric/core";
+import type {
+  DomainEvent,
+  Email,
+  EventToType,
+  UnexpectedError,
+} from "@fabric/core";
 import { Effect, TaggedError } from "@fabric/core";
 import type {
   DomainEventStore,
@@ -57,7 +62,7 @@ export class EmailQueueService {
         (event) =>
           EmailSubscriptions[eventName](deps, event)
             .flatMap((sendMailOptions) =>
-              queueEmail(deps, event.type, event.id, sendMailOptions),
+              queueEmail(deps, event, sendMailOptions),
             )
             .map(() => {
               scheduleBatchEmailProcessing(deps);
@@ -93,8 +98,7 @@ export class EmailQueueService {
 
 export function queueEmail(
   { events }: EmailServiceDeps,
-  eventType: string,
-  eventId: UUID,
+  event: EventToType<DomainEvent>,
   { recipient, subject, body }: SendMailOptions,
 ): Effect<void, UnexpectedError> {
   return events
@@ -104,8 +108,9 @@ export function queueEmail(
         id: crypto.randomUUID(),
         streamId: crypto.randomUUID(),
         payload: {
-          eventId,
-          eventType,
+          streamId: event.streamId,
+          eventId: event.id,
+          eventType: event.type,
           recipient,
           subject,
           body,
