@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { TaggedError } from "../error/tagged-error.js";
+import { TaggedError } from "../error/tagged-error.js";
 import type { UnionToIntersection } from "../index.js";
 import { UnexpectedError } from "../index.js";
 import { Result } from "../result/result.js";
@@ -337,6 +337,9 @@ export class Effect<
             lastValue = effectResult.value;
           }
         } catch (error: unknown) {
+          if (error instanceof TaggedError) {
+            return Result.failWith(error as TError);
+          }
           return Result.failWith(new UnexpectedError((error as Error).message));
         }
       },
