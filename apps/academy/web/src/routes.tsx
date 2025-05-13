@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router";
+import { NotFoundPage } from "./components/ui/not-found.tsx";
 import {
   generateRoutes,
   type LazyPage,
@@ -11,4 +12,10 @@ const dynamicPages = import.meta.glob([
 
 const routes = generateRoutes(dynamicPages);
 
-export const router = createBrowserRouter(routes);
+export const router = createBrowserRouter([
+  ...routes,
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+]);

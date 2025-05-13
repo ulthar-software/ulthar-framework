@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState } from "react";
+import { useAuthHasPerm } from "../../utils/auth/use-auth-has-perm.ts";
 import { useAuthLogout } from "../../utils/auth/use-auth-logout.ts";
 import { useQuery } from "../../utils/rpc/use-query.ts";
 import { clx } from "../../utils/styles/clx.ts";
 import { Anchor } from "../ui/anchor.tsx";
 import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
+import { LoadingSpinner } from "../ui/loading-spinner.tsx";
 import { UltharLogo } from "./ulthar-logo.tsx";
 
 export function PlatformHeader() {
   const logout = useAuthLogout();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const canListUsers = useAuthHasPerm("LIST_USERS");
 
   // Fetch current user data to get first and last name
   const [isLoading, currentUserData] = useQuery("getCurrentUser", {});
@@ -41,6 +45,8 @@ export function PlatformHeader() {
     <header className="flex p-4 gap-4 w-full shadow bg-dark-alt h-16 justify-between">
       <UltharLogo size="small" showText={false} />
 
+      {isLoading && <LoadingSpinner />}
+
       <div className="relative" ref={dropdownRef}>
         <Button
           onClick={() => {
@@ -49,7 +55,7 @@ export function PlatformHeader() {
           className="flex items-center gap-2 bg-dark hover:bg-gray-800"
         >
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-semibold">
-            {isLoading ? "..." : userInitials}
+            {userInitials}
           </div>
           <span className="hidden sm:inline">
             {currentUserData?.user.firstName} {currentUserData?.user.lastName}
@@ -68,12 +74,14 @@ export function PlatformHeader() {
             >
               <Icon name="bx-book" /> Cursos
             </Anchor>
-            <Anchor
-              href="/users"
-              className="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-gray-800"
-            >
-              <Icon name="bxs-user-account" /> Usuarios
-            </Anchor>
+            {canListUsers && (
+              <Anchor
+                href="/users"
+                className="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-gray-800"
+              >
+                <Icon name="bxs-user-account" /> Usuarios
+              </Anchor>
+            )}
             <Anchor
               href="/profile"
               className="flex items-center gap-2 w-full px-4 py-2 text-left text-white hover:bg-gray-800"
