@@ -4,11 +4,11 @@ import { Field, Model, WritableValueStore } from "@fabric/core";
 import { SQLiteStoreDriver } from "@fabric/sqlite-store";
 import fs from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { buildDependencies } from "../services/build-dependencies.js";
+import { initializeDependencies } from "../services/build-dependencies.js";
 import { getHashOfSeed } from "./get-hash-of-seed.js";
 import { PROD_SEEDS } from "./prod-seeds.js";
 
-const deps = buildDependencies();
+const deps = initializeDependencies();
 
 const SeedModel = new Model("seeds", {
   id: Field.integer({

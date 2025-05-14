@@ -60,6 +60,8 @@ describe("Email Service", () => {
       emailTransport: transporter,
       templates: EmailTemplates,
     });
+
+    emailQueueService.start();
   });
 
   afterEach(() => {

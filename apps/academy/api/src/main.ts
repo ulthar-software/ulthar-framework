@@ -1,19 +1,22 @@
-import "dotenv/config";
-
 import { JSONExtReviver } from "@fabric/core";
 import { DomainUseCases } from "@ulthar/academy-domain";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
 import type { AppDependencies } from "./dependencies.js";
-import { buildDependencies } from "./services/build-dependencies.js";
+import {
+  initializeDependencies,
+  initializeEmails,
+} from "./services/build-dependencies.js";
 import { createHTTPEndpoints } from "./utils/create-http-endpoints.js";
 
 const app = express();
 
 const PORT = process.env.PORT ?? 3000;
 
-const dependencies = buildDependencies();
+const dependencies = initializeDependencies();
+const emails = initializeEmails(dependencies);
+emails.start();
 
 const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
@@ -57,7 +60,7 @@ async function gracefulShutdown() {
     await dependencies.events.close().runOrThrow();
     console.log("Database connections closed");
 
-    dependencies.emails.stop();
+    emails.stop();
     console.log("Email service stopped");
 
     process.exit(0);

@@ -51,8 +51,10 @@ export const EmailSubscriptions: EventSubscriptionRecord = {
 
 export class EmailQueueService {
   private emailProcessingTimeoutId: NodeJS.Timeout | null = null;
-  constructor(private deps: EmailServiceDeps) {
-    const { events, templates } = deps;
+  constructor(private deps: EmailServiceDeps) {}
+
+  start() {
+    const { events, templates } = this.deps;
     const eventNames = Object.keys(templates) as EventNamesWithEmails[];
     const scheduleBatchEmailProcessing =
       this.scheduleBatchEmailProcessing.bind(this);
@@ -60,12 +62,12 @@ export class EmailQueueService {
       events.subscribe(
         eventName,
         (event) =>
-          EmailSubscriptions[eventName](deps, event)
+          EmailSubscriptions[eventName](this.deps, event)
             .flatMap((sendMailOptions) =>
-              queueEmail(deps, event, sendMailOptions),
+              queueEmail(this.deps, event, sendMailOptions),
             )
             .map(() => {
-              scheduleBatchEmailProcessing(deps);
+              scheduleBatchEmailProcessing();
             }),
         {
           callOnReplay: false,
@@ -74,8 +76,8 @@ export class EmailQueueService {
     }
   }
 
-  private scheduleBatchEmailProcessing(deps: EmailServiceDeps) {
-    const delayMs = deps.env.get("EMAIL_DELAY_MS");
+  private scheduleBatchEmailProcessing() {
+    const delayMs = this.deps.env.get("EMAIL_DELAY_MS");
 
     // Clear existing timeout if it exists
     if (this.emailProcessingTimeoutId) {
@@ -84,7 +86,7 @@ export class EmailQueueService {
 
     // Set a new timeout
     this.emailProcessingTimeoutId = setTimeout(() => {
-      void processQueuedEmails(deps).runOrThrow();
+      void processQueuedEmails(this.deps).runOrThrow();
     }, delayMs);
   }
 
