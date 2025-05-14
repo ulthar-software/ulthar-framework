@@ -9,6 +9,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router";
 import { ContentSectionBlock } from "../../../components/academy/content-section.tsx";
 import { CourseSidebar } from "../../../components/academy/course-sidebar.tsx";
 import { AddSectionModal } from "../../../components/academy/modals/course-crud/add-section-modal.tsx";
+import { EditUnitTitleModal } from "../../../components/academy/modals/course-crud/edit-unit-title-modal.tsx";
 import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageTitle } from "../../../components/academy/page-title.tsx";
 import { PlatformFooter } from "../../../components/academy/platform-footer.tsx";
@@ -198,30 +199,54 @@ export default function CourseView() {
                   <PageTitle>{unitData.unit.title}</PageTitle>
 
                   {canEditCourse && (
-                    <Button
-                      onClick={() => {
-                        const [close] = showModal(
-                          <AddSectionModal
-                            unitId={unitId as UUID}
-                            courseId={id as UUID}
-                            closeModal={() => {
-                              close();
-                            }}
-                            refreshUnit={refreshUnit}
-                          />,
-                        );
-                      }}
-                      className="bg-primary text-white px-3 py-2 flex items-center"
-                    >
-                      <Icon name="bx-plus" className="mr-1" />
-                      Agregar Sección
-                    </Button>
+                    <div className="flex space-x-2">
+                      <Button
+                        onClick={() => {
+                          const [close] = showModal(
+                            <EditUnitTitleModal
+                              unitId={unitId as UUID}
+                              currentTitle={unitData.unit.title}
+                              closeModal={() => {
+                                close();
+                              }}
+                              refreshUnit={refreshUnit}
+                            />,
+                          );
+                        }}
+                        className="bg-primary text-white px-3 py-2 flex items-center"
+                      >
+                        <Icon name="bx-edit" className="mr-1" />
+                        Editar Título
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          const [close] = showModal(
+                            <AddSectionModal
+                              unitId={unitId as UUID}
+                              courseId={id as UUID}
+                              closeModal={() => {
+                                close();
+                              }}
+                              refreshUnit={refreshUnit}
+                            />,
+                          );
+                        }}
+                        className="bg-primary text-white px-3 py-2 flex items-center"
+                      >
+                        <Icon name="bx-plus" className="mr-1" />
+                        Agregar Sección
+                      </Button>
+                    </div>
                   )}
                 </div>
 
                 <section className="space-y-6">
                   {unitData.sections.map((section) => (
-                    <ContentSectionBlock key={section.id} section={section} />
+                    <ContentSectionBlock
+                      key={section.id}
+                      section={section}
+                      refreshUnit={refreshUnit}
+                    />
                   ))}
                 </section>
 

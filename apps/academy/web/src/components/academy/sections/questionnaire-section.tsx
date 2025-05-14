@@ -1,7 +1,7 @@
 import { exhaustiveCheck } from "@fabric/core";
 import type {
-  QuestionnaireSection,
   QuestionnaireSectionContent,
+  TaggedQuestionnaireSection,
 } from "@ulthar/academy-domain";
 import { useEffect, useState } from "react";
 import { useModal } from "../../../utils/modal/modal-hooks.tsx";
@@ -16,11 +16,13 @@ import { QuestionnaireResultsModal } from "./questionnaire-results-modal.tsx";
 import { SectionCard } from "./section-card.tsx";
 
 export interface QuestionnaireContentSectionProps {
-  section: QuestionnaireSection;
+  section: TaggedQuestionnaireSection;
+  refreshUnit: () => Promise<void>;
 }
 
 export function QuestionnaireContentSectionBlock({
   section,
+  refreshUnit,
 }: QuestionnaireContentSectionProps) {
   const { showModal } = useModal();
   const [answers, setAnswers] = useState<Record<number, number> | null>(null);
@@ -171,7 +173,7 @@ export function QuestionnaireContentSectionBlock({
   }
 
   return (
-    <SectionCard section={section}>
+    <SectionCard section={section} refreshUnit={refreshUnit}>
       <div className="text-gray-200">
         {(isLoading || isSendingResponse) && (
           <div className="flex-grow flex justify-center items-center">

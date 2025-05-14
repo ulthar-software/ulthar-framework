@@ -1,29 +1,37 @@
-import type { ContentSection } from "@ulthar/academy-domain";
+import type { TaggedContentSection } from "@ulthar/academy-domain";
 import type { PropsWithChildren } from "react";
 import { useAuthHasPerm } from "../../../utils/auth/use-auth-has-perm.ts";
+import { useModal } from "../../../utils/modal/modal-hooks.tsx";
 import { Button } from "../../ui/button.tsx";
 import { Icon } from "../../ui/icon.tsx";
+import { EditSectionModal } from "../modals/course-crud/edit-section-modal.tsx";
 
 export interface SectionCardProps {
-  section: ContentSection;
+  section: TaggedContentSection;
+  refreshUnit: () => Promise<void>;
 }
 
-export function SectionCard({ children }: PropsWithChildren<SectionCardProps>) {
+export function SectionCard({
+  children,
+  section,
+  refreshUnit,
+}: PropsWithChildren<SectionCardProps>) {
   const hasEditPermission = useAuthHasPerm("EDIT_COURSE");
+  const { showModal } = useModal();
   return (
-    // <div className="bg-dark-alt p-6 rounded-lg shadow-md">
-    <div className="p-6 relative">
+    <div className="pt-16 relative">
       {hasEditPermission && (
         <Button
           onClick={() => {
-            // const [close] = showModal(
-            //   <EditSectionModal
-            //     unitId={unitId as UUID}
-            //     courseId={id as UUID}
-            //     closeModal={close}
-            //     refreshUnit={refreshUnit}
-            //   />,
-            // );
+            const [close] = showModal(
+              <EditSectionModal
+                section={section}
+                closeModal={() => {
+                  close();
+                }}
+                refreshUnit={refreshUnit}
+              />,
+            );
           }}
           className="bg-primary text-white px-3 py-2 flex items-center absolute top-2 right-2 rounded-md hover:bg-primary-dark"
         >
@@ -31,7 +39,6 @@ export function SectionCard({ children }: PropsWithChildren<SectionCardProps>) {
           Editar Sección
         </Button>
       )}
-      {/* <h3 className="text-2xl font-bold text-white mb-3">{section.title}</h3> */}
       {children}
     </div>
   );

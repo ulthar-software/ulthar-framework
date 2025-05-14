@@ -1,4 +1,5 @@
-import { type UUID } from "@fabric/core";
+import type { Infer } from "@fabric/core";
+import { JSONExt, type UUID } from "@fabric/core";
 import type { SectionType } from "@ulthar/academy-domain";
 import { useState } from "react";
 import { useRPC } from "../../../../utils/rpc/use-rpc.ts";
@@ -7,6 +8,7 @@ import { Form, FormButton, Input, TextArea } from "../../../forms/index";
 import { Button } from "../../../ui/button";
 import { Icon } from "../../../ui/icon";
 import {
+  quizContentSchema,
   quizSectionSchema,
   textSectionSchema,
   videoSectionSchema,
@@ -30,12 +32,12 @@ export function AddSectionModal({
   const addQuizSectionCommand = useRPC("addQuestionnaireSectionToUnit");
 
   // Handle adding a text section
-  const handleAddTextSection = async (data: {
-    content: string;
-  }): Promise<void> => {
+  const handleAddTextSection = async (
+    data: Infer<typeof textSectionSchema>,
+  ): Promise<void> => {
     const result = await addTextSectionCommand({
       unitId,
-      text: data.content,
+      text: data.text,
     });
 
     if (result.isError()) {
@@ -50,11 +52,9 @@ export function AddSectionModal({
   };
 
   // Handle adding a video section
-  const handleAddVideoSection = async (data: {
-    title: string;
-    videoUrl: string;
-    description: string;
-  }): Promise<void> => {
+  const handleAddVideoSection = async (
+    data: Infer<typeof videoSectionSchema>,
+  ): Promise<void> => {
     const result = await addVideoSectionCommand({
       unitId,
       title: data.title,
@@ -73,14 +73,25 @@ export function AddSectionModal({
   };
 
   // Handle adding a quiz section
-  const handleAddQuizSection = async (data: {
-    title: string;
-    instructions: string;
-  }): Promise<void> => {
+  const handleAddQuizSection = async (
+    data: Infer<typeof quizSectionSchema>,
+  ): Promise<void> => {
+    const questionData = JSONExt.parseWithModel(
+      quizContentSchema,
+      data.content,
+    );
+
+    if (questionData.isError()) {
+      showErrorToast(
+        "El contenido del cuestionario no es válido. Por favor, revisa el formato.",
+      );
+      return;
+    }
+
     const result = await addQuizSectionCommand({
       unitId,
       title: data.title,
-      questions: [],
+      ...questionData.unwrapOrThrow(),
     });
 
     if (result.isError()) {
@@ -194,7 +205,6 @@ export function AddSectionModal({
         >
           <Input name="title" type="text" label="Título de la sección" />
           <Input name="videoUrl" type="text" label="URL del video" />
-          <TextArea name="description" label="Descripción (opcional)" />
 
           <div className="flex justify-end gap-2 mt-2">
             <Button onClick={closeModal} className="bg-gray-500 text-white">
@@ -213,7 +223,7 @@ export function AddSectionModal({
           className="flex flex-col gap-4"
         >
           <Input name="title" type="text" label="Título del cuestionario" />
-          <TextArea name="instructions" label="Instrucciones" />
+          <TextArea name="content" label="Cuestionario" />
 
           <div className="flex justify-end gap-2 mt-2">
             <Button onClick={closeModal} className="bg-gray-500 text-white">
