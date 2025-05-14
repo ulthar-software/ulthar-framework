@@ -6,8 +6,7 @@ import type { PosixDate } from "../../time/posix-date.js";
 import type { Email } from "../../types/email.js";
 import type { UUID } from "../../types/uuid.js";
 import { variantConstructor } from "../../variant/constructor.js";
-import type { TaggedVariant } from "../../variant/variant.js";
-import { VariantTag } from "../../variant/variant.js";
+import type { TaggedVariant, VariantTag } from "../../variant/variant.js";
 import type { Model } from "./model.js";
 import type { Infer } from "./schema.js";
 
@@ -27,15 +26,15 @@ export const Field = {
   ) => variantConstructor<EnumField<K>>("EnumField")(opts),
   embedded: <
     T extends Record<string, FieldDefinition>,
-    TOpts extends EmbeddedField<T>,
+    TOpts extends Omit<EmbeddedField<T>, VariantTag | "subModel">,
   >(
-    opts: Omit<TOpts, VariantTag>,
-  ): TOpts => {
-    return {
-      [VariantTag]: "EmbeddedField",
+    subModel: T,
+    opts?: TOpts,
+  ) =>
+    variantConstructor<EmbeddedField<T>>("EmbeddedField")({
+      subModel,
       ...opts,
-    } as const as TOpts;
-  },
+    }),
   objectArray: <
     T extends Record<string, FieldDefinition>,
     TOpts extends Omit<ObjectArrayField<T>, VariantTag | "subModel">,

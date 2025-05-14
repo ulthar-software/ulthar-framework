@@ -10,16 +10,20 @@ import { Field } from "./fields.js";
 describe("FieldParsers", () => {
   describe("EmbeddedField", () => {
     it("should return a valid result", () => {
-      const result = fieldParsers.EmbeddedField(
-        Field.embedded({
-          subModel: {
-            name: Field.string(),
-            someExpectedProperty: Field.string(),
-          },
+      const field = Field.embedded(
+        {
+          name: Field.string(),
+          someExpectedProperty: Field.string(),
+        },
+        {
           isOptional: true,
-        }),
-        { name: "test", someExpectedProperty: "test" },
+        },
       );
+
+      const result = fieldParsers.EmbeddedField(field, {
+        name: "test",
+        someExpectedProperty: "test",
+      });
 
       expect(result.unwrapOrThrow()).toEqual({
         name: "test",
@@ -29,13 +33,15 @@ describe("FieldParsers", () => {
 
     it("should return an error if a property is missing", () => {
       const result = fieldParsers.EmbeddedField(
-        Field.embedded({
-          subModel: {
+        Field.embedded(
+          {
             name: Field.string(),
             someExpectedProperty: Field.string(),
           },
-          isOptional: true,
-        }),
+          {
+            isOptional: true,
+          },
+        ),
         { name: "test" },
       );
 
@@ -106,10 +112,8 @@ describe("FieldParsers", () => {
     it("should work with complex typed items", () => {
       const field = Field.array(
         Field.embedded({
-          subModel: {
-            name: Field.string(),
-            age: Field.integer(),
-          },
+          name: Field.string(),
+          age: Field.integer(),
         }),
       );
 

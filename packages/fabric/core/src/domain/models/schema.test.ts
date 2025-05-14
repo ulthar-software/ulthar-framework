@@ -61,12 +61,10 @@ describe("Schema", () => {
       password: Field.string({}),
       phone: Field.string({ isOptional: true }),
       address: Field.embedded({
-        subModel: {
-          street: Field.string({}),
-          city: Field.string({}),
-          state: Field.string({}),
-          zip: Field.string({}),
-        },
+        street: Field.string({}),
+        city: Field.string({}),
+        state: Field.string({}),
+        zip: Field.string({}),
       }),
     });
 

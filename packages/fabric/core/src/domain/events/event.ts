@@ -19,9 +19,7 @@ export class DomainEvent<
       name,
       {
         ...BaseEventFields,
-        payload: Field.embedded({
-          subModel: fields,
-        }),
+        payload: Field.embedded(fields),
       },
       {
         constraints: [{ type: "unique", fields: ["streamId", "version"] }],
