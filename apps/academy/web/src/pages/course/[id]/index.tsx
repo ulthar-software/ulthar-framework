@@ -35,6 +35,7 @@ export default function CourseView() {
   const { showModal } = useModal();
 
   const canEditCourse = useAuthHasPerm("EDIT_COURSE");
+  const canEnrollStudents = useAuthHasPerm("ENROLL_STUDENTS");
 
   const unitId = searchParams.get("unitId");
 
@@ -138,7 +139,7 @@ export default function CourseView() {
   // When we have the course data
   return (
     <PageContainer>
-      <PlatformHeader />
+      <PlatformHeader title={courseData?.course.title} />
       {isLoadingCourse && (
         <div className="flex-grow flex justify-center items-center">
           <LoadingSpinner className="text-primary text-4xl sm:text-6xl" />
@@ -163,15 +164,26 @@ export default function CourseView() {
           {/* Main content - now with overflow scroll */}
           <section className="flex-grow p-6 md:p-8 overflow-y-auto">
             {/* Toggle button for sidebar on mobile */}
-            <Button
-              onClick={() => {
-                setShowModulesSidebar(!showModulesSidebar);
-              }}
-              className="mb-4 bg-dark-alt text-primary px-3"
-            >
-              <Icon name="bx-menu" className="mr-2" />
-              Ver módulos
-            </Button>
+            <div className="flex justify-between items-center mb-4">
+              <Button
+                onClick={() => {
+                  setShowModulesSidebar(!showModulesSidebar);
+                }}
+                className="mb-4 bg-dark-alt text-primary px-3"
+              >
+                <Icon name="bx-menu" className="mr-2" />
+                Ver módulos
+              </Button>
+
+              {canEnrollStudents && (
+                <Anchor
+                  href={`/course/${id}/students`}
+                  className="flex items-center transition-colors rounded bg-primary p-2"
+                >
+                  Ver estudiantes inscriptos
+                </Anchor>
+              )}
+            </div>
 
             {isLoadingUnit && (
               <div className="flex-grow flex justify-center items-center">
