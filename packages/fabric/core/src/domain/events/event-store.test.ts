@@ -1,6 +1,7 @@
-import { describe, expect, expectTypeOf, test } from "@fabric/testing";
+import { describe, expect, expectTypeOf, fnMock, test } from "@fabric/testing";
 import { Field } from "../models/fields.js";
 
+import { Effect } from "../../effect/effect.js";
 import type { Infer } from "../models/index.js";
 import { ValueStoreDriverMock } from "../value-store/value-store-driver-mock.js";
 import { AggregateStore } from "./aggregate-store.js";
@@ -145,5 +146,70 @@ describe("EventStore", async () => {
       .runOrThrow();
 
     expect(deletedState.isNothing()).toBe(true);
+  });
+
+  test("Given an event store with events, when replayAll is called, it should replay all events", async () => {
+    const streamId = crypto.randomUUID();
+
+    const localEventStore = new EventStore(
+      new ValueStoreDriverMock(),
+      eventStreams,
+    );
+    await localEventStore.sync().runOrThrow();
+
+    const createStateEvent = CreateStateEventModel.from({
+      id: crypto.randomUUID(),
+      streamId,
+      version: 1,
+      payload: { name: "test" },
+    });
+
+    const updateStateEvent = UpdateStateEventModel.from({
+      id: crypto.randomUUID(),
+      streamId,
+      version: 2,
+      payload: { count: 1 },
+    });
+
+    const deleteStateEvent = DeleteStateEvent.from({
+      id: crypto.randomUUID(),
+      streamId,
+      version: 3,
+      payload: {},
+    });
+
+    await localEventStore
+      .append("StateAggregate", createStateEvent)
+      .runOrThrow();
+    await localEventStore
+      .append("StateAggregate", updateStateEvent)
+      .runOrThrow();
+    await localEventStore
+      .append("StateAggregate", deleteStateEvent)
+      .runOrThrow();
+
+    // Mock subscriber to verify replay behavior
+    const mockSubscriber = fnMock(() => Effect.ok());
+
+    localEventStore.subscribe("CreateStateEvent", mockSubscriber, {
+      callOnReplay: true,
+    });
+    localEventStore.subscribe("UpdateStateEvent", mockSubscriber, {
+      callOnReplay: true,
+    });
+    localEventStore.subscribe("DeleteStateEvent", mockSubscriber, {
+      callOnReplay: true,
+    });
+
+    await localEventStore.replayAll().runOrThrow();
+
+    expect(mockSubscriber).toHaveBeenCalledTimes(3);
+
+    expect(mockSubscriber).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "CreateStateEvent",
+        payload: { name: "test" },
+      }),
+    );
   });
 });

@@ -15,30 +15,20 @@ import { DomainEvent } from "./event.js";
 
 export class EventStore<TEventStreams extends readonly EventStream[]> {
   private eventSubscriptions: SubscriptionMap = {};
-  private streamModels: Record<string, DomainEvent> = {};
+
+  private eventModel = new DomainEvent("events", {});
 
   constructor(
     private readonly storageDriver: ValueStoreDriver,
     private readonly eventStreams: TEventStreams,
-  ) {
-    for (const stream of eventStreams) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (this.streamModels[stream.name] !== undefined) {
-        throw new UnexpectedError(
-          `Stream with name ${stream.name} is declared multiple times`,
-        );
-      }
-
-      this.streamModels[stream.name] = new DomainEvent(stream.name, {});
-    }
-  }
+  ) {}
 
   close(): Effect<void, StoreQueryError> {
     return this.storageDriver.close();
   }
 
   sync(): Effect<void, CircularDependencyError | StoreQueryError> {
-    return this.storageDriver.sync(Object.values(this.streamModels));
+    return this.storageDriver.sync([this.eventModel]);
   }
 
   /**
@@ -54,17 +44,20 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
     event: EventToType<TEvent>,
   ): Effect<EventToType<TEvent>, UnexpectedError> {
     return this.storageDriver
-      .insert(this.streamModels[streamName], {
-        into: streamName,
+      .insert(this.eventModel, {
+        into: "events",
         values: [event],
       })
-      .flatMap(() =>
-        Effect.all(() =>
-          this.eventSubscriptions[event.type].map((subscription) =>
-            subscription.subscriber(event),
-          ),
-        ),
-      )
+      .flatMap(() => {
+        const subs = this.eventSubscriptions[event.type];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!subs) {
+          return Effect.ok();
+        }
+        return Effect.all(() =>
+          subs.map((subscription) => subscription.subscriber(event)),
+        ).discardValue();
+      })
       .tapError((error) => {
         console.error(error);
       })
@@ -92,6 +85,40 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
       opts: opts ?? {},
       subscriber: subscriber as EventSubscriber<DomainEvent>,
     });
+  }
+
+  replayAll(): Effect<void, StoreQueryError | TaggedError> {
+    return this.storageDriver
+      .get<EventToType<DomainEvent>>(this.eventModel, {
+        from: "events",
+        orderBy: {
+          timestamp: "ASC",
+        },
+      })
+      .flatMap((events) => {
+        return Effect.all(() =>
+          events.map((event) => this.replayEvent(event)),
+        ).discardValue();
+      });
+  }
+
+  private replayEvent(
+    event: EventToType<DomainEvent>,
+  ): Effect<void, TaggedError> {
+    const eventName = event.type;
+    const subscriptions = this.eventSubscriptions[eventName];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (subscriptions) {
+      return Effect.all(() =>
+        subscriptions.map((subscription) => {
+          if (subscription.opts.callOnReplay) {
+            return subscription.subscriber(event);
+          }
+          return Effect.ok();
+        }),
+      ).discardValue();
+    }
+    return Effect.ok();
   }
 }
 

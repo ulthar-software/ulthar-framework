@@ -6,6 +6,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Effect } from "../../effect/effect.js";
+import type { TaggedError } from "../../error/tagged-error.js";
 import type { CircularDependencyError } from "../../utils/sort-by-dependencies.js";
 import type { StoreQueryError } from "../value-store/index.js";
 import type { ValueStoreDriver } from "../value-store/value-store-driver.js";
@@ -31,42 +32,57 @@ export class AggregateStore<
 
     for (const projector of projectors) {
       for (const event of projector.events) {
-        eventStore.subscribe(event.name, (e) => {
-          return this.from(projector.model.name)
-            .where({ id: e.streamId } as any)
-            .selectOne()
-            .flatMap((aggregate) => {
-              let result: any;
-              if (aggregate.isNothing()) {
-                //@ts-expect-error aggregate is nothing, so we call the create projector without the second argument
-                result = projector.projections[event.name](e);
-                return this.driver.insert(projector.model, {
-                  into: projector.model.name,
-                  values: [result],
-                });
-              }
+        eventStore.subscribe(
+          event.name,
+          (e) => {
+            return this.from(projector.model.name)
+              .where({ id: e.streamId } as any)
+              .selectOne()
+              .flatMap((aggregate) => {
+                let result: any;
+                if (aggregate.isNothing()) {
+                  //@ts-expect-error aggregate is nothing, so we call the create projector without the second argument
+                  result = projector.projections[event.name](e);
+                  return this.driver.insert(projector.model, {
+                    into: projector.model.name,
+                    values: [result],
+                  });
+                }
 
-              result = projector.projections[event.name](e, aggregate.value!);
+                result = projector.projections[event.name](e, aggregate.value!);
 
-              if (result === null) {
-                return this.driver.delete(projector.model, {
-                  from: projector.model.name,
+                if (result === null) {
+                  return this.driver.delete(projector.model, {
+                    from: projector.model.name,
+                    where: { id: e.streamId },
+                  });
+                }
+
+                return this.driver.update(projector.model, {
+                  table: projector.model.name,
+                  set: result,
                   where: { id: e.streamId },
                 });
-              }
-
-              return this.driver.update(projector.model, {
-                table: projector.model.name,
-                set: result,
-                where: { id: e.streamId },
               });
-            });
-        });
+          },
+          {
+            callOnReplay: true,
+          },
+        );
       }
     }
   }
 
   sync(): Effect<void, CircularDependencyError | StoreQueryError> {
     return this.eventStore.sync().flatMap(() => this.driver.sync(this.models));
+  }
+
+  clearAndReplay(): Effect<
+    void,
+    CircularDependencyError | StoreQueryError | TaggedError
+  > {
+    return this.driver
+      .sync(this.models)
+      .flatMap(() => this.eventStore.replayAll());
   }
 }
