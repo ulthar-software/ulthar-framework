@@ -22,7 +22,9 @@ export class DomainEvent<
         payload: Field.embedded(fields),
       },
       {
-        constraints: [{ type: "unique", fields: ["streamId", "version"] }],
+        constraints: [
+          { type: "unique", fields: ["type", "streamId", "version"] },
+        ],
       },
     );
   }
