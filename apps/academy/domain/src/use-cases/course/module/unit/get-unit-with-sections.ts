@@ -7,7 +7,10 @@ import {
   UnexpectedError,
   type Infer,
 } from "@fabric/core";
-import type { TaggedContentSection } from "../../../../models/sections/index.js";
+import type {
+  TaggedContentSection,
+  TaggedTextSection,
+} from "../../../../models/sections/index.js";
 import { SectionType } from "../../../../models/sections/index.js";
 import type { Unit } from "../../../../models/unit.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
@@ -118,7 +121,7 @@ function getUnitWithSections(
             ({
               ...q,
               type: SectionType.TEXT,
-            }) as TaggedContentSection,
+            }) as TaggedTextSection,
         ),
       )
       .mapError(() => new UnexpectedError()),

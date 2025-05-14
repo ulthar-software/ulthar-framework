@@ -14,10 +14,10 @@ export type ContentSection = TextSection | VideoSection | QuestionnaireSection;
 
 export type TaggedVideoSection = {
   type: typeof SectionType.VIDEO;
-} & TextSection;
+} & VideoSection;
 export type TaggedTextSection = {
   type: typeof SectionType.TEXT;
-} & VideoSection;
+} & TextSection;
 export type TaggedQuestionnaireSection = {
   type: typeof SectionType.QUESTIONNAIRE;
 } & QuestionnaireSection;

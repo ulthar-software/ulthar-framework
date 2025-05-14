@@ -3,10 +3,7 @@ import {
   createServiceMocks,
   type MockedDependencies,
 } from "../../services/mocks/create-mock-services.js";
-import {
-  SectionOrderChangedEvent,
-  SectionTitleChangedEvent,
-} from "./section-base.js";
+import { SectionOrderChangedEvent } from "./section-base.js";
 import {
   VideoSectionAddedEvent,
   VideoSectionContentChangedEvent,
@@ -92,6 +89,7 @@ describe("Video Section", () => {
       id: services.crypto.randomUUID(),
       streamId: sectionId,
       payload: {
+        title: "Video Tutorial", // Title remains unchanged
         content: {
           videoUrl: "https://example.com/new-video",
           description: "Updated description with more details",
@@ -120,61 +118,6 @@ describe("Video Section", () => {
       createdBy,
       version: 2,
       updatedAt: contentChangeEvent.timestamp,
-      createdAt: section.createdAt,
-    });
-  });
-
-  test("Updating section title", () => {
-    // First create a video section
-    const sectionId = services.crypto.randomUUID();
-    const unitId = services.crypto.randomUUID();
-    const createdBy = services.crypto.randomUUID();
-
-    const addEvent = VideoSectionAddedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: sectionId,
-      payload: {
-        title: "Old Video Title",
-        content: {
-          videoUrl: "https://example.com/video",
-          description: "Some description",
-          duration: 300,
-        },
-        unitId,
-        order: 2,
-        createdBy,
-      },
-      version: 1,
-    });
-
-    const section = VideoSectionProjector.project(addEvent).unwrapOrThrow();
-    if (!section) throw new Error("Section was not created");
-
-    // Then update the title
-    const titleChangeEvent = SectionTitleChangedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: sectionId,
-      payload: {
-        title: "New Video Title",
-        updatedBy: services.crypto.randomUUID(),
-      },
-      version: 2,
-    });
-
-    const updatedSection = VideoSectionProjector.project(
-      titleChangeEvent,
-      section,
-    ).unwrapOrThrow();
-
-    expect(updatedSection).toEqual({
-      id: sectionId,
-      title: "New Video Title", // Changed
-      content: section.content, // Unchanged
-      unitId,
-      order: 2,
-      createdBy,
-      version: 2,
-      updatedAt: titleChangeEvent.timestamp,
       createdAt: section.createdAt,
     });
   });

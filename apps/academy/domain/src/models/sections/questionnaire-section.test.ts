@@ -8,10 +8,7 @@ import {
   QuestionnaireSectionContentChangedEvent,
   QuestionnaireSectionProjector,
 } from "./questionnaire-section.js";
-import {
-  SectionOrderChangedEvent,
-  SectionTitleChangedEvent,
-} from "./section-base.js";
+import { SectionOrderChangedEvent } from "./section-base.js";
 
 describe("Questionnaire Section", () => {
   let services: MockedDependencies;
@@ -133,6 +130,7 @@ describe("Questionnaire Section", () => {
       id: services.crypto.randomUUID(),
       streamId: sectionId,
       payload: {
+        title: "Updated Quiz",
         content: {
           questions: [
             {
@@ -165,7 +163,7 @@ describe("Questionnaire Section", () => {
 
     expect(updatedSection).toEqual({
       id: sectionId,
-      title: "Quiz", // Unchanged
+      title: "Updated Quiz", // Changed
       content: {
         questions: [
           {
@@ -191,69 +189,6 @@ describe("Questionnaire Section", () => {
       createdBy,
       version: 2,
       updatedAt: contentChangeEvent.timestamp,
-      createdAt: section.createdAt,
-    });
-  });
-
-  test("Updating section title", () => {
-    // First create a questionnaire section
-    const sectionId = services.crypto.randomUUID();
-    const unitId = services.crypto.randomUUID();
-    const createdBy = services.crypto.randomUUID();
-
-    const addEvent = QuestionnaireSectionAddedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: sectionId,
-      payload: {
-        title: "Quiz",
-        content: {
-          questions: [
-            {
-              questionText: "Sample question?",
-              options: [
-                { text: "Option A", isCorrect: true },
-                { text: "Option B", isCorrect: false },
-              ],
-            },
-          ],
-          passingScore: 70,
-        },
-        unitId,
-        order: 3,
-        createdBy,
-      },
-      version: 1,
-    });
-
-    const section =
-      QuestionnaireSectionProjector.project(addEvent).unwrapOrThrow();
-    if (!section) throw new Error("Section was not created");
-
-    // Then update the title
-    const titleChangeEvent = SectionTitleChangedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: sectionId,
-      payload: {
-        title: "Final Assessment",
-        updatedBy: services.crypto.randomUUID(),
-      },
-      version: 2,
-    });
-
-    const updatedSection = QuestionnaireSectionProjector.project(
-      titleChangeEvent,
-      section,
-    ).unwrapOrThrow();
-
-    expect(updatedSection).toEqual({
-      id: sectionId,
-      title: "Final Assessment", // Changed
-      content: section.content, // Unchanged
-      unitId, // Unchanged
-      order: 3, // Unchanged
-      createdBy,
-      version: 2,
-      updatedAt: titleChangeEvent.timestamp,
       createdAt: section.createdAt,
     });
   });

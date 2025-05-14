@@ -176,7 +176,7 @@ describe("Add Questionnaire Response Use Case", () => {
     expect(result.isError()).toBe(true);
     const error = result.unwrapErrorOrThrow();
     expect(error).toBeInstanceOf(QuestionnaireSectionNotFoundError);
-    expect((error as QuestionnaireSectionNotFoundError).questionnaireId).toBe(
+    expect((error as QuestionnaireSectionNotFoundError).sectionId).toBe(
       nonExistentQuestionnaireId,
     );
   });

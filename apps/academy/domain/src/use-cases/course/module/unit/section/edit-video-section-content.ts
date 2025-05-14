@@ -53,6 +53,7 @@ export const EditVideoSectionContentUseCase = new UseCase({
             id: crypto.randomUUID(),
             streamId: sectionId,
             payload: {
+              title: section.title,
               content: {
                 videoUrl,
               },

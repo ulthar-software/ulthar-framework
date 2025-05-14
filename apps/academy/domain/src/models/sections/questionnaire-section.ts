@@ -10,7 +10,6 @@ import {
   BaseSectionAddedEvent,
   BaseSectionFields,
   SectionOrderChangedEvent,
-  SectionTitleChangedEvent,
 } from "./section-base.js";
 
 // Questionnaire Section Content Model
@@ -48,9 +47,7 @@ export const QuestionnaireSectionModel = new AggregateModel(
   {
     ...BaseSectionFields,
     title: Field.string(),
-    content: Field.embedded({
-      subModel: QuestionnaireSectionContentModel,
-    }),
+    content: Field.embedded(QuestionnaireSectionContentModel),
   },
 );
 
@@ -63,9 +60,7 @@ export const QuestionnaireSectionAddedEvent = new DomainEvent(
   {
     ...BaseSectionAddedEvent,
     title: Field.string(),
-    content: Field.embedded({
-      subModel: QuestionnaireSectionContentModel,
-    }),
+    content: Field.embedded(QuestionnaireSectionContentModel),
   },
 );
 
@@ -77,9 +72,8 @@ export type QuestionnaireSectionAddedEvent = EventToType<
 export const QuestionnaireSectionContentChangedEvent = new DomainEvent(
   "QuestionnaireSectionContentChanged",
   {
-    content: Field.embedded({
-      subModel: QuestionnaireSectionContentModel,
-    }),
+    title: Field.string(),
+    content: Field.embedded(QuestionnaireSectionContentModel),
     updatedBy: Field.uuid(),
   },
 );
@@ -91,7 +85,6 @@ export type QuestionnaireSectionContentChangedEvent = EventToType<
 // Event streams for questionnaire section
 export const QuestionnaireSectionEvents = [
   QuestionnaireSectionAddedEvent,
-  SectionTitleChangedEvent,
   QuestionnaireSectionContentChangedEvent,
   SectionOrderChangedEvent,
 ] as const;
@@ -115,15 +108,12 @@ export const QuestionnaireSectionProjector = new AggregateProjector(
         createdBy: event.payload.createdBy,
         content: event.payload.content,
       }),
-    SectionTitleChanged: (event, section): QuestionnaireSection =>
-      QuestionnaireSectionModel.update(section, event, {
-        title: event.payload.title,
-      }),
     QuestionnaireSectionContentChanged: (
       event,
       section,
     ): QuestionnaireSection =>
       QuestionnaireSectionModel.update(section, event, {
+        title: event.payload.title,
         content: event.payload.content,
       }),
     SectionOrderChanged: (event, section): QuestionnaireSection =>

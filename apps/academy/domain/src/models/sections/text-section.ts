@@ -23,9 +23,7 @@ export type TextSectionContent = Infer<Schema<typeof TextSectionContentModel>>;
 // Text Section Model
 export const TextSectionModel = new AggregateModel("textSections", {
   ...BaseSectionFields,
-  content: Field.embedded({
-    subModel: TextSectionContentModel,
-  }),
+  content: Field.embedded(TextSectionContentModel),
 });
 
 export type TextSectionModel = typeof TextSectionModel;
@@ -34,9 +32,7 @@ export type TextSection = Infer<TextSectionModel>;
 // Text Section Added Event
 export const TextSectionAddedEvent = new DomainEvent("TextSectionAdded", {
   ...BaseSectionAddedEvent,
-  content: Field.embedded({
-    subModel: TextSectionContentModel,
-  }),
+  content: Field.embedded(TextSectionContentModel),
 });
 
 export type TextSectionAddedEvent = EventToType<typeof TextSectionAddedEvent>;
@@ -45,9 +41,7 @@ export type TextSectionAddedEvent = EventToType<typeof TextSectionAddedEvent>;
 export const TextSectionContentChangedEvent = new DomainEvent(
   "TextSectionContentChanged",
   {
-    content: Field.embedded({
-      subModel: TextSectionContentModel,
-    }),
+    content: Field.embedded(TextSectionContentModel),
     updatedBy: Field.uuid(),
   },
 );

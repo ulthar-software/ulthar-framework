@@ -10,7 +10,6 @@ import {
   BaseSectionAddedEvent,
   BaseSectionFields,
   SectionOrderChangedEvent,
-  SectionTitleChangedEvent,
 } from "./section-base.js";
 
 // Video Section Content Model
@@ -26,9 +25,7 @@ export type VideoSectionContent = Infer<
 export const VideoSectionModel = new AggregateModel("videoSections", {
   ...BaseSectionFields,
   title: Field.string(),
-  content: Field.embedded({
-    subModel: VideoSectionContentModel,
-  }),
+  content: Field.embedded(VideoSectionContentModel),
 });
 
 export type VideoSectionModel = typeof VideoSectionModel;
@@ -38,9 +35,7 @@ export type VideoSection = Infer<VideoSectionModel>;
 export const VideoSectionAddedEvent = new DomainEvent("VideoSectionAdded", {
   ...BaseSectionAddedEvent,
   title: Field.string(),
-  content: Field.embedded({
-    subModel: VideoSectionContentModel,
-  }),
+  content: Field.embedded(VideoSectionContentModel),
 });
 
 export type VideoSectionAddedEvent = EventToType<typeof VideoSectionAddedEvent>;
@@ -49,9 +44,8 @@ export type VideoSectionAddedEvent = EventToType<typeof VideoSectionAddedEvent>;
 export const VideoSectionContentChangedEvent = new DomainEvent(
   "VideoSectionContentChanged",
   {
-    content: Field.embedded({
-      subModel: VideoSectionContentModel,
-    }),
+    title: Field.string(),
+    content: Field.embedded(VideoSectionContentModel),
     updatedBy: Field.uuid(),
   },
 );
@@ -63,7 +57,6 @@ export type VideoSectionContentChangedEvent = EventToType<
 // Event streams for video section
 export const VideoSectionEvents = [
   VideoSectionAddedEvent,
-  SectionTitleChangedEvent,
   VideoSectionContentChangedEvent,
   SectionOrderChangedEvent,
 ] as const;
@@ -87,12 +80,9 @@ export const VideoSectionProjector = new AggregateProjector(
         createdBy: event.payload.createdBy,
         content: event.payload.content,
       }),
-    SectionTitleChanged: (event, section): VideoSection =>
-      VideoSectionModel.update(section, event, {
-        title: event.payload.title,
-      }),
     VideoSectionContentChanged: (event, section): VideoSection =>
       VideoSectionModel.update(section, event, {
+        title: event.payload.title,
         content: event.payload.content,
       }),
     SectionOrderChanged: (event, section): VideoSection =>

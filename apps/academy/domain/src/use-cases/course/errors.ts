@@ -47,9 +47,9 @@ export class QuestionnaireVersionMismatchError extends TaggedError<"Questionnair
 }
 
 export class QuestionnaireSectionNotFoundError extends TaggedError<"QuestionnaireSectionNotFoundError"> {
-  constructor(public readonly questionnaireId: UUID) {
+  constructor(public readonly sectionId: UUID) {
     super("QuestionnaireSectionNotFoundError");
-    this.message = `Questionnaire section with ID ${questionnaireId} not found`;
+    this.message = `Questionnaire section with ID ${sectionId} not found`;
   }
 }
 
