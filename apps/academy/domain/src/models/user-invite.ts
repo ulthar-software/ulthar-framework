@@ -36,9 +36,15 @@ export type UserInviteAcceptedEvent = EventToType<
   typeof UserInviteAcceptedEvent
 >;
 
+export const UserInviteRemovedEvent = new DomainEvent("UserInviteRemoved", {
+  removedBy: Field.uuid(),
+});
+export type UserInviteRemovedEvent = EventToType<typeof UserInviteRemovedEvent>;
+
 export const UserInviteEvents = [
   UserInvitedEvent,
   UserInviteAcceptedEvent,
+  UserInviteRemovedEvent,
 ] as const;
 
 export const UserInviteStream = new EventStream(
@@ -54,5 +60,6 @@ export const UserInviteProjector = new AggregateProjector(
     UserInvited: (event): UserInvite =>
       UserInviteModel.from(event, event.payload),
     UserInviteAccepted: (): null => null,
+    UserInviteRemoved: (): null => null,
   },
 );

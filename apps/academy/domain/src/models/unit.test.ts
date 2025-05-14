@@ -5,9 +5,9 @@ import {
 } from "../services/mocks/create-mock-services.js";
 import {
   UnitAddedEvent,
-  UnitNameChangedEvent,
   UnitOrderChangedEvent,
   UnitProjector,
+  UnitTitleChangedEvent,
 } from "./unit.js";
 
 describe("Unit", () => {
@@ -65,15 +65,17 @@ describe("Unit", () => {
     if (!unit) throw new Error("Unit was not created");
 
     // Then update the unit title
-    const titleChangedEvent: UnitNameChangedEvent = UnitNameChangedEvent.from({
-      id: services.crypto.randomUUID(),
-      streamId: unitId,
-      payload: {
-        title: "Updated Unit Name",
-        updatedBy: services.crypto.randomUUID(),
+    const titleChangedEvent: UnitTitleChangedEvent = UnitTitleChangedEvent.from(
+      {
+        id: services.crypto.randomUUID(),
+        streamId: unitId,
+        payload: {
+          title: "Updated Unit Name",
+          updatedBy: services.crypto.randomUUID(),
+        },
+        version: 2,
       },
-      version: 2,
-    });
+    );
 
     const updatedUnit = UnitProjector.project(
       titleChangedEvent,

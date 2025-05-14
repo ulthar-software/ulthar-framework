@@ -15,6 +15,7 @@ import {
   ChangeCourseTitleUseCase,
   ChangeModuleOrderUseCase,
   ChangeModuleTitleUseCase,
+  ChangeUnitTitleUseCase,
   CourseNotFoundError,
   CreateCourseUseCase,
   CreateTagUseCase,
@@ -80,6 +81,7 @@ export const DomainUseCases = [
   GetCurrentUserUseCase,
   ListUsersUseCase,
   ListUserInvitesUseCase,
+  ChangeUnitTitleUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;

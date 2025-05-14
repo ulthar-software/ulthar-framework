@@ -34,12 +34,12 @@ export const UnitAddedEvent = new DomainEvent("UnitAdded", {
 
 export type UnitAddedEvent = EventToType<typeof UnitAddedEvent>;
 
-export const UnitNameChangedEvent = new DomainEvent("UnitNameChanged", {
+export const UnitTitleChangedEvent = new DomainEvent("UnitTitleChanged", {
   title: Field.string(),
   updatedBy: Field.uuid(),
 });
 
-export type UnitNameChangedEvent = EventToType<typeof UnitNameChangedEvent>;
+export type UnitTitleChangedEvent = EventToType<typeof UnitTitleChangedEvent>;
 
 export const UnitOrderChangedEvent = new DomainEvent("UnitOrderChanged", {
   order: Field.integer({
@@ -52,7 +52,7 @@ export type UnitOrderChangedEvent = EventToType<typeof UnitOrderChangedEvent>;
 
 export const UnitEvents = [
   UnitAddedEvent,
-  UnitNameChangedEvent,
+  UnitTitleChangedEvent,
   UnitOrderChangedEvent,
 ] as const;
 
@@ -64,7 +64,7 @@ export const UnitProjector = new AggregateProjector(
   UnitEvents,
   {
     UnitAdded: (event): Unit => UnitModel.from(event, event.payload),
-    UnitNameChanged: (event, unit): Unit =>
+    UnitTitleChanged: (event, unit): Unit =>
       UnitModel.update(unit, event, {
         title: event.payload.title,
       }),
