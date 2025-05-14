@@ -41,7 +41,6 @@ export function fakeTextContentSection(
 ): TaggedTextSection {
   return {
     id: section?.id ?? (faker.string.uuid() as UUID),
-    title: section?.title ?? faker.lorem.words(3),
     order: section?.order ?? faker.number.int({ min: 0, max: 100 }),
     unitId: section?.unitId ?? (faker.string.uuid() as UUID),
     version: section?.version ?? faker.number.int({ min: 0, max: 100 }),

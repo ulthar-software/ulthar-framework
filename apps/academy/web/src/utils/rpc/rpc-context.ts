@@ -54,6 +54,17 @@ export const EmptyRPCContext: RpcClient = {
   addQuestionnaireSectionToUnit:
     emptyMock<UseCaseRPC<"addQuestionnaireSectionToUnit">>(),
   registerUser: emptyMock<UseCaseRPC<"registerUser">>(),
+  changeModuleTitle: emptyMock<UseCaseRPC<"changeModuleTitle">>(),
+  changeUnitTitle: emptyMock<UseCaseRPC<"changeUnitTitle">>(),
+  editQuestionnaireSectionContent:
+    emptyMock<UseCaseRPC<"editQuestionnaireSectionContent">>(),
+  editTextSectionContent: emptyMock<UseCaseRPC<"editTextSectionContent">>(),
+  editVideoSectionContent: emptyMock<UseCaseRPC<"editVideoSectionContent">>(),
+  getCourseEnrollments: emptyMock<UseCaseRPC<"getCourseEnrollments">>(),
+  getCurrentUser: emptyMock<UseCaseRPC<"getCurrentUser">>(),
+  getTags: emptyMock<UseCaseRPC<"getTags">>(),
+  listUserInvites: emptyMock<UseCaseRPC<"listUserInvites">>(),
+  listUsers: emptyMock<UseCaseRPC<"listUsers">>(),
 };
 
 export const RpcContext = createContext<RpcClient>(EmptyRPCContext);

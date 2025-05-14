@@ -30,6 +30,7 @@ export function fakeUnitWithSections(
 ): GetUnitWithSectionsOutput {
   return {
     unit: fakeUnitSummary(unit),
+    tags: [],
     sections: sections ?? [
       fakeVideoContentSection(),
       fakeQuestionnaireContentSection(),
