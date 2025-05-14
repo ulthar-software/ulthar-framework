@@ -2,7 +2,7 @@ import { exhaustiveCheck } from "@fabric/core";
 import { AccessPolicy, UserRole } from "@ulthar/academy-domain";
 import { useState } from "react";
 import type { ListUsersOutput } from "../../../domain/dist/use-cases/user/list-users";
-import { InviteUserModal } from "../components/academy/modals/course-crud/invite-single-user-modal.tsx";
+import { InviteUserModal } from "../components/academy/modals/invite-single-user-modal.tsx";
 import { PageContainer } from "../components/academy/page-container.tsx";
 import { PageContent } from "../components/academy/page-content.tsx";
 import { PageTitle } from "../components/academy/page-title.tsx";
@@ -131,7 +131,7 @@ export default function UsersPage() {
     <PageContainer>
       <PlatformHeader />
       <PageContent>
-        <PageTitle>Lista de Usuarios del Sistema</PageTitle>
+        <PageTitle>Usuarios</PageTitle>
 
         {/* Search input */}
         <div className="w-full mb-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
@@ -232,11 +232,10 @@ export default function UsersPage() {
           </div>
         </div>
 
+        <h3 className="mt-8 mb-2 font-bold">Invitaciones pendientes</h3>
+
         {/* User Invites Table */}
-        <div className="w-full rounded-lg overflow-hidden border border-gray-700 mt-8">
-          <div className="bg-dark-alt p-4 font-bold">
-            Invitaciones pendientes
-          </div>
+        <div className="w-full rounded-lg overflow-hidden border border-gray-700 ">
           <table className="w-full">
             <thead className="bg-dark-alt">
               <tr>

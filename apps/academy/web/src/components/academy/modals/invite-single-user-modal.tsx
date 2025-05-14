@@ -1,11 +1,11 @@
 import type { Email } from "@fabric/core";
 import { UserRole } from "@ulthar/academy-domain";
 import { useState } from "react";
-import { useRPC } from "../../../../utils/rpc/use-rpc.ts";
-import { showErrorToast } from "../../../../utils/toasts/show-error-toast.ts";
-import { showSuccessToast } from "../../../../utils/toasts/show-success-toast.ts";
-import { Button } from "../../../ui/button.tsx";
-import { LoadingSpinner } from "../../../ui/loading-spinner.tsx";
+import { useRPC } from "../../../utils/rpc/use-rpc.ts";
+import { showErrorToast } from "../../../utils/toasts/show-error-toast.ts";
+import { showSuccessToast } from "../../../utils/toasts/show-success-toast.ts";
+import { Button } from "../../ui/button.tsx";
+import { LoadingSpinner } from "../../ui/loading-spinner.tsx";
 
 export function InviteUserModal({
   closeModal,
