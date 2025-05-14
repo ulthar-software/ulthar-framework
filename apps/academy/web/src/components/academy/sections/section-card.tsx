@@ -19,7 +19,7 @@ export function SectionCard({
   const hasEditPermission = useAuthHasPerm("EDIT_COURSE");
   const { showModal } = useModal();
   return (
-    <div className="pt-16 relative">
+    <div className="pt-16 relative max-w-6xl w-full mx-auto">
       {hasEditPermission && (
         <Button
           onClick={() => {

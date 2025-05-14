@@ -272,8 +272,8 @@ export default function CourseView() {
           </section>
 
           {/* Right sidebar for concepts - always visible and fixed height */}
-          {id && unitId && unitData && (
-            <ResourceSidebar courseId={id as UUID} unitId={unitId as UUID} />
+          {id && unitData && (
+            <ResourceSidebar courseId={id as UUID} unitId={unitData.unit.id} />
           )}
         </section>
       )}
