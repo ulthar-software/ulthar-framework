@@ -19,6 +19,7 @@ import {
   CourseNotFoundError,
   CreateCourseUseCase,
   CreateTagUseCase,
+  EditTextSectionContentUseCase,
   EditVideoSectionContentUseCase,
   EmptyCourseError,
   EnrollStudentInCourseUseCase,
@@ -82,6 +83,7 @@ export const DomainUseCases = [
   ListUserInvitesUseCase,
   ChangeUnitTitleUseCase,
   EditVideoSectionContentUseCase,
+  EditTextSectionContentUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
