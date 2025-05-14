@@ -21,7 +21,6 @@ export async function createTextSectionMock(
     },
     {
       unitId,
-      title: section.title ?? "Test Text Section",
       text:
         section.content?.text ?? "This is a text section for testing purposes.",
     },
