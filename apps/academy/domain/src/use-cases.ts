@@ -19,11 +19,13 @@ import {
   CourseNotFoundError,
   CreateCourseUseCase,
   CreateTagUseCase,
+  EditVideoSectionContentUseCase,
   EmptyCourseError,
   EnrollStudentInCourseUseCase,
   EnrollUsersByEmailUseCase,
   GetAllCoursesUseCase,
   GetCourseDetailsUseCase,
+  GetCurrentUserUseCase,
   GetQuestionnaireResponseUseCase,
   GetResourcesByUnitTagsUseCase,
   GetTagsUseCase,
@@ -32,6 +34,8 @@ import {
   InvalidCredentialsError,
   InvalidInviteCodeError,
   InviteUserUseCase,
+  ListUserInvitesUseCase,
+  ListUsersUseCase,
   LoginUseCase,
   ModuleNotFoundError,
   NotEnrolledInCourseError,
@@ -44,13 +48,8 @@ import {
   UnitNotFoundError,
   UserAlreadyExistsError,
   UserAlreadyInvitedError,
-} from "./use-cases/index.js";
-import {
-  GetCurrentUserUseCase,
   UserNotFoundError,
-} from "./use-cases/user/get-current-user.js";
-import { ListUserInvitesUseCase } from "./use-cases/user/list-user-invites.js";
-import { ListUsersUseCase } from "./use-cases/user/list-users.js";
+} from "./use-cases/index.js";
 import type { UseCaseErrorValue } from "./utils/use-case.js";
 import { UnauthorizedError } from "./utils/use-case.js";
 
@@ -82,6 +81,7 @@ export const DomainUseCases = [
   ListUsersUseCase,
   ListUserInvitesUseCase,
   ChangeUnitTitleUseCase,
+  EditVideoSectionContentUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
