@@ -27,6 +27,7 @@ import {
   EnrollUsersByEmailUseCase,
   GetAllCoursesUseCase,
   GetCourseDetailsUseCase,
+  GetCourseEnrollmentsUseCase,
   GetCurrentUserUseCase,
   GetQuestionnaireResponseUseCase,
   GetResourcesByUnitTagsUseCase,
@@ -86,6 +87,7 @@ export const DomainUseCases = [
   EditVideoSectionContentUseCase,
   EditTextSectionContentUseCase,
   EditQuestionnaireSectionContentUseCase,
+  GetCourseEnrollmentsUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;

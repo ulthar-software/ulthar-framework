@@ -19,6 +19,16 @@ export type UserInviteModel = typeof UserInviteModel;
 
 export type UserInvite = Infer<UserInviteModel>;
 
+export const UserInviteViewModelProperties = [
+  "id",
+  "email",
+  "role",
+] as const satisfies (keyof UserInvite)[];
+
+export type UserInviteViewModelProperty =
+  (typeof UserInviteViewModelProperties)[number];
+export type UserInviteViewModel = Pick<UserInvite, UserInviteViewModelProperty>;
+
 export const UserInvitedEvent = new DomainEvent("UserInvited", {
   email: Field.email(),
   role: Field.enum({

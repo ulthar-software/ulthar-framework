@@ -21,6 +21,17 @@ export const UserModel = new AggregateModel("users", {
 export type UserModel = typeof UserModel;
 export type User = Infer<UserModel>;
 
+export const UserViewModelProperties = [
+  "id",
+  "email",
+  "firstName",
+  "lastName",
+  "role",
+] as const satisfies (keyof User)[];
+
+export type UserViewModelProperty = (typeof UserViewModelProperties)[number];
+export type UserViewModel = Pick<User, UserViewModelProperty>;
+
 export const UserCreatedEvent = new DomainEvent("UserCreated", {
   firstName: Field.string(),
   lastName: Field.string(),

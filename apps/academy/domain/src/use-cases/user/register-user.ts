@@ -58,7 +58,7 @@ export const RegisterUserUseCase = new UseCase({
         .selectOneOrFail()
         .mapError(() => new InvalidInviteCodeError());
 
-      const userId = crypto.randomUUID();
+      const userId = invite.id;
       const hashedPassword = yield* crypto.hashPassword(password);
 
       const registrationEvent = UserRegisteredByInvitationEvent.from({
