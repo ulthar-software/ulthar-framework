@@ -3,11 +3,11 @@
 import { JSONExt, TaggedError, UnexpectedError } from "@fabric/core";
 import type { UseCase } from "@ulthar/academy-domain";
 import type { Express } from "express";
-import type { ApiDependencies } from "../dependencies.js";
+import type { AppDependencies } from "../dependencies.js";
 import { parseAccessToken } from "./parse-access-token.js";
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-export function createHTTPEndpoints<TDeps extends ApiDependencies>(
+export function createHTTPEndpoints<TDeps extends AppDependencies>(
   app: Express,
   deps: TDeps,
   useCases: readonly UseCase<string, any, any, any, any>[],
