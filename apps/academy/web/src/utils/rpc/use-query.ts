@@ -4,7 +4,7 @@ import type {
   UseCaseInput,
   UseCaseOkValue,
 } from "@ulthar/academy-domain";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { UseCaseFromName, UseCaseNames } from "./rpc-context.ts";
 import { useRPC } from "./use-rpc.ts";
 
@@ -31,7 +31,6 @@ export function useQuery<TName extends UseCaseNames>(
     undefined,
     undefined,
   ]);
-  const runEffect = useRef(false);
 
   async function callRPC() {
     setState([true, undefined, undefined]);
@@ -61,13 +60,7 @@ export function useQuery<TName extends UseCaseNames>(
   }
 
   useEffect(() => {
-    if (runEffect.current) {
-      void callRPC();
-    }
-    runEffect.current = true;
-    return () => {
-      runEffect.current = true;
-    };
+    void callRPC();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(input)]);
 

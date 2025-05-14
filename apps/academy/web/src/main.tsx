@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router";
@@ -13,16 +12,14 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <StrictMode>
-      <AuthProvider>
-        <ConcreteRpcProvider>
-          <ModalProvider>
-            <RouterProvider router={router} />
-          </ModalProvider>
-          <Toaster />
-        </ConcreteRpcProvider>
-      </AuthProvider>
-    </StrictMode>,
+    <AuthProvider>
+      <ConcreteRpcProvider>
+        <ModalProvider>
+          <RouterProvider router={router} />
+        </ModalProvider>
+        <Toaster />
+      </ConcreteRpcProvider>
+    </AuthProvider>,
   );
 } else {
   console.error("Root element not found");
