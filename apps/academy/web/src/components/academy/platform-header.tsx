@@ -9,7 +9,11 @@ import { Icon } from "../ui/icon.tsx";
 import { LoadingSpinner } from "../ui/loading-spinner.tsx";
 import { UltharLogo } from "./ulthar-logo.tsx";
 
-export function PlatformHeader() {
+export interface PlatformHeaderProps {
+  title?: string;
+}
+
+export function PlatformHeader({ title }: PlatformHeaderProps) {
   const logout = useAuthLogout();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,9 +47,16 @@ export function PlatformHeader() {
 
   return (
     <header className="flex p-4 gap-4 w-full shadow bg-dark-alt h-16 justify-between">
-      <UltharLogo size="small" showText={false} />
-
-      {isLoading && <LoadingSpinner />}
+      <div className="flex items-center gap-4">
+        {!title && <UltharLogo size="medium" showText={true} />}
+        {title && (
+          <>
+            <title>{title}</title>
+            <UltharLogo size="small" showText={false} />
+            <h1 className="text-2xl font-semibold text-primary">{title}</h1>
+          </>
+        )}
+      </div>
 
       <div className="relative" ref={dropdownRef}>
         <Button
@@ -54,12 +65,18 @@ export function PlatformHeader() {
           }}
           className="flex items-center gap-2 bg-dark hover:bg-gray-800"
         >
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-semibold">
-            {userInitials}
-          </div>
-          <span className="hidden sm:inline">
-            {currentUserData?.user.firstName} {currentUserData?.user.lastName}
-          </span>
+          {isLoading && <LoadingSpinner />}
+          {!isLoading && (
+            <>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-semibold">
+                {userInitials}
+              </div>
+              <span className="hidden sm:inline">
+                {currentUserData?.user.firstName}{" "}
+                {currentUserData?.user.lastName}
+              </span>
+            </>
+          )}
           <Icon
             name="bx-chevron-down"
             className={clx(isOpen && "rotate-180", "transition-transform")}

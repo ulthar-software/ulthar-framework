@@ -31,7 +31,7 @@ export function UltharLogo({
   // Define size classes for the logo and text
   const logoSizeClasses = {
     small: "w-6 h-6",
-    medium: "w-12 h-12",
+    medium: "w-10 h-10",
     large: "w-14 h-14",
   };
 
