@@ -89,7 +89,6 @@ describe("Get Unit With Sections Use Case", () => {
       id: textEventId,
       streamId: textSectionId,
       payload: {
-        title: "Introduction Text",
         unitId: existingUnitId,
         order: 100,
         createdBy: user.id,

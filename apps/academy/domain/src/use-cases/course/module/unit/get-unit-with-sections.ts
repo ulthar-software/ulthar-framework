@@ -12,6 +12,7 @@ import type {
   TaggedTextSection,
 } from "../../../../models/sections/index.js";
 import { SectionType } from "../../../../models/sections/index.js";
+import { TagModel } from "../../../../models/tag.js";
 import type { Unit } from "../../../../models/unit.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
 import type { UserAccess } from "../../../../services/auth-service.js";
@@ -38,6 +39,7 @@ export type GetUnitWithSectionsInput = Infer<
 
 export interface GetUnitWithSectionsOutput {
   unit: Unit;
+  tags: { id: string; name: string }[];
   sections: TaggedContentSection[];
 }
 
@@ -107,58 +109,77 @@ function getUnitWithSections(
   state: DomainStateStore,
   unit: Unit,
 ): Effect<GetUnitWithSectionsOutput, UnexpectedError> {
-  // Now that we have the unit, fetch all sections for this unit
-  // We need to query each section table separately since they are stored in different tables
-  return Effect.all(() => [
-    // Fetch text sections
-    state
-      .from("textSections")
-      .where({ unitId: unit.id })
-      .select()
-      .map((p) =>
-        p.map(
-          (q) =>
-            ({
-              ...q,
-              type: SectionType.TEXT,
-            }) as TaggedTextSection,
-        ),
-      )
-      .mapError(() => new UnexpectedError()),
+  return Effect.fromGen(function* () {
+    const [textSections, videoSections, questionnaireSections] =
+      yield* Effect.all(() => [
+        // Fetch text sections
+        state
+          .from("textSections")
+          .where({ unitId: unit.id })
+          .select()
+          .map((p) =>
+            p.map(
+              (q) =>
+                ({
+                  ...q,
+                  type: SectionType.TEXT,
+                }) as TaggedTextSection,
+            ),
+          )
+          .mapError(() => new UnexpectedError()),
 
-    // Fetch video sections
-    state
-      .from("videoSections")
-      .where({ unitId: unit.id })
-      .select()
-      .map((p) =>
-        p.map(
-          (q) =>
-            ({
-              ...q,
-              type: SectionType.VIDEO,
-            }) as TaggedContentSection,
-        ),
-      )
-      .mapError(() => new UnexpectedError()),
+        // Fetch video sections
+        state
+          .from("videoSections")
+          .where({ unitId: unit.id })
+          .select()
+          .map((p) =>
+            p.map(
+              (q) =>
+                ({
+                  ...q,
+                  type: SectionType.VIDEO,
+                }) as TaggedContentSection,
+            ),
+          )
+          .mapError(() => new UnexpectedError()),
 
-    // Fetch questionnaire sections
-    state
-      .from("questionnaireSections")
+        // Fetch questionnaire sections
+        state
+          .from("questionnaireSections")
+          .where({ unitId: unit.id })
+          .select()
+          .map((p) =>
+            p.map(
+              (q) =>
+                ({
+                  ...q,
+                  type: SectionType.QUESTIONNAIRE,
+                }) as TaggedContentSection,
+            ),
+          )
+          .mapError(() => new UnexpectedError()),
+      ]);
+
+    const tags = yield* state
+      .from("unitTags")
+      .innerJoin({
+        model: TagModel,
+        on: {
+          left: "tagId",
+          right: "id",
+        },
+        as: "tag",
+      })
       .where({ unitId: unit.id })
-      .select()
-      .map((p) =>
-        p.map(
-          (q) =>
-            ({
-              ...q,
-              type: SectionType.QUESTIONNAIRE,
-            }) as TaggedContentSection,
-        ),
-      )
-      .mapError(() => new UnexpectedError()),
-  ]).map(([textSections, videoSections, questionnaireSections]) => {
-    // Combine all sections into a single array
+      .select(["tag.id", "tag.name"])
+      .map((tags) =>
+        tags.map((tag) => ({
+          id: tag["tag.id"],
+          name: tag["tag.name"],
+        })),
+      );
+
     const allSections = [
       ...textSections,
       ...videoSections,
@@ -171,6 +192,7 @@ function getUnitWithSections(
     return {
       unit,
       sections: sortedSections,
+      tags,
     };
   });
 }
