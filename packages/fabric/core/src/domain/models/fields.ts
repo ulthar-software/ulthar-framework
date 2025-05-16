@@ -112,7 +112,7 @@ export type FieldToType<TField> =
   : TField extends UrlField ? MaybeOptional<TField, string>
   : TField extends EmbeddedField<infer TSubModel> ? MaybeOptional<TField, Infer<Model<string, TSubModel>>>
   : TField extends ObjectArrayField<infer TSubModel> ? MaybeOptional<TField, Infer<Model<string, TSubModel>>[]>
-  : TField extends ArrayField<infer TItemType> ? MaybeOptional<TField, FieldToType<TItemType>[]>
+  : TField extends ArrayField<infer TItemType> ? MaybeOptional<TField, (FieldToType<TItemType>)[]>
   : never;
 
 //prettier-ignore
