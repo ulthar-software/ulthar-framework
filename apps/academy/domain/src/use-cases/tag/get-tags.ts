@@ -1,7 +1,9 @@
-import type { Effect, StoreReadQuery } from "@fabric/core";
+import type { StoreReadQuery, UUID } from "@fabric/core";
 import {
+  Effect,
   Field,
   isLike,
+  isNotIn,
   Schema,
   UnexpectedError,
   type Infer,
@@ -18,11 +20,24 @@ export interface GetTagsDependencies {
   currentUser: UserAccess;
 }
 
+export const TypesWithTags = {
+  UNIT: "UNIT",
+  RESOURCE: "RESOURCE",
+};
+export type TypesWithTags = (typeof TypesWithTags)[keyof typeof TypesWithTags];
+export const TypeWithTagsValues = Object.values(TypesWithTags);
+
 export const GetTagsInputModel = new Schema({
   filter: Field.string({ isOptional: true }),
   limit: Field.integer({ isOptional: true, minValue: 1, maxValue: 100 }),
+  idToFilter: Field.uuid({
+    isOptional: true,
+  }),
+  typeToFilter: Field.enum({
+    values: TypeWithTagsValues,
+    isOptional: true,
+  }),
 });
-
 export type GetTagsInput = Infer<typeof GetTagsInputModel>;
 
 export interface GetTagsOutput {
@@ -36,20 +51,62 @@ export const GetTagsUseCase = new UseCase({
   inputSchema: GetTagsInputModel,
   effect: (
     { state }: GetTagsDependencies,
-    { filter, limit }: GetTagsInput,
+    { filter, limit, idToFilter, typeToFilter }: GetTagsInput,
   ): Effect<GetTagsOutput, UnexpectedError> => {
-    let tagsQuery = state.from("tags");
+    return Effect.fromGen(function* () {
+      let tagsQuery = state.from("tags");
 
-    if (filter) {
-      tagsQuery = tagsQuery.where({
-        name: isLike(`%${filter}%`),
-      }) as StoreReadQuery<Tag>;
-    }
+      if (filter || (idToFilter && typeToFilter)) {
+        let tagsToFilter: UUID[] = [];
+        if (typeToFilter === TypesWithTags.UNIT) {
+          const unitTags = yield* state
+            .from("unitTags")
+            .where({
+              unitId: idToFilter,
+            })
+            .select(["tagId"]);
+          tagsToFilter = unitTags.map((tag) => tag.tagId);
+        }
 
-    return tagsQuery
-      .limit(limit ?? 10)
-      .select()
-      .map((tags) => ({ tags }))
-      .mapError((e) => new UnexpectedError(e.message));
+        if (typeToFilter === TypesWithTags.RESOURCE) {
+          const resourceTags = yield* state
+            .from("resourceTags")
+            .where({
+              resourceId: idToFilter,
+            })
+            .select(["tagId"]);
+          tagsToFilter = [
+            ...tagsToFilter,
+            ...resourceTags.map((tag) => tag.tagId),
+          ];
+        }
+
+        if (filter || tagsToFilter.length > 0) {
+          tagsQuery = tagsQuery.where({
+            ...(filter
+              ? {
+                  name: isLike(`%${filter}%`),
+                }
+              : {}),
+            ...(tagsToFilter.length > 0
+              ? {
+                  id: isNotIn(tagsToFilter),
+                }
+              : {}),
+          }) as StoreReadQuery<Tag>;
+        }
+      }
+
+      const result = yield* tagsQuery
+        .limit(limit ?? 10)
+        .select()
+        .map((tags) => ({ tags }))
+        .tapError((e) => {
+          console.error(e);
+        })
+        .mapError((e) => new UnexpectedError(e.message));
+
+      return result;
+    });
   },
 });

@@ -1,7 +1,11 @@
 import { SchemaParsingError } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
+import { createCourseMock } from "../../models/mocks/create-course-mock.js";
+import { createModuleMock } from "../../models/mocks/create-module-mock.js";
 import { createTagMock } from "../../models/mocks/create-tag-mock.js";
+import { createUnitMock } from "../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../models/mocks/create-user-mock.js";
+import { UnitTagCreatedEvent } from "../../models/unit-tag.js";
 import type { User } from "../../models/user.js";
 import { Permission } from "../../security/permission.js";
 import {
@@ -120,5 +124,50 @@ describe("Get Tags Use Case", () => {
 
     // Assert
     expect(result.unwrapErrorOrThrow()).toBeInstanceOf(SchemaParsingError);
+  });
+
+  test("Given idToFilter and typeToFilter=UNIT, it should return tags linked to the unit", async () => {
+    // Arrange: create a unit and link tags to it
+    const courseId = await createCourseMock(services, user.id);
+    const moduleId = await createModuleMock(services, user.id, courseId);
+    const unitId = await createUnitMock(services, user.id, moduleId);
+    const tag1Id = await createTagMock(services, user.id, { name: "UnitTag1" });
+
+    await services.events
+      .append(
+        "unitTags",
+        UnitTagCreatedEvent.from({
+          id: services.crypto.randomUUID(),
+          payload: {
+            unitId,
+            tagId: tag1Id,
+            createdBy: user.id,
+          },
+          streamId: unitId,
+          version: 1,
+        }),
+      )
+      .runOrThrow();
+
+    // Act
+    const result = await GetTagsUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.MANAGE_TAGS],
+        },
+      },
+      { idToFilter: unitId, typeToFilter: "UNIT" },
+    ).run();
+
+    // Assert
+    expect(result.isOk()).toBe(true);
+    const tags = result.unwrapOrThrow().tags;
+    expect(tags).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: tag1Id })]),
+    );
+
+    expect(tags.length).toEqual(10); // default limit
   });
 });

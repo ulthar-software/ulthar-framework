@@ -9,8 +9,8 @@ import type { User } from "../../../models/user.js";
 import { Permission } from "../../../security/permission.js";
 import { mockUserAccess } from "../../../utils/mock-user-access.js";
 import { UnauthorizedError } from "../../../utils/use-case.js";
-import { AddResourceToCourse } from "./add-resource-to-course.js";
-import { EditResource } from "./edit-resource.js";
+import { AddResourceToCourseUseCase } from "./add-resource-to-course.js";
+import { EditResourceUseCase } from "./edit-resource.js";
 import { ResourceNotFoundError } from "./errors.js";
 
 describe("Edit Resource Use Case", () => {
@@ -25,7 +25,7 @@ describe("Edit Resource Use Case", () => {
     courseId = await createCourseMock(services, admin.id);
 
     // Create a resource to edit
-    const result = await AddResourceToCourse.call(
+    const result = await AddResourceToCourseUseCase.call(
       {
         ...services,
         currentUser: {
@@ -46,7 +46,7 @@ describe("Edit Resource Use Case", () => {
   });
 
   test("Given valid changes, it should edit the resource", async () => {
-    const result = await EditResource.call(
+    const result = await EditResourceUseCase.call(
       {
         ...services,
         currentUser: {
@@ -77,7 +77,7 @@ describe("Edit Resource Use Case", () => {
 
   test("Given a user without permissions, it should deny access", async () => {
     await expect(() =>
-      EditResource.call(
+      EditResourceUseCase.call(
         {
           ...services,
           currentUser: mockUserAccess(services, []),
@@ -95,7 +95,7 @@ describe("Edit Resource Use Case", () => {
     const nonExistentResourceId = services.crypto.randomUUID();
 
     await expect(() =>
-      EditResource.call(
+      EditResourceUseCase.call(
         {
           ...services,
           currentUser: mockUserAccess(services, [Permission.EDIT_COURSE]),

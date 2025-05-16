@@ -8,3 +8,4 @@ export * from "./get-all-courses.js";
 export * from "./get-course-details.js";
 export * from "./get-questionnaire-response.js";
 export * from "./module/index.js";
+export * from "./resources/index.js";

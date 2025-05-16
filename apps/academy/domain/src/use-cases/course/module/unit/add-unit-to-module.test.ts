@@ -11,6 +11,7 @@ import {
   type MockedDependencies,
 } from "../../../../services/mocks/create-mock-services.js";
 import { UnauthorizedError } from "../../../../utils/use-case.js";
+import { TagNotFoundError } from "../../../tag/errors.js";
 import { ModuleNotFoundError } from "../../errors.js";
 import { AddUnitToModuleUseCase } from "./add-unit-to-module.js";
 
@@ -280,5 +281,32 @@ describe("Add Unit To Module Use Case", () => {
     expect(tagIds).toContain(javascriptTagId);
     expect(tagIds).toContain(typescriptTagId);
     expect(tagIds).toContain(frontendTagId);
+  });
+
+  test("Given a valid module ID, unit title, and a non-existent tag ID, it should return an error", async () => {
+    // Arrange
+    const nonExistentTagId = services.crypto.randomUUID();
+    const input = {
+      moduleId: existingModuleId,
+      title: "Unit with Invalid Tag",
+      tagIds: [nonExistentTagId],
+    };
+
+    // Act
+    const result = await AddUnitToModuleUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.EDIT_COURSE],
+        },
+      },
+      input,
+    ).run();
+
+    // Assert
+    expect(result.isError()).toBe(true);
+    const error = result.unwrapErrorOrThrow();
+    expect(error).toBeInstanceOf(TagNotFoundError);
   });
 });

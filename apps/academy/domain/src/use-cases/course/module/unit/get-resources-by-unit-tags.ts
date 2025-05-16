@@ -28,6 +28,9 @@ export interface GetResourcesByUnitTagsDependencies {
 export const GetResourcesByUnitTagsInputModel = new Schema({
   courseId: Field.uuid(),
   unitId: Field.uuid(),
+  getFullCourse: Field.boolean({
+    isOptional: true,
+  }),
 });
 
 export type GetResourcesByUnitTagsInput = Infer<
@@ -53,7 +56,7 @@ export const GetResourcesByUnitTagsUseCase = new UseCase({
   inputSchema: GetResourcesByUnitTagsInputModel,
   effect: (
     { state, currentUser }: GetResourcesByUnitTagsDependencies,
-    { courseId, unitId }: GetResourcesByUnitTagsInput,
+    { courseId, unitId, getFullCourse }: GetResourcesByUnitTagsInput,
   ): Effect<
     GetResourcesByUnitTagsOutput,
     | CourseNotFoundError
@@ -68,50 +71,70 @@ export const GetResourcesByUnitTagsUseCase = new UseCase({
       .selectOneOrFail()
       .mapError(() => new UnitNotFoundError(unitId))
       .flatMap(() => assertValidatedInCourse(state, currentUser, courseId))
-      .flatMap(() => getResourcesByUnitTags(state, unitId));
+      .flatMap(() =>
+        getResourcesByUnitTags(state, unitId, courseId, getFullCourse),
+      );
   },
 });
 
 function getResourcesByUnitTags(
   state: DomainStateStore,
   unitId: UUID,
+  courseId: UUID,
+  shouldGetFullCourse = false,
 ): Effect<GetResourcesByUnitTagsOutput, UnexpectedError> {
   // First get all tags associated with this unit
-  return state
-    .from("unitTags")
-    .where({ unitId: unitId })
-    .select()
-    .mapError(() => new UnexpectedError())
-    .flatMap((unitTags) => {
-      // If there are no tags for this unit, return an empty resources array
-      if (unitTags.length === 0) {
-        return Effect.ok([]);
-      }
-
-      // Extract tag IDs from unit tags
-      const tagIds = unitTags.map((tag) => tag.tagId);
-
-      // Find resources that have any of these tags
-      return state
+  return Effect.fromGen(function* () {
+    if (shouldGetFullCourse) {
+      const result = yield* state
         .from("resources")
-        .innerJoin({
-          model: ResourceTagModel,
-          as: "t",
-          on: {
-            left: "id",
-            right: "resourceId",
-          },
-        })
         .where({
-          "t.tagId": isIn(tagIds),
+          courseId,
         })
-        .selectDistinct(["id", "title", "type", "url", "description"])
+        .select(["id", "title", "type", "url", "description"])
         .tapError((e) => {
           console.error(e);
         })
         .mapError(() => new UnexpectedError());
-    })
-    .map((resources) => ({
+      return {
+        resources: result,
+      };
+    }
+    const unitTags = yield* state
+      .from("unitTags")
+      .where({ unitId: unitId })
+      .select();
+
+    if (unitTags.length === 0) {
+      return {
+        resources: [],
+      };
+    }
+
+    // Extract tag IDs from unit tags
+    const tagIds = unitTags.map((tag) => tag.tagId);
+
+    const resources = yield* state
+      .from("resources")
+      .innerJoin({
+        model: ResourceTagModel,
+        as: "t",
+        on: {
+          left: "id",
+          right: "resourceId",
+        },
+      })
+      .where({
+        "t.tagId": isIn(tagIds),
+      })
+      .selectDistinct(["id", "title", "type", "url", "description"])
+      .tapError((e) => {
+        console.error(e);
+      })
+      .mapError(() => new UnexpectedError());
+
+    return {
       resources,
-    }));
+    };
+  });
 }

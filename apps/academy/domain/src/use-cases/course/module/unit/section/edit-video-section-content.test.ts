@@ -50,12 +50,6 @@ describe("Edit Video Section Content Use Case", () => {
   });
 
   test("Admin should successfully edit a video section content", async () => {
-    // Arrange
-    const updatedContent = {
-      sectionId: existingSectionId,
-      videoUrl: "https://example.com/videos/updated.mp4",
-    };
-
     // Act
     const result = await EditVideoSectionContentUseCase.call(
       {
@@ -65,7 +59,11 @@ describe("Edit Video Section Content Use Case", () => {
           permissions: [Permission.EDIT_COURSE],
         },
       },
-      updatedContent,
+      {
+        sectionId: existingSectionId,
+        title: "Updated Video Title",
+        videoUrl: "https://example.com/videos/updated.mp4",
+      },
     ).runOrThrow();
 
     // Assert
@@ -82,7 +80,7 @@ describe("Edit Video Section Content Use Case", () => {
 
     expect(sectionInDb.content).toEqual(
       expect.objectContaining({
-        videoUrl: updatedContent.videoUrl,
+        videoUrl: "https://example.com/videos/updated.mp4",
       }),
     );
   });
@@ -92,6 +90,7 @@ describe("Edit Video Section Content Use Case", () => {
     const invalidSectionId = "00000000-0000-0000-0000-000000000000";
     const updatedContent = {
       sectionId: invalidSectionId,
+      title: "New Video Title",
       videoUrl: "https://example.com/videos/invalid.mp4",
     };
 

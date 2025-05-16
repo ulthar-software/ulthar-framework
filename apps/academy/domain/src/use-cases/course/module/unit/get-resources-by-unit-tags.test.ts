@@ -417,4 +417,29 @@ describe("Get Resources By Unit Tags Use Case", () => {
     expect(error).toBeInstanceOf(UnitNotFoundError);
     expect((error as UnitNotFoundError).unitId).toBe(nonExistentUnitId);
   });
+
+  test("Should return all resources for the course when getFullCourse is true", async () => {
+    // Act
+    const result = await GetResourcesByUnitTagsUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.VIEW_COURSE],
+        },
+      },
+      {
+        courseId: existingCourseId,
+        unitId: existingUnitId,
+        getFullCourse: true,
+      },
+    ).runOrThrow();
+
+    // Assert: All 4 resources for the course should be returned
+    expect(result.resources).toHaveLength(4);
+    const resourceTitles = result.resources.map((r) => r.title).sort();
+    expect(resourceTitles).toEqual(
+      ["Resource 1", "Resource 2", "Resource 3", "Resource 4"].sort(),
+    );
+  });
 });

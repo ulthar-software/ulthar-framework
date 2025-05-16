@@ -1,4 +1,8 @@
-import { UnexpectedError, type ClassConstructor } from "@fabric/core";
+import {
+  AlreadyExistsError,
+  UnexpectedError,
+  type ClassConstructor,
+} from "@fabric/core";
 import {
   ExpiredTokenError,
   InvalidTokenError,
@@ -7,6 +11,9 @@ import {
   AddModuleToCourseUseCase,
   AddQuestionnaireResponseUseCase,
   AddQuestionnaireSectionToUnitUseCase,
+  AddResourceToCourseUseCase,
+  AddTagToResourceUseCase,
+  AddTagToUnitUseCase,
   AddTextSectionToUnitUseCase,
   AddUnitToModuleUseCase,
   AddVideoSectionToUnitUseCase,
@@ -20,6 +27,7 @@ import {
   CreateCourseUseCase,
   CreateTagUseCase,
   EditQuestionnaireSectionContentUseCase,
+  EditResourceUseCase,
   EditTextSectionContentUseCase,
   EditVideoSectionContentUseCase,
   EmptyCourseError,
@@ -46,6 +54,7 @@ import {
   QuestionnaireSectionNotFoundError,
   QuestionnaireVersionMismatchError,
   RegisterUserUseCase,
+  ResourceNotFoundError,
   StudentAlreadyEnrolledError,
   TagAlreadyExistsError,
   UnitNotFoundError,
@@ -88,6 +97,10 @@ export const DomainUseCases = [
   EditTextSectionContentUseCase,
   EditQuestionnaireSectionContentUseCase,
   GetCourseEnrollmentsUseCase,
+  AddResourceToCourseUseCase,
+  EditResourceUseCase,
+  AddTagToResourceUseCase,
+  AddTagToUnitUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
@@ -120,6 +133,9 @@ export const DomainUseCaseErrorsMap = {
   UnauthorizedError: UnauthorizedError,
   EmptyCourseError: EmptyCourseError,
   UserNotFoundError: UserNotFoundError,
+  ResourceNotFoundError: ResourceNotFoundError,
+  TagNotFoundError: ResourceNotFoundError,
+  AlreadyExistsError: AlreadyExistsError,
 } as const satisfies Record<
   DomainUseCaseErrors["_tag"],
   ClassConstructor<DomainUseCaseErrors>

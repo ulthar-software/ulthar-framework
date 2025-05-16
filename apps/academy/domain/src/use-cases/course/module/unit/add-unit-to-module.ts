@@ -15,6 +15,7 @@ import type { DomainCryptoService } from "../../../../services/crypto-service.js
 import type { DomainEventStore } from "../../../../services/event-store.js";
 import type { DomainStateStore } from "../../../../services/state-store.js";
 import { UseCase } from "../../../../utils/use-case.js";
+import { TagNotFoundError } from "../../../tag/errors.js";
 import { ModuleNotFoundError } from "../../errors.js";
 
 export interface AddUnitToModuleDependencies {
@@ -49,67 +50,73 @@ export const AddUnitToModuleUseCase = new UseCase({
     { state, events, crypto, currentUser }: AddUnitToModuleDependencies,
     { moduleId, title, tagIds }: AddUnitToModuleInput,
   ): Effect<AddUnitToModuleOutput, ModuleNotFoundError | UnexpectedError> => {
-    return state
-      .from("modules")
-      .where({ id: moduleId })
-      .selectOneOrFail()
-      .mapError(() => new ModuleNotFoundError(moduleId))
-      .flatMap(() => {
-        // Get the count of existing units for this module to determine the order
-        return state
-          .from("units")
-          .where({ moduleId })
-          .count()
-          .mapError(() => new UnexpectedError())
-          .flatMap((count) => {
-            const unitId = crypto.randomUUID();
-            const eventId = crypto.randomUUID();
-            const unitOrder = count * 100 + 100; // Set order to 100 more than last unit (maintains spacing of 100)
+    return Effect.fromGen(function* () {
+      yield* state
+        .from("modules")
+        .where({ id: moduleId })
+        .selectOneOrFail()
+        .mapError(() => new ModuleNotFoundError(moduleId));
 
-            const unitAddedEvent = UnitAddedEvent.from({
-              id: eventId,
-              streamId: unitId,
+      const count = yield* state
+        .from("units")
+        .where({ moduleId })
+        .count()
+        .mapError(() => new UnexpectedError());
+
+      const unitId = crypto.randomUUID();
+      const eventId = crypto.randomUUID();
+      const unitOrder = count * 100 + 100; // Set order to 100 more than last unit (maintains spacing of 100)
+
+      const unitAddedEvent = UnitAddedEvent.from({
+        id: eventId,
+        streamId: unitId,
+        payload: {
+          title,
+          moduleId,
+          order: unitOrder,
+          createdBy: currentUser.id,
+        },
+        version: 1,
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (tagIds) {
+        for (const tagId of tagIds) {
+          // Check if the tag exists
+          yield* state
+            .from("tags")
+            .where({ id: tagId })
+            .selectOneOrFail()
+            .mapError(() => new TagNotFoundError(tagId));
+        }
+      }
+
+      yield* events.append("units", unitAddedEvent);
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (tagIds) {
+        yield* Effect.all(() =>
+          tagIds.map((tagId) => {
+            const unitTagId = crypto.randomUUID();
+            const unitTagEventId = crypto.randomUUID();
+
+            const unitTagEvent = UnitTagCreatedEvent.from({
+              id: unitTagEventId,
+              streamId: unitTagId,
               payload: {
-                title,
-                moduleId,
-                order: unitOrder,
+                unitId,
+                tagId,
                 createdBy: currentUser.id,
               },
               version: 1,
             });
 
-            // First create the unit
-            return events.append("units", unitAddedEvent).flatMap(() => {
-              // If there are tagIds, create associations for each tag
-              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-              if (tagIds && tagIds.length > 0) {
-                return Effect.all(() =>
-                  tagIds.map((tagId) => {
-                    const unitTagId = crypto.randomUUID();
-                    const unitTagEventId = crypto.randomUUID();
+            return events.append("unitTags", unitTagEvent);
+          }),
+        );
+      }
 
-                    const unitTagEvent = UnitTagCreatedEvent.from({
-                      id: unitTagEventId,
-                      streamId: unitTagId,
-                      payload: {
-                        unitId,
-                        tagId,
-                        createdBy: currentUser.id,
-                      },
-                      version: 1,
-                    });
-
-                    return events.append("unitTags", unitTagEvent);
-                  }),
-                ).map(() => ({
-                  unitId,
-                }));
-              }
-
-              // If no tags, just return the unit ID
-              return Effect.ok({ unitId });
-            });
-          });
-      });
+      return { unitId };
+    });
   },
 });

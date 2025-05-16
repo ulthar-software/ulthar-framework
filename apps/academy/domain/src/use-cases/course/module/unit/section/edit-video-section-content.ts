@@ -19,6 +19,7 @@ export interface EditVideoSectionContentDependencies {
 
 export const EditVideoSectionContentInputModel = new Schema({
   sectionId: Field.uuid(),
+  title: Field.string(),
   videoUrl: Field.url(),
 });
 
@@ -37,7 +38,7 @@ export const EditVideoSectionContentUseCase = new UseCase({
   inputSchema: EditVideoSectionContentInputModel,
   effect: (
     { state, events, currentUser, crypto }: EditVideoSectionContentDependencies,
-    { sectionId, videoUrl }: EditVideoSectionContentInput,
+    { sectionId, videoUrl, title }: EditVideoSectionContentInput,
   ): Effect<
     EditVideoSectionContentOutput,
     UnitNotFoundError | UnexpectedError
@@ -53,7 +54,7 @@ export const EditVideoSectionContentUseCase = new UseCase({
             id: crypto.randomUUID(),
             streamId: sectionId,
             payload: {
-              title: section.title,
+              title,
               content: {
                 videoUrl,
               },

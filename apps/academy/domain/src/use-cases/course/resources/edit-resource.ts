@@ -1,4 +1,4 @@
-import type { Infer, UUID } from "@fabric/core";
+import type { Infer, UnexpectedError, UUID } from "@fabric/core";
 import { Effect, Field, Schema } from "@fabric/core";
 import { ResourceEditedEvent } from "../../../models/resource.js";
 import { AccessPolicy } from "../../../security/access-policy.js";
@@ -30,7 +30,7 @@ export interface EditResourceOutput {
   resourceId: UUID;
 }
 
-export const EditResource = new UseCase({
+export const EditResourceUseCase = new UseCase({
   auth: AccessPolicy.WithPermission(Permission.EDIT_COURSE),
   name: "editResource",
   type: "command",
@@ -38,7 +38,7 @@ export const EditResource = new UseCase({
   effect: (
     { state, events, crypto, currentUser }: EditResourceDependencies,
     payload: EditResourceInput,
-  ) => {
+  ): Effect<EditResourceOutput, ResourceNotFoundError | UnexpectedError> => {
     return Effect.fromGen(function* () {
       const { resourceId, title, description, url } = payload;
 

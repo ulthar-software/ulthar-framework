@@ -1,4 +1,5 @@
 import type { UUID } from "@fabric/core";
+import { faker } from "@fabric/testing";
 import { Permission } from "../../security/permission.js";
 import type { MockedDependencies } from "../../services/mocks/create-mock-services.js";
 import { CreateTagUseCase } from "../../use-cases/tag/create-tag.js";
@@ -27,7 +28,7 @@ export async function createTagMock(
       },
     },
     {
-      name: tag.name ?? "Test Tag",
+      name: tag.name ?? faker.word.words({ count: { min: 1, max: 3 } }),
     },
   ).runOrThrow();
 

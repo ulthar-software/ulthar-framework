@@ -1,3 +1,4 @@
+export * from "./add-tag-to-unit.js";
 export * from "./add-unit-to-module.js";
 export * from "./change-unit-title.js";
 export * from "./get-resources-by-unit-tags.js";

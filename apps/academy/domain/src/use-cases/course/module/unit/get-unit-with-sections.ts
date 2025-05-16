@@ -39,7 +39,7 @@ export type GetUnitWithSectionsInput = Infer<
 
 export interface GetUnitWithSectionsOutput {
   unit: Unit;
-  tags: { id: string; name: string }[];
+  tags: { id: UUID; name: string }[];
   sections: TaggedContentSection[];
 }
 
