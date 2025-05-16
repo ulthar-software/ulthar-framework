@@ -7,6 +7,7 @@ import {
   isLessThan,
   isLike,
   isNotEqualTo,
+  isNotIn,
   Model,
 } from "@fabric/core";
 import { describe, expect, test } from "@fabric/testing";
@@ -34,6 +35,18 @@ describe("SQL where clause from filter options", () => {
     const params = filterToParams(col, [], opts);
 
     expect(result).toEqual("WHERE `name` IN ($where_name_0,$where_name_1)");
+    expect(params).toEqual({ where_name_0: "John", where_name_1: "Jane" });
+  });
+
+  test("should create a where clause from options with NOT IN option", () => {
+    const opts = {
+      name: isNotIn(["John", "Jane"]),
+    };
+    const result = filterToSQL(opts);
+
+    const params = filterToParams(col, [], opts);
+
+    expect(result).toEqual("WHERE `name` NOT IN ($where_name_0,$where_name_1)");
     expect(params).toEqual({ where_name_0: "John", where_name_1: "Jane" });
   });
 

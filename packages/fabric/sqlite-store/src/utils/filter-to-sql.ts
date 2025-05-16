@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import type {
@@ -13,9 +13,11 @@ import type {
   SingleFilterOption,
 } from "@fabric/core";
 import {
+  exhaustiveCheck,
   FILTER_OPTION_OPERATOR_KEY,
   FILTER_OPTION_TYPE_KEY,
   FILTER_OPTION_VALUE_KEY,
+  isSpecialFilterOption,
 } from "@fabric/core";
 import type { JoinOptions } from "../../../core/dist/domain/value-store/queries/read/join-types.js";
 import { identifierToSQL } from "./identifier-to-sql.js";
@@ -88,25 +90,34 @@ function getWhereFromKeyValue(
     return `${identifierToSQL(key)} IS NULL`;
   }
 
-  if (typeof value === "object") {
-    if (value[FILTER_OPTION_TYPE_KEY] === "like") {
-      return `${identifierToSQL(key)} LIKE ${getWhereParamKey(key, opts)}`;
-    }
-
-    if (value[FILTER_OPTION_TYPE_KEY] === "in") {
-      return `${identifierToSQL(key)} IN (${value[FILTER_OPTION_VALUE_KEY].map(
-        (_v: any, i: number) =>
+  if (isSpecialFilterOption<any>(value)) {
+    switch (value[FILTER_OPTION_TYPE_KEY]) {
+      case "like":
+        return `${identifierToSQL(key)} LIKE ${getWhereParamKey(key, opts)}`;
+      case "in":
+        return `${identifierToSQL(key)} IN (${value[
+          FILTER_OPTION_VALUE_KEY
+        ].map((_v: any, i: number) =>
           getWhereParamKey(key, {
             postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
           }),
-      ).join(",")})`;
-    }
-
-    if (value[FILTER_OPTION_TYPE_KEY] === "comparison") {
-      return `${identifierToSQL(key)} ${value[FILTER_OPTION_OPERATOR_KEY]} ${getWhereParamKey(
-        key,
-        opts,
-      )}`;
+        ).join(",")})`;
+      case "not_in":
+        return `${identifierToSQL(key)} NOT IN (${value[
+          FILTER_OPTION_VALUE_KEY
+        ].map((_v: any, i: number) =>
+          getWhereParamKey(key, {
+            postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
+          }),
+        ).join(",")})`;
+      case "comparison":
+        return `${identifierToSQL(key)} ${value[FILTER_OPTION_OPERATOR_KEY]} ${getWhereParamKey(
+          key,
+          opts,
+        )}`;
+      default: {
+        exhaustiveCheck(value[FILTER_OPTION_TYPE_KEY]);
+      }
     }
   }
   return `${identifierToSQL(key)} = ${getWhereParamKey(key, opts)}`;
@@ -173,19 +184,34 @@ function getParamsForFilterKeyValue(
   value: FilterValue,
   opts: { postfix?: string } = {},
 ) {
-  if (typeof value === "object") {
-    if (value[FILTER_OPTION_TYPE_KEY] === "in") {
-      return value[FILTER_OPTION_VALUE_KEY].reduce(
-        (acc: Record<string, any>, _: any, i: number) => {
-          return {
-            ...acc,
-            [getWhereKeyForParamKey(key, {
-              postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
-            })]: value[FILTER_OPTION_VALUE_KEY][i],
-          };
-        },
-        {},
-      );
+  if (isSpecialFilterOption<any>(value)) {
+    switch (value[FILTER_OPTION_TYPE_KEY]) {
+      case "in":
+      case "not_in": {
+        return value[FILTER_OPTION_VALUE_KEY].reduce(
+          (acc: Record<string, any>, _: any, i: number) => {
+            return {
+              ...acc,
+              [getWhereKeyForParamKey(key, {
+                postfix: opts.postfix ? `${opts.postfix}_${i}` : `_${i}`,
+              })]: value[FILTER_OPTION_VALUE_KEY][i],
+            };
+          },
+          {},
+        );
+      }
+      case "like":
+      case "comparison": {
+        return {
+          [getWhereKeyForParamKey(key, opts)]: getParamValueFromOptionValue(
+            field,
+            value,
+          ),
+        };
+      }
+      default: {
+        exhaustiveCheck(value[FILTER_OPTION_TYPE_KEY]);
+      }
     }
   }
 
