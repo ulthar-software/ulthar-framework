@@ -3190,6 +3190,7 @@ __metadata:
     "@types/jsonwebtoken": "npm:^9"
     "@types/morgan": "npm:^1"
     "@types/nodemailer": "npm:^6.4.17"
+    "@ulthar/academy-domain": "workspace:^"
     bcrypt: "npm:^5.1.1"
     cors: "npm:^2.8.5"
     dotenv: "npm:^16.5.0"

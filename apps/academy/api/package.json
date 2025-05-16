@@ -19,6 +19,7 @@
     "@fabric/core": "workspace:^",
     "@fabric/sqlite-store": "workspace:^",
     "@types/nodemailer": "^6.4.17",
+    "@ulthar/academy-domain": "workspace:^",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
