@@ -50,44 +50,21 @@ export const ResourceCreatedEvent = new DomainEvent("ResourceCreated", {
 
 export type ResourceCreatedEvent = EventToType<typeof ResourceCreatedEvent>;
 
-export const ResourceTitleChangedEvent = new DomainEvent(
-  "ResourceTitleChanged",
-  {
-    title: Field.string(),
-    updatedBy: Field.uuid(),
-  },
-);
-
-export type ResourceTitleChangedEvent = EventToType<
-  typeof ResourceTitleChangedEvent
->;
-
-export const ResourceDescriptionChangedEvent = new DomainEvent(
-  "ResourceDescriptionChanged",
-  {
-    description: Field.string(),
-    updatedBy: Field.uuid(),
-  },
-);
-
-export type ResourceDescriptionChangedEvent = EventToType<
-  typeof ResourceDescriptionChangedEvent
->;
-
-export const ResourceUrlChangedEvent = new DomainEvent("ResourceUrlChanged", {
+export const ResourceEditedEvent = new DomainEvent("ResourceEdited", {
+  title: Field.string(),
+  description: Field.string(),
   url: Field.string(),
   updatedBy: Field.uuid(),
 });
+export type ResourceEditedEvent = EventToType<typeof ResourceEditedEvent>;
 
-export type ResourceUrlChangedEvent = EventToType<
-  typeof ResourceUrlChangedEvent
->;
+export const ResourceDeletedEvent = new DomainEvent("ResourceDeleted", {});
+export type ResourceDeletedEvent = EventToType<typeof ResourceDeletedEvent>;
 
 export const ResourceEvents = [
   ResourceCreatedEvent,
-  ResourceTitleChangedEvent,
-  ResourceDescriptionChangedEvent,
-  ResourceUrlChangedEvent,
+  ResourceEditedEvent,
+  ResourceDeletedEvent,
 ] as const;
 
 export const ResourceStream = new EventStream(
@@ -102,17 +79,14 @@ export const ResourceProjector = new AggregateProjector(
   {
     ResourceCreated: (event): Resource =>
       ResourceModel.from(event, event.payload),
-    ResourceTitleChanged: (event, reference): Resource =>
-      ResourceModel.update(reference, event, {
+    ResourceEdited: (event, resource): Resource => {
+      return ResourceModel.update(resource, event, {
+        courseId: resource.courseId,
         title: event.payload.title,
-      }),
-    ResourceDescriptionChanged: (event, reference): Resource =>
-      ResourceModel.update(reference, event, {
         description: event.payload.description,
-      }),
-    ResourceUrlChanged: (event, reference): Resource =>
-      ResourceModel.update(reference, event, {
         url: event.payload.url,
-      }),
+      });
+    },
+    ResourceDeleted: () => null,
   },
 );
