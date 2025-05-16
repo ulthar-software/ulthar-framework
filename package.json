@@ -45,9 +45,11 @@
     "apps:build": "yarn workspaces foreach -vvA --topological --include 'apps/**/*' run build",
     "apps:test": "yarn workspaces foreach -vvA --topological --include 'apps/**/*' run test",
     "libs:test": "yarn workspaces foreach -vvA --include 'packages/**/*' run test",
-    "libs:build": "yarn workspaces foreach -vvA --topological --include 'packages/**/*' run build",
+    "libs:build": "yarn packages/fabric/core build && yarn packages/fabric/sqlite-store build",
     "ci:test": "yarn workspaces foreach -vvA run test",
     "ci:build": "yarn workspaces foreach -vvA --topological run build",
-    "full:test": "cross-env RUN_ALL_TESTS=true yarn workspaces foreach -vvA run test"
+    "full:test": "cross-env RUN_ALL_TESTS=true yarn workspaces foreach -vvA run test",
+    "apps:academy:build": "yarn workspaces foreach -vvA --topological --include 'apps/academy/*' run build",
+    "academy:prepare": "yarn libs:build && yarn apps:academy:build"
   }
 }
