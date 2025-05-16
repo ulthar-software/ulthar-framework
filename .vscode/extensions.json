@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "bierner.github-markdown-preview",
     "bradlc.vscode-tailwindcss",
     "streetsidesoftware.code-spell-checker",
     "streetsidesoftware.code-spell-checker-spanish",
@@ -8,9 +7,9 @@
     "bourhaouta.tailwindshades",
     "austenc.tailwind-docs",
     "ms-vscode.atom-keybindings",
-    "usernamehw.errorlens",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "arcanis.vscode-zipfs"
+    "qwtel.sqlite-viewer",
+    "antiantisepticeye.vscode-color-picker"
   ]
 }
