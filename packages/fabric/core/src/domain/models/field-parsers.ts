@@ -53,6 +53,18 @@ export const fieldParsers: FieldParsers = {
   },
   BooleanField: (f, v) => {
     return parseOptionality(f, v, (v) => {
+      if (typeof v === "string") {
+        const parsedValue = parseAndSanitizeString(v);
+        if (parsedValue === "true") {
+          return Result.ok(true);
+        }
+        if (parsedValue === "false") {
+          return Result.ok(false);
+        }
+
+        return Result.failWith(new InvalidFieldTypeError());
+      }
+
       if (typeof v === "boolean") {
         return Result.ok(v);
       }
