@@ -2,7 +2,6 @@ import { useNavigate } from "react-router";
 import { clx } from "../../utils/styles/clx.ts";
 import { PageContainer } from "../academy/page-container.tsx";
 import { PlatformFooter } from "../academy/platform-footer.tsx";
-import { PlatformHeader } from "../academy/platform-header.tsx";
 import { Anchor } from "./anchor.tsx";
 import { Button } from "./button.tsx";
 import { Icon } from "./icon.tsx";
@@ -39,7 +38,6 @@ export function NotFoundPage({
 
   return (
     <PageContainer>
-      <PlatformHeader />
       <div
         className={clx(
           "flex flex-col items-center justify-center grow bg-dark px-4",

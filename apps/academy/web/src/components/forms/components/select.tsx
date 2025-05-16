@@ -37,7 +37,7 @@ export function Select({
       </label>
       <select
         className={clx(
-          "border rounded-md p-2 outline-none",
+          "border rounded-md p-2 outline-none bg-dark-alt",
           shouldShowError ? "border-red-700" : "border-gray-600",
         )}
         name={name}

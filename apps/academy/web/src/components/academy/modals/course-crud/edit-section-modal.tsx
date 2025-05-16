@@ -52,6 +52,7 @@ export function EditSectionModal({
     const result = await editVideoSectionCommand({
       sectionId: section.id,
       videoUrl: data.videoUrl,
+      title: data.title,
     });
 
     if (result.isError()) {

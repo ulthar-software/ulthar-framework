@@ -9,6 +9,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router";
 import { ContentSectionBlock } from "../../../components/academy/content-section.tsx";
 import { CourseSidebar } from "../../../components/academy/course-sidebar.tsx";
 import { AddSectionModal } from "../../../components/academy/modals/course-crud/add-section-modal.tsx";
+import { AddTagsToUnitModal } from "../../../components/academy/modals/course-crud/add-tags-to-unit-modal.tsx";
 import { EditUnitTitleModal } from "../../../components/academy/modals/course-crud/edit-unit-title-modal.tsx";
 import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageTitle } from "../../../components/academy/page-title.tsx";
@@ -37,8 +38,6 @@ export default function CourseView() {
   const canEditCourse = useAuthHasPerm("EDIT_COURSE");
   const canEnrollStudents = useAuthHasPerm("ENROLL_STUDENTS");
 
-  const unitId = searchParams.get("unitId");
-
   // State for controlling the visibility of the module sidebar
   const [showModulesSidebar, setShowModulesSidebar] = useState(false);
 
@@ -52,12 +51,14 @@ export default function CourseView() {
     },
   );
 
+  const paramsUnitId = getParamsUnitId(searchParams, id as UUID);
+
   // Fetch unit data
   const [isLoadingUnit, unitData, unitError, refreshUnit] = useQuery(
     "getUnitWithSections",
     {
       courseId: id as UUID,
-      unitId: unitId as UUID,
+      unitId: paramsUnitId,
     },
   );
 
@@ -68,8 +69,8 @@ export default function CourseView() {
 
   // Use the extracted function in a useMemo hook
   const nextAndPrevUnitIds = useMemo(
-    () => getPrevAndNextUnitIds(courseData, unitId as UUID),
-    [courseData, unitId],
+    () => getPrevAndNextUnitIds(courseData, unitData?.unit.id),
+    [courseData, unitData?.unit.id],
   );
 
   useEffect(() => {
@@ -136,6 +137,16 @@ export default function CourseView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseError, unitError]);
 
+  useEffect(() => {
+    if (courseData && unitData) {
+      localStorage.setItem(
+        getLastUnitKey(courseData.course.id),
+        unitData.unit.id,
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseData?.course.id, unitData?.unit.id]);
+
   // When we have the course data
   return (
     <PageContainer>
@@ -157,7 +168,7 @@ export default function CourseView() {
               setShowModulesSidebar(false);
             }}
             currentModuleId={unitData?.unit.moduleId}
-            currentUnitId={unitId as UUID}
+            currentUnitId={paramsUnitId}
             courseId={id as UUID}
           />
 
@@ -179,8 +190,12 @@ export default function CourseView() {
                 <Anchor
                   href={`/course/${id}/students`}
                   className="flex items-center transition-colors rounded bg-primary p-2"
+                  title=" Ver estudiantes inscriptos"
                 >
-                  Ver estudiantes inscriptos
+                  <Icon
+                    name="bxs-user-account"
+                    className="text-white text-xl"
+                  />
                 </Anchor>
               )}
             </div>
@@ -208,15 +223,14 @@ export default function CourseView() {
                   </div>
                 )}
                 <div className="flex justify-between items-center mb-4">
-                  <PageTitle>{unitData.unit.title}</PageTitle>
-
-                  {canEditCourse && (
-                    <div className="flex space-x-2">
+                  <PageTitle>
+                    {unitData.unit.title}
+                    {canEditCourse && (
                       <Button
                         onClick={() => {
                           const [close] = showModal(
                             <EditUnitTitleModal
-                              unitId={unitId as UUID}
+                              unitId={unitData.unit.id}
                               currentTitle={unitData.unit.title}
                               closeModal={() => {
                                 close();
@@ -225,16 +239,21 @@ export default function CourseView() {
                             />,
                           );
                         }}
-                        className="bg-primary text-white px-3 py-2 flex items-center"
+                        className="text-primary px-3 py-2 flex items-center"
+                        title="Editar Título de Unidad"
                       >
-                        <Icon name="bx-edit" className="mr-1" />
-                        Editar Título
+                        <Icon name="bx-edit" />
                       </Button>
+                    )}
+                  </PageTitle>
+
+                  {canEditCourse && (
+                    <div className="flex space-x-2">
                       <Button
                         onClick={() => {
                           const [close] = showModal(
                             <AddSectionModal
-                              unitId={unitId as UUID}
+                              unitId={unitData.unit.id}
                               courseId={id as UUID}
                               closeModal={() => {
                                 close();
@@ -243,10 +262,28 @@ export default function CourseView() {
                             />,
                           );
                         }}
-                        className="bg-primary text-white px-3 py-2 flex items-center"
+                        className="text-primary border px-3 py-2 flex items-center"
+                        title="Agregar Sección"
                       >
-                        <Icon name="bx-plus" className="mr-1" />
-                        Agregar Sección
+                        <Icon name="bx-plus" />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          const [close] = showModal(
+                            <AddTagsToUnitModal
+                              unitId={unitData.unit.id}
+                              unitTags={unitData.tags}
+                              closeModal={() => {
+                                close();
+                              }}
+                              refresh={refreshUnit}
+                            />,
+                          );
+                        }}
+                        className="text-primary border px-3 py-2 flex items-center"
+                        title="Editar Etiquetas"
+                      >
+                        <Icon name="bx-tag" />
                       </Button>
                     </div>
                   )}
@@ -354,7 +391,7 @@ function getAllUnitIds(courseData: GetCourseDetailsOutput | undefined) {
 
 function getPrevAndNextUnitIds(
   courseData: GetCourseDetailsOutput | undefined,
-  unitId: UUID | null,
+  unitId: UUID | undefined,
 ): PrevAndNextUnitIds {
   if (!courseData || !unitId) {
     return {
@@ -381,4 +418,25 @@ function getPrevAndNextUnitIds(
     prevUnitId,
     nextUnitId,
   };
+}
+
+function getParamsUnitId(
+  searchParams: URLSearchParams,
+  courseId: UUID,
+): UUID | undefined {
+  const paramsUnitId = searchParams.get("unitId");
+
+  if (!paramsUnitId) {
+    const lastUnitId = localStorage.getItem(getLastUnitKey(courseId));
+    if (!lastUnitId) {
+      return undefined;
+    }
+    return lastUnitId as UUID;
+  }
+
+  return paramsUnitId ? (paramsUnitId as UUID) : undefined;
+}
+
+function getLastUnitKey(courseId: UUID): string {
+  return `${courseId}-last_unit_id`;
 }

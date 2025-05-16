@@ -1,11 +1,15 @@
 import type { UUID } from "@fabric/core";
 import type { ResourceType } from "@ulthar/academy-domain";
 import { useState } from "react";
+import { useAuthHasPerm } from "../../utils/auth/use-auth-has-perm.ts";
+import { useModal } from "../../utils/modal/modal-hooks.tsx";
 import { useQuery } from "../../utils/rpc/use-query.ts";
 import { clx } from "../../utils/styles/clx.ts";
 import { Anchor } from "../ui/anchor.tsx";
+import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
 import { LoadingSpinner } from "../ui/loading-spinner.tsx";
+import { AddResourceModal } from "./modals/course-crud/add-resource-modal.tsx";
 
 export interface ResourceSidebarProps {
   courseId: UUID;
@@ -45,11 +49,20 @@ const resourceTypeDisplayMap: ResourceTypeDisplay = {
 
 export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
   const [activeTab, setActiveTab] = useState<ResourceType | "ALL">("CONCEPT");
+  const [getFullCourse, setGetFullCourse] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, resources, errors] = useQuery("getResourcesByUnitTags", {
-    courseId,
-    unitId,
-  });
+  const [isLoading, resources, errors, refresh] = useQuery(
+    "getResourcesByUnitTags",
+    {
+      courseId,
+      unitId,
+      getFullCourse,
+    },
+  );
+
+  const hasEditPermission = useAuthHasPerm("EDIT_COURSE");
+
+  const { showModal } = useModal();
 
   const hasResources = resources?.resources && resources.resources.length > 0;
 
@@ -73,7 +86,58 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
 
   return (
     <aside className="hidden w-96 bg-dark-alt p-4 shrink-0 h-full md:flex flex-col">
-      <h2 className="text-lg font-semibold text-primary mb-4">Recursos</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-primary">Recursos</h2>
+        <div className="flex items-center">
+          <label className="flex items-center mr-2 cursor-pointer select-none">
+            <span className="mr-2 text-xs text-gray-300">
+              {getFullCourse ? "Todo el curso" : "Solo esta unidad"}
+            </span>
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={getFullCourse}
+                onChange={() => {
+                  setGetFullCourse((v) => !v);
+                }}
+                className="sr-only"
+                id="toggle-full-course"
+              />
+              <div
+                className={clx(
+                  "block w-10 h-6 rounded-full transition-colors",
+                  getFullCourse ? "bg-primary" : "bg-gray-600",
+                )}
+              ></div>
+              <div
+                className={clx(
+                  "dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform",
+                  getFullCourse ? "translate-x-4" : "",
+                )}
+              ></div>
+            </div>
+          </label>
+          {hasEditPermission && (
+            <Button
+              className="bg-primary"
+              onClick={() => {
+                const [close] = showModal(
+                  <AddResourceModal
+                    courseId={courseId}
+                    refresh={refresh}
+                    closeModal={() => {
+                      close();
+                    }}
+                  />,
+                );
+              }}
+              title="Agregar recurso"
+            >
+              <Icon name="bx-plus" className="text-xl" />
+            </Button>
+          )}
+        </div>
+      </div>
 
       {isLoading && (
         <div className="flex-grow flex justify-center items-center">

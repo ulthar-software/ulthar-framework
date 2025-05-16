@@ -19,7 +19,7 @@ export function SectionCard({
   const hasEditPermission = useAuthHasPerm("EDIT_COURSE");
   const { showModal } = useModal();
   return (
-    <div className="pt-16 relative max-w-6xl w-full mx-auto">
+    <div className="relative max-w-6xl w-full mx-auto">
       {hasEditPermission && (
         <Button
           onClick={() => {
@@ -33,10 +33,10 @@ export function SectionCard({
               />,
             );
           }}
-          className="bg-primary text-white px-3 py-2 flex items-center absolute top-2 right-2 rounded-md hover:bg-primary-dark"
+          title="Editar Sección"
+          className="text-primary px-3 py-2 flex items-center absolute top-2 right-2 rounded-md hover:bg-primary-dark"
         >
-          <Icon name="bx-edit" className="mr-1" />
-          Editar Sección
+          <Icon name="bx-edit" />
         </Button>
       )}
       {children}

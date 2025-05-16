@@ -94,6 +94,14 @@ export default function CourseStudentsPage() {
       <PageContainer>
         <PlatformHeader title={`Estudiantes - ${courseData.course.title}`} />
         <PageContent>
+          <Button
+            title="volver"
+            onClick={() => navigate(-1)}
+            className="mb-4 text-primary"
+          >
+            <Icon name="bx-arrow-back" className="mr-2" />
+            Volver
+          </Button>
           <div className="w-full mb-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
             <div className="relative w-full sm:w-64">
               <input
@@ -202,7 +210,7 @@ export default function CourseStudentsPage() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={2} className="p-4 text-center">
+                        <td colSpan={3} className="p-4 text-center">
                           No se encontraron invitaciones
                         </td>
                       </tr>

@@ -1,4 +1,6 @@
+import type { Infer } from "@fabric/core";
 import { Field, Schema } from "@fabric/core";
+import { ResourceTypeValues } from "@ulthar/academy-domain";
 
 export const unitSchema = new Schema({
   title: Field.string({ minLength: 3 }),
@@ -66,3 +68,23 @@ export const quizSectionSchema = new Schema({
   title: Field.string({ minLength: 3 }),
   content: Field.string(),
 });
+
+export const addResourceToCourseSchema = new Schema({
+  title: Field.string(),
+  description: Field.string(),
+  url: Field.string(),
+  type: Field.enum({
+    values: ResourceTypeValues,
+  }),
+  tagIds: Field.array(Field.uuid(), {
+    isOptional: true,
+  }),
+});
+export type AddResourceToCoursePayload = Infer<
+  typeof addResourceToCourseSchema
+>;
+
+export const addTagsSchema = new Schema({
+  tagIds: Field.array(Field.uuid()),
+});
+export type AddTagsPayload = Infer<typeof addTagsSchema>;

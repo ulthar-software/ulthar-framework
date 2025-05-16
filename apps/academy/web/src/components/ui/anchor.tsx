@@ -6,6 +6,7 @@ export interface AnchorProps extends PropsWithChildren {
   className?: string;
   external?: boolean;
   onClick?: () => void;
+  title?: string;
 }
 
 /**
@@ -18,6 +19,7 @@ export function Anchor({
   onClick,
   className = "",
   external = false,
+  title = "",
 }: AnchorProps) {
   if (external) {
     return (
@@ -27,6 +29,7 @@ export function Anchor({
         target="_blank"
         rel="noopener noreferrer"
         onClick={onClick}
+        title={title}
       >
         {children}
       </Link>
