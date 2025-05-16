@@ -202,6 +202,8 @@ function filterBySpecialFilter<T>(
       return typeof value === "string" && filterLike(value, filter);
     case "in":
       return filter[FILTER_OPTION_VALUE_KEY].includes(value);
+    case "not_in":
+      return !filter[FILTER_OPTION_VALUE_KEY].includes(value);
     case "comparison":
       return filterComparison(value, filter);
     default:

@@ -25,7 +25,11 @@ export function isMultiFilter(
 export function isSpecialFilterOption<T>(
   filter: FilterValue,
 ): filter is SpecialFilterOption<T> {
-  return FILTER_OPTION_TYPE_KEY in filter;
+  return (
+    typeof filter === "object" &&
+    filter !== null &&
+    FILTER_OPTION_TYPE_KEY in filter
+  );
 }
 
 export type SpecialFilterOption<T> =
@@ -45,7 +49,7 @@ export type LikeFilterOption<T> = T extends string
   : never;
 
 export interface InFilterOption<T> {
-  [FILTER_OPTION_TYPE_KEY]: "in";
+  [FILTER_OPTION_TYPE_KEY]: "in" | "not_in";
   [FILTER_OPTION_VALUE_KEY]: T[];
 }
 
@@ -107,6 +111,13 @@ export function isLike(value: string): LikeFilterOption<string> {
 export function isIn<T>(values: T[]): InFilterOption<T> {
   return {
     [FILTER_OPTION_TYPE_KEY]: "in",
+    [FILTER_OPTION_VALUE_KEY]: values,
+  };
+}
+
+export function isNotIn<T>(values: T[]): InFilterOption<T> {
+  return {
+    [FILTER_OPTION_TYPE_KEY]: "not_in",
     [FILTER_OPTION_VALUE_KEY]: values,
   };
 }
