@@ -29,7 +29,7 @@ export const TypeWithTagsValues = Object.values(TypesWithTags);
 
 export const GetTagsInputModel = new Schema({
   filter: Field.string({ isOptional: true }),
-  limit: Field.integer({ isOptional: true, minValue: 1, maxValue: 100 }),
+  limit: Field.integer({ isOptional: true }),
   idToFilter: Field.uuid({
     isOptional: true,
   }),

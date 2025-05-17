@@ -119,7 +119,7 @@ describe("Get Tags Use Case", () => {
           permissions: [Permission.MANAGE_TAGS],
         },
       },
-      { limit: -1 },
+      { limit: "banana" },
     ).run();
 
     // Assert
@@ -169,5 +169,23 @@ describe("Get Tags Use Case", () => {
     );
 
     expect(tags.length).toEqual(10); // default limit
+  });
+
+  test("Given a negative limit, it should return all tags", async () => {
+    // Act
+    const result = await GetTagsUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.MANAGE_TAGS],
+        },
+      },
+      { limit: -1 },
+    ).run();
+
+    // Assert
+    const tags = result.unwrapOrThrow().tags;
+    expect(tags.length).toEqual(21); // default limit
   });
 });
