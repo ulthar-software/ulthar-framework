@@ -3,7 +3,13 @@ import { ResourceTypeValues } from "@ulthar/academy-domain";
 import { useRPC } from "../../../../utils/rpc/use-rpc.ts";
 import { showErrorToast } from "../../../../utils/toasts/show-error-toast.ts";
 import { TagSelect } from "../../../forms/components/tag-select.tsx";
-import { Form, FormButton, Input, Select } from "../../../forms/index";
+import {
+  Form,
+  FormButton,
+  Input,
+  Select,
+  TextArea,
+} from "../../../forms/index";
 import { Button } from "../../../ui/button.tsx";
 import type { AddResourceToCoursePayload } from "./schemas.ts";
 import { addResourceToCourseSchema } from "./schemas.ts";
@@ -50,7 +56,7 @@ export function AddResourceModal({
         className="flex flex-col gap-4"
       >
         <Input name="title" type="text" label="Título del recurso" />
-        <Input name="description" type="text" label="Descripción del recurso" />
+        <TextArea name="description" label="Descripción del recurso" />
         <Input name="url" type="text" label="URL del recurso" />
         <Select
           name="type"

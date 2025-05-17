@@ -88,3 +88,26 @@ export const addTagsSchema = new Schema({
   tagIds: Field.array(Field.uuid()),
 });
 export type AddTagsPayload = Infer<typeof addTagsSchema>;
+
+export const editResourceSchema = new Schema({
+  title: Field.string(),
+  description: Field.string(),
+  url: Field.string(),
+});
+export type EditResourcePayload = Infer<typeof editResourceSchema>;
+
+export const bulkResourceAddSchema = new Schema({
+  json: Field.string({}),
+});
+export type BulkResourceAddPayload = Infer<typeof bulkResourceAddSchema>;
+
+export const bulkResourceSchema = new Schema({
+  title: Field.string(),
+  description: Field.string(),
+  url: Field.string(),
+  tags: Field.array(Field.string()),
+  type: Field.enum({
+    values: ResourceTypeValues,
+  }),
+});
+export type BulkResource = Infer<typeof bulkResourceSchema>;

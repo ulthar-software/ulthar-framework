@@ -1,6 +1,9 @@
 import type { UUID } from "@fabric/core";
 import type { ResourceType } from "@ulthar/academy-domain";
 import { useState } from "react";
+import { MarkdownHooks } from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
 import { useAuthHasPerm } from "../../utils/auth/use-auth-has-perm.ts";
 import { useModal } from "../../utils/modal/modal-hooks.tsx";
 import { useQuery } from "../../utils/rpc/use-query.ts";
@@ -10,6 +13,8 @@ import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
 import { LoadingSpinner } from "../ui/loading-spinner.tsx";
 import { AddResourceModal } from "./modals/course-crud/add-resource-modal.tsx";
+import { BulkAddResourceModal } from "./modals/course-crud/bulk-add-resource-modal.tsx";
+import { EditResourceModal } from "./modals/course-crud/edit-resource-modal.tsx";
 
 export interface ResourceSidebarProps {
   courseId: UUID;
@@ -44,6 +49,18 @@ const resourceTypeDisplayMap: ResourceTypeDisplay = {
   DOCUMENTATION: {
     label: "Documentación",
     className: "bg-amber-900 text-white",
+  },
+  BLOG: {
+    label: "Blogs",
+    className: "bg-gray-900 text-white",
+  },
+  TUTORIAL: {
+    label: "Tutoriales",
+    className: "bg-teal-900 text-white",
+  },
+  TOOL: {
+    label: "Herramientas",
+    className: "bg-indigo-900 text-white",
   },
 };
 
@@ -119,7 +136,7 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
           </label>
           {hasEditPermission && (
             <Button
-              className="bg-primary"
+              className="text-primary"
               onClick={() => {
                 const [close] = showModal(
                   <AddResourceModal
@@ -134,6 +151,25 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
               title="Agregar recurso"
             >
               <Icon name="bx-plus" className="text-xl" />
+            </Button>
+          )}
+          {hasEditPermission && (
+            <Button
+              className="text-primary"
+              onClick={() => {
+                const [close] = showModal(
+                  <BulkAddResourceModal
+                    courseId={courseId}
+                    refresh={refresh}
+                    closeModal={() => {
+                      close();
+                    }}
+                  />,
+                );
+              }}
+              title="Agregar recurso"
+            >
+              <Icon name="bx-add-to-queue" className="text-xl" />
             </Button>
           )}
         </div>
@@ -215,27 +251,53 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
                       <h3 className="font-medium text-white">
                         {resource.title}
                       </h3>
-                      {activeTab === "ALL" && (
-                        <span
-                          className={clx(
-                            "text-xs px-2 py-1 rounded",
-                            resourceTypeDisplayMap[resource.type].className,
-                          )}
-                        >
-                          {resourceTypeDisplayMap[resource.type].label}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {hasEditPermission && (
+                          <Button
+                            onClick={() => {
+                              const [close] = showModal(
+                                <EditResourceModal
+                                  resource={resource}
+                                  closeModal={() => {
+                                    close();
+                                  }}
+                                  refresh={refresh}
+                                />,
+                              );
+                            }}
+                            className="text-primary px-3 py-2 flex items-center"
+                            title="Editar Título de Unidad"
+                          >
+                            <Icon name="bx-edit" />
+                          </Button>
+                        )}
+                        {activeTab === "ALL" && (
+                          <span
+                            className={clx(
+                              "text-xs px-2 py-1 rounded",
+                              resourceTypeDisplayMap[resource.type].className,
+                            )}
+                          >
+                            {resourceTypeDisplayMap[resource.type].label}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-300 mb-2">
-                      {resource.description}
-                    </p>
+                    <div className="text-sm text-gray-300 mb-2">
+                      <MarkdownHooks
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeHighlight]}
+                      >
+                        {resource.description}
+                      </MarkdownHooks>
+                    </div>
                     <div className="mt-2">
                       <Anchor
                         href={resource.url}
                         className="text-primary hover:text-primary-light text-sm"
                         external
                       >
-                        Ver recurso{" "}
+                        Ver recurso
                         <Icon name="bx-link-external" className="inline" />
                       </Anchor>
                     </div>

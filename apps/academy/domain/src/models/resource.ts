@@ -14,6 +14,9 @@ export const ResourceType = {
   VIDEO: "VIDEO",
   CONCEPT: "CONCEPT",
   DOCUMENTATION: "DOCUMENTATION",
+  BLOG: "BLOG",
+  TUTORIAL: "TUTORIAL",
+  TOOL: "TOOL",
 } as const;
 
 export const ResourceTypeValues = Object.values(ResourceType);
