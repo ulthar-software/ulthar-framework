@@ -185,7 +185,7 @@ export function AddSectionModal({
           className="flex flex-col gap-4"
         >
           <Input name="title" type="text" label="Título de la sección" />
-          <TextArea name="content" label="Contenido" />
+          <TextArea name="text" label="Contenido" />
 
           <div className="flex justify-end gap-2 mt-2">
             <Button onClick={closeModal} className="bg-gray-500 text-white">
