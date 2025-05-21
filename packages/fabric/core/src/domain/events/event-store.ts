@@ -54,7 +54,7 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
         if (!subs) {
           return Effect.ok();
         }
-        return Effect.all(() =>
+        return Effect.allInSequence(() =>
           subs.map((subscription) => subscription.subscriber(event)),
         ).discardValue();
       })
@@ -96,7 +96,7 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
         },
       })
       .flatMap((events) => {
-        return Effect.all(() =>
+        return Effect.allInSequence(() =>
           events.map((event) => this.replayEvent(event)),
         ).discardValue();
       });
@@ -109,10 +109,12 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
     const subscriptions = this.eventSubscriptions[eventName];
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (subscriptions) {
-      return Effect.all(() =>
+      return Effect.allInSequence(() =>
         subscriptions.map((subscription) => {
           if (subscription.opts.callOnReplay) {
-            return subscription.subscriber(event);
+            return subscription.subscriber(event).catchAll((e) => {
+              console.error(e);
+            });
           }
           return Effect.ok();
         }),
