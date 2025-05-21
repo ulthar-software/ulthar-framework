@@ -146,7 +146,7 @@ export const fieldParsers: FieldParsers = {
   },
   EmailField: function (f, v) {
     return parseOptionality(f, v, (v) => {
-      const parsedValue = parseAndSanitizeString(v);
+      const parsedValue = parseAndSanitizeString(v)?.toLowerCase();
       if (parsedValue === undefined || !isEmail(parsedValue)) {
         return Result.failWith(new InvalidFieldTypeError());
       }

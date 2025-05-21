@@ -8,6 +8,18 @@ import {
 import { Field } from "./fields.js";
 
 describe("FieldParsers", () => {
+  describe("EmailField", () => {
+    it("should parse a valid email", () => {
+      const field = Field.email();
+      const result = fieldParsers.EmailField(field, "test@example.com");
+      expect(result.unwrapOrThrow()).toBe("test@example.com");
+    });
+    it("should parse a valid email", () => {
+      const field = Field.email();
+      const result = fieldParsers.EmailField(field, "tESt@example.com");
+      expect(result.unwrapOrThrow()).toBe("test@example.com");
+    });
+  });
   describe("EmbeddedField", () => {
     it("should return a valid result", () => {
       const field = Field.embedded(
