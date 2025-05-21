@@ -1,6 +1,7 @@
 import type {
   DomainEvent,
   Email,
+  Environment,
   EventToType,
   UnexpectedError,
 } from "@fabric/core";
@@ -22,7 +23,7 @@ import type {
   EventNamesWithEmails,
   EventsWithEmail,
 } from "../email-templates.js";
-import type { ApiEnvironment } from "../environment.js";
+import type { ApiEnvironment, EnvSchema } from "../environment.js";
 
 export interface EmailServiceDeps {
   env: ApiEnvironment;
@@ -193,7 +194,10 @@ export function generateInviteEmail(
 }
 
 export function sendMail(
-  { env, emailTransport }: EmailServiceDeps,
+  { env, emailTransport }: {
+    env: Environment<EnvSchema>,
+    emailTransport: Transporter,
+  },
   { recipient, subject, body }: SendMailOptions,
 ): Effect<void, EmailSendError> {
   return Effect.tryFrom(

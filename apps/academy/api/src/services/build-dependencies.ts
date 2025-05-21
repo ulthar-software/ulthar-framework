@@ -52,14 +52,7 @@ export function initializeEnvironment(): Environment<EnvSchema> {
 }
 
 export function initializeEmails(deps: AppDependencies) {
-  const emailTransport = createTransport({
-    host: deps.env.get("EMAIL_HOST"),
-    port: deps.env.get("EMAIL_PORT"),
-    auth: {
-      user: deps.env.get("EMAIL_USER"),
-      pass: deps.env.get("EMAIL_PASSWORD"),
-    },
-  });
+  const emailTransport = createEmailTransport(deps);
 
   return new EmailQueueService({
     env: deps.env,
@@ -67,5 +60,16 @@ export function initializeEmails(deps: AppDependencies) {
     state: deps.state,
     templates: EmailTemplates,
     emailTransport,
+  });
+}
+
+export function createEmailTransport({env}: {env: Environment<EnvSchema>}) {
+  return createTransport({
+    host: env.get("EMAIL_HOST"),
+    port: env.get("EMAIL_PORT"),
+    auth: {
+      user: env.get("EMAIL_USER"),
+      pass: env.get("EMAIL_PASSWORD"),
+    },
   });
 }
