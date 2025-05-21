@@ -49,7 +49,8 @@ export function createHTTPEndpoints<TDeps extends AppDependencies>(
         return;
       } catch (error) {
         console.error(error);
-        console.log(req.body, req.query);
+        console.error("Body: ", req.body);
+        console.error("Query: ", req.query);
         if (error instanceof TaggedError) {
           if (error instanceof UnexpectedError) {
             res.status(500);
