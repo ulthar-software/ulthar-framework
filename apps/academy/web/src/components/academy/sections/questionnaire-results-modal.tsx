@@ -1,8 +1,6 @@
 import type { QuestionnaireSectionContent } from "@ulthar/academy-domain";
-import { MarkdownHooks } from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
-import remarkGfm from "remark-gfm";
 import { Button } from "../../ui/button.tsx";
+import { MarkdownContent } from "../../ui/markdown-content.tsx";
 
 interface QuestionnaireResultsModalProps {
   questions: QuestionnaireSectionContent["questions"];
@@ -15,15 +13,6 @@ export function QuestionnaireResultsModal({
   answers,
   closeModal,
 }: QuestionnaireResultsModalProps) {
-  const renderMarkdown = (content: string) => (
-    <MarkdownHooks
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeHighlight]}
-    >
-      {content}
-    </MarkdownHooks>
-  );
-
   return (
     <div className="bg-gray-800 rounded-md p-6 max-w-3xl w-11/12 max-h-[80vh] overflow-y-auto">
       <div className="space-y-6">
@@ -33,9 +22,7 @@ export function QuestionnaireResultsModal({
             <div key={questionIndex} className="p-4 bg-gray-800 rounded-md">
               <div className="mb-3 font-semibold">
                 <span className="mr-2">Pregunta {questionIndex + 1}:</span>
-                <span className="markdown-content">
-                  {renderMarkdown(question.questionText)}
-                </span>
+                <MarkdownContent content={question.questionText} />
               </div>
               <div className="space-y-2 ml-4">
                 {question.options.map((option, optionIndex) => {
@@ -57,9 +44,7 @@ export function QuestionnaireResultsModal({
                         isSelected ? selectedColor : correctHighlight
                       } rounded-md ${option.isCorrect ? "font-medium" : ""}`}
                     >
-                      <span className="markdown-content">
-                        {renderMarkdown(option.text)}
-                      </span>
+                      <MarkdownContent content={option.text} />
                       {option.isCorrect && (
                         <span className="ml-auto text-green-400">
                           ✓ Correcta

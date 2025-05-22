@@ -1,9 +1,6 @@
 import type { UUID } from "@fabric/core";
 import type { ResourceType } from "@ulthar/academy-domain";
 import { useState } from "react";
-import { MarkdownHooks } from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
-import remarkGfm from "remark-gfm";
 import { useAuthHasPerm } from "../../utils/auth/use-auth-has-perm.ts";
 import { useModal } from "../../utils/modal/modal-hooks.tsx";
 import { useQuery } from "../../utils/rpc/use-query.ts";
@@ -12,6 +9,7 @@ import { Anchor } from "../ui/anchor.tsx";
 import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
 import { LoadingSpinner } from "../ui/loading-spinner.tsx";
+import { MarkdownContent } from "../ui/markdown-content.tsx";
 import { AddResourceModal } from "./modals/course-crud/add-resource-modal.tsx";
 import { BulkAddResourceModal } from "./modals/course-crud/bulk-add-resource-modal.tsx";
 import { EditResourceModal } from "./modals/course-crud/edit-resource-modal.tsx";
@@ -284,12 +282,7 @@ export function ResourceSidebar({ courseId, unitId }: ResourceSidebarProps) {
                       </div>
                     </div>
                     <div className="text-sm text-gray-300 mb-2">
-                      <MarkdownHooks
-                        remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeHighlight]}
-                      >
-                        {resource.description}
-                      </MarkdownHooks>
+                      <MarkdownContent content={resource.description} />
                     </div>
                     <div className="mt-2">
                       <Anchor

@@ -131,11 +131,10 @@ body {
 }
 
 .markdown-content code {
-  background-color: theme("colors.gray.800");
+  background-color: theme("colors.gray.900");
   padding: 0.2em 0.4em;
   border-radius: 3px;
   font-family: monospace;
-  font-size: 0.9em;
 }
 
 .markdown-content pre {
@@ -144,6 +143,7 @@ body {
   border-radius: 4px;
   overflow: auto;
   margin-bottom: 1.25rem;
+  font-size: 1.2em;
 }
 
 .markdown-content pre code {

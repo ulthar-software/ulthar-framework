@@ -1,9 +1,7 @@
 import type { QuestionnaireSectionContent } from "@ulthar/academy-domain";
 import { useState } from "react";
-import { MarkdownHooks } from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
-import remarkGfm from "remark-gfm";
 import { Button } from "../../ui/button.tsx";
+import { MarkdownContent } from "../../ui/markdown-content.tsx";
 
 interface QuestionnaireModalProps {
   questions: QuestionnaireSectionContent["questions"];
@@ -32,15 +30,6 @@ export function QuestionnaireModal({
     onSubmit(answers);
   };
 
-  const renderMarkdown = (content: string) => (
-    <MarkdownHooks
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeHighlight]}
-    >
-      {content}
-    </MarkdownHooks>
-  );
-
   return (
     <div className="bg-gray-800 rounded-md p-6 max-w-3xl w-11/12 max-h-[80vh] overflow-y-auto">
       <div className="space-y-6">
@@ -49,7 +38,7 @@ export function QuestionnaireModal({
             <div className="mb-3 font-semibold">
               <span className="mr-2">Pregunta {questionIndex + 1}:</span>
               <span className="markdown-content">
-                {renderMarkdown(question.questionText)}
+                <MarkdownContent content={question.questionText} />
               </span>
             </div>
             <div className="space-y-2 ml-4">
@@ -69,7 +58,7 @@ export function QuestionnaireModal({
                     htmlFor={`q${questionIndex}-o${optionIndex}`}
                     className="markdown-content cursor-pointer"
                   >
-                    {renderMarkdown(option.text)}
+                    <MarkdownContent content={option.text} />
                   </label>
                 </div>
               ))}

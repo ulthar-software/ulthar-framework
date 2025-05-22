@@ -10,7 +10,6 @@ import { useRPC } from "../../../utils/rpc/use-rpc.ts";
 import { showErrorToast } from "../../../utils/toasts/show-error-toast.ts";
 import { Button } from "../../ui/button.tsx";
 import { LoadingSpinner } from "../../ui/loading-spinner.tsx";
-import "./dark.css";
 import { QuestionnaireModal } from "./questionnaire-modal.tsx";
 import { QuestionnaireResultsModal } from "./questionnaire-results-modal.tsx";
 import { SectionCard } from "./section-card.tsx";

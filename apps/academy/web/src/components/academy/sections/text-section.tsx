@@ -1,8 +1,5 @@
 import type { TaggedTextSection } from "@ulthar/academy-domain";
-import { MarkdownHooks } from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
-import remarkGfm from "remark-gfm";
-import "./dark.css";
+import { MarkdownContent } from "../../ui/markdown-content.tsx";
 import { SectionCard } from "./section-card.tsx";
 
 export interface TextContentSectionProps {
@@ -18,14 +15,7 @@ export function TextContentSectionBlock({
 
   return (
     <SectionCard section={section} refreshUnit={refreshUnit}>
-      <div className="markdown-content text-gray-200">
-        <MarkdownHooks
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight]}
-        >
-          {text}
-        </MarkdownHooks>
-      </div>
+      <MarkdownContent content={text} />
     </SectionCard>
   );
 }
