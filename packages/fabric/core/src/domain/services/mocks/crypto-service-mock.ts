@@ -24,4 +24,8 @@ export class CryptoServiceMock implements CryptoService {
       throw new InvalidPasswordError();
     });
   }
+
+  generateRandomToken(size: number): string {
+    return crypto.randomBytes(size).toString("hex");
+  }
 }

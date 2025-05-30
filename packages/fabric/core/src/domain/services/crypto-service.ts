@@ -10,6 +10,7 @@ export interface CryptoService {
     hash: string,
   ): Effect<void, InvalidPasswordError | UnexpectedError>;
   randomUUID(): UUID;
+  generateRandomToken(size: number): string;
 }
 
 export class InvalidPasswordError extends TaggedError<"InvalidPasswordError"> {
