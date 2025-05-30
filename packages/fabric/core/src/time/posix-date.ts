@@ -14,6 +14,47 @@ export class PosixDate {
   public getDateString(): string {
     return new Date(this.timestamp).toISOString().split("T")[0];
   }
+
+  public getIsoString(): string {
+    return new Date(this.timestamp).toISOString();
+  }
+
+  public static now(): PosixDate {
+    return new PosixDate();
+  }
+
+  public static fromIsoString(dateString: string): PosixDate {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      throw new Error(`Invalid date string: ${dateString}`);
+    }
+    return new PosixDate(date.getTime());
+  }
+
+  public add(milliseconds: number): PosixDate {
+    return new PosixDate(this.timestamp + milliseconds);
+  }
+
+  public isBefore(other: PosixDate): boolean {
+    return this.timestamp < other.timestamp;
+  }
+  public isAfter(other: PosixDate): boolean {
+    return this.timestamp > other.timestamp;
+  }
+
+  public formatDate(
+    lang: Intl.LocalesArgument,
+    opts?: Intl.DateTimeFormatOptions,
+  ): string {
+    return new Date(this.timestamp).toLocaleDateString(lang, opts);
+  }
+
+  public formatTime(
+    lang: Intl.LocalesArgument,
+    opts?: Intl.DateTimeFormatOptions,
+  ): string {
+    return new Date(this.timestamp).toLocaleTimeString(lang, opts);
+  }
 }
 
 export interface TimeZone extends TaggedVariant<"TimeZone"> {
