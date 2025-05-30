@@ -1,8 +1,10 @@
+import type { UnionToIntersection } from "@fabric/core";
 import {
   AlreadyExistsError,
   UnexpectedError,
   type ClassConstructor,
 } from "@fabric/core";
+import type { ScheduledUseCaseDependencies } from "./schedules.js";
 import {
   ExpiredTokenError,
   InvalidTokenError,
@@ -62,7 +64,10 @@ import {
   UserAlreadyInvitedError,
   UserNotFoundError,
 } from "./use-cases/index.js";
-import type { UseCaseErrorValue } from "./utils/use-case.js";
+import type {
+  UseCaseDependencies,
+  UseCaseErrorValue,
+} from "./utils/use-case.js";
 import { UnauthorizedError } from "./utils/use-case.js";
 
 export const DomainUseCases = [
@@ -141,3 +146,10 @@ export const DomainUseCaseErrorsMap = {
   ClassConstructor<DomainUseCaseErrors>
 >;
 export type DomainUseCaseErrorsMap = typeof DomainUseCaseErrorsMap;
+
+export type DomainDependencies = Omit<
+  UnionToIntersection<
+    UseCaseDependencies<DomainUseCases[number]> | ScheduledUseCaseDependencies
+  >,
+  "currentUser"
+>;

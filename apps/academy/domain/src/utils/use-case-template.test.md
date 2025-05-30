@@ -1,9 +1,6 @@
+```ts
 import type { UUID } from "@fabric/core";
-import { beforeAll, describe, expect, test } from "@fabric/testing";
-import { createServiceMocks, type MockedDependencies } from "../mocks.js";
-import { createCourseMock } from "../models/mocks/create-course-mock.js";
-import { createUserMock } from "../models/mocks/create-user-mock.js";
-import type { User } from "../models/user.js";
+import { beforeEach, describe, expect, test } from "@fabric/testing";
 
 describe("Template Use Case", () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -11,7 +8,7 @@ describe("Template Use Case", () => {
   let services: MockedDependencies;
   let admin: User;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     services = await createServiceMocks();
     admin = await createUserMock(services, { role: "ADMIN" });
     courseId = await createCourseMock(services, admin.id);
@@ -21,3 +18,4 @@ describe("Template Use Case", () => {
     expect(true).toBe(true);
   });
 });
+```

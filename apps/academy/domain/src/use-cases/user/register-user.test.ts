@@ -24,7 +24,7 @@ describe("Register User Use Case", () => {
 
     // Create a valid invitation that can be used for tests
     validInviteEmail = "newuser@example.com";
-    validInviteCode = services.crypto.generateInviteCode();
+    validInviteCode = services.crypto.generateRandomToken(4);
     validInviteId = services.crypto.randomUUID();
 
     const inviteEvent = UserInvitedEvent.from({
@@ -147,7 +147,7 @@ describe("Register User Use Case", () => {
     });
 
     // Create a valid invitation for the already registered email
-    const inviteCode = services.crypto.generateInviteCode();
+    const inviteCode = services.crypto.generateRandomToken(4);
     const inviteId = services.crypto.randomUUID();
 
     const inviteEvent = UserInvitedEvent.from({
@@ -187,7 +187,7 @@ describe("Register User Use Case", () => {
   test("Should register users with different roles based on invitation", async () => {
     // Create a teacher invitation
     const teacherEmail = "teacher@example.com";
-    const teacherInviteCode = services.crypto.generateInviteCode();
+    const teacherInviteCode = services.crypto.generateRandomToken(4);
     const teacherInviteId = services.crypto.randomUUID();
 
     const teacherInviteEvent = UserInvitedEvent.from({

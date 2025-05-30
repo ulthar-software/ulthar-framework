@@ -8,6 +8,13 @@ export interface UserAccess {
   permissions: Permission[];
 }
 
+export const SystemId = "SYSTEM" as UUID;
+
+export const SystemAccess: UserAccess = {
+  id: SystemId,
+  permissions: ["SYSTEM"],
+};
+
 export interface AuthService {
   /**
    * Generates an access token for the given user.

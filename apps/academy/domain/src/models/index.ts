@@ -23,6 +23,11 @@ import {
 } from "./sections/index.js";
 
 import {
+  PasswordResetRequestModel,
+  PasswordResetRequestProjector,
+  PasswordResetRequestStream,
+} from "./password-reset.js";
+import {
   QuestionnaireResponseModel,
   QuestionnaireResponseProjector,
   QuestionnaireResponseStream,
@@ -51,6 +56,7 @@ export * from "./course.js";
 export * from "./email-queue.js";
 export * from "./enrollment.js";
 export * from "./module.js";
+export * from "./password-reset.js";
 export * from "./resource-tag.js";
 export * from "./resource.js";
 export * from "./sections/index.js";
@@ -77,6 +83,7 @@ export const DomainModels = [
   UnitTagModel,
   QuestionnaireResponseModel,
   EmailQueueModel,
+  PasswordResetRequestModel,
 ] as const;
 
 export const DomainStreams = [
@@ -95,6 +102,7 @@ export const DomainStreams = [
   UnitTagStream,
   QuestionnaireResponseStream,
   EmailQueueStream,
+  PasswordResetRequestStream,
 ] as const;
 
 export type DomainEvents = (typeof DomainStreams)[number]["events"][number];
@@ -115,4 +123,5 @@ export const DomainProjectors = [
   UnitTagProjector,
   QuestionnaireResponseProjector,
   EmailQueueProjector,
+  PasswordResetRequestProjector,
 ] as const;

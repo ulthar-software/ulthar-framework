@@ -1,10 +1,9 @@
-import type { UnexpectedError } from "@fabric/core";
+import type { CryptoService, UnexpectedError } from "@fabric/core";
 import { Effect, Field, Schema, type Infer } from "@fabric/core";
 import { UnitTitleChangedEvent } from "../../../../models/unit.js";
 import { AccessPolicy } from "../../../../security/access-policy.js";
 import { Permission } from "../../../../security/permission.js";
 import type { UserAccess } from "../../../../services/auth-service.js";
-import type { DomainCryptoService } from "../../../../services/crypto-service.js";
 import type { DomainEventStore } from "../../../../services/event-store.js";
 import type { DomainStateStore } from "../../../../services/state-store.js";
 import { UseCase } from "../../../../utils/use-case.js";
@@ -13,7 +12,7 @@ import { UnitNotFoundError } from "../../errors.js";
 export interface ChangeUnitTitleDependencies {
   state: DomainStateStore;
   events: DomainEventStore;
-  crypto: DomainCryptoService;
+  crypto: CryptoService;
   currentUser: UserAccess;
 }
 

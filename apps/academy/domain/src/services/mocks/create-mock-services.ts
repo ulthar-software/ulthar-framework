@@ -1,4 +1,5 @@
 import { AggregateStore, EventStore } from "@fabric/core";
+import { TimeServiceMock } from "@fabric/core/mocks";
 import { SQLiteStoreDriver } from "@fabric/sqlite-store";
 import { DomainProjectors, DomainStreams } from "../../models/index.js";
 import type { DomainEventStore } from "../event-store.js";
@@ -11,6 +12,7 @@ export interface MockedDependencies {
   events: DomainEventStore;
   crypto: CryptoServiceMock;
   auth: AuthServiceMock;
+  time: TimeServiceMock;
 }
 
 export async function createServiceMocks(): Promise<MockedDependencies> {
@@ -27,8 +29,9 @@ export async function createServiceMocks(): Promise<MockedDependencies> {
 
   const crypto = new CryptoServiceMock();
   const auth = new AuthServiceMock();
+  const time = new TimeServiceMock();
 
   await state.sync().runOrThrow();
 
-  return { state, events, crypto, auth };
+  return { state, events, crypto, auth, time };
 }

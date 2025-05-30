@@ -10,7 +10,7 @@ export async function createInvitationMock(
   opts?: { email: Email; role: UserRole },
 ): Promise<UUID> {
   const inviteId = crypto.randomUUID();
-  const inviteCode = crypto.generateInviteCode();
+  const inviteCode = crypto.generateRandomToken(4);
 
   const inviteEvent = UserInvitedEvent.from({
     id: crypto.randomUUID(),

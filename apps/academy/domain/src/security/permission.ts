@@ -7,6 +7,7 @@ import type { UserRole } from "./user-role.js";
  *    - `ENTITY`: The domain object that the user can perform the action on. This is a domain noun in the singular form.
  */
 export const Permission = {
+  SYSTEM: "SYSTEM",
   INVITE_USERS: "INVITE_USERS",
   VIEW_COURSE: "VIEW_COURSE",
   CREATE_COURSE: "CREATE_COURSE",
@@ -19,6 +20,7 @@ export const Permission = {
 export type Permission = EnumToType<typeof Permission>;
 
 export const permissionsByRole: Record<Permission, UserRole[]> = {
+  SYSTEM: [],
   INVITE_USERS: ["ADMIN"],
   VIEW_COURSE: ["ADMIN", "TEACHER"],
   CREATE_COURSE: ["ADMIN"],

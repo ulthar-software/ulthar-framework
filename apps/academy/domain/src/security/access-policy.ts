@@ -14,5 +14,13 @@ export const AccessPolicy = {
     isAuthRequired: true,
     requiredPermissions: [perm, ...perms],
   }),
+  /**
+   * Represents a use case that can only be executed by the system itself.
+   * This is used for system-level operations that do not require user authentication.
+   */
+  System: () => ({
+    isAuthRequired: true,
+    requiredPermissions: ["SYSTEM"],
+  }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as const satisfies Record<string, (...args: any) => UseCaseAuth>;

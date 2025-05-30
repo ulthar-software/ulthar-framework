@@ -23,7 +23,9 @@ export async function createUserMock(
   const userId = opts.id ?? crypto.randomUUID();
   const firstName = opts.firstName ?? faker.person.firstName();
   const lastName = opts.lastName ?? faker.person.lastName();
-  const email = opts.email ?? faker.internet.email({ firstName, lastName });
+  const email =
+    opts.email ??
+    (faker.internet.email({ firstName, lastName }).toLowerCase() as Email);
   const password = opts.password ?? faker.internet.password();
 
   await events
@@ -35,7 +37,7 @@ export async function createUserMock(
         payload: {
           firstName,
           lastName,
-          email: email as Email,
+          email: email,
           hashedPassword: await crypto.hashPassword(password).runOrThrow(),
           role: opts.role ?? UserRole.ADMIN,
           invitedBy: crypto.randomUUID(),

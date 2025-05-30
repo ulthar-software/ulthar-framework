@@ -1,8 +1,8 @@
+import type { CryptoService } from "@fabric/core";
 import { Effect, InvalidPasswordError, Result } from "@fabric/core";
 import crypto, { type UUID } from "node:crypto";
-import { type DomainCryptoService } from "../crypto-service.js";
 
-export class CryptoServiceMock implements DomainCryptoService {
+export class CryptoServiceMock implements CryptoService {
   randomUUID(): UUID {
     return crypto.randomUUID();
   }
@@ -25,7 +25,7 @@ export class CryptoServiceMock implements DomainCryptoService {
     });
   }
 
-  generateInviteCode(): string {
-    return crypto.randomBytes(4).toString("hex");
+  generateRandomToken(size: number): string {
+    return crypto.randomBytes(size).toString("hex");
   }
 }

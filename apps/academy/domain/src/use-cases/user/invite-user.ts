@@ -1,9 +1,9 @@
+import type { CryptoService } from "@fabric/core";
 import { Field, Schema, TaggedError, type Infer } from "@fabric/core";
 import { UserInvitedEvent } from "../../models/user-invite.js";
 import { AccessPolicy } from "../../security/access-policy.js";
 import { Permission } from "../../security/permission.js";
 import { UserRole } from "../../security/user-role.js";
-import type { DomainCryptoService } from "../../services/crypto-service.js";
 import type { DomainEventStore } from "../../services/event-store.js";
 import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
@@ -22,7 +22,7 @@ export type InviteUserInput = Infer<typeof InviteUserInputModel>;
 export interface InviteUserDependencies {
   state: DomainStateStore;
   events: DomainEventStore;
-  crypto: DomainCryptoService;
+  crypto: CryptoService;
 }
 
 // Custom errors for the invite user use case
@@ -64,7 +64,7 @@ export const InviteUserUseCase = new UseCase({
           .mapError(() => new UserAlreadyInvitedError(email)),
       )
       .flatMap(() => {
-        const inviteCode = crypto.generateInviteCode();
+        const inviteCode = crypto.generateRandomToken(4);
         const id = crypto.randomUUID();
 
         const inviteEvent = UserInvitedEvent.from({
