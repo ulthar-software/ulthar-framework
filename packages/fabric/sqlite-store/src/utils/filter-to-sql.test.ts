@@ -9,21 +9,23 @@ import {
   isNotEqualTo,
   isNotIn,
   Model,
+  PosixDate,
 } from "@fabric/core";
 import { describe, expect, test } from "@fabric/testing";
 import { filterToParams, filterToSQL } from "./filter-to-sql.js";
 
 describe("SQL where clause from filter options", () => {
   const col = new Model("users", {
-    name: Field.string({}),
-    age: Field.integer({}),
-    status: Field.string({}),
-    salary: Field.decimal({}),
-    rating: Field.float({}),
+    name: Field.string(),
+    age: Field.integer(),
+    status: Field.string(),
+    salary: Field.decimal(),
+    rating: Field.float(),
     quantity: Field.integer({
       isUnsigned: true,
     }),
-    price: Field.decimal({}),
+    price: Field.decimal(),
+    createdAt: Field.posixDate(),
   });
 
   test("should create a where clause from options with IN option", () => {
@@ -57,7 +59,7 @@ describe("SQL where clause from filter options", () => {
     const result = filterToSQL(opts);
 
     const jointModel = new Model("test", {
-      option: Field.integer({}),
+      option: Field.integer(),
     });
 
     const params = filterToParams(
@@ -147,6 +149,16 @@ describe("SQL where clause from filter options", () => {
     const params = filterToParams(col, [], opts);
     expect(result).toEqual("WHERE `price` <= $where_price");
     expect(params).toEqual({ where_price: 100 });
+  });
+
+  test("should create a where clause from options with LESS THAN OR EQUALS option when the field type is a date", () => {
+    const opts = {
+      createdAt: isLessOrEqualTo(new PosixDate(1627849200000)),
+    };
+    const result = filterToSQL(opts);
+    const params = filterToParams(col, [], opts);
+    expect(result).toEqual("WHERE `createdAt` <= $where_createdAt");
+    expect(params).toEqual({ where_createdAt: 1627849200000 });
   });
 
   test("should create a where clause from options with IS NULL option", () => {
