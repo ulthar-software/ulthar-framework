@@ -1,13 +1,9 @@
-import type { UUID } from "@fabric/core";
+import type { CryptoService, UUID } from "@fabric/core";
 import { Effect, InvalidPasswordError, UnexpectedError } from "@fabric/core";
-import type { DomainCryptoService } from "@ulthar/academy-domain";
 import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 
-export class ConcreteCryptoService implements DomainCryptoService {
-  generateInviteCode(): string {
-    return crypto.randomBytes(4).toString("hex");
-  }
+export class ConcreteCryptoService implements CryptoService {
   hashPassword(password: string): Effect<string, UnexpectedError> {
     return Effect.tryFrom(
       async () => {
@@ -33,5 +29,9 @@ export class ConcreteCryptoService implements DomainCryptoService {
   }
   randomUUID(): UUID {
     return crypto.randomUUID();
+  }
+
+  generateRandomToken(size: number): string {
+    return crypto.randomBytes(size).toString("hex");
   }
 }

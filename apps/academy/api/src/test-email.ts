@@ -1,7 +1,13 @@
 import "dotenv/config";
 
-import { Environment } from "@fabric/core";
-import { UserInvitedEvent, UserRole } from "@ulthar/academy-domain";
+import { Environment, hours, PosixDate } from "@fabric/core";
+import {
+  PasswordResetRequestedEvent,
+  UserCreatedEvent,
+  UserInvitedEvent,
+  UserRole,
+} from "@ulthar/academy-domain";
+import { createServiceMocks } from "@ulthar/academy-domain/mocks";
 import { randomUUID } from "crypto";
 import { writeFile } from "fs/promises";
 import { tmpdir } from "os";
@@ -48,9 +54,30 @@ Example: yarn test-email UserInvited
   process.env.SUPPORT_EMAIL =
     process.env.SUPPORT_EMAIL ?? "support@example.com";
 
+  const { state, events } = await createServiceMocks();
+
+  await events
+    .append(
+      "users",
+      UserCreatedEvent.from({
+        id: randomUUID(),
+        streamId: randomUUID(),
+        payload: {
+          email: "test@example.com",
+          firstName: "Test",
+          hashedPassword: "hashed-password",
+          lastName: "User",
+          role: UserRole.ADMIN,
+        },
+        version: 1,
+      }),
+    )
+    .runOrThrow();
+
   const mockDeps = {
     env,
     templates: EmailTemplates,
+    state,
   } as EmailServiceDeps;
 
   try {
@@ -102,6 +129,21 @@ async function generateMockEmailData(
           version: 1,
         });
         const subscriptionFn = EmailSubscriptions.UserInvited;
+        return await subscriptionFn(mockDeps, mockEvent).runOrThrow();
+      },
+      PasswordResetRequested: async () => {
+        // Mock data for password reset
+        const mockEvent = PasswordResetRequestedEvent.from({
+          id: randomUUID(),
+          streamId: randomUUID(),
+          payload: {
+            token: "RESET123", // Sample reset token
+            email: "test@example.com",
+            expiresAt: new PosixDate().add(hours(1)),
+          },
+          version: 1,
+        });
+        const subscriptionFn = EmailSubscriptions.PasswordResetRequested;
         return await subscriptionFn(mockDeps, mockEvent).runOrThrow();
       },
     };

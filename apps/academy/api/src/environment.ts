@@ -23,6 +23,8 @@ export const EnvSchema = new Schema({
   EMAIL_DELAY_MS: Field.integer(),
   EMAIL_FROM: Field.string(),
   SUPPORT_EMAIL: Field.email(),
+
+  TZ: Field.string(),
 });
 export type EnvSchema = typeof EnvSchema;
 

@@ -1,5 +1,5 @@
 import { JSONExtReviver } from "@fabric/core";
-import { DomainUseCases } from "@ulthar/academy-domain";
+import { DomainUseCases, scheduledUseCases } from "@ulthar/academy-domain";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
@@ -7,6 +7,7 @@ import type { AppDependencies } from "./dependencies.js";
 import {
   initializeDependencies,
   initializeEmails,
+  initializeScheduleService,
 } from "./services/build-dependencies.js";
 import { createHTTPEndpoints } from "./utils/create-http-endpoints.js";
 
@@ -16,7 +17,10 @@ const PORT = process.env.PORT ?? 3000;
 
 const dependencies = initializeDependencies();
 const emails = initializeEmails(dependencies);
-emails.start();
+const scheduleService = initializeScheduleService(
+  dependencies,
+  scheduledUseCases,
+);
 
 const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
@@ -55,13 +59,18 @@ async function gracefulShutdown() {
       });
     });
 
+    await scheduleService.stop();
+    console.log("Schedule service stopped");
+
+    emails.stop();
+    console.log("Email service stopped");
+
     // Close all connections
     await dependencies.state.close().runOrThrow();
     await dependencies.events.close().runOrThrow();
     console.log("Database connections closed");
 
-    emails.stop();
-    console.log("Email service stopped");
+    console.log("All services stopped gracefully");
 
     process.exit(0);
   } catch (error) {

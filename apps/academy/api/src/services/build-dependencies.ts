@@ -1,7 +1,9 @@
 import "dotenv/config";
 
-import { Environment } from "@fabric/core";
+import type { TimeService } from "@fabric/core";
+import { Environment, PosixDate } from "@fabric/core";
 import { SQLiteStoreDriver } from "@fabric/sqlite-store";
+import type { ScheduledUseCase } from "@ulthar/academy-domain";
 import {
   DomainEventStore,
   DomainProjectors,
@@ -15,6 +17,7 @@ import { EnvSchema } from "../environment.js";
 import { ConcreteAuthService } from "./auth-service.js";
 import { ConcreteCryptoService } from "./crypto-service.js";
 import { EmailQueueService } from "./email-service.js";
+import { ScheduleService } from "./schedule-service.js";
 
 export function initializeDependencies(): AppDependencies {
   const env = initializeEnvironment();
@@ -25,12 +28,17 @@ export function initializeDependencies(): AppDependencies {
 
   const auth = new ConcreteAuthService(env.get("JWT_SECRET"));
 
+  const time: TimeService = {
+    now: () => new PosixDate(),
+  };
+
   return {
     events,
     state,
     auth,
     crypto,
     env,
+    time,
   };
 }
 
@@ -54,16 +62,19 @@ export function initializeEnvironment(): Environment<EnvSchema> {
 export function initializeEmails(deps: AppDependencies) {
   const emailTransport = createEmailTransport(deps);
 
-  return new EmailQueueService({
+  const emails = new EmailQueueService({
     env: deps.env,
     events: deps.events,
     state: deps.state,
     templates: EmailTemplates,
     emailTransport,
   });
+
+  emails.start();
+  return emails;
 }
 
-export function createEmailTransport({env}: {env: Environment<EnvSchema>}) {
+export function createEmailTransport({ env }: { env: Environment<EnvSchema> }) {
   return createTransport({
     host: env.get("EMAIL_HOST"),
     port: env.get("EMAIL_PORT"),
@@ -72,4 +83,13 @@ export function createEmailTransport({env}: {env: Environment<EnvSchema>}) {
       pass: env.get("EMAIL_PASSWORD"),
     },
   });
+}
+
+export function initializeScheduleService(
+  deps: AppDependencies,
+  scheduledUseCases: ScheduledUseCase[],
+) {
+  const scheduleService = new ScheduleService(deps, scheduledUseCases);
+  scheduleService.start();
+  return scheduleService;
 }

@@ -2835,6 +2835,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:~3.6.0":
+  version: 3.6.2
+  resolution: "@types/luxon@npm:3.6.2"
+  checksum: 10c0/7572ee52b3d3e9dd10464b90561a728b90f34b9a257751cc3ce23762693dd1d14fa98b7f103e2efe2c6f49033331f91de5681ffd65cca88618cefe555be326db
+  languageName: node
+  linkType: hard
+
 "@types/mdast@npm:^4.0.0":
   version: 4.0.4
   resolution: "@types/mdast@npm:4.0.4"
@@ -3193,6 +3200,7 @@ __metadata:
     "@ulthar/academy-domain": "workspace:^"
     bcrypt: "npm:^5.1.1"
     cors: "npm:^2.8.5"
+    cron: "npm:^4.3.1"
     dotenv: "npm:^16.5.0"
     express: "npm:^5.1.0"
     handlebars: "npm:^4.7.8"
@@ -4305,6 +4313,16 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/1c1703be4f02a250b1d6ca3267e408ce16abfe8364193891afc94c2d5c060b69611fdc8d97af74b7e6d5d1aac0ab2fb94d6b079573146bc2d756c2484ce5f0ee
+  languageName: node
+  linkType: hard
+
+"cron@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "cron@npm:4.3.1"
+  dependencies:
+    "@types/luxon": "npm:~3.6.0"
+    luxon: "npm:~3.6.0"
+  checksum: 10c0/057cfc3a18747b1c9733e84227c841358a99f4582fb11e926259362c24fdabdbd48dc25072e675b6846b6b0c581d0f96d37f84c794ad84b2f717d0e7dd2c7126
   languageName: node
   linkType: hard
 
@@ -6908,6 +6926,13 @@ __metadata:
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: 10c0/b3a452b491433db885beed95041eb104c157ef7794b9c9b4d647be503be91769d11206bb573849a16b4cc0d03cbd15ffd22df7960997788b74c1d399ac7a4fed
+  languageName: node
+  linkType: hard
+
+"luxon@npm:~3.6.0":
+  version: 3.6.1
+  resolution: "luxon@npm:3.6.1"
+  checksum: 10c0/906d57a9dc4d1de9383f2e9223e378c298607c1b4d17b6657b836a3cd120feb1c1de3b5d06d846a3417e1ca764de8476e8c23b3cd4083b5cdb870adcb06a99d5
   languageName: node
   linkType: hard
 

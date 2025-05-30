@@ -9,6 +9,7 @@ import { Effect, TaggedError } from "@fabric/core";
 import type {
   DomainEventStore,
   DomainStateStore,
+  PasswordResetRequestedEvent,
   UserInvitedEvent,
 } from "@ulthar/academy-domain";
 import {
@@ -43,11 +44,12 @@ export type EventSubscriptionRecord = {
   [K in EventNamesWithEmails]: (
     deps: EmailServiceDeps,
     event: Extract<EventsWithEmail, { type: K }>,
-  ) => Effect<SendMailOptions>;
+  ) => Effect<SendMailOptions, UnexpectedError>;
 };
 
 export const EmailSubscriptions: EventSubscriptionRecord = {
   UserInvited: generateInviteEmail,
+  PasswordResetRequested: generatePasswordResetEmail,
 };
 
 export class EmailQueueService {
@@ -62,14 +64,20 @@ export class EmailQueueService {
     for (const eventName of eventNames) {
       events.subscribe(
         eventName,
-        (event) =>
-          EmailSubscriptions[eventName](this.deps, event)
+        (event) => {
+          const processEmailEvent = EmailSubscriptions[eventName] as (
+            deps: EmailServiceDeps,
+            event: EventsWithEmail,
+          ) => Effect<SendMailOptions, UnexpectedError>;
+
+          return processEmailEvent(this.deps, event as EventsWithEmail)
             .flatMap((sendMailOptions) =>
               queueEmail(this.deps, event, sendMailOptions),
             )
             .map(() => {
               scheduleBatchEmailProcessing();
-            }),
+            });
+        },
         {
           callOnReplay: false,
         },
@@ -178,7 +186,7 @@ export function processQueuedEmails(
 export function generateInviteEmail(
   { templates, env }: EmailServiceDeps,
   event: UserInvitedEvent,
-) {
+): Effect<SendMailOptions> {
   const template = templates.UserInvited;
   const payload = {
     code: event.payload.code,
@@ -193,10 +201,51 @@ export function generateInviteEmail(
   });
 }
 
+export function generatePasswordResetEmail(
+  { templates, env, state }: EmailServiceDeps,
+  event: PasswordResetRequestedEvent,
+): Effect<SendMailOptions, UnexpectedError> {
+  return Effect.fromGen(function* () {
+    const template = templates.PasswordResetRequested;
+
+    const user = yield* state
+      .from("users")
+      .where({ email: event.payload.email })
+      .selectOneOrFail();
+
+    const payload = {
+      resetToken: event.payload.token,
+      email: event.payload.email,
+      userName: user.firstName,
+      expiryDate: event.payload.expiresAt.formatDate("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        timeZone: env.get("TZ"),
+      }),
+      expiryTime: event.payload.expiresAt.formatTime("es-AR", {
+        hourCycle: "h23",
+        second: undefined,
+        timeZone: env.get("TZ"),
+      }),
+      env: getEnvForEmails(env),
+    };
+
+    return {
+      recipient: event.payload.email,
+      subject: template.subject(payload),
+      body: template.body(payload),
+    };
+  });
+}
+
 export function sendMail(
-  { env, emailTransport }: {
-    env: Environment<EnvSchema>,
-    emailTransport: Transporter,
+  {
+    env,
+    emailTransport,
+  }: {
+    env: Environment<EnvSchema>;
+    emailTransport: Transporter;
   },
   { recipient, subject, body }: SendMailOptions,
 ): Effect<void, EmailSendError> {

@@ -9,10 +9,10 @@ describe("ConcreteCryptoService", () => {
     cryptoService = new ConcreteCryptoService();
   });
 
-  describe("generateInviteCode", () => {
+  describe("generateRandomToken", () => {
     test("should generate an 8-character hex code", () => {
       // Act
-      const code = cryptoService.generateInviteCode();
+      const code = cryptoService.generateRandomToken(4);
 
       // Assert
       expect(code).toBeDefined();
@@ -24,8 +24,8 @@ describe("ConcreteCryptoService", () => {
 
     test("should generate different codes on multiple calls", () => {
       // Act
-      const code1 = cryptoService.generateInviteCode();
-      const code2 = cryptoService.generateInviteCode();
+      const code1 = cryptoService.generateRandomToken(4);
+      const code2 = cryptoService.generateRandomToken(4);
 
       // Assert
       expect(code1).not.toBe(code2);

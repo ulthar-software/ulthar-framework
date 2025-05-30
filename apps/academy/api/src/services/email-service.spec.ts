@@ -70,7 +70,7 @@ describe("Email Service", () => {
   });
 
   it("should queue an email when a user invited event is received", async () => {
-    const code = deps.crypto.generateInviteCode();
+    const code = deps.crypto.generateRandomToken(4);
     const email = "demo-email@mail.com";
 
     await deps.events
@@ -113,7 +113,7 @@ describe("Email Service", () => {
   it("should batch multiple email events", async () => {
     // Generate three invite events
     for (let i = 0; i < 3; i++) {
-      const code = deps.crypto.generateInviteCode();
+      const code = deps.crypto.generateRandomToken(4);
       const email = `user${i}@example.com` as Email;
 
       await deps.events
@@ -151,7 +151,7 @@ describe("Email Service", () => {
 
   it("should process queued emails", async () => {
     // Generate a test email
-    const code = deps.crypto.generateInviteCode();
+    const code = deps.crypto.generateRandomToken(4);
     const email = "demo-email@mail.com";
 
     await deps.events
@@ -200,7 +200,7 @@ describe("Email Service", () => {
 
   it("should mark emails as failed when sending fails", async () => {
     // Generate a test email
-    const code = deps.crypto.generateInviteCode();
+    const code = deps.crypto.generateRandomToken(4);
     const email = "failing-email" as Email;
 
     await deps.events
