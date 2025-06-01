@@ -1,6 +1,9 @@
 import type { UnexpectedError } from "@fabric/core";
 import { Effect, Field, isLike, Schema, type Infer } from "@fabric/core";
 import { EnrollmentModel } from "../../../models/enrollment.js";
+import { ModuleModel } from "../../../models/module.js";
+import { getStudentProgressInCourse } from "../../../models/sections/get-student-progress-in-course.js";
+import { UnitModel } from "../../../models/unit.js";
 import {
   UserInviteViewModelProperties,
   type UserInviteViewModel,
@@ -26,9 +29,14 @@ export interface GetCourseEnrollmentsDependencies {
   state: DomainStateStore;
 }
 
+interface StudentViewModelWithProgress extends UserViewModel {
+  quizzes: number;
+}
+
 export interface GetCourseEnrollmentsOutput {
-  users: UserViewModel[];
-  userInvites: UserInviteViewModel[];
+  students: StudentViewModelWithProgress[];
+  invites: UserInviteViewModel[];
+  totalQuizzes: number;
 }
 
 export const GetCourseEnrollmentsUseCase = new UseCase({
@@ -41,8 +49,22 @@ export const GetCourseEnrollmentsUseCase = new UseCase({
     { courseId, filter }: GetCourseEnrollmentsInput,
   ): Effect<GetCourseEnrollmentsOutput, UnexpectedError> => {
     return Effect.fromGen(function* () {
-      // 2. Get users whose id is in userIds and apply filter if provided
-      const users = yield* state
+      const questionnaireCount = yield* state
+        .from("questionnaireSections")
+        .innerJoin({
+          model: UnitModel,
+          as: "u",
+          on: { left: "unitId", right: "id" },
+        })
+        .innerJoin({
+          model: ModuleModel,
+          as: "m",
+          on: { left: "u.moduleId", right: "id" },
+        })
+        .where({ "m.courseId": courseId })
+        .count();
+
+      const students = yield* state
         .from("users")
         .innerJoin({
           model: EnrollmentModel,
@@ -63,7 +85,21 @@ export const GetCourseEnrollmentsUseCase = new UseCase({
         )
         .select(UserViewModelProperties);
 
-      // 3. Get userInvites whose id is in userIds and apply filter if provided
+      const studentsWithProgress: StudentViewModelWithProgress[] = [];
+
+      for (const student of students) {
+        const quizzes = yield* getStudentProgressInCourse(
+          state,
+          courseId,
+          student.id,
+        );
+
+        studentsWithProgress.push({
+          ...student,
+          quizzes: quizzes.filter((quiz) => quiz.score === 100).length, // Count only quizzes with full score
+        });
+      }
+
       const userInvites = yield* state
         .from("userInvites")
         .innerJoin({
@@ -78,10 +114,10 @@ export const GetCourseEnrollmentsUseCase = new UseCase({
         )
         .select(UserInviteViewModelProperties);
 
-      // 4. Merge and tag type
       const result: GetCourseEnrollmentsOutput = {
-        users,
-        userInvites,
+        students: studentsWithProgress,
+        invites: userInvites,
+        totalQuizzes: questionnaireCount,
       };
       return result;
     });

@@ -38,8 +38,9 @@ describe("Get Course Enrollments Use Case", () => {
     ).runOrThrow();
 
     expect(result).toEqual({
-      users: [],
-      userInvites: [],
+      students: [],
+      invites: [],
+      totalQuizzes: 0,
     });
   });
 
@@ -66,13 +67,13 @@ describe("Get Course Enrollments Use Case", () => {
       { courseId },
     ).runOrThrow();
 
-    expect(result.users).toHaveLength(2);
-    expect(result.users.map((u) => u.id)).toEqual(
+    expect(result.students).toHaveLength(2);
+    expect(result.students.map((u) => u.id)).toEqual(
       expect.arrayContaining([user1.id, user2.id]),
     );
 
-    expect(result.userInvites).toHaveLength(2);
-    expect(result.userInvites.map((i) => i.id)).toEqual(
+    expect(result.invites).toHaveLength(2);
+    expect(result.invites.map((i) => i.id)).toEqual(
       expect.arrayContaining([inviteId1, inviteId2]),
     );
   });
@@ -118,8 +119,8 @@ describe("Get Course Enrollments Use Case", () => {
       { courseId, filter: "john" },
     ).runOrThrow();
 
-    expect(result.users).toHaveLength(2);
-    expect(result.users.map((u) => u.id)).toEqual(
+    expect(result.students).toHaveLength(2);
+    expect(result.students.map((u) => u.id)).toEqual(
       expect.arrayContaining([user1.id, user3.id]),
     );
   });
@@ -151,8 +152,8 @@ describe("Get Course Enrollments Use Case", () => {
       { courseId, filter: "john" },
     ).runOrThrow();
 
-    expect(result.userInvites).toHaveLength(2);
-    expect(result.userInvites.map((i) => i.id)).toEqual(
+    expect(result.invites).toHaveLength(2);
+    expect(result.invites.map((i) => i.id)).toEqual(
       expect.arrayContaining([inviteId1, inviteId3]),
     );
   });
@@ -178,10 +179,10 @@ describe("Get Course Enrollments Use Case", () => {
       { courseId, filter: "ALICE" },
     ).runOrThrow();
 
-    expect(result.users).toHaveLength(1);
-    expect(result.users[0].id).toBe(user.id);
-    expect(result.userInvites).toHaveLength(1);
-    expect(result.userInvites[0].id).toBe(inviteId);
+    expect(result.students).toHaveLength(1);
+    expect(result.students[0].id).toBe(user.id);
+    expect(result.invites).toHaveLength(1);
+    expect(result.invites[0].id).toBe(inviteId);
   });
 
   test("Should return empty results when filter matches nothing", async () => {
@@ -205,8 +206,8 @@ describe("Get Course Enrollments Use Case", () => {
       { courseId, filter: "nonexistent" },
     ).runOrThrow();
 
-    expect(result.users).toHaveLength(0);
-    expect(result.userInvites).toHaveLength(0);
+    expect(result.students).toHaveLength(0);
+    expect(result.invites).toHaveLength(0);
   });
 
   test("Should return all results when no filter is provided", async () => {
@@ -230,7 +231,7 @@ describe("Get Course Enrollments Use Case", () => {
       { courseId },
     ).runOrThrow();
 
-    expect(result.users).toHaveLength(1);
-    expect(result.userInvites).toHaveLength(1);
+    expect(result.students).toHaveLength(1);
+    expect(result.invites).toHaveLength(1);
   });
 });
