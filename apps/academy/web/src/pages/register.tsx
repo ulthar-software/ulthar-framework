@@ -17,6 +17,7 @@ const registerSchema = new Schema({
   firstName: Field.string(),
   lastName: Field.string(),
   password: Field.string(),
+  confirmPassword: Field.string(),
 });
 type FormValues = Infer<typeof registerSchema>;
 
@@ -33,7 +34,20 @@ export default function Register() {
   const navigate = useNavigate();
 
   async function onRegister(data: FormValues) {
-    const result = await register({ ...data, email, inviteCode: code });
+    if (data.password !== data.confirmPassword) {
+      showErrorToast(
+        "Las contraseñas no coinciden. Por favor, intentá nuevamente.",
+      );
+      return;
+    }
+
+    const result = await register({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      password: data.password,
+      email,
+      inviteCode: code,
+    });
 
     if (result.isOk()) {
       showSuccessToast("Te registraste con éxito! Ya podés iniciar sesión.");
@@ -98,6 +112,11 @@ export default function Register() {
             <Input name="firstName" type="text" label="Nombre" />
             <Input name="lastName" type="text" label="Apellido" />
             <Input name="password" type="password" label="Contraseña" />
+            <Input
+              name="confirmPassword"
+              type="password"
+              label="Confirmar Contraseña"
+            />
             <FormButton className="bg-primary">Registrar</FormButton>
           </Form>
         </section>
