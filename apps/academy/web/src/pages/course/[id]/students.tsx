@@ -154,22 +154,28 @@ export default function CourseStudentsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-gray-900">
-                    {studentsData && studentsData.users.length > 0 ? (
-                      studentsData.users.map((user) => (
-                        <tr
-                          key={user.id}
-                          className="border-t border-gray-800 hover:bg-gray-800"
-                        >
-                          <td className="p-2">{`${user.firstName} ${user.lastName}`}</td>
-                          <td className="p-2">{user.email}</td>
-                          <td className="p-2 text-warning">
-                            <Icon name="bx-error" /> En construcción
-                          </td>
-                          <td className="p-2 text-warning">
-                            <Icon name="bx-error" /> En construcción
-                          </td>
-                        </tr>
-                      ))
+                    {studentsData && studentsData.students.length > 0 ? (
+                      studentsData.students
+                        .sort((a, b) => b.quizzes - a.quizzes)
+                        .map((student) => (
+                          <tr
+                            key={student.id}
+                            className="border-t border-gray-800 hover:bg-gray-800"
+                          >
+                            <td className="p-2">{`${student.firstName} ${student.lastName}`}</td>
+                            <td className="p-2">{student.email}</td>
+                            <td className="p-2">
+                              {(
+                                (student.quizzes / studentsData.totalQuizzes) *
+                                100
+                              ).toFixed(2)}
+                              %
+                            </td>
+                            <td className="p-2 text-warning">
+                              <Icon name="bx-error" /> En construcción
+                            </td>
+                          </tr>
+                        ))
                     ) : (
                       <tr>
                         <td colSpan={4} className="p-4 text-center">
@@ -194,9 +200,9 @@ export default function CourseStudentsPage() {
                   </thead>
                   <tbody className="bg-gray-900">
                     {studentsData &&
-                    Array.isArray(studentsData.userInvites) &&
-                    studentsData.userInvites.length > 0 ? (
-                      studentsData.userInvites.map((invite) => (
+                    Array.isArray(studentsData.invites) &&
+                    studentsData.invites.length > 0 ? (
+                      studentsData.invites.map((invite) => (
                         <tr
                           key={invite.id}
                           className="border-t border-gray-800 hover:bg-gray-800"
