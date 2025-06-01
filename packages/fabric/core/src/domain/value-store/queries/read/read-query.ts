@@ -17,7 +17,7 @@ export interface StoreReadQueryDeps {
 }
 
 export interface StoreReadQuery<T> extends SortableStoreQuery<T> {
-  where(where: FilterOptions<T>): SortableStoreQuery<T>;
+  where(where?: FilterOptions<T>): SortableStoreQuery<T>;
   leftJoin<TModel extends Model, TAsKey extends string>(
     opts: JoinOptions<TModel, T, TAsKey>,
   ): StoreReadQuery<T & JoinedModel<TModel, TAsKey>>;

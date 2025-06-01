@@ -41,7 +41,10 @@ export class StoreReadQueryBuilder<T> implements StoreReadQuery<T> {
     });
   }
 
-  where(where: FilterOptions<T>): SortableStoreQuery<T> {
+  where(where?: FilterOptions<T>): SortableStoreQuery<T> {
+    if (!where) {
+      return this;
+    }
     return new StoreReadQueryBuilder(this.driver, this.model, {
       ...this.query,
       where,

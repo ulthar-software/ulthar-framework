@@ -1,5 +1,6 @@
-import type { UnexpectedError, UUID } from "@fabric/core";
-import { Effect, Field, isIn, isLike, Schema, type Infer } from "@fabric/core";
+import type { UnexpectedError } from "@fabric/core";
+import { Effect, Field, isLike, Schema, type Infer } from "@fabric/core";
+import { EnrollmentModel } from "../../../models/enrollment.js";
 import {
   UserInviteViewModelProperties,
   type UserInviteViewModel,
@@ -40,34 +41,41 @@ export const GetCourseEnrollmentsUseCase = new UseCase({
     { courseId, filter }: GetCourseEnrollmentsInput,
   ): Effect<GetCourseEnrollmentsOutput, UnexpectedError> => {
     return Effect.fromGen(function* () {
-      // 1. Get all enrollments for the course
-      const enrollments = yield* state
-        .from("enrollments")
-        .where({ courseId })
-        .select(["userId"]);
-      const userIds = enrollments.map((e: { userId: UUID }) => e.userId);
-      if (userIds.length === 0)
-        return {
-          users: [],
-          userInvites: [],
-        };
-
       // 2. Get users whose id is in userIds and apply filter if provided
       const users = yield* state
         .from("users")
-        .where({
-          id: isIn(userIds),
-          ...(filter ? { name: isLike(filter) } : {}),
+        .innerJoin({
+          model: EnrollmentModel,
+          as: "e",
+          on: { left: "id", right: "userId" },
         })
+        .where(
+          filter
+            ? [
+                { "e.courseId": courseId, email: isLike(`%${filter}%`) },
+                {
+                  "e.courseId": courseId,
+                  firstName: isLike(`%${filter}%`),
+                },
+                { "e.courseId": courseId, lastName: isLike(`%${filter}%`) },
+              ]
+            : undefined,
+        )
         .select(UserViewModelProperties);
 
       // 3. Get userInvites whose id is in userIds and apply filter if provided
       const userInvites = yield* state
         .from("userInvites")
-        .where({
-          id: isIn(userIds),
-          ...(filter ? { email: isLike(filter) } : {}),
+        .innerJoin({
+          model: EnrollmentModel,
+          as: "e",
+          on: { left: "id", right: "userId" },
         })
+        .where(
+          filter
+            ? [{ "e.courseId": courseId, email: isLike(`%${filter}%`) }]
+            : undefined,
+        )
         .select(UserInviteViewModelProperties);
 
       // 4. Merge and tag type
