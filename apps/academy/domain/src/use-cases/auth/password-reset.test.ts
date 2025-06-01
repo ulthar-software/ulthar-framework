@@ -4,7 +4,7 @@ import type { MockedDependencies } from "../../mocks.js";
 import { createServiceMocks } from "../../mocks.js";
 import { createUserMock } from "../../models/mocks/create-user-mock.js";
 import type { User } from "../../models/user.js";
-import { PasswordResetUseCase } from "./password-reset.js";
+import { ResetPasswordUseCase } from "./password-reset.js";
 import { RequestPasswordResetUseCase } from "./request-password-reset.js";
 
 describe("Password Reset Use case", () => {
@@ -30,7 +30,7 @@ describe("Password Reset Use case", () => {
 
     services.time.advanceTime(minutes(5));
 
-    await PasswordResetUseCase.call(
+    await ResetPasswordUseCase.call(
       { ...services, currentUser: undefined },
       {
         email: user.email,

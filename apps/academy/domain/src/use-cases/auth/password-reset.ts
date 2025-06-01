@@ -18,20 +18,20 @@ import type { DomainEventStore } from "../../services/event-store.js";
 import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
 
-export interface PasswordResetDependencies {
+export interface ResetPasswordDependencies {
   events: DomainEventStore;
   state: DomainStateStore;
   crypto: CryptoService;
   time: TimeService;
 }
 
-export const PasswordResetInputModel = new Schema({
+export const ResetPasswordInputModel = new Schema({
   email: Field.email(),
   token: Field.string(),
   newPassword: Field.string(),
 });
 
-export type PasswordResetInput = Infer<typeof PasswordResetInputModel>;
+export type ResetPasswordInput = Infer<typeof ResetPasswordInputModel>;
 
 export class InvalidPasswordResetTokenError extends TaggedError<"InvalidPasswordResetTokenError"> {
   constructor() {
@@ -39,14 +39,14 @@ export class InvalidPasswordResetTokenError extends TaggedError<"InvalidPassword
   }
 }
 
-export const PasswordResetUseCase = new UseCase({
-  name: "passwordReset",
+export const ResetPasswordUseCase = new UseCase({
+  name: "resetPassword",
   type: "command",
   auth: AccessPolicy.Anonymous(),
-  inputSchema: PasswordResetInputModel,
+  inputSchema: ResetPasswordInputModel,
   effect: (
-    { events, state, crypto, time }: PasswordResetDependencies,
-    { token, email, newPassword }: PasswordResetInput,
+    { events, state, crypto, time }: ResetPasswordDependencies,
+    { token, email, newPassword }: ResetPasswordInput,
   ): Effect<void, InvalidPasswordResetTokenError | UnexpectedError> => {
     return Effect.fromGen(function* () {
       const resetRequest = yield* state

@@ -2,32 +2,32 @@
 import type { Infer } from "@fabric/core";
 import { Effect, Field, Schema } from "@fabric/core";
 
-export interface TemplateUseCaseDependencies {
+export interface TemplateDependencies {
   state: DomainStateStore;
   events: DomainEventStore;
   crypto: DomainCryptoService;
   currentUser: UserAccess;
 }
 
-export const TemplateUseCaseInputModel = new Schema({
+export const TemplateInputModel = new Schema({
   courseId: Field.uuid(),
 });
-export type TemplateUseCaseInput = Infer<typeof TemplateUseCaseInputModel>;
+export type TemplateInput = Infer<typeof TemplateInputModel>;
 
-export interface TemplateUseCaseOutput {
+export interface TemplateOutput {
   ok: boolean;
 }
 
 export const TemplateUseCase = new UseCase({
   auth: AccessPolicy.Authenticated(),
-  name: "templateUseCase",
+  name: "template",
   type: "command",
-  inputSchema: TemplateUseCaseInputModel,
+  inputSchema: TemplateInputModel,
   effect: (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    dependencies: TemplateUseCaseDependencies,
+    dependencies: TemplateDependencies,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    payload: TemplateUseCaseInput,
+    payload: TemplateInput,
   ) => {
     return Effect.fromGen(function* () {
       // Check if the course exists

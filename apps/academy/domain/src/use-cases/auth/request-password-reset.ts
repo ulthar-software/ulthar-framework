@@ -1,38 +1,42 @@
 import type { CryptoService, Infer, TimeService } from "@fabric/core";
-import { Effect, Field, hours, Schema } from "@fabric/core";
+import { Effect, Field, hours, Schema, UnexpectedError } from "@fabric/core";
 import { PasswordResetRequestedEvent } from "../../models/password-reset.js";
 import { AccessPolicy } from "../../security/access-policy.js";
 import type { DomainEventStore } from "../../services/event-store.js";
 import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
 
-export interface RequestPasswordUseCaseDependencies {
+export interface RequestPasswordResetDependencies {
   state: DomainStateStore;
   events: DomainEventStore;
   crypto: CryptoService;
   time: TimeService;
 }
 
-export const RequestPasswordUseCaseInputModel = new Schema({
+export const RequestPasswordResetInputModel = new Schema({
   email: Field.email(),
 });
-export type RequestPasswordUseCaseInput = Infer<
-  typeof RequestPasswordUseCaseInputModel
+export type RequestPasswordResetInput = Infer<
+  typeof RequestPasswordResetInputModel
 >;
 
 export const PasswordResetTokenExpirationTime = hours(1);
 
 export const RequestPasswordResetUseCase = new UseCase({
   auth: AccessPolicy.Anonymous(),
-  name: "requestPasswordUseCase",
+  name: "requestPasswordReset",
   type: "command",
-  inputSchema: RequestPasswordUseCaseInputModel,
+  inputSchema: RequestPasswordResetInputModel,
   effect: (
-    { state, events, crypto, time }: RequestPasswordUseCaseDependencies,
-    { email }: RequestPasswordUseCaseInput,
-  ) => {
+    { state, events, crypto, time }: RequestPasswordResetDependencies,
+    { email }: RequestPasswordResetInput,
+  ): Effect<void, UnexpectedError> => {
     return Effect.fromGen(function* () {
-      const user = yield* state.from("users").where({ email }).selectOne();
+      const user = yield* state
+        .from("users")
+        .where({ email })
+        .selectOne()
+        .mapError(() => new UnexpectedError());
 
       const token = crypto.generateRandomToken(24);
       const hashedToken = yield* crypto.hashPassword(token);

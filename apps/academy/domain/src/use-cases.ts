@@ -46,6 +46,7 @@ import {
   IncompleteQuestionnaireResponseError,
   InvalidCredentialsError,
   InvalidInviteCodeError,
+  InvalidPasswordResetTokenError,
   InviteUserUseCase,
   ListUserInvitesUseCase,
   ListUsersUseCase,
@@ -56,6 +57,8 @@ import {
   QuestionnaireSectionNotFoundError,
   QuestionnaireVersionMismatchError,
   RegisterUserUseCase,
+  RequestPasswordResetUseCase,
+  ResetPasswordUseCase,
   ResourceNotFoundError,
   StudentAlreadyEnrolledError,
   TagAlreadyExistsError,
@@ -106,6 +109,8 @@ export const DomainUseCases = [
   EditResourceUseCase,
   AddTagToResourceUseCase,
   AddTagToUnitUseCase,
+  RequestPasswordResetUseCase,
+  ResetPasswordUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
@@ -141,6 +146,7 @@ export const DomainUseCaseErrorsMap = {
   ResourceNotFoundError: ResourceNotFoundError,
   TagNotFoundError: ResourceNotFoundError,
   AlreadyExistsError: AlreadyExistsError,
+  InvalidPasswordResetTokenError: InvalidPasswordResetTokenError,
 } as const satisfies Record<
   DomainUseCaseErrors["_tag"],
   ClassConstructor<DomainUseCaseErrors>
