@@ -38,9 +38,7 @@ describe("State Store", () => {
       id: Field.uuid({ isPrimaryKey: true }),
       version: Field.integer({ hasArbitraryPrecision: true }),
       payload: Field.embedded({
-        subModel: {
-          name: Field.string(),
-        },
+        name: Field.string(),
       }),
       timestamp: Field.posixDate(),
     },

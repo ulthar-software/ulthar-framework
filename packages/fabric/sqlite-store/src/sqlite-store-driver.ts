@@ -54,9 +54,9 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     const [sql, params] = this.getCountStatement(model, query);
     return Effect.tryFrom(
       () => {
-        const result = this.allPrepared(sql, ["x"], params);
+        const result = this.allPrepared(sql, ["count"], params);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const value = result[0].x as number | undefined;
+        const value = result[0].count as number | undefined;
 
         return value ?? 0;
       },
@@ -131,7 +131,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     model: Model,
     query: StoreDeleteOptions,
   ): Effect<void, StoreQueryError> {
-    const sql = `DELETE FROM ${query.from} ${filterToSQL(query.where)}`;
+    const sql = `DELETE FROM ${query.from} ${filterToSQL(model, query.where)}`;
     const params = filterToParams(model, [], query.where);
     return Effect.tryFrom(
       () => {
@@ -200,13 +200,26 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     model: Model,
     query: StoreReadOptions,
   ): [string, Record<string, any>] {
-    const queryFilter = filterToSQL(query.where);
+    const queryFilter = filterToSQL(model, query.where);
     const limit = query.limit ? `LIMIT ${query.limit}` : "";
     const offset = query.offset ? `OFFSET ${query.offset}` : "";
 
+    // Handle joins if they exist
+    const joinClauses = [];
+    if (query.joins && query.joins.length > 0) {
+      for (const join of query.joins) {
+        const joinType = join.type === "left" ? "LEFT JOIN" : "INNER JOIN";
+        joinClauses.push(
+          `${joinType} ${join.model.name} ${join.as} ON ${transformManualKey(model, join.on.left)} = ${join.as}.${join.on.right}`,
+        );
+      }
+    }
+    const joinSql = joinClauses.length > 0 ? joinClauses.join(" ") : "";
+
     const sql = [
-      `SELECT COUNT(*) as x`,
+      `SELECT COUNT(*) as count`,
       `FROM ${query.from}`,
+      joinSql,
       queryFilter,
       limit,
       offset,
@@ -219,7 +232,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     model: Model,
     query: StoreReadOptions,
   ): [string, Record<string, any>] {
-    const queryFilter = filterToSQL(query.where);
+    const queryFilter = filterToSQL(model, query.where);
     const limit = query.limit ? `LIMIT ${query.limit}` : "";
     const offset = query.offset ? `OFFSET ${query.offset}` : "";
 
@@ -247,7 +260,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
 
     const selectFields = columns.join(", ");
 
-    const queryFilter = filterToSQL(query.where);
+    const queryFilter = filterToSQL(model, query.where);
     const limit = query.limit ? `LIMIT ${query.limit}` : "";
     const offset = query.offset ? `OFFSET ${query.offset}` : "";
 

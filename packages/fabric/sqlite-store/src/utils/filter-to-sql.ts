@@ -24,14 +24,14 @@ import { identifierToSQL } from "./identifier-to-sql.js";
 import { keyToParamKey } from "./record-utils.js";
 import { fieldValueToSQL } from "./value-to-sql.js";
 
-export function filterToSQL(filterOptions?: FilterOptions) {
+export function filterToSQL(model: Model, filterOptions?: FilterOptions) {
   if (!filterOptions) return "";
 
   if (Array.isArray(filterOptions)) {
-    return `WHERE ${getWhereFromMultiOption(filterOptions)}`;
+    return `WHERE ${getWhereFromMultiOption(model, filterOptions)}`;
   }
 
-  return `WHERE ${getWhereFromSingleOption(filterOptions)}`;
+  return `WHERE ${getWhereFromSingleOption(model, filterOptions)}`;
 }
 
 export function filterToParams(
@@ -53,21 +53,31 @@ export function filterToParams(
   return getParamsFromSingleFilterOption(collection, joinsMap, filterOptions);
 }
 
-function getWhereFromMultiOption(filterOptions: MultiFilterOption) {
+function getWhereFromMultiOption(
+  model: Model,
+  filterOptions: MultiFilterOption,
+) {
   return filterOptions
     .map(
       (option, i) =>
-        `(${getWhereFromSingleOption(option, { postfix: `_${i}` })})`,
+        `(${getWhereFromSingleOption(model, option, { postfix: `_${i}` })})`,
     )
     .join(" OR ");
 }
 
 function getWhereFromSingleOption(
+  model: Model,
   filterOptions: SingleFilterOption,
   opts: { postfix?: string } = {},
 ) {
   return Object.entries(filterOptions)
-    .map(([key, value]) => getWhereFromKeyValue(key, value, opts))
+    .map(([key, value]) =>
+      getWhereFromKeyValue(
+        key.includes(".") ? key : `${model.name}.${key}`,
+        value,
+        opts,
+      ),
+    )
     .join(" AND ");
 }
 
@@ -155,7 +165,7 @@ function getParamsFromSingleFilterOption(
 
         ...getParamsForFilterKeyValue(
           getField(collection, joins, key),
-          key,
+          key.includes(".") ? key : `${collection.name}.${key}`,
           value,
           opts,
         ),

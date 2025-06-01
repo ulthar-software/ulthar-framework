@@ -12,7 +12,7 @@ export function updateToSql(
   return [
     `UPDATE ${identifierToSQL(model.name)} SET ${recordToSqlSet(
       query.set,
-    )} ${filterToSQL(query.where)}`,
+    )} ${filterToSQL(model, query.where)}`,
     {
       ...recordToSqlParamRecord(model, {
         ...query.set,
