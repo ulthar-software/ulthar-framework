@@ -1,6 +1,7 @@
 import type { UnionToIntersection } from "@fabric/core";
 import {
   AlreadyExistsError,
+  NotFoundError,
   UnexpectedError,
   type ClassConstructor,
 } from "@fabric/core";
@@ -58,6 +59,7 @@ import {
   QuestionnaireVersionMismatchError,
   RegisterUserUseCase,
   RequestPasswordResetUseCase,
+  ResendInviteUseCase,
   ResetPasswordUseCase,
   ResourceNotFoundError,
   StudentAlreadyEnrolledError,
@@ -111,6 +113,7 @@ export const DomainUseCases = [
   AddTagToUnitUseCase,
   RequestPasswordResetUseCase,
   ResetPasswordUseCase,
+  ResendInviteUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
@@ -147,6 +150,7 @@ export const DomainUseCaseErrorsMap = {
   TagNotFoundError: ResourceNotFoundError,
   AlreadyExistsError: AlreadyExistsError,
   InvalidPasswordResetTokenError: InvalidPasswordResetTokenError,
+  NotFoundError: NotFoundError,
 } as const satisfies Record<
   DomainUseCaseErrors["_tag"],
   ClassConstructor<DomainUseCaseErrors>
