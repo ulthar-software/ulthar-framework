@@ -61,15 +61,15 @@ function ConfirmationModalExample() {
       <h3 className="text-lg font-semibold mb-4">Confirmation Modal Example</h3>
       <Button
         onClick={() => {
-          showConfirmationModal(
-            "Are you sure you want to proceed?",
-            () => {
+          showConfirmationModal({
+            message: "Are you sure you want to proceed?",
+            onConfirm: () => {
               console.log("Confirmed!");
             },
-            () => {
+            onCancel: () => {
               console.log("Cancelled!");
             },
-          );
+          });
         }}
       >
         Open Confirmation Modal
@@ -162,8 +162,14 @@ function MultipleModalsExample() {
               closeModal={() => {
                 closeFirstModal();
                 // Show confirmation modal after closing the first one
-                showConfirmationModal("Do you want to continue?", () => {
-                  console.log("Continuing after custom modal");
+                showConfirmationModal({
+                  message: "Do you want to continue?",
+                  onConfirm: () => {
+                    console.log("Continuing after custom modal");
+                  },
+                  onCancel: () => {
+                    console.log("Cancelled after custom modal");
+                  },
                 });
               }}
             />,
