@@ -5,6 +5,10 @@ import type {
 } from "@fabric/core";
 import { Effect, Field, Schema, type Infer } from "@fabric/core";
 import {
+  UserEnrolledEvent,
+  UserUnenrolledEvent,
+} from "../../models/enrollment.js";
+import {
   UserInvitedEvent,
   UserInviteRemovedEvent,
 } from "../../models/user-invite.js";
@@ -58,6 +62,25 @@ export const ResendInviteUseCase = new UseCase({
         }),
       );
 
+      const enrollments = yield* state
+        .from("enrollments")
+        .where({ userId: existingInvite.id })
+        .select();
+
+      for (const enrollment of enrollments) {
+        yield* events.append(
+          "enrollments",
+          UserUnenrolledEvent.from({
+            id: crypto.randomUUID(),
+            streamId: enrollment.id,
+            payload: {
+              unenrolledBy: currentUser.id,
+            },
+            version: enrollment.version + 1,
+          }),
+        );
+      }
+
       // If the user is already invited, resend the invitation
       const event = UserInvitedEvent.from({
         id: crypto.randomUUID(),
@@ -71,6 +94,21 @@ export const ResendInviteUseCase = new UseCase({
       });
 
       yield* events.append("userInvites", event);
+
+      for (const enrollment of enrollments) {
+        yield* events.append(
+          "enrollments",
+          UserEnrolledEvent.from({
+            id: crypto.randomUUID(),
+            streamId: crypto.randomUUID(),
+            payload: {
+              courseId: enrollment.courseId,
+              userId: event.streamId,
+            },
+            version: enrollment.version + 1,
+          }),
+        );
+      }
     });
   },
 });

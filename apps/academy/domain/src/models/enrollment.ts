@@ -26,15 +26,21 @@ export const EnrollmentModel = new AggregateModel(
 export type EnrollmentModel = typeof EnrollmentModel;
 export type Enrollment = Infer<EnrollmentModel>;
 
-// Event for when a user is enrolled in a course
 export const UserEnrolledEvent = new DomainEvent("UserEnrolled", {
   userId: Field.uuid(),
   courseId: Field.uuid(),
 });
-
 export type UserEnrolledEvent = EventToType<typeof UserEnrolledEvent>;
 
-export const EnrollmentEvents = [UserEnrolledEvent] as const;
+export const UserUnenrolledEvent = new DomainEvent("UserUnenrolled", {
+  unenrolledBy: Field.uuid(),
+});
+export type UserUnenrolledEvent = EventToType<typeof UserUnenrolledEvent>;
+
+export const EnrollmentEvents = [
+  UserEnrolledEvent,
+  UserUnenrolledEvent,
+] as const;
 
 export const EnrollmentStream = new EventStream(
   EnrollmentModel.name,
@@ -51,5 +57,6 @@ export const EnrollmentProjector = new AggregateProjector(
         userId: event.payload.userId,
         courseId: event.payload.courseId,
       }),
+    UserUnenrolled: () => null,
   },
 );
