@@ -69,6 +69,9 @@ export const EmptyRPCContext: RpcClient = {
   addTagToResource: emptyMock<UseCaseRPC<"addTagToResource">>(),
   addTagToUnit: emptyMock<UseCaseRPC<"addTagToUnit">>(),
   editResource: emptyMock<UseCaseRPC<"editResource">>(),
+  requestPasswordReset: emptyMock<UseCaseRPC<"requestPasswordReset">>(),
+  resetPassword: emptyMock<UseCaseRPC<"resetPassword">>(),
+  resendInvite: emptyMock<UseCaseRPC<"resendInvite">>(),
 };
 
 export const RpcContext = createContext<RpcClient>(EmptyRPCContext);
