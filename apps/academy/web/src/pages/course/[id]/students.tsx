@@ -28,7 +28,7 @@ export default function CourseStudentsPage() {
 
   const [filter, setFilter] = useState("");
 
-  const { showModal } = useModal();
+  const { showModal, showConfirmationModal } = useModal();
 
   const [isLoadingCourse, courseData, courseError] = useQuery(
     "getCourseDetails",
@@ -46,6 +46,7 @@ export default function CourseStudentsPage() {
   );
 
   const resendInvite = useRPC("resendInvite");
+  const cancelInvite = useRPC("cancelInvite");
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
@@ -117,6 +118,41 @@ export default function CourseStudentsPage() {
     showSuccessToast("Invitación reenviada correctamente.");
 
     await refreshStudents();
+  }
+
+  function handleCancelInvite(id: UUID): void {
+    showConfirmationModal({
+      message: "¿Estás seguro de que deseas cancelar esta invitación?",
+      onConfirm: async () => {
+        const result = await cancelInvite({ inviteId: id });
+        if (result.isError()) {
+          const error = result.value;
+          switch (error._tag) {
+            case "UnexpectedError": {
+              showErrorToast(
+                "Ocurrió un error inesperado al cancelar la invitación.",
+              );
+              break;
+            }
+            case "NotFoundError": {
+              showErrorToast("No se encontró la invitación.");
+              break;
+            }
+            default: {
+              exhaustiveCheck(error);
+            }
+          }
+          return;
+        }
+
+        showSuccessToast("Invitación cancelada correctamente.");
+
+        await refreshStudents();
+      },
+      styles: {
+        confirmButton: "bg-red-600 text-white",
+      },
+    });
   }
 
   if (courseData) {
@@ -224,6 +260,7 @@ export default function CourseStudentsPage() {
                   <thead className="bg-dark-alt">
                     <tr>
                       <th className="text-left p-4">Email</th>
+                      <th className="text-left p-4">Fecha de invitación</th>
                       <th className="text-left p-4">Estado</th>
                       <th className="text-left p-4">Acciones</th>
                     </tr>
@@ -238,8 +275,20 @@ export default function CourseStudentsPage() {
                           className="border-t border-gray-800 hover:bg-gray-800"
                         >
                           <td className="p-2">{invite.email}</td>
-                          <td className="p-2 text-warning">Pendiente</td>
                           <td className="p-2">
+                            {/* {invite.createdAt.timestamp} */}
+                            {invite.createdAt.formatDate("es-AR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}{" "}
+                            {invite.createdAt.formatTime("es-AR", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </td>
+                          <td className="p-2 text-warning">Pendiente</td>
+                          <td className="p-2 flex">
                             <Button
                               onClick={() => handleResendInvite(invite.id)}
                               className="bg-primary text-white"
@@ -247,12 +296,21 @@ export default function CourseStudentsPage() {
                             >
                               <Icon name="bx-refresh" />
                             </Button>
+                            <Button
+                              title="Cancelar invitación"
+                              onClick={() => {
+                                handleCancelInvite(invite.id);
+                              }}
+                              className="bg-red-600 text-white ml-2"
+                            >
+                              <Icon name="bx-trash" />
+                            </Button>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={3} className="p-4 text-center">
+                        <td colSpan={4} className="p-4 text-center">
                           No se encontraron invitaciones
                         </td>
                       </tr>
