@@ -1,3 +1,4 @@
+import type { UUID } from "@fabric/core";
 import { exhaustiveCheck, Field, Schema } from "@fabric/core";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -12,7 +13,9 @@ import { LoadingSpinner } from "../../../components/ui/loading-spinner.tsx";
 import { useModal } from "../../../utils/modal/modal-hooks.tsx";
 import { useParsedRouteParams } from "../../../utils/routing/use-route-params.ts";
 import { useQuery } from "../../../utils/rpc/use-query.ts";
+import { useRPC } from "../../../utils/rpc/use-rpc.ts";
 import { showErrorToast } from "../../../utils/toasts/show-error-toast.ts";
+import { showSuccessToast } from "../../../utils/toasts/show-success-toast.ts";
 
 const routeSchema = new Schema({
   id: Field.uuid(),
@@ -41,6 +44,8 @@ export default function CourseStudentsPage() {
       filter: filter.length > 0 ? filter : undefined,
     },
   );
+
+  const resendInvite = useRPC("resendInvite");
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
@@ -87,6 +92,31 @@ export default function CourseStudentsPage() {
         <PlatformFooter />
       </PageContainer>
     );
+  }
+  async function handleResendInvite(id: UUID): Promise<void> {
+    const result = await resendInvite({ inviteId: id });
+    if (result.isError()) {
+      const error = result.value;
+      switch (error._tag) {
+        case "UnexpectedError": {
+          showErrorToast(
+            "Ocurrió un error inesperado al reenviar la invitación.",
+          );
+          break;
+        }
+        case "NotFoundError": {
+          showErrorToast("No se encontró la invitación.");
+          break;
+        }
+        default: {
+          exhaustiveCheck(error);
+        }
+      }
+    }
+
+    showSuccessToast("Invitación reenviada correctamente.");
+
+    await refreshStudents();
   }
 
   if (courseData) {
@@ -209,8 +239,14 @@ export default function CourseStudentsPage() {
                         >
                           <td className="p-2">{invite.email}</td>
                           <td className="p-2 text-warning">Pendiente</td>
-                          <td className="p-2 text-warning">
-                            <Icon name="bx-error" /> En construcción
+                          <td className="p-2">
+                            <Button
+                              onClick={() => handleResendInvite(invite.id)}
+                              className="bg-primary text-white"
+                              title="Reenviar invitación"
+                            >
+                              <Icon name="bx-refresh" />
+                            </Button>
                           </td>
                         </tr>
                       ))
