@@ -2,6 +2,7 @@ import type { JSX, PropsWithChildren } from "react";
 import { Fragment, useCallback, useState } from "react";
 import { ConfirmationModal } from "./components/confirmation-modal.tsx";
 import { LoadingModal } from "./components/loading-modal.tsx";
+import type { ConfirmModalProps } from "./modal-context.tsx";
 import { ModalContext } from "./modal-context.tsx";
 
 export interface Modal {
@@ -22,22 +23,17 @@ export function ModalProvider({ children }: PropsWithChildren) {
     setModals((prevModals) => prevModals.filter((modal) => modal.id !== id));
   }
 
-  const showConfirmationModal = useCallback(
-    (message: string, onConfirm?: () => void, onCancel?: () => void) => {
-      const id = addModal(
-        <ConfirmationModal
-          message={message}
-          onConfirm={onConfirm}
-          onCancel={onCancel}
-          closeModal={() => {
-            closeModal(id);
-          }}
-        />,
-      );
-      return id;
-    },
-    [],
-  );
+  const showConfirmationModal = useCallback((props: ConfirmModalProps) => {
+    const id = addModal(
+      <ConfirmationModal
+        {...props}
+        closeModal={() => {
+          closeModal(id);
+        }}
+      />,
+    );
+    return id;
+  }, []);
 
   return (
     <ModalContext.Provider
