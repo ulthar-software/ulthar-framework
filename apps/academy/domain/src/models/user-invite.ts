@@ -23,6 +23,7 @@ export const UserInviteViewModelProperties = [
   "id",
   "email",
   "role",
+  "createdAt",
 ] as const satisfies (keyof UserInvite)[];
 
 export type UserInviteViewModelProperty =
