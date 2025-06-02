@@ -72,6 +72,7 @@ export const EmptyRPCContext: RpcClient = {
   requestPasswordReset: emptyMock<UseCaseRPC<"requestPasswordReset">>(),
   resetPassword: emptyMock<UseCaseRPC<"resetPassword">>(),
   resendInvite: emptyMock<UseCaseRPC<"resendInvite">>(),
+  cancelInvite: emptyMock<UseCaseRPC<"cancelInvite">>(),
 };
 
 export const RpcContext = createContext<RpcClient>(EmptyRPCContext);
