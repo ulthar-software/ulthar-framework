@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JSONExt, Result, UnexpectedError } from "@fabric/core";
+import { registerDefaultTransformers } from "@fabric/core/default-json-transformers";
 import {
   deserializeError,
   DomainUseCases,
@@ -15,6 +16,8 @@ import { useAuthLogout } from "../auth/use-auth-logout.ts";
 import { useEnv } from "../env/use-env.ts";
 import type { RpcClient } from "./rpc-context.ts";
 import { RpcProvider } from "./rpc-context.ts";
+
+registerDefaultTransformers();
 
 export function ConcreteRpcProvider({ children }: PropsWithChildren) {
   const API_URL = useEnv("API_URL");

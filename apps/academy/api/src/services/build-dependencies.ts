@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import type { TimeService } from "@fabric/core";
 import { Environment, PosixDate } from "@fabric/core";
+import { registerDefaultTransformers } from "@fabric/core/default-json-transformers";
 import { SQLiteStoreDriver } from "@fabric/sqlite-store";
 import type { ScheduledUseCase } from "@ulthar/academy-domain";
 import {
@@ -18,6 +19,8 @@ import { ConcreteAuthService } from "./auth-service.js";
 import { ConcreteCryptoService } from "./crypto-service.js";
 import { EmailQueueService } from "./email-service.js";
 import { ScheduleService } from "./schedule-service.js";
+
+registerDefaultTransformers();
 
 export function initializeDependencies(): AppDependencies {
   const env = initializeEnvironment();
