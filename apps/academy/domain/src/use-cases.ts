@@ -21,6 +21,7 @@ import {
   AddUnitToModuleUseCase,
   AddVideoSectionToUnitUseCase,
   BatchEnrollmentFailedError,
+  CancelInviteUseCase,
   ChangeCourseDescriptionUseCase,
   ChangeCourseTitleUseCase,
   ChangeModuleOrderUseCase,
@@ -114,6 +115,7 @@ export const DomainUseCases = [
   RequestPasswordResetUseCase,
   ResetPasswordUseCase,
   ResendInviteUseCase,
+  CancelInviteUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
