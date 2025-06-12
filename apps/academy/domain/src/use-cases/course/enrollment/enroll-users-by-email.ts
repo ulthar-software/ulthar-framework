@@ -64,10 +64,7 @@ export interface EnrollUsersByEmailOutput {
 export const EnrollUsersByEmailUseCase = new UseCase({
   name: "enrollUsersByEmail",
   type: "command",
-  auth: AccessPolicy.WithPermission(
-    Permission.ENROLL_STUDENTS,
-    Permission.INVITE_USERS,
-  ),
+  auth: AccessPolicy.WithPermission(Permission.ENROLL_STUDENTS),
   inputSchema: EnrollUsersByEmailInputModel,
   effect: (
     { state, events, crypto }: EnrollUsersByEmailDependencies,
