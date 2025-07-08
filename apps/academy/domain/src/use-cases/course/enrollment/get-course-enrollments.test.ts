@@ -3,7 +3,11 @@ import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
 import { createEnrollmentMock } from "../../../models/mocks/create-enrollment-mock.js";
 import { createInvitationMock } from "../../../models/mocks/create-invitation-mock.js";
+import { createModuleMock } from "../../../models/mocks/create-module-mock.js";
+import { createQuestionnaireSectionMock } from "../../../models/mocks/create-questionnaire-section-mock.js";
+import { createUnitMock } from "../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
+import type { User } from "../../../models/user.js";
 import { Permission } from "../../../security/permission.js";
 import { UserRole } from "../../../security/user-role.js";
 import {
@@ -11,227 +15,266 @@ import {
   type MockedDependencies,
 } from "../../../services/mocks/create-mock-services.js";
 import { mockUserAccess } from "../../../utils/mock-user-access.js";
+import { UnauthorizedError } from "../../../utils/use-case.js";
+import { AddQuestionnaireResponseUseCase } from "../add-questionnaire-response.js";
 import { GetCourseEnrollmentsUseCase } from "./get-course-enrollments.js";
 
 describe("Get Course Enrollments Use Case", () => {
   let services: MockedDependencies;
+  let courseOwner: User;
   let courseId: UUID;
+  let moduleId: UUID;
+  let unitId: UUID;
+  let quizId1: UUID;
+  let quizId2: UUID;
+  let testUser1: User;
+  let testUser2: User;
+  let testUser3: User;
+  let testInviteId1: UUID;
+  let testInviteId2: UUID;
+  let testInviteId3: UUID;
 
   beforeEach(async () => {
     services = await createServiceMocks();
 
-    // Create a test course
-    const user = await createUserMock(services);
-    courseId = await createCourseMock(services, user.id, {
+    // Create shared test data
+    courseOwner = await createUserMock(services);
+    courseId = await createCourseMock(services, courseOwner.id, {
       title: "Test Course",
       description: "A course for testing enrollments",
     });
-  });
 
-  test("Should return empty lists when no enrollments exist", async () => {
-    const result = await GetCourseEnrollmentsUseCase.call(
+    // Create course structure for quiz testing
+    moduleId = await createModuleMock(services, courseOwner.id, courseId);
+    unitId = await createUnitMock(services, courseOwner.id, moduleId);
+
+    quizId1 = await createQuestionnaireSectionMock(
+      services,
+      courseOwner.id,
+      unitId,
       {
-        state: services.state,
-        currentUser: mockUserAccess(services, [Permission.ENROLL_STUDENTS]),
+        title: "Quiz 1",
       },
-      { courseId },
-    ).runOrThrow();
+    );
+    quizId2 = await createQuestionnaireSectionMock(
+      services,
+      courseOwner.id,
+      unitId,
+      {
+        title: "Quiz 2",
+      },
+    );
 
-    expect(result).toEqual({
-      students: [],
-      invites: [],
-      totalQuizzes: 0,
+    // Create test users with specific names for filtering tests
+    testUser1 = await createUserMock(services, {
+      firstName: "John",
+      lastName: "Doe",
+    });
+    testUser2 = await createUserMock(services, {
+      firstName: "Jane",
+      lastName: "Smith",
+    });
+    testUser3 = await createUserMock(services, {
+      firstName: "Bob",
+      lastName: "Johnson",
+    });
+
+    // Create test invites with specific emails for filtering tests
+    testInviteId1 = await createInvitationMock(services, {
+      email: "john.doe@example.com",
+      role: UserRole.STUDENT,
+    });
+    testInviteId2 = await createInvitationMock(services, {
+      email: "jane.smith@example.com",
+      role: UserRole.STUDENT,
+    });
+    testInviteId3 = await createInvitationMock(services, {
+      email: "bob.johnson@example.com",
+      role: UserRole.STUDENT,
     });
   });
 
-  test("Should return enrolled users and invites", async () => {
-    // Create users and enroll them
-    const user1 = await createUserMock(services);
-    const user2 = await createUserMock(services);
-
-    await createEnrollmentMock(services, user1.id, courseId);
-    await createEnrollmentMock(services, user2.id, courseId);
-
-    // Create user invites
-    const inviteId1 = await createInvitationMock(services);
-    const inviteId2 = await createInvitationMock(services);
-
-    await createEnrollmentMock(services, inviteId1, courseId);
-    await createEnrollmentMock(services, inviteId2, courseId);
-
-    const result = await GetCourseEnrollmentsUseCase.call(
+  async function callUseCase(filter?: string) {
+    return await GetCourseEnrollmentsUseCase.call(
       {
         state: services.state,
         currentUser: mockUserAccess(services, [Permission.ENROLL_STUDENTS]),
       },
-      { courseId },
+      { courseId, ...(filter && { filter }) },
     ).runOrThrow();
+  }
 
-    expect(result.students).toHaveLength(2);
-    expect(result.students.map((u) => u.id)).toEqual(
-      expect.arrayContaining([user1.id, user2.id]),
-    );
-
-    expect(result.invites).toHaveLength(2);
-    expect(result.invites.map((i) => i.id)).toEqual(
-      expect.arrayContaining([inviteId1, inviteId2]),
-    );
-  });
-
-  test("Should fail when user lacks ENROLL_STUDENTS permission", async () => {
-    const result = await GetCourseEnrollmentsUseCase.call(
+  async function callUseCaseWithoutPermission() {
+    return await GetCourseEnrollmentsUseCase.call(
       {
         state: services.state,
         currentUser: mockUserAccess(services, []),
       },
       { courseId },
     ).run();
+  }
+
+  async function enrollUsersAndInvites() {
+    await createEnrollmentMock(services, testUser1.id, courseId);
+    await createEnrollmentMock(services, testUser2.id, courseId);
+    await createEnrollmentMock(services, testUser3.id, courseId);
+    await createEnrollmentMock(services, testInviteId1, courseId);
+    await createEnrollmentMock(services, testInviteId2, courseId);
+    await createEnrollmentMock(services, testInviteId3, courseId);
+  }
+
+  async function mockCorrectQuizResponse(
+    questionnaireId: UUID,
+    userId: UUID,
+    version: number,
+  ) {
+    await AddQuestionnaireResponseUseCase.call(
+      {
+        ...services,
+        currentUser: mockUserAccess(services, [], userId),
+      },
+      {
+        questionnaireId,
+        questionnaireVersion: version,
+        answers: [0], // for default mock, assume 0 is correct
+      },
+    ).runOrThrow();
+  }
+
+  async function mockWrongQuizResponse(
+    questionnaireId: UUID,
+    userId: UUID,
+    version: number,
+  ) {
+    await AddQuestionnaireResponseUseCase.call(
+      {
+        ...services,
+        currentUser: mockUserAccess(services, [], userId),
+      },
+      {
+        questionnaireId,
+        questionnaireVersion: version,
+        answers: [1], // for default mock, assume 1 is wrong
+      },
+    ).runOrThrow();
+  }
+
+  test("Should return empty lists when no enrollments exist", async () => {
+    const result = await callUseCase();
+
+    expect(result).toEqual({
+      students: [],
+      invites: [],
+      totalQuizzes: 2,
+    });
+  });
+
+  test("Should return enrolled users and invites", async () => {
+    await enrollUsersAndInvites();
+
+    const result = await callUseCase();
+
+    expect(result.students).toHaveLength(3);
+    expect(result.students.map((u) => u.id)).toEqual(
+      expect.arrayContaining([testUser1.id, testUser2.id, testUser3.id]),
+    );
+
+    expect(result.invites).toHaveLength(3);
+    expect(result.invites.map((i) => i.id)).toEqual(
+      expect.arrayContaining([testInviteId1, testInviteId2, testInviteId3]),
+    );
+  });
+
+  test("Should fail when user lacks ENROLL_STUDENTS permission", async () => {
+    const result = await callUseCaseWithoutPermission();
 
     expect(result.isError()).toBe(true);
     const error = result.unwrapErrorOrThrow();
-    expect(error.name).toBe("UnauthorizedError");
+    expect(error).toBeInstanceOf(UnauthorizedError);
   });
 
   test("Should filter enrolled users by search term", async () => {
-    // Create users with specific names
-    const user1 = await createUserMock(services, {
-      firstName: "John",
-      lastName: "Doe",
-    });
-    const user2 = await createUserMock(services, {
-      firstName: "Jane",
-      lastName: "Smith",
-    });
-    const user3 = await createUserMock(services, {
-      firstName: "Bob",
-      lastName: "Johnson",
-    });
+    await enrollUsersAndInvites();
 
-    await createEnrollmentMock(services, user1.id, courseId);
-    await createEnrollmentMock(services, user2.id, courseId);
-    await createEnrollmentMock(services, user3.id, courseId);
-
-    const result = await GetCourseEnrollmentsUseCase.call(
-      {
-        state: services.state,
-        currentUser: mockUserAccess(services, [Permission.ENROLL_STUDENTS]),
-      },
-      { courseId, filter: "john" },
-    ).runOrThrow();
+    const result = await callUseCase("john");
 
     expect(result.students).toHaveLength(2);
     expect(result.students.map((u) => u.id)).toEqual(
-      expect.arrayContaining([user1.id, user3.id]),
+      expect.arrayContaining([testUser1.id, testUser3.id]),
     );
   });
 
   test("Should filter user invites by search term", async () => {
-    // Create invites with specific emails
-    const inviteId1 = await createInvitationMock(services, {
-      email: "john.doe@example.com",
-      role: UserRole.STUDENT,
-    });
-    const inviteId2 = await createInvitationMock(services, {
-      email: "jane.smith@example.com",
-      role: UserRole.STUDENT,
-    });
-    const inviteId3 = await createInvitationMock(services, {
-      email: "bob.johnson@example.com",
-      role: UserRole.STUDENT,
-    });
+    await enrollUsersAndInvites();
 
-    await createEnrollmentMock(services, inviteId1, courseId);
-    await createEnrollmentMock(services, inviteId2, courseId);
-    await createEnrollmentMock(services, inviteId3, courseId);
-
-    const result = await GetCourseEnrollmentsUseCase.call(
-      {
-        state: services.state,
-        currentUser: mockUserAccess(services, [Permission.ENROLL_STUDENTS]),
-      },
-      { courseId, filter: "john" },
-    ).runOrThrow();
+    const result = await callUseCase("john");
 
     expect(result.invites).toHaveLength(2);
     expect(result.invites.map((i) => i.id)).toEqual(
-      expect.arrayContaining([inviteId1, inviteId3]),
+      expect.arrayContaining([testInviteId1, testInviteId3]),
     );
   });
 
   test("Should perform case-insensitive filtering", async () => {
-    const user = await createUserMock(services, {
-      firstName: "Alice",
-      lastName: "Wonder",
-    });
-    await createEnrollmentMock(services, user.id, courseId);
+    await enrollUsersAndInvites();
 
-    const inviteId = await createInvitationMock(services, {
-      email: "alice.wonder@example.com",
-      role: UserRole.STUDENT,
-    });
-    await createEnrollmentMock(services, inviteId, courseId);
+    const result = await callUseCase("JOHN");
 
-    const result = await GetCourseEnrollmentsUseCase.call(
-      {
-        state: services.state,
-        currentUser: mockUserAccess(services, [Permission.ENROLL_STUDENTS]),
-      },
-      { courseId, filter: "ALICE" },
-    ).runOrThrow();
-
-    expect(result.students).toHaveLength(1);
-    expect(result.students[0].id).toBe(user.id);
-    expect(result.invites).toHaveLength(1);
-    expect(result.invites[0].id).toBe(inviteId);
+    expect(result.students).toHaveLength(2);
+    expect(result.students.map((u) => u.id)).toEqual(
+      expect.arrayContaining([testUser1.id, testUser3.id]),
+    );
+    expect(result.invites).toHaveLength(2);
+    expect(result.invites.map((i) => i.id)).toEqual(
+      expect.arrayContaining([testInviteId1, testInviteId3]),
+    );
   });
 
   test("Should return empty results when filter matches nothing", async () => {
-    const user = await createUserMock(services, {
-      firstName: "Test",
-      lastName: "User",
-    });
-    await createEnrollmentMock(services, user.id, courseId);
+    await enrollUsersAndInvites();
 
-    const inviteId = await createInvitationMock(services, {
-      email: "test@example.com",
-      role: UserRole.STUDENT,
-    });
-    await createEnrollmentMock(services, inviteId, courseId);
-
-    const result = await GetCourseEnrollmentsUseCase.call(
-      {
-        state: services.state,
-        currentUser: mockUserAccess(services, [Permission.ENROLL_STUDENTS]),
-      },
-      { courseId, filter: "nonexistent" },
-    ).runOrThrow();
+    const result = await callUseCase("nonexistent");
 
     expect(result.students).toHaveLength(0);
     expect(result.invites).toHaveLength(0);
   });
 
-  test("Should return all results when no filter is provided", async () => {
-    const user = await createUserMock(services, {
-      firstName: "Test",
-      lastName: "User",
-    });
-    await createEnrollmentMock(services, user.id, courseId);
+  test("Should return total quiz count in course", async () => {
+    await enrollUsersAndInvites();
 
-    const inviteId = await createInvitationMock(services, {
-      email: "test@example.com",
-      role: UserRole.STUDENT,
-    });
-    await createEnrollmentMock(services, inviteId, courseId);
+    const result = await callUseCase();
 
-    const result = await GetCourseEnrollmentsUseCase.call(
-      {
-        state: services.state,
-        currentUser: mockUserAccess(services, [Permission.ENROLL_STUDENTS]),
-      },
-      { courseId },
-    ).runOrThrow();
+    expect(result.totalQuizzes).toBe(2);
+  });
 
-    expect(result.students).toHaveLength(1);
-    expect(result.invites).toHaveLength(1);
+  test("Should include quiz results when students have completed quizzes", async () => {
+    await createEnrollmentMock(services, testUser1.id, courseId);
+    await createEnrollmentMock(services, testUser2.id, courseId);
+
+    // User 1 completes both quizzes correctly
+    await mockCorrectQuizResponse(quizId1, testUser1.id, 1);
+    await mockCorrectQuizResponse(quizId2, testUser1.id, 1);
+
+    // User 2 completes one quiz correctly, one incorrectly
+    await mockCorrectQuizResponse(quizId1, testUser2.id, 1);
+    await mockWrongQuizResponse(quizId2, testUser2.id, 1);
+
+    const result = await callUseCase();
+
+    expect(result.students).toHaveLength(2);
+    expect(result.totalQuizzes).toBe(2);
+
+    // Find users in results
+    const user1Result = result.students.find((s) => s.id === testUser1.id);
+    const user2Result = result.students.find((s) => s.id === testUser2.id);
+
+    if (!user1Result || !user2Result) {
+      throw new Error("Test users not found in results");
+    }
+
+    expect(user1Result.quizzesTried).toEqual(2);
+    expect(user1Result.quizzesCompleted).toEqual(2);
+    expect(user2Result.quizzesTried).toEqual(2);
+    expect(user2Result.quizzesCompleted).toEqual(1);
   });
 });

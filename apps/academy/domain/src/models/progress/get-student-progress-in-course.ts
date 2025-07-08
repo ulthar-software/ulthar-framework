@@ -1,15 +1,23 @@
-import type { UUID } from "@fabric/core";
+import type { Effect, StoreQueryError, UUID } from "@fabric/core";
 import type { DomainStateStore } from "../../services/state-store.js";
 import { ModuleModel } from "../module.js";
 import { QuestionnaireResponseModel } from "../questionnaire-response.js";
+import { QuestionnaireSectionModel } from "../sections/questionnaire-section.js";
 import { UnitModel } from "../unit.js";
-import { QuestionnaireSectionModel } from "./questionnaire-section.js";
 
 export function getStudentProgressInCourse(
   state: DomainStateStore,
   courseId: UUID,
   userId: UUID,
-) {
+): Effect<
+  {
+    responseVersion: number;
+    quizVersion: number;
+    quizTitle: string;
+    score: number;
+  }[],
+  StoreQueryError
+> {
   return state
     .from("users")
     .innerJoin({

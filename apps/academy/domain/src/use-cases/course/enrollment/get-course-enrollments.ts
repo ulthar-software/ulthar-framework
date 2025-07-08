@@ -2,7 +2,7 @@ import type { UnexpectedError } from "@fabric/core";
 import { Effect, Field, isLike, Schema, type Infer } from "@fabric/core";
 import { EnrollmentModel } from "../../../models/enrollment.js";
 import { ModuleModel } from "../../../models/module.js";
-import { getStudentProgressInCourse } from "../../../models/sections/get-student-progress-in-course.js";
+import { getStudentProgressInCourse } from "../../../models/progress/get-student-progress-in-course.js";
 import { UnitModel } from "../../../models/unit.js";
 import {
   UserInviteViewModelProperties,
@@ -30,7 +30,8 @@ export interface GetCourseEnrollmentsDependencies {
 }
 
 interface StudentViewModelWithProgress extends UserViewModel {
-  quizzes: number;
+  quizzesTried: number; // Number of quizzes completed with or without full score
+  quizzesCompleted: number; // Number of quizzes completed with full score
 }
 
 export interface GetCourseEnrollmentsOutput {
@@ -96,7 +97,8 @@ export const GetCourseEnrollmentsUseCase = new UseCase({
 
         studentsWithProgress.push({
           ...student,
-          quizzes: quizzes.filter((quiz) => quiz.score === 100).length, // Count only quizzes with full score
+          quizzesTried: quizzes.length, // Count all quizzes done, regardless of score
+          quizzesCompleted: quizzes.filter((quiz) => quiz.score === 100).length, // Count only quizzes with full score
         });
       }
 
