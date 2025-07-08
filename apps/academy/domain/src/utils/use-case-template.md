@@ -1,11 +1,11 @@
 ```ts
-import type { Infer } from "@fabric/core";
+import type { CryptoService, Infer } from "@fabric/core";
 import { Effect, Field, Schema } from "@fabric/core";
 
 export interface TemplateDependencies {
   state: DomainStateStore;
   events: DomainEventStore;
-  crypto: DomainCryptoService;
+  crypto: CryptoService;
   currentUser: UserAccess;
 }
 
