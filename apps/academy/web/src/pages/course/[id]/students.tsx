@@ -1,6 +1,6 @@
 import type { UUID } from "@fabric/core";
 import { exhaustiveCheck, Field, Schema } from "@fabric/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { EnrollUsersModal } from "../../../components/academy/modals/enroll-users-modal.tsx";
 import { PageContainer } from "../../../components/academy/page-container.tsx";
@@ -21,12 +21,17 @@ const routeSchema = new Schema({
   id: Field.uuid(),
 });
 
+type SortKey = "name" | "email" | "progress" | "completed";
+type SortOrder = "asc" | "desc";
+
 export default function CourseStudentsPage() {
   const { id } = useParsedRouteParams(routeSchema, "/");
 
   const navigate = useNavigate();
 
   const [filter, setFilter] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("name");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
   const { showModal, showConfirmationModal } = useModal();
 
@@ -44,6 +49,49 @@ export default function CourseStudentsPage() {
       filter: filter.length > 0 ? filter : undefined,
     },
   );
+
+  const sortedStudents = useMemo(() => {
+    if (!studentsData?.students) {
+      return [];
+    }
+    const data = [...studentsData.students];
+    data.sort((a, b) => {
+      let valA: string | number;
+      let valB: string | number;
+
+      switch (sortKey) {
+        case "name":
+          valA = `${a.firstName} ${a.lastName}`;
+          valB = `${b.firstName} ${b.lastName}`;
+          break;
+        case "email":
+          valA = a.email;
+          valB = b.email;
+          break;
+        case "progress":
+          valA = (a.quizzesTried / studentsData.totalQuizzes) * 100;
+          valB = (b.quizzesTried / studentsData.totalQuizzes) * 100;
+          break;
+        case "completed":
+          valA = (a.quizzesCompleted / studentsData.totalQuizzes) * 100;
+          valB = (b.quizzesCompleted / studentsData.totalQuizzes) * 100;
+          break;
+        default:
+          return 0;
+      }
+
+      if (typeof valA === "string" && typeof valB === "string") {
+        return sortOrder === "asc"
+          ? valA.localeCompare(valB)
+          : valB.localeCompare(valA);
+      }
+      if (typeof valA === "number" && typeof valB === "number") {
+        return sortOrder === "asc" ? valA - valB : valB - valA;
+      }
+      return 0;
+    });
+    return data;
+  }, [studentsData, sortKey, sortOrder]);
 
   const resendInvite = useRPC("resendInvite");
   const cancelInvite = useRPC("cancelInvite");
@@ -155,6 +203,39 @@ export default function CourseStudentsPage() {
     });
   }
 
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortOrder("asc");
+    }
+  };
+
+  const SortableHeader = ({
+    label,
+    sortValue,
+  }: {
+    label: string;
+    sortValue: SortKey;
+  }) => (
+    <th className="text-left p-4">
+      <button
+        onClick={() => {
+          handleSort(sortValue);
+        }}
+        className="flex items-center gap-2 hover:text-primary transition-colors"
+      >
+        {label}
+        {sortKey === sortValue && (
+          <Icon
+            name={sortOrder === "asc" ? "bx-up-arrow-alt" : "bx-down-arrow-alt"}
+          />
+        )}
+      </button>
+    </th>
+  );
+
   if (courseData) {
     return (
       <PageContainer>
@@ -213,38 +294,57 @@ export default function CourseStudentsPage() {
                 <table className="w-full">
                   <thead className="bg-dark-alt">
                     <tr>
-                      <th className="text-left p-4">Nombre completo</th>
-                      <th className="text-left p-4">Email</th>
-                      <th className="text-left p-4">Progreso</th>
+                      <SortableHeader
+                        label="Nombre completo"
+                        sortValue="name"
+                      />
+                      <SortableHeader label="Email" sortValue="email" />
+                      <SortableHeader label="Progreso" sortValue="progress" />
+                      <SortableHeader
+                        label="Completados"
+                        sortValue="completed"
+                      />
                       <th className="text-left p-4">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="bg-gray-900">
-                    {studentsData && studentsData.students.length > 0 ? (
-                      studentsData.students
-                        .sort((a, b) => b.quizzes - a.quizzes)
-                        .map((student) => (
-                          <tr
-                            key={student.id}
-                            className="border-t border-gray-800 hover:bg-gray-800"
-                          >
-                            <td className="p-2">{`${student.firstName} ${student.lastName}`}</td>
-                            <td className="p-2">{student.email}</td>
-                            <td className="p-2">
-                              {(
-                                (student.quizzes / studentsData.totalQuizzes) *
-                                100
-                              ).toFixed(2)}
-                              %
-                            </td>
-                            <td className="p-2 text-warning">
-                              <Icon name="bx-error" /> En construcción
-                            </td>
-                          </tr>
-                        ))
+                    {studentsData && sortedStudents.length > 0 ? (
+                      sortedStudents.map((student) => (
+                        <tr
+                          key={student.id}
+                          className="border-t border-gray-800 hover:bg-gray-800"
+                        >
+                          <td className="p-2">{`${student.firstName} ${student.lastName}`}</td>
+                          <td className="p-2">{student.email}</td>
+                          <td className="p-2">
+                            {(
+                              (student.quizzesTried /
+                                studentsData.totalQuizzes) *
+                              100
+                            ).toFixed(2)}
+                            %
+                          </td>
+                          <td className="p-2">
+                            {(
+                              (student.quizzesCompleted /
+                                studentsData.totalQuizzes) *
+                              100
+                            ).toFixed(2)}
+                            %
+                          </td>
+                          <td className="p-2">
+                            <Button
+                              onClick={() => void 0}
+                              className="bg-primary text-white"
+                            >
+                              <Icon name="bx-detail" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
                     ) : (
                       <tr>
-                        <td colSpan={4} className="p-4 text-center">
+                        <td colSpan={5} className="p-4 text-center">
                           No se encontraron usuarios
                         </td>
                       </tr>
