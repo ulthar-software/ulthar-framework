@@ -3,6 +3,7 @@ import { exhaustiveCheck, Field, Schema } from "@fabric/core";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { EnrollUsersModal } from "../../../components/academy/modals/enroll-users-modal.tsx";
+import { StudentProgressDetailsModal } from "../../../components/academy/modals/student-progress-details-modal.tsx";
 import { PageContainer } from "../../../components/academy/page-container.tsx";
 import { PageContent } from "../../../components/academy/page-content.tsx";
 import { PlatformFooter } from "../../../components/academy/platform-footer.tsx";
@@ -334,7 +335,17 @@ export default function CourseStudentsPage() {
                           </td>
                           <td className="p-2">
                             <Button
-                              onClick={() => void 0}
+                              onClick={() => {
+                                const [closeModal] = showModal(
+                                  <StudentProgressDetailsModal
+                                    studentId={student.id}
+                                    modules={courseData.modules}
+                                    closeModal={() => {
+                                      closeModal();
+                                    }}
+                                  />,
+                                );
+                              }}
                               className="bg-primary text-white"
                             >
                               <Icon name="bx-detail" />
