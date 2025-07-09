@@ -30,6 +30,7 @@ export interface GetDetailedStudentProgressOutput {
 export interface QuizProgress {
   quizId: string;
   quizTitle: string;
+  attempts: number;
   score?: number;
   isCurrentVersion?: boolean;
 }
@@ -105,6 +106,7 @@ export const GetDetailedStudentProgressUseCase = new UseCase({
         .where({ "m.id": moduleId, userId: studentId })
         .select([
           "score",
+          "version",
           "questionnaireVersion",
           "questionnaireId",
           "qs.version",
@@ -117,20 +119,20 @@ export const GetDetailedStudentProgressUseCase = new UseCase({
 
       return {
         progress: Math.round((studentQuizCount / moduleQuizCount) * 100),
-        quizzes: moduleQuizzes.map((qs) => ({
-          quizId: qs.id,
-          quizTitle: qs.title,
-          score: studentQuizResponses.find(
-            (qr) =>
-              qr.questionnaireId === qs.id &&
-              qr.questionnaireVersion === qr["qs.version"],
-          )?.score,
-          isCurrentVersion: studentQuizResponses.some(
-            (qr) =>
-              qr.questionnaireId === qs.id &&
-              qr.questionnaireVersion === qr["qs.version"],
-          ),
-        })),
+        quizzes: moduleQuizzes.map((qs) => {
+          const qResponse = studentQuizResponses.find(
+            (qr) => qr.questionnaireId === qs.id,
+          );
+          return {
+            quizId: qs.id,
+            quizTitle: qs.title,
+            attempts: qResponse?.version ?? 0,
+            score: qResponse?.score,
+            isCurrentVersion: qResponse
+              ? qResponse["qs.version"] === qResponse.questionnaireVersion
+              : false,
+          };
+        }),
       };
     });
   },
