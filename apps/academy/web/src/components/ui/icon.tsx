@@ -11,10 +11,15 @@ export interface IconProps {
    * The Boxicons icon name, including the prefix. (bx, bxs, bxl)
    */
   name: IconName;
+
+  /**
+   * Optional title for the icon, used for accessibility.
+   */
+  title?: string;
 }
 
-export function Icon({ name, className = "" }: IconProps) {
-  return <i className={clx("bx", name, className)}></i>;
+export function Icon({ name, className = "", title }: IconProps) {
+  return <i className={clx("bx", name, className)} title={title}></i>;
 }
 
 export type IconName =
