@@ -1,4 +1,4 @@
-import type { Infer, StoreQueryError, UnexpectedError } from "@fabric/core";
+import type { Infer, UnexpectedError } from "@fabric/core";
 import { Effect, Field, Schema } from "@fabric/core";
 import { EnrollmentModel } from "../../../models/enrollment.js";
 import { QuestionnaireSectionModel } from "../../../models/index.js";
@@ -35,7 +35,7 @@ export const GetProgressByModuleUseCase = new UseCase({
     { moduleId }: GetProgressByModuleInput,
   ): Effect<
     GetProgressByModuleOutput,
-    StoreQueryError | UnexpectedError | ModuleNotFoundError
+    UnexpectedError | ModuleNotFoundError
   > => {
     return Effect.fromGen(function* () {
       const courseId = yield* state
