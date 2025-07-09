@@ -41,6 +41,8 @@ import {
   GetCourseDetailsUseCase,
   GetCourseEnrollmentsUseCase,
   GetCurrentUserUseCase,
+  GetDetailedStudentProgressUseCase,
+  GetProgressByModuleUseCase,
   GetQuestionnaireResponseUseCase,
   GetResourcesByUnitTagsUseCase,
   GetTagsUseCase,
@@ -116,6 +118,8 @@ export const DomainUseCases = [
   ResetPasswordUseCase,
   ResendInviteUseCase,
   CancelInviteUseCase,
+  GetDetailedStudentProgressUseCase,
+  GetProgressByModuleUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
