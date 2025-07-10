@@ -91,7 +91,9 @@ export function StudentProgressDetailsModal({
                     />
                   </div>
                 </div>
-                <p className="text-sm text-gray-400">Intentos: {quiz.tries}</p>
+                <p className="text-sm text-gray-400">
+                  Intentos: {quiz.attempts}
+                </p>
                 <p className="text-sm text-gray-400">
                   Ultimo puntaje: {quiz.score ?? "N/A"}
                 </p>
