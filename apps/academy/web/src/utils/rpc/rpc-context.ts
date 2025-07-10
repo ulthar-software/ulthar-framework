@@ -73,6 +73,9 @@ export const EmptyRPCContext: RpcClient = {
   resetPassword: emptyMock<UseCaseRPC<"resetPassword">>(),
   resendInvite: emptyMock<UseCaseRPC<"resendInvite">>(),
   cancelInvite: emptyMock<UseCaseRPC<"cancelInvite">>(),
+  getDetailedStudentProgress:
+    emptyMock<UseCaseRPC<"getDetailedStudentProgress">>(),
+  getProgressByModule: emptyMock<UseCaseRPC<"getProgressByModule">>(),
 };
 
 export const RpcContext = createContext<RpcClient>(EmptyRPCContext);
