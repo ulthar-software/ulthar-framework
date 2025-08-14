@@ -18,6 +18,9 @@ export const UnitModel = new AggregateModel("units", {
   createdBy: Field.reference({
     targetModel: "users",
   }),
+  deletedAt: Field.posixDate({
+    isOptional: true,
+  }),
 });
 
 export type UnitModel = typeof UnitModel;
@@ -50,10 +53,15 @@ export const UnitOrderChangedEvent = new DomainEvent("UnitOrderChanged", {
 
 export type UnitOrderChangedEvent = EventToType<typeof UnitOrderChangedEvent>;
 
+export const UnitDeletedEvent = new DomainEvent("UnitDeleted", {});
+
+export type UnitDeletedEvent = EventToType<typeof UnitDeletedEvent>;
+
 export const UnitEvents = [
   UnitAddedEvent,
   UnitTitleChangedEvent,
   UnitOrderChangedEvent,
+  UnitDeletedEvent,
 ] as const;
 
 export const UnitStream = new EventStream(UnitModel.name, UnitEvents);
@@ -71,6 +79,10 @@ export const UnitProjector = new AggregateProjector(
     UnitOrderChanged: (event, unit): Unit =>
       UnitModel.update(unit, event, {
         order: event.payload.order,
+      }),
+    UnitDeleted: (event, unit): Unit =>
+      UnitModel.update(unit, event, {
+        deletedAt: event.timestamp,
       }),
   },
 );
