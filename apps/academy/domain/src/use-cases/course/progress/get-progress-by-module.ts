@@ -40,7 +40,7 @@ export const GetProgressByModuleUseCase = new UseCase({
     return Effect.fromGen(function* () {
       const courseId = yield* state
         .from("modules")
-        .where({ id: moduleId })
+        .where({ id: moduleId, deletedAt: undefined })
         .selectOneOrFail(["courseId"])
         .map((row) => row.courseId)
         .mapError(() => new ModuleNotFoundError(moduleId));
@@ -57,7 +57,7 @@ export const GetProgressByModuleUseCase = new UseCase({
           as: "m",
           on: { left: "u.moduleId", right: "id" },
         })
-        .where({ "m.id": moduleId })
+        .where({ "m.id": moduleId, "m.deletedAt": undefined })
         .count();
 
       const userEnrolledInCourse = yield* state
@@ -92,7 +92,7 @@ export const GetProgressByModuleUseCase = new UseCase({
           as: "m",
           on: { left: "u.moduleId", right: "id" },
         })
-        .where({ "m.id": moduleId })
+        .where({ "m.id": moduleId, "m.deletedAt": undefined })
         .select([
           "qr.questionnaireVersion",
           "qs.version",

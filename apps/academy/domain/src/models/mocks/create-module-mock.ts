@@ -30,19 +30,27 @@ export async function createModuleMock(
   ).runOrThrow();
 
   if (module.deletedAt) {
-    await DeleteModuleUseCase.call(
-      {
-        ...services,
-        currentUser: {
-          id: userId,
-          permissions: [Permission.EDIT_COURSE],
-        },
-      },
-      {
-        moduleId: moduleResult.moduleId,
-      },
-    ).runOrThrow();
+    await deleteModuleMock(services, userId, moduleResult.moduleId);
   }
 
   return moduleResult.moduleId;
+}
+
+export async function deleteModuleMock(
+  services: MockedDependencies,
+  userId: UUID,
+  moduleId: UUID,
+): Promise<void> {
+  await DeleteModuleUseCase.call(
+    {
+      ...services,
+      currentUser: {
+        id: userId,
+        permissions: [Permission.EDIT_COURSE],
+      },
+    },
+    {
+      moduleId,
+    },
+  ).runOrThrow();
 }

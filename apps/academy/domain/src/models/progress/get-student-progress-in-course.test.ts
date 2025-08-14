@@ -9,7 +9,10 @@ import {
 import { mockUserAccess } from "../../utils/mock-user-access.js";
 import { createCourseMock } from "../mocks/create-course-mock.js";
 import { createEnrollmentMock } from "../mocks/create-enrollment-mock.js";
-import { createModuleMock } from "../mocks/create-module-mock.js";
+import {
+  createModuleMock,
+  deleteModuleMock,
+} from "../mocks/create-module-mock.js";
 import { createQuestionnaireSectionMock } from "../mocks/create-questionnaire-section-mock.js";
 import { createUnitMock } from "../mocks/create-unit-mock.js";
 import { createUserMock } from "../mocks/create-user-mock.js";
@@ -129,6 +132,25 @@ describe("Get User Progress in Course", () => {
 
     // Act - Update the quiz and submit a new response
     await updateQuiz(existingQuizId1);
+
+    const result = await getStudentProgressInCourse(
+      services.state,
+      existingCourseId,
+      user.id,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toEqual([]);
+  });
+
+  test("Given a deleted module, it should not count for the progress", async () => {
+    // Arrange - Create a new user and submit a response
+    await mockCorrectQuizResponse(existingQuizId1, 1);
+    await mockCorrectQuizResponse(existingQuizId2, 1);
+    await mockWrongQuizResponse(existingQuizId3, 1);
+
+    // Act - Delete the module and check progress
+    await deleteModuleMock(services, user.id, existingModuleId);
 
     const result = await getStudentProgressInCourse(
       services.state,

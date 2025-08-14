@@ -88,7 +88,7 @@ function getUnitFromMaybeId(
   // Find the first module of the course
   return state
     .from("modules")
-    .where({ courseId })
+    .where({ courseId, deletedAt: undefined })
     .orderBy({ order: "ASC" })
     .limit(1)
     .selectOneOrFail()

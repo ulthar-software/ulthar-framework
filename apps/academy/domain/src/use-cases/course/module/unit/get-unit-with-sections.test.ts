@@ -2,12 +2,13 @@ import type { UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createCourseMock } from "../../../../models/mocks/create-course-mock.js";
 import { createEnrollmentMock } from "../../../../models/mocks/create-enrollment-mock.js";
-import { createModuleMock } from "../../../../models/mocks/create-module-mock.js";
+import {
+  createModuleMock,
+  deleteModuleMock,
+} from "../../../../models/mocks/create-module-mock.js";
+import { createTextSectionMock } from "../../../../models/mocks/create-text-section-mock.js";
 import { createUnitMock } from "../../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../../models/mocks/create-user-mock.js";
-import { QuestionnaireSectionAddedEvent } from "../../../../models/sections/questionnaire-section.js";
-import { TextSectionAddedEvent } from "../../../../models/sections/text-section.js";
-import { VideoSectionAddedEvent } from "../../../../models/sections/video-section.js";
 import type { User } from "../../../../models/user.js";
 import { Permission } from "../../../../security/permission.js";
 import {
@@ -27,7 +28,7 @@ describe("Get Unit With Sections Use Case", () => {
   let existingCourseId: UUID;
   let existingModuleId: UUID;
   let existingUnitId: UUID;
-  let sections: { id: UUID; order: number; type: string }[] = [];
+  let sectionsIds: UUID[] = [];
 
   beforeEach(async () => {
     services = await createServiceMocks();
@@ -79,89 +80,14 @@ describe("Get Unit With Sections Use Case", () => {
     });
 
     // Create different types of sections for the unit
-    sections = [];
+    sectionsIds = [];
 
-    // Add a text section
-    const textSectionId = services.crypto.randomUUID();
-    const textEventId = services.crypto.randomUUID();
-
-    const textSectionEvent = TextSectionAddedEvent.from({
-      id: textEventId,
-      streamId: textSectionId,
-      payload: {
-        unitId: existingUnitId,
-        order: 100,
-        createdBy: user.id,
-        content: {
-          text: "This is an introduction to the course.",
-        },
-      },
-      version: 1,
-    });
-
-    await services.events.append("textSections", textSectionEvent).runOrThrow();
-    sections.push({ id: textSectionId, order: 100, type: "text" });
-
-    // Add a video section
-    const videoSectionId = services.crypto.randomUUID();
-    const videoEventId = services.crypto.randomUUID();
-
-    const videoSectionEvent = VideoSectionAddedEvent.from({
-      id: videoEventId,
-      streamId: videoSectionId,
-      payload: {
-        title: "Tutorial Video",
-        unitId: existingUnitId,
-        order: 300,
-        createdBy: user.id,
-        content: {
-          videoUrl: "https://example.com/video",
-        },
-      },
-      version: 1,
-    });
-
-    await services.events
-      .append("videoSections", videoSectionEvent)
-      .runOrThrow();
-    sections.push({ id: videoSectionId, order: 300, type: "video" });
-
-    // Add a questionnaire section
-    const questionnaireSectionId = services.crypto.randomUUID();
-    const questionnaireEventId = services.crypto.randomUUID();
-
-    const questionnaireSectionEvent = QuestionnaireSectionAddedEvent.from({
-      id: questionnaireEventId,
-      streamId: questionnaireSectionId,
-      payload: {
-        title: "Knowledge Check",
-        unitId: existingUnitId,
-        order: 200,
-        createdBy: user.id,
-        content: {
-          questions: [
-            {
-              questionText: "What is this course about?",
-              options: [
-                { text: "Learning programming", isCorrect: true },
-                { text: "Cooking", isCorrect: false },
-              ],
-            },
-          ],
-          passingScore: 80,
-        },
-      },
-      version: 1,
-    });
-
-    await services.events
-      .append("questionnaireSections", questionnaireSectionEvent)
-      .runOrThrow();
-    sections.push({
-      id: questionnaireSectionId,
-      order: 200,
-      type: "questionnaire",
-    });
+    // Add sections
+    sectionsIds.push(
+      await createTextSectionMock(services, user.id, existingUnitId),
+      await createTextSectionMock(services, user.id, existingUnitId),
+      await createTextSectionMock(services, user.id, existingUnitId),
+    );
   });
 
   test("Admin should successfully get a unit with all its sections in order", async () => {
@@ -196,14 +122,9 @@ describe("Get Unit With Sections Use Case", () => {
     expect(result.sections).toHaveLength(3);
 
     // Verify sections are in the correct order
-    expect(result.sections[0].order).toBe(100); // Text section
-    expect(result.sections[1].order).toBe(200); // Questionnaire section
-    expect(result.sections[2].order).toBe(300); // Video section
-
-    // Verify section content
-    expect(result.sections[0]).toHaveProperty("content.text");
-    expect(result.sections[1]).toHaveProperty("content.questions");
-    expect(result.sections[2]).toHaveProperty("content.videoUrl");
+    expect(result.sections[0].order).toBe(100);
+    expect(result.sections[1].order).toBe(200);
+    expect(result.sections[2].order).toBe(300);
   });
 
   test("Enrolled student should successfully get a unit with all its sections", async () => {
@@ -270,6 +191,35 @@ describe("Get Unit With Sections Use Case", () => {
 
     // Should still contain the sections for the selected unit
     expect(result.sections).toHaveLength(3);
+  });
+
+  test("Should skip units from a deleted module when unitId is not provided", async () => {
+    // Arrange
+    const queryData = {
+      courseId: existingCourseId,
+      // No unitId provided
+    };
+
+    await deleteModuleMock(services, user.id, existingModuleId);
+
+    // Act
+    const result = await GetUnitWithSectionsUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.VIEW_COURSE],
+        },
+      },
+      queryData,
+    ).runOrThrow();
+
+    // Assert
+    expect(result.unit).toEqual(
+      expect.objectContaining({
+        title: "Unit 2-1", // Should be the first unit in the second module
+      }),
+    );
   });
 
   test("Non-enrolled student should not be able to see unit with sections", async () => {

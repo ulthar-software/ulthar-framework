@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createServiceMocks, type MockedDependencies } from "../../../mocks.js";
 import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
 import { createEnrollmentMock } from "../../../models/mocks/create-enrollment-mock.js";
-import { createModuleMock } from "../../../models/mocks/create-module-mock.js";
+import {
+  createModuleMock,
+  deleteModuleMock,
+} from "../../../models/mocks/create-module-mock.js";
 import { createQuestionnaireSectionMock } from "../../../models/mocks/create-questionnaire-section-mock.js";
 import { createUnitMock } from "../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
@@ -158,6 +161,22 @@ describe("getModuleProgress", () => {
         },
         {
           moduleId: nonExistentModuleId,
+        },
+      ).runOrThrow(),
+    ).rejects.toThrow(ModuleNotFoundError);
+  });
+
+  test("Should fail if the module is deleted", async () => {
+    await deleteModuleMock(services, user1.id, module1Id);
+
+    await expect(
+      GetProgressByModuleUseCase.call(
+        {
+          ...services,
+          currentUser,
+        },
+        {
+          moduleId: module1Id,
         },
       ).runOrThrow(),
     ).rejects.toThrow(ModuleNotFoundError);

@@ -1,9 +1,8 @@
 import type { UnexpectedError } from "@fabric/core";
 import { Effect, Field, isLike, Schema, type Infer } from "@fabric/core";
 import { EnrollmentModel } from "../../../models/enrollment.js";
-import { ModuleModel } from "../../../models/module.js";
 import { getStudentProgressInCourse } from "../../../models/progress/get-student-progress-in-course.js";
-import { UnitModel } from "../../../models/unit.js";
+import { getQuestionnairesCountFromCourse } from "../../../models/sections/get-all-questionnaires-from-course.js";
 import {
   UserInviteViewModelProperties,
   type UserInviteViewModel,
@@ -50,20 +49,10 @@ export const GetCourseEnrollmentsUseCase = new UseCase({
     { courseId, filter }: GetCourseEnrollmentsInput,
   ): Effect<GetCourseEnrollmentsOutput, UnexpectedError> => {
     return Effect.fromGen(function* () {
-      const questionnaireCount = yield* state
-        .from("questionnaireSections")
-        .innerJoin({
-          model: UnitModel,
-          as: "u",
-          on: { left: "unitId", right: "id" },
-        })
-        .innerJoin({
-          model: ModuleModel,
-          as: "m",
-          on: { left: "u.moduleId", right: "id" },
-        })
-        .where({ "m.courseId": courseId })
-        .count();
+      const questionnaireCount = yield* getQuestionnairesCountFromCourse(
+        state,
+        courseId,
+      );
 
       const students = yield* state
         .from("users")

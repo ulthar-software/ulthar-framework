@@ -1,11 +1,14 @@
-import type { UUID } from "@fabric/core";
+import { type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
 import {
   createServiceMocks,
   type MockedDependencies,
 } from "../../services/mocks/create-mock-services.js";
 import { createCourseMock } from "../mocks/create-course-mock.js";
-import { createModuleMock } from "../mocks/create-module-mock.js";
+import {
+  createModuleMock,
+  deleteModuleMock,
+} from "../mocks/create-module-mock.js";
 import { createQuestionnaireSectionMock } from "../mocks/create-questionnaire-section-mock.js";
 import { createUnitMock } from "../mocks/create-unit-mock.js";
 import { createUserMock } from "../mocks/create-user-mock.js";
@@ -79,5 +82,41 @@ describe("Get All Questionnaires Count From Course", () => {
 
     // Assert
     expect(result).toHaveLength(2);
+  });
+
+  test("Should not count deleted modules", async () => {
+    // Arrange - Add multiple questionnaire sections
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+
+    // Arrange - Delete the module
+    await deleteModuleMock(services, user.id, existingModuleId);
+
+    // Act
+    const result = await getQuestionnairesCountFromCourse(
+      services.state,
+      existingCourseId,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toBe(0);
+  });
+
+  test("Should return no questionnaires from a deleted module", async () => {
+    // Arrange - Add multiple questionnaire sections
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+
+    // Arrange - Delete the module
+    await deleteModuleMock(services, user.id, existingModuleId);
+
+    // Act
+    const result = await getQuestionnairesFromCourse(
+      services.state,
+      existingCourseId,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toHaveLength(0);
   });
 });

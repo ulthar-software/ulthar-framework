@@ -4,7 +4,10 @@ import type { MockedDependencies } from "../../../mocks.js";
 import { createServiceMocks } from "../../../mocks.js";
 import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
 import { createEnrollmentMock } from "../../../models/mocks/create-enrollment-mock.js";
-import { createModuleMock } from "../../../models/mocks/create-module-mock.js";
+import {
+  createModuleMock,
+  deleteModuleMock,
+} from "../../../models/mocks/create-module-mock.js";
 import { createQuestionnaireSectionMock } from "../../../models/mocks/create-questionnaire-section-mock.js";
 import { createUnitMock } from "../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
@@ -12,6 +15,7 @@ import type { User } from "../../../models/user.js";
 import type { UserAccess } from "../../../services/auth-service.js";
 import { mockUserAccess } from "../../../utils/mock-user-access.js";
 import { AddQuestionnaireResponseUseCase } from "../add-questionnaire-response.js";
+import { ModuleNotFoundError } from "../index.js";
 import { EditQuestionnaireSectionContentUseCase } from "../module/index.js";
 import { GetDetailedStudentProgressUseCase } from "./get-detailed-student-progress.js";
 
@@ -156,6 +160,29 @@ describe("GetDetailedStudentProgress Use Case", () => {
         },
       ],
     });
+  });
+
+  test("should fail to return quizzes from a deleted module", async () => {
+    await mockCorrectQuizResponse(quiz1, user.id, 1);
+    await mockCorrectQuizResponse(quiz2, user.id, 1);
+
+    await deleteModuleMock(services, user.id, module1Id);
+
+    const result = await GetDetailedStudentProgressUseCase.call(
+      {
+        ...services,
+        currentUser,
+      },
+      {
+        moduleId: module1Id,
+        studentId: user.id,
+      },
+    ).run();
+
+    expect(result.isError()).toBe(true);
+    const error = result.unwrapErrorOrThrow();
+    expect(error).toBeInstanceOf(ModuleNotFoundError);
+    expect((error as ModuleNotFoundError).moduleId).toBe(module1Id);
   });
 
   async function mockCorrectQuizResponse(

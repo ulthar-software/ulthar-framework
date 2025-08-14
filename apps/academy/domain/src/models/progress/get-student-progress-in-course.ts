@@ -40,7 +40,7 @@ export function getStudentProgressInCourse(
       as: "m",
       on: { left: "u.moduleId", right: "id" },
     })
-    .where({ "m.courseId": courseId, id: userId })
+    .where({ "m.courseId": courseId, id: userId, "m.deletedAt": undefined })
     .select(["qr.questionnaireVersion", "qs.version", "qs.title", "qr.score"])
     .map((rows) => {
       return rows

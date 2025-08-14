@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createCourseMock } from "../../../models/mocks/create-course-mock.js";
 import { createEnrollmentMock } from "../../../models/mocks/create-enrollment-mock.js";
 import { createInvitationMock } from "../../../models/mocks/create-invitation-mock.js";
-import { createModuleMock } from "../../../models/mocks/create-module-mock.js";
+import {
+  createModuleMock,
+  deleteModuleMock,
+} from "../../../models/mocks/create-module-mock.js";
 import { createQuestionnaireSectionMock } from "../../../models/mocks/create-questionnaire-section-mock.js";
 import { createUnitMock } from "../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
@@ -276,5 +279,39 @@ describe("Get Course Enrollments Use Case", () => {
     expect(user1Result.quizzesCompleted).toEqual(2);
     expect(user2Result.quizzesTried).toEqual(2);
     expect(user2Result.quizzesCompleted).toEqual(1);
+  });
+
+  test("should not include quiz results from deleted modules", async () => {
+    await createEnrollmentMock(services, testUser1.id, courseId);
+    await createEnrollmentMock(services, testUser2.id, courseId);
+
+    // User 1 completes both quizzes correctly
+    await mockCorrectQuizResponse(quizId1, testUser1.id, 1);
+    await mockCorrectQuizResponse(quizId2, testUser1.id, 1);
+
+    // User 2 completes one quiz correctly, one incorrectly
+    await mockCorrectQuizResponse(quizId1, testUser2.id, 1);
+    await mockWrongQuizResponse(quizId2, testUser2.id, 1);
+
+    // Arrange - Delete the module
+    await deleteModuleMock(services, courseOwner.id, moduleId);
+
+    const result = await callUseCase();
+
+    expect(result.students).toHaveLength(2);
+    expect(result.totalQuizzes).toBe(0);
+
+    // Find users in results
+    const user1Result = result.students.find((s) => s.id === testUser1.id);
+    const user2Result = result.students.find((s) => s.id === testUser2.id);
+
+    if (!user1Result || !user2Result) {
+      throw new Error("Test users not found in results");
+    }
+
+    expect(user1Result.quizzesTried).toEqual(0);
+    expect(user1Result.quizzesCompleted).toEqual(0);
+    expect(user2Result.quizzesTried).toEqual(0);
+    expect(user2Result.quizzesCompleted).toEqual(0);
   });
 });

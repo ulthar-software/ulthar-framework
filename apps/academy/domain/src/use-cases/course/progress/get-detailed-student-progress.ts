@@ -52,7 +52,7 @@ export const GetDetailedStudentProgressUseCase = new UseCase({
       // Check if the course exists
       const courseId = yield* state
         .from("modules")
-        .where({ id: moduleId })
+        .where({ id: moduleId, deletedAt: undefined })
         .selectOneOrFail(["courseId"])
         .map((row) => row.courseId)
         .mapError(() => new ModuleNotFoundError(moduleId));
