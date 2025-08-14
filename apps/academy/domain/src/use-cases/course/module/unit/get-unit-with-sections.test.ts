@@ -7,7 +7,10 @@ import {
   deleteModuleMock,
 } from "../../../../models/mocks/create-module-mock.js";
 import { createTextSectionMock } from "../../../../models/mocks/create-text-section-mock.js";
-import { createUnitMock } from "../../../../models/mocks/create-unit-mock.js";
+import {
+  createUnitMock,
+  deleteUnitMock,
+} from "../../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../../models/user.js";
 import { Permission } from "../../../../security/permission.js";
@@ -218,6 +221,35 @@ describe("Get Unit With Sections Use Case", () => {
     expect(result.unit).toEqual(
       expect.objectContaining({
         title: "Unit 2-1", // Should be the first unit in the second module
+      }),
+    );
+  });
+
+  test("Should skip deleted units when unitId is not provided", async () => {
+    // Arrange
+    const queryData = {
+      courseId: existingCourseId,
+      // No unitId provided
+    };
+
+    await deleteUnitMock(services, user.id, existingUnitId);
+
+    // Act
+    const result = await GetUnitWithSectionsUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.VIEW_COURSE],
+        },
+      },
+      queryData,
+    ).runOrThrow();
+
+    // Assert
+    expect(result.unit).toEqual(
+      expect.objectContaining({
+        title: "Unit 1-2", // Should be the first unit in the second module
       }),
     );
   });

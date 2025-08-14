@@ -61,6 +61,10 @@ describe("Get Course Details Use Case", () => {
       await createUnitMock(services, user.id, moduleIds[1], {
         title: "Unit 2-1",
       }),
+      await createUnitMock(services, user.id, moduleIds[1], {
+        title: "Unit 2-2",
+        deletedAt: PosixDate.now(), //this unit is deleted, it should not appear in results
+      }),
     ];
   });
 
@@ -92,7 +96,7 @@ describe("Get Course Details Use Case", () => {
     );
 
     // Check modules
-    expect(result.modules).toHaveLength(2);
+    expect(result.modules).toHaveLength(2); //One module is deleted from the course
     expect(result.modules[0].id).toBe(moduleIds[0]);
     expect(result.modules[0].title).toBe("Module 1");
     expect(result.modules[1].id).toBe(moduleIds[1]);
@@ -106,7 +110,7 @@ describe("Get Course Details Use Case", () => {
     expect(result.modules[0].units[1].title).toBe("Unit 1-2");
 
     // Check units in second module
-    expect(result.modules[1].units).toHaveLength(1);
+    expect(result.modules[1].units).toHaveLength(1); //One unit is deleted from this module
     expect(result.modules[1].units[0].id).toBe(unitIds[2]);
     expect(result.modules[1].units[0].title).toBe("Unit 2-1");
   });

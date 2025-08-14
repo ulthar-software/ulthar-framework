@@ -98,6 +98,7 @@ export const GetCourseDetailsUseCase = new UseCase({
               .from("units")
               .where({
                 moduleId: isIn(moduleIds),
+                deletedAt: undefined, // Only fetch non-deleted units
               })
               .orderBy({ order: "ASC" })
               .select()

@@ -97,7 +97,7 @@ function getUnitFromMaybeId(
       // Find the first unit in that module
       return state
         .from("units")
-        .where({ moduleId: firstModule.id })
+        .where({ moduleId: firstModule.id, deletedAt: undefined })
         .orderBy({ order: "ASC" })
         .limit(1)
         .selectOneOrFail()
