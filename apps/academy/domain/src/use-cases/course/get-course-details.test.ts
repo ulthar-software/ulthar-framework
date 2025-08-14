@@ -1,4 +1,4 @@
-import type { UUID } from "@fabric/core";
+import { PosixDate, type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createCourseMock } from "../../models/mocks/create-course-mock.js";
 import { createEnrollmentMock } from "../../models/mocks/create-enrollment-mock.js";
@@ -42,6 +42,11 @@ describe("Get Course Details Use Case", () => {
       await createModuleMock(services, user.id, existingCourseId, {
         title: "Module 2",
         description: "Second module",
+      }),
+      await createModuleMock(services, user.id, existingCourseId, {
+        title: "Module 3",
+        description: "Third module",
+        deletedAt: PosixDate.now(), //this module is deleted, it should not appear in results
       }),
     ];
 

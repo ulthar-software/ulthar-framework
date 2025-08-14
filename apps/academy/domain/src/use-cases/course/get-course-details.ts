@@ -77,7 +77,7 @@ export const GetCourseDetailsUseCase = new UseCase({
         // Get all modules for this course
         return state
           .from("modules")
-          .where({ courseId })
+          .where({ courseId, deletedAt: undefined })
           .orderBy({ order: "ASC" })
           .select()
           .mapError(() => new UnexpectedError())

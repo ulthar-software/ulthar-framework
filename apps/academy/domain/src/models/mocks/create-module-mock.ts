@@ -1,8 +1,11 @@
 import type { UUID } from "@fabric/core";
 import { Permission } from "../../security/permission.js";
 import type { MockedDependencies } from "../../services/mocks/create-mock-services.js";
-import { AddModuleToCourseUseCase } from "../../use-cases/index.js";
-import type { Module } from "../module.js";
+import {
+  AddModuleToCourseUseCase,
+  DeleteModuleUseCase,
+} from "../../use-cases/index.js";
+import { type Module } from "../module.js";
 
 export async function createModuleMock(
   services: MockedDependencies,
@@ -25,6 +28,21 @@ export async function createModuleMock(
       description: module.description ?? "A module for testing",
     },
   ).runOrThrow();
+
+  if (module.deletedAt) {
+    await DeleteModuleUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: userId,
+          permissions: [Permission.EDIT_COURSE],
+        },
+      },
+      {
+        moduleId: moduleResult.moduleId,
+      },
+    ).runOrThrow();
+  }
 
   return moduleResult.moduleId;
 }

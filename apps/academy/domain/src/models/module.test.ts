@@ -253,7 +253,7 @@ describe("Module", () => {
         description: "Deep dive into advanced JavaScript features and patterns",
         updatedBy,
       },
-      version: 3n,
+      version: 3,
     });
 
     const afterDescUpdate = ModuleProjector.project(
@@ -270,7 +270,7 @@ describe("Module", () => {
         order: 2,
         updatedBy,
       },
-      version: 4n,
+      version: 4,
     });
 
     const finalModule = ModuleProjector.project(
@@ -285,7 +285,7 @@ describe("Module", () => {
       courseId: courseId,
       order: 2,
       createdBy: createdBy,
-      version: 4n,
+      version: 4,
       updatedAt: orderEvent.timestamp,
       createdAt: addEvent.timestamp,
     });

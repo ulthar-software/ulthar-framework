@@ -20,6 +20,9 @@ export const ModuleModel = new AggregateModel("modules", {
   createdBy: Field.reference({
     targetModel: "users",
   }),
+  deletedAt: Field.posixDate({
+    isOptional: true,
+  }),
 });
 
 export type ModuleModel = typeof ModuleModel;
@@ -71,11 +74,16 @@ export type ModuleOrderChangedEvent = EventToType<
   typeof ModuleOrderChangedEvent
 >;
 
+export const ModuleDeletedEvent = new DomainEvent("ModuleDeleted", {});
+
+export type ModuleDeletedEvent = EventToType<typeof ModuleDeletedEvent>;
+
 export const ModuleEvents = [
   ModuleAddedEvent,
   ModuleTitleChangedEvent,
   ModuleDescriptionChangedEvent,
   ModuleOrderChangedEvent,
+  ModuleDeletedEvent,
 ] as const;
 
 export const ModuleStream = new EventStream(ModuleModel.name, ModuleEvents);
@@ -97,6 +105,10 @@ export const ModuleProjector = new AggregateProjector(
     ModuleOrderChanged: (event, module): Module =>
       ModuleModel.update(module, event, {
         order: event.payload.order,
+      }),
+    ModuleDeleted: (event, module): Module =>
+      ModuleModel.update(module, event, {
+        deletedAt: event.timestamp,
       }),
   },
 );
