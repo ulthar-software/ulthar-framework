@@ -9,6 +9,7 @@ import {
 import {
   BaseSectionAddedEvent,
   BaseSectionFields,
+  SectionDeletedEvent,
   SectionOrderChangedEvent,
 } from "./section-base.js";
 
@@ -87,6 +88,7 @@ export const QuestionnaireSectionEvents = [
   QuestionnaireSectionAddedEvent,
   QuestionnaireSectionContentChangedEvent,
   SectionOrderChangedEvent,
+  SectionDeletedEvent,
 ] as const;
 
 export const QuestionnaireSectionStream = new EventStream(
@@ -119,6 +121,10 @@ export const QuestionnaireSectionProjector = new AggregateProjector(
     SectionOrderChanged: (event, section): QuestionnaireSection =>
       QuestionnaireSectionModel.update(section, event, {
         order: event.payload.order,
+      }),
+    SectionDeleted: (event, section): QuestionnaireSection =>
+      QuestionnaireSectionModel.update(section, event, {
+        deletedAt: event.timestamp,
       }),
   },
 );

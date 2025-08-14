@@ -13,6 +13,9 @@ export const BaseSectionFields = {
   createdBy: Field.reference({
     targetModel: "users",
   }),
+  deletedAt: Field.posixDate({
+    isOptional: true,
+  }),
 };
 
 // For compatibility with existing code, we'll keep the section type enum
@@ -52,3 +55,7 @@ export const SectionOrderChangedEvent = new DomainEvent("SectionOrderChanged", {
 export type SectionOrderChangedEvent = EventToType<
   typeof SectionOrderChangedEvent
 >;
+
+export const SectionDeletedEvent = new DomainEvent("SectionDeleted", {});
+
+export type SectionDeletedEvent = EventToType<typeof SectionDeletedEvent>;
