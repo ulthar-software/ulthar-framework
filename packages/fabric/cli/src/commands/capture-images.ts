@@ -4,7 +4,7 @@ import type {
   SchemaParsingError,
   UnexpectedError,
 } from "@fabric/core";
-import { Effect, Field, Model } from "@fabric/core";
+import { Effect, Field, Schema } from "@fabric/core";
 import type {
   BrowserService,
   LoginFailedError,
@@ -65,16 +65,16 @@ export interface Dependencies {
   browserService: BrowserService;
 }
 
-export const ConfigModel = new Model("capture-images-config", {
+export const ConfigSchema = new Schema({
   rootUrl: Field.string(),
-  auth: Field.embedded({
-    subModel: {
+  auth: Field.embedded(
+    {
       username: Field.string(),
       password: Field.string(),
       loginPath: Field.string(),
     },
-    isOptional: true,
-  }),
+    { isOptional: true },
+  ),
   paths: Field.objectArray({
     name: Field.string(),
     path: Field.string(),
@@ -88,7 +88,7 @@ export const ConfigModel = new Model("capture-images-config", {
   }),
 });
 
-type Config = Infer<typeof ConfigModel>;
+type Config = Infer<typeof ConfigSchema>;
 
 function captureImages(
   configPath: string,
@@ -97,27 +97,20 @@ function captureImages(
   | UnexpectedError
   | FileReadError
   | JSONParsingError
-  | SchemaParsingError<typeof ConfigModel>
+  | SchemaParsingError<typeof ConfigSchema>
   | LoginFailedError
   | LoginFormNotFoundError,
   Dependencies
 > {
   return Effect.withDeps(({ fileService, browserService }: Dependencies) =>
     fileService
-      .readJsonFile(ConfigModel, configPath)
+      .readJsonFile(ConfigSchema, configPath)
       .flatMap((opts) => {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (opts.auth) {
           return Effect.seq(
-            () =>
-              browserService.goTo(
-                `${opts.rootUrl}${opts.auth.loginPath as string}`,
-              ),
-            () =>
-              browserService.login(
-                opts.auth.username as string,
-                opts.auth.password as string,
-              ),
+            () => browserService.goTo(`${opts.rootUrl}${opts.auth.loginPath}`),
+            () => browserService.login(opts.auth.username, opts.auth.password),
             () => Effect.ok(opts),
           );
         }

@@ -1,7 +1,7 @@
 import type {
   Infer,
   JSONParsingError,
-  Model,
+  Schema,
   SchemaParsingError,
 } from "@fabric/core";
 import { Effect, JSONExt, UnexpectedError } from "@fabric/core";
@@ -30,19 +30,19 @@ export class FileServiceImplementation implements FileService {
       (err: Error) => new UnexpectedError(err.message),
     );
   }
-  readJsonFile<TModel extends Model>(
-    model: TModel,
+  readJsonFile<TSchema extends Schema>(
+    schema: TSchema,
     path: string,
   ): Effect<
-    Infer<TModel>,
+    Infer<TSchema>,
     | UnexpectedError
     | FileReadError
     | JSONParsingError
-    | SchemaParsingError<TModel>
+    | SchemaParsingError<TSchema>
   > {
     return Effect.tryFrom(
       async () => await fs.readFile(path, "utf-8"),
       (err: Error) => new FileReadError(err.message),
-    ).mapResult((data) => JSONExt.parseWithModel(model, data));
+    ).mapResult((data) => JSONExt.parseWithModel(schema, data));
   }
 }

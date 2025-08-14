@@ -1,22 +1,25 @@
-import type { JSONParsingError, SchemaParsingError } from "@fabric/core";
+import type {
+  JSONParsingError,
+  Schema,
+  SchemaParsingError,
+} from "@fabric/core";
 import {
   TaggedError,
   type Effect,
   type Infer,
-  type Model,
   type UnexpectedError,
 } from "@fabric/core";
 
 export interface FileService {
-  readJsonFile<TModel extends Model>(
-    model: TModel,
+  readJsonFile<TSchema extends Schema>(
+    schema: TSchema,
     path: string,
   ): Effect<
-    Infer<TModel>,
+    Infer<TSchema>,
     | UnexpectedError
     | FileReadError
     | JSONParsingError
-    | SchemaParsingError<TModel>
+    | SchemaParsingError<TSchema>
   >;
 
   openExplorerIn(path: string): Effect<void, UnexpectedError>;
