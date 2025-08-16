@@ -115,7 +115,7 @@ function getUnitWithSections(
         // Fetch text sections
         state
           .from("textSections")
-          .where({ unitId: unit.id })
+          .where({ unitId: unit.id, deletedAt: undefined })
           .select()
           .map((p) =>
             p.map(
@@ -131,7 +131,7 @@ function getUnitWithSections(
         // Fetch video sections
         state
           .from("videoSections")
-          .where({ unitId: unit.id })
+          .where({ unitId: unit.id, deletedAt: undefined })
           .select()
           .map((p) =>
             p.map(
@@ -147,7 +147,7 @@ function getUnitWithSections(
         // Fetch questionnaire sections
         state
           .from("questionnaireSections")
-          .where({ unitId: unit.id })
+          .where({ unitId: unit.id, deletedAt: undefined })
           .select()
           .map((p) =>
             p.map(

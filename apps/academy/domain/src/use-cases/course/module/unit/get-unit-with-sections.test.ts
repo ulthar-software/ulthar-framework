@@ -13,7 +13,10 @@ import {
   deleteUnitMock,
 } from "../../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../../models/mocks/create-user-mock.js";
-import { createVideoSectionMock } from "../../../../models/mocks/create-video-section-mock.js";
+import {
+  createVideoSectionMock,
+  deleteVideoSectionMock,
+} from "../../../../models/mocks/create-video-section-mock.js";
 import type { User } from "../../../../models/user.js";
 import { Permission } from "../../../../security/permission.js";
 import {
@@ -254,6 +257,31 @@ describe("Get Unit With Sections Use Case", () => {
         title: "Unit 1-2", // Should be the first unit in the second module
       }),
     );
+  });
+
+  test("Should skip deleted sections in the unit", async () => {
+    // Arrange
+    await deleteVideoSectionMock(services, user.id, sectionsIds[0]);
+
+    const queryData = {
+      courseId: existingCourseId,
+      unitId: existingUnitId,
+    };
+
+    // Act
+    const result = await GetUnitWithSectionsUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: user.id,
+          permissions: [Permission.VIEW_COURSE],
+        },
+      },
+      queryData,
+    ).runOrThrow();
+
+    // Check sections - should have 2 sections now
+    expect(result.sections).toHaveLength(2);
   });
 
   test("Non-enrolled student should not be able to see unit with sections", async () => {
