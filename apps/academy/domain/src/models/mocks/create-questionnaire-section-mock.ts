@@ -2,6 +2,7 @@ import type { UUID } from "@fabric/core";
 import { Permission } from "../../security/permission.js";
 import type { MockedDependencies } from "../../services/mocks/create-mock-services.js";
 import { AddQuestionnaireSectionToUnitUseCase } from "../../use-cases/course/module/unit/section/add-questionnaire-section-to-unit.js";
+import { DeleteQuestionnaireSectionUseCase } from "../../use-cases/course/module/unit/section/delete-questionnaire-section.js";
 import type { QuestionnaireSection } from "../sections/questionnaire-section.js";
 
 export async function createQuestionnaireSectionMock(
@@ -37,5 +38,32 @@ export async function createQuestionnaireSectionMock(
     },
   ).runOrThrow();
 
+  if (section.deletedAt) {
+    await deleteQuestionnaireSectionMock(
+      services,
+      userId,
+      sectionResult.sectionId,
+    );
+  }
+
   return sectionResult.sectionId;
+}
+
+export async function deleteQuestionnaireSectionMock(
+  services: MockedDependencies,
+  userId: UUID,
+  sectionId: UUID,
+): Promise<void> {
+  await DeleteQuestionnaireSectionUseCase.call(
+    {
+      ...services,
+      currentUser: {
+        id: userId,
+        permissions: [Permission.EDIT_COURSE],
+      },
+    },
+    {
+      sectionId,
+    },
+  ).runOrThrow();
 }

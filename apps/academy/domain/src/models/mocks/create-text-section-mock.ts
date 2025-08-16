@@ -2,6 +2,7 @@ import type { UUID } from "@fabric/core";
 import { Permission } from "../../security/permission.js";
 import type { MockedDependencies } from "../../services/mocks/create-mock-services.js";
 import { AddTextSectionToUnitUseCase } from "../../use-cases/course/module/unit/section/add-text-section-to-unit.js";
+import { DeleteTextSectionUseCase } from "../../use-cases/course/module/unit/section/delete-text-section.js";
 import type { TextSection } from "../sections/text-section.js";
 
 export async function createTextSectionMock(
@@ -26,5 +27,28 @@ export async function createTextSectionMock(
     },
   ).runOrThrow();
 
+  if (section.deletedAt) {
+    await deleteTextSectionMock(services, userId, sectionResult.sectionId);
+  }
+
   return sectionResult.sectionId;
+}
+
+export async function deleteTextSectionMock(
+  services: MockedDependencies,
+  userId: UUID,
+  sectionId: UUID,
+): Promise<void> {
+  await DeleteTextSectionUseCase.call(
+    {
+      ...services,
+      currentUser: {
+        id: userId,
+        permissions: [Permission.EDIT_COURSE],
+      },
+    },
+    {
+      sectionId,
+    },
+  ).runOrThrow();
 }
