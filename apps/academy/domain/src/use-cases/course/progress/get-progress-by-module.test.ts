@@ -7,8 +7,14 @@ import {
   createModuleMock,
   deleteModuleMock,
 } from "../../../models/mocks/create-module-mock.js";
-import { createQuestionnaireSectionMock } from "../../../models/mocks/create-questionnaire-section-mock.js";
-import { createUnitMock } from "../../../models/mocks/create-unit-mock.js";
+import {
+  createQuestionnaireSectionMock,
+  deleteQuestionnaireSectionMock,
+} from "../../../models/mocks/create-questionnaire-section-mock.js";
+import {
+  createUnitMock,
+  deleteUnitMock,
+} from "../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../models/user.js";
 import type { UserAccess } from "../../../services/auth-service.js";
@@ -25,10 +31,10 @@ describe("getModuleProgress", () => {
   let user2: User;
   let courseId: UUID;
   let module1Id: UUID;
-  let unit1: UUID;
-  let unit2: UUID;
-  let quiz1: UUID;
-  let quiz2: UUID;
+  let unit1Id: UUID;
+  let unit2Id: UUID;
+  let quiz1Id: UUID;
+  let quiz2Id: UUID;
   let currentUser: UserAccess;
 
   beforeEach(async () => {
@@ -41,15 +47,25 @@ describe("getModuleProgress", () => {
 
     module1Id = await createModuleMock(services, user1.id, courseId);
 
-    unit1 = await createUnitMock(services, user1.id, module1Id);
-    unit2 = await createUnitMock(services, user1.id, module1Id);
+    unit1Id = await createUnitMock(services, user1.id, module1Id);
+    unit2Id = await createUnitMock(services, user1.id, module1Id);
 
-    quiz1 = await createQuestionnaireSectionMock(services, user1.id, unit1, {
-      title: "Quiz 1",
-    });
-    quiz2 = await createQuestionnaireSectionMock(services, user1.id, unit2, {
-      title: "Quiz 2",
-    });
+    quiz1Id = await createQuestionnaireSectionMock(
+      services,
+      user1.id,
+      unit1Id,
+      {
+        title: "Quiz 1",
+      },
+    );
+    quiz2Id = await createQuestionnaireSectionMock(
+      services,
+      user1.id,
+      unit2Id,
+      {
+        title: "Quiz 2",
+      },
+    );
 
     await createEnrollmentMock(services, user1.id, courseId);
     await createEnrollmentMock(services, user2.id, courseId);
@@ -58,10 +74,10 @@ describe("getModuleProgress", () => {
   });
 
   test("should return correct progress for users with correct quiz responses", async () => {
-    await mockCorrectQuizResponse(quiz1, user1.id, 1);
-    await mockCorrectQuizResponse(quiz2, user1.id, 1);
-    await mockCorrectQuizResponse(quiz1, user2.id, 1);
-    await mockCorrectQuizResponse(quiz2, user2.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user1.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user1.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user2.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user2.id, 1);
 
     const result = await GetProgressByModuleUseCase.call(
       {
@@ -76,10 +92,10 @@ describe("getModuleProgress", () => {
     expect(result.progress).toEqual(100);
   });
   test("should return correct progress for users with correct quiz responses", async () => {
-    await mockCorrectQuizResponse(quiz1, user1.id, 1);
-    await mockWrongQuizResponse(quiz2, user1.id, 1);
-    await mockCorrectQuizResponse(quiz1, user2.id, 1);
-    await mockWrongQuizResponse(quiz2, user2.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user1.id, 1);
+    await mockWrongQuizResponse(quiz2Id, user1.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user2.id, 1);
+    await mockWrongQuizResponse(quiz2Id, user2.id, 1);
 
     const result = await GetProgressByModuleUseCase.call(
       {
@@ -95,10 +111,10 @@ describe("getModuleProgress", () => {
   });
 
   test("should return correct progress for users with correct quiz responses", async () => {
-    await mockCorrectQuizResponse(quiz1, user1.id, 1);
-    await mockWrongQuizResponse(quiz2, user1.id, 1);
-    await mockCorrectQuizResponse(quiz1, user2.id, 1);
-    await mockCorrectQuizResponse(quiz2, user2.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user1.id, 1);
+    await mockWrongQuizResponse(quiz2Id, user1.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user2.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user2.id, 1);
 
     const result = await GetProgressByModuleUseCase.call(
       {
@@ -114,12 +130,12 @@ describe("getModuleProgress", () => {
   });
 
   test("If a test gets updated the progress should reflect the changes", async () => {
-    await mockCorrectQuizResponse(quiz1, user1.id, 1);
-    await mockCorrectQuizResponse(quiz2, user1.id, 1);
-    await mockCorrectQuizResponse(quiz1, user2.id, 1);
-    await mockCorrectQuizResponse(quiz2, user2.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user1.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user1.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user2.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user2.id, 1);
 
-    await updateQuiz(quiz1);
+    await updateQuiz(quiz1Id);
 
     const result = await GetProgressByModuleUseCase.call(
       {
@@ -180,6 +196,48 @@ describe("getModuleProgress", () => {
         },
       ).runOrThrow(),
     ).rejects.toThrow(ModuleNotFoundError);
+  });
+
+  test("Should skip deleted units", async () => {
+    await mockCorrectQuizResponse(quiz1Id, user1.id, 1);
+    await mockWrongQuizResponse(quiz2Id, user1.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user2.id, 1);
+    await mockWrongQuizResponse(quiz2Id, user2.id, 1);
+
+    await deleteUnitMock(services, user1.id, unit1Id);
+
+    const result = await GetProgressByModuleUseCase.call(
+      {
+        ...services,
+        currentUser,
+      },
+      {
+        moduleId: module1Id,
+      },
+    ).runOrThrow();
+
+    expect(result.progress).toEqual(0); //the only quiz that is not deleted is quiz2, which are all failed responses
+  });
+
+  test("Should skip deleted quizzes", async () => {
+    await mockCorrectQuizResponse(quiz1Id, user1.id, 1);
+    await mockWrongQuizResponse(quiz2Id, user1.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user2.id, 1);
+    await mockWrongQuizResponse(quiz2Id, user2.id, 1);
+
+    await deleteQuestionnaireSectionMock(services, user1.id, quiz2Id);
+
+    const result = await GetProgressByModuleUseCase.call(
+      {
+        ...services,
+        currentUser,
+      },
+      {
+        moduleId: module1Id,
+      },
+    ).runOrThrow();
+
+    expect(result.progress).toEqual(100); //the only quiz that is not deleted is quiz2, which are all failed responses
   });
 
   async function mockCorrectQuizResponse(

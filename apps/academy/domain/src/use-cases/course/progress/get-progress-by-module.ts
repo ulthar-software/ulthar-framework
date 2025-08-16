@@ -57,7 +57,12 @@ export const GetProgressByModuleUseCase = new UseCase({
           as: "m",
           on: { left: "u.moduleId", right: "id" },
         })
-        .where({ "m.id": moduleId, "m.deletedAt": undefined })
+        .where({
+          "m.id": moduleId,
+          "m.deletedAt": undefined,
+          "u.deletedAt": undefined,
+          deletedAt: undefined,
+        })
         .count();
 
       const userEnrolledInCourse = yield* state
@@ -92,7 +97,12 @@ export const GetProgressByModuleUseCase = new UseCase({
           as: "m",
           on: { left: "u.moduleId", right: "id" },
         })
-        .where({ "m.id": moduleId, "m.deletedAt": undefined })
+        .where({
+          "m.id": moduleId,
+          "m.deletedAt": undefined,
+          "u.deletedAt": undefined,
+          "qs.deletedAt": undefined,
+        })
         .select([
           "qr.questionnaireVersion",
           "qs.version",

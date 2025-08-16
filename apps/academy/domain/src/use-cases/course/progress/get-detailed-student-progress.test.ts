@@ -9,7 +9,10 @@ import {
   deleteModuleMock,
 } from "../../../models/mocks/create-module-mock.js";
 import { createQuestionnaireSectionMock } from "../../../models/mocks/create-questionnaire-section-mock.js";
-import { createUnitMock } from "../../../models/mocks/create-unit-mock.js";
+import {
+  createUnitMock,
+  deleteUnitMock,
+} from "../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../models/mocks/create-user-mock.js";
 import type { User } from "../../../models/user.js";
 import type { UserAccess } from "../../../services/auth-service.js";
@@ -24,10 +27,10 @@ describe("GetDetailedStudentProgress Use Case", () => {
   let services: MockedDependencies;
   let user: User;
   let module1Id: UUID;
-  let unit1: UUID;
-  let unit2: UUID;
-  let quiz1: UUID;
-  let quiz2: UUID;
+  let unit1Id: UUID;
+  let unit2Id: UUID;
+  let quiz1Id: UUID;
+  let quiz2Id: UUID;
   let currentUser: UserAccess;
 
   beforeEach(async () => {
@@ -37,13 +40,13 @@ describe("GetDetailedStudentProgress Use Case", () => {
 
     module1Id = await createModuleMock(services, user.id, courseId);
 
-    unit1 = await createUnitMock(services, user.id, module1Id);
-    unit2 = await createUnitMock(services, user.id, module1Id);
+    unit1Id = await createUnitMock(services, user.id, module1Id);
+    unit2Id = await createUnitMock(services, user.id, module1Id);
 
-    quiz1 = await createQuestionnaireSectionMock(services, user.id, unit1, {
+    quiz1Id = await createQuestionnaireSectionMock(services, user.id, unit1Id, {
       title: "Quiz 1",
     });
-    quiz2 = await createQuestionnaireSectionMock(services, user.id, unit2, {
+    quiz2Id = await createQuestionnaireSectionMock(services, user.id, unit2Id, {
       title: "Quiz 2",
     });
 
@@ -53,8 +56,8 @@ describe("GetDetailedStudentProgress Use Case", () => {
   });
 
   test("should return correct progress when all quizzes are correctly done", async () => {
-    await mockCorrectQuizResponse(quiz1, user.id, 1);
-    await mockCorrectQuizResponse(quiz2, user.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user.id, 1);
 
     const result = await GetDetailedStudentProgressUseCase.call(
       {
@@ -71,14 +74,14 @@ describe("GetDetailedStudentProgress Use Case", () => {
       progress: 100,
       quizzes: [
         {
-          quizId: quiz1,
+          quizId: quiz1Id,
           quizTitle: "Quiz 1",
           score: 100,
           attempts: 1,
           isCurrentVersion: true,
         },
         {
-          quizId: quiz2,
+          quizId: quiz2Id,
           quizTitle: "Quiz 2",
           score: 100,
           attempts: 1,
@@ -89,10 +92,10 @@ describe("GetDetailedStudentProgress Use Case", () => {
   });
 
   test("should return correct progress when quizzes change", async () => {
-    await mockCorrectQuizResponse(quiz1, user.id, 1);
-    await mockCorrectQuizResponse(quiz2, user.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user.id, 1);
 
-    await updateQuiz(quiz2);
+    await updateQuiz(quiz2Id);
 
     const result = await GetDetailedStudentProgressUseCase.call(
       {
@@ -109,14 +112,14 @@ describe("GetDetailedStudentProgress Use Case", () => {
       progress: 50,
       quizzes: [
         {
-          quizId: quiz1,
+          quizId: quiz1Id,
           quizTitle: "Quiz 1",
           score: 100,
           attempts: 1,
           isCurrentVersion: true,
         },
         {
-          quizId: quiz2,
+          quizId: quiz2Id,
           quizTitle: "Updated Quiz Title",
           score: 100,
           attempts: 1,
@@ -127,8 +130,8 @@ describe("GetDetailedStudentProgress Use Case", () => {
   });
 
   test("should return correct progress with wrong quiz responses", async () => {
-    await mockWrongQuizResponse(quiz1, user.id, 1);
-    await mockCorrectQuizResponse(quiz2, user.id, 1);
+    await mockWrongQuizResponse(quiz1Id, user.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user.id, 1);
 
     const result = await GetDetailedStudentProgressUseCase.call(
       {
@@ -145,14 +148,14 @@ describe("GetDetailedStudentProgress Use Case", () => {
       progress: 50,
       quizzes: [
         {
-          quizId: quiz1,
+          quizId: quiz1Id,
           quizTitle: "Quiz 1",
           score: 0,
           isCurrentVersion: true,
           attempts: 1,
         },
         {
-          quizId: quiz2,
+          quizId: quiz2Id,
           quizTitle: "Quiz 2",
           score: 100,
           isCurrentVersion: true,
@@ -163,8 +166,8 @@ describe("GetDetailedStudentProgress Use Case", () => {
   });
 
   test("should fail to return quizzes from a deleted module", async () => {
-    await mockCorrectQuizResponse(quiz1, user.id, 1);
-    await mockCorrectQuizResponse(quiz2, user.id, 1);
+    await mockCorrectQuizResponse(quiz1Id, user.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user.id, 1);
 
     await deleteModuleMock(services, user.id, module1Id);
 
@@ -183,6 +186,39 @@ describe("GetDetailedStudentProgress Use Case", () => {
     const error = result.unwrapErrorOrThrow();
     expect(error).toBeInstanceOf(ModuleNotFoundError);
     expect((error as ModuleNotFoundError).moduleId).toBe(module1Id);
+  });
+
+  test("should not count quizzes from a deleted unit", async () => {
+    await mockCorrectQuizResponse(quiz1Id, user.id, 1);
+    await mockCorrectQuizResponse(quiz2Id, user.id, 1);
+
+    await deleteUnitMock(services, user.id, unit1Id);
+
+    const result = await GetDetailedStudentProgressUseCase.call(
+      {
+        ...services,
+        currentUser,
+      },
+      {
+        moduleId: module1Id,
+        studentId: user.id,
+      },
+    ).run();
+
+    expect(result.isOk()).toBe(true);
+    const progress = result.unwrapOrThrow();
+    expect(progress).toEqual({
+      progress: 100,
+      quizzes: [
+        {
+          quizId: quiz2Id,
+          quizTitle: "Quiz 2",
+          score: 100,
+          attempts: 1,
+          isCurrentVersion: true,
+        },
+      ],
+    });
   });
 
   async function mockCorrectQuizResponse(

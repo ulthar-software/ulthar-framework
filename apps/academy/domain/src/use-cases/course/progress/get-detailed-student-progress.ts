@@ -76,7 +76,12 @@ export const GetDetailedStudentProgressUseCase = new UseCase({
           as: "m",
           on: { left: "u.moduleId", right: "id" },
         })
-        .where({ "m.id": moduleId })
+        .where({
+          "m.id": moduleId,
+          deletedAt: undefined,
+          "u.deletedAt": undefined,
+          "m.deletedAt": undefined,
+        })
         .orderBy({
           "u.order": "ASC",
           order: "ASC",
@@ -112,27 +117,28 @@ export const GetDetailedStudentProgressUseCase = new UseCase({
           "qs.version",
         ]);
 
-      const studentQuizCount = studentQuizResponses.filter(
-        (qr) =>
-          qr.questionnaireVersion === qr["qs.version"] && qr.score === 100,
+      const countedQuizzesResponses = moduleQuizzes.map((qs) => {
+        const qResponse = studentQuizResponses.find(
+          (qr) => qr.questionnaireId === qs.id,
+        );
+        return {
+          quizId: qs.id,
+          quizTitle: qs.title,
+          attempts: qResponse?.version ?? 0,
+          score: qResponse?.score,
+          isCurrentVersion: qResponse
+            ? qResponse["qs.version"] === qResponse.questionnaireVersion
+            : false,
+        };
+      });
+
+      const studentQuizCount = countedQuizzesResponses.filter(
+        (qr) => qr.isCurrentVersion && qr.score === 100,
       ).length;
 
       return {
         progress: Math.round((studentQuizCount / moduleQuizCount) * 100),
-        quizzes: moduleQuizzes.map((qs) => {
-          const qResponse = studentQuizResponses.find(
-            (qr) => qr.questionnaireId === qs.id,
-          );
-          return {
-            quizId: qs.id,
-            quizTitle: qs.title,
-            attempts: qResponse?.version ?? 0,
-            score: qResponse?.score,
-            isCurrentVersion: qResponse
-              ? qResponse["qs.version"] === qResponse.questionnaireVersion
-              : false,
-          };
-        }),
+        quizzes: countedQuizzesResponses,
       };
     });
   },
