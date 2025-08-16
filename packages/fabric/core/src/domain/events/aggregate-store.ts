@@ -33,6 +33,7 @@ export class AggregateStore<
     for (const projector of projectors) {
       for (const event of projector.events) {
         eventStore.subscribe(
+          projector.streamName,
           event.name,
           (e) => {
             return this.from(projector.model.name)

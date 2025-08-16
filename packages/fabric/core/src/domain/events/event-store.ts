@@ -49,7 +49,8 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
         values: [event],
       })
       .flatMap(() => {
-        const subs = this.eventSubscriptions[event.type];
+        const subscriptionKey = `${streamName}:${event.type}`;
+        const subs = this.eventSubscriptions[subscriptionKey];
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!subs) {
           return Effect.ok();
@@ -72,16 +73,18 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
       { name: TEventName }
     >,
   >(
+    streamName: TEventStreams[number]["name"],
     eventName: TEventName,
     subscriber: EventSubscriber<TEvent>,
     opts?: SubscriptionOptions,
   ): void {
+    const subscriptionKey = `${streamName}:${eventName}`;
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (this.eventSubscriptions[eventName] === undefined) {
-      this.eventSubscriptions[eventName] = [];
+    if (this.eventSubscriptions[subscriptionKey] === undefined) {
+      this.eventSubscriptions[subscriptionKey] = [];
     }
 
-    this.eventSubscriptions[eventName].push({
+    this.eventSubscriptions[subscriptionKey].push({
       opts: opts ?? {},
       subscriber: subscriber as EventSubscriber<DomainEvent>,
     });
@@ -106,11 +109,19 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
     event: EventToType<DomainEvent>,
   ): Effect<void, TaggedError> {
     const eventName = event.type;
-    const subscriptions = this.eventSubscriptions[eventName];
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (subscriptions) {
+
+    // Find all subscriptions that match this event type across all streams
+    const matchingSubscriptions: Subscription[] = [];
+
+    for (const key in this.eventSubscriptions) {
+      if (key.endsWith(`:${eventName}`)) {
+        matchingSubscriptions.push(...this.eventSubscriptions[key]);
+      }
+    }
+
+    if (matchingSubscriptions.length > 0) {
       return Effect.allInSequence(() =>
-        subscriptions.map((subscription) => {
+        matchingSubscriptions.map((subscription) => {
           if (subscription.opts.callOnReplay) {
             return subscription.subscriber(event).catchAll((e) => {
               console.error(e);

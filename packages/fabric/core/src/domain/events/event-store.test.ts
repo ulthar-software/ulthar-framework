@@ -191,15 +191,30 @@ describe("EventStore", async () => {
     // Mock subscriber to verify replay behavior
     const mockSubscriber = fnMock(() => Effect.ok());
 
-    localEventStore.subscribe("CreateStateEvent", mockSubscriber, {
-      callOnReplay: true,
-    });
-    localEventStore.subscribe("UpdateStateEvent", mockSubscriber, {
-      callOnReplay: true,
-    });
-    localEventStore.subscribe("DeleteStateEvent", mockSubscriber, {
-      callOnReplay: true,
-    });
+    localEventStore.subscribe(
+      "StateAggregate",
+      "CreateStateEvent",
+      mockSubscriber,
+      {
+        callOnReplay: true,
+      },
+    );
+    localEventStore.subscribe(
+      "StateAggregate",
+      "UpdateStateEvent",
+      mockSubscriber,
+      {
+        callOnReplay: true,
+      },
+    );
+    localEventStore.subscribe(
+      "StateAggregate",
+      "DeleteStateEvent",
+      mockSubscriber,
+      {
+        callOnReplay: true,
+      },
+    );
 
     await localEventStore.replayAll().runOrThrow();
 
@@ -211,5 +226,79 @@ describe("EventStore", async () => {
         payload: { name: "test" },
       }),
     );
+  });
+
+  test("Given two event streams with events of the same name, when subscribing to events by name, subscribers should only be triggered for events from the correct stream", async () => {
+    // Create a shared event type that will be used in both streams
+    const UserCreatedEventModel = new DomainEvent("UserCreated", {
+      name: Field.string(),
+    });
+
+    // Create two different event streams that both use the same event name
+    const streamA = new EventStream("StreamA", [
+      UserCreatedEventModel,
+    ] as const);
+    const streamB = new EventStream("StreamB", [
+      UserCreatedEventModel,
+    ] as const);
+
+    const eventStreams = [streamA, streamB];
+    const localEventStore = new EventStore(
+      new ValueStoreDriverMock(),
+      eventStreams,
+    );
+    await localEventStore.sync().runOrThrow();
+
+    // Create mock subscribers for each stream
+    const streamASubscriber = fnMock(() => Effect.ok());
+    const streamBSubscriber = fnMock(() => Effect.ok());
+
+    // Subscribe to the same event name from both streams
+    // In a correct implementation, we should be able to specify which stream we're subscribing to
+    localEventStore.subscribe("StreamA", "UserCreated", streamASubscriber);
+    localEventStore.subscribe("StreamB", "UserCreated", streamBSubscriber);
+
+    // Create events for each stream
+    const streamAEvent = UserCreatedEventModel.from({
+      id: crypto.randomUUID(),
+      streamId: crypto.randomUUID(),
+      version: 1,
+      payload: { name: "Alice from Stream A" },
+    });
+
+    const streamBEvent = UserCreatedEventModel.from({
+      id: crypto.randomUUID(),
+      streamId: crypto.randomUUID(),
+      version: 1,
+      payload: { name: "Bob from Stream B" },
+    });
+
+    // Append event to Stream A
+    await localEventStore.append("StreamA", streamAEvent).runOrThrow();
+
+    // only streamASubscriber should be called once.
+    expect(streamASubscriber).toHaveBeenCalledTimes(1);
+    expect(streamBSubscriber).toHaveBeenCalledTimes(0);
+
+    // Create new mock subscribers to test the second stream
+    const streamASubscriber2 = fnMock(() => Effect.ok());
+    const streamBSubscriber2 = fnMock(() => Effect.ok());
+
+    // Create a new event store to avoid interference
+    const localEventStore2 = new EventStore(
+      new ValueStoreDriverMock(),
+      eventStreams,
+    );
+    await localEventStore2.sync().runOrThrow();
+
+    localEventStore2.subscribe("StreamA", "UserCreated", streamASubscriber2);
+    localEventStore2.subscribe("StreamB", "UserCreated", streamBSubscriber2);
+
+    // Append event to Stream B
+    await localEventStore2.append("StreamB", streamBEvent).runOrThrow();
+
+    // Again, both subscribers are called when only streamBSubscriber should be called
+    expect(streamASubscriber2).toHaveBeenCalledTimes(0);
+    expect(streamBSubscriber2).toHaveBeenCalledTimes(1);
   });
 });
