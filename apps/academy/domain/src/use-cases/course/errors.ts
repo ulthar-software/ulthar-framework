@@ -46,6 +46,20 @@ export class QuestionnaireVersionMismatchError extends TaggedError<"Questionnair
   }
 }
 
+export class TextSectionNotFoundError extends TaggedError<"TextSectionNotFoundError"> {
+  constructor(public readonly sectionId: UUID) {
+    super("TextSectionNotFoundError");
+    this.message = `Text section with ID ${sectionId} not found`;
+  }
+}
+
+export class VideoSectionNotFoundError extends TaggedError<"VideoSectionNotFoundError"> {
+  constructor(public readonly sectionId: UUID) {
+    super("VideoSectionNotFoundError");
+    this.message = `Video section with ID ${sectionId} not found`;
+  }
+}
+
 export class QuestionnaireSectionNotFoundError extends TaggedError<"QuestionnaireSectionNotFoundError"> {
   constructor(public readonly sectionId: UUID) {
     super("QuestionnaireSectionNotFoundError");
