@@ -6,12 +6,14 @@ import {
   createModuleMock,
   deleteModuleMock,
 } from "../../../../models/mocks/create-module-mock.js";
+import { createQuestionnaireSectionMock } from "../../../../models/mocks/create-questionnaire-section-mock.js";
 import { createTextSectionMock } from "../../../../models/mocks/create-text-section-mock.js";
 import {
   createUnitMock,
   deleteUnitMock,
 } from "../../../../models/mocks/create-unit-mock.js";
 import { createUserMock } from "../../../../models/mocks/create-user-mock.js";
+import { createVideoSectionMock } from "../../../../models/mocks/create-video-section-mock.js";
 import type { User } from "../../../../models/user.js";
 import { Permission } from "../../../../security/permission.js";
 import {
@@ -87,8 +89,8 @@ describe("Get Unit With Sections Use Case", () => {
 
     // Add sections
     sectionsIds.push(
-      await createTextSectionMock(services, user.id, existingUnitId),
-      await createTextSectionMock(services, user.id, existingUnitId),
+      await createVideoSectionMock(services, user.id, existingUnitId),
+      await createQuestionnaireSectionMock(services, user.id, existingUnitId),
       await createTextSectionMock(services, user.id, existingUnitId),
     );
   });
