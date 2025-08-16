@@ -19,7 +19,12 @@ export function getQuestionnairesFromCourse(
       as: "m",
       on: { left: "u.moduleId", right: "id" },
     })
-    .where({ "m.courseId": courseId, "m.deletedAt": undefined })
+    .where({
+      "m.courseId": courseId,
+      "m.deletedAt": undefined,
+      "u.deletedAt": undefined,
+      deletedAt: undefined,
+    })
     .select(["id", "title", "version"]);
 }
 
@@ -39,6 +44,11 @@ export function getQuestionnairesCountFromCourse(
       as: "m",
       on: { left: "u.moduleId", right: "id" },
     })
-    .where({ "m.courseId": courseId, "m.deletedAt": undefined })
+    .where({
+      "m.courseId": courseId,
+      "m.deletedAt": undefined,
+      "u.deletedAt": undefined,
+      deletedAt: undefined,
+    })
     .count();
 }

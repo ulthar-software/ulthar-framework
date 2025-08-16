@@ -108,7 +108,11 @@ export const GetDetailedStudentProgressUseCase = new UseCase({
           as: "m",
           on: { left: "u.moduleId", right: "id" },
         })
-        .where({ "m.id": moduleId, userId: studentId })
+        .where({
+          "m.id": moduleId,
+          userId: studentId,
+          "qs.deletedAt": undefined,
+        })
         .select([
           "score",
           "version",

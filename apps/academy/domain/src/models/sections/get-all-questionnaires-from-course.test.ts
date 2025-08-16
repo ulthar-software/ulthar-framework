@@ -9,8 +9,11 @@ import {
   createModuleMock,
   deleteModuleMock,
 } from "../mocks/create-module-mock.js";
-import { createQuestionnaireSectionMock } from "../mocks/create-questionnaire-section-mock.js";
-import { createUnitMock } from "../mocks/create-unit-mock.js";
+import {
+  createQuestionnaireSectionMock,
+  deleteQuestionnaireSectionMock,
+} from "../mocks/create-questionnaire-section-mock.js";
+import { createUnitMock, deleteUnitMock } from "../mocks/create-unit-mock.js";
 import { createUserMock } from "../mocks/create-user-mock.js";
 import type { User } from "../user.js";
 import {
@@ -118,5 +121,84 @@ describe("Get All Questionnaires Count From Course", () => {
 
     // Assert
     expect(result).toHaveLength(0);
+  });
+  test("Should not count questionnaires from deleted units", async () => {
+    // Arrange - Add multiple questionnaire sections
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+
+    // Arrange - Delete the unit
+    await deleteUnitMock(services, user.id, existingUnitId);
+
+    // Act
+    const result = await getQuestionnairesCountFromCourse(
+      services.state,
+      existingCourseId,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toBe(0);
+  });
+
+  test("should not return questionnaires from deleted units", async () => {
+    // Arrange - Add multiple questionnaire sections
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+
+    // Arrange - Delete the unit
+    await deleteUnitMock(services, user.id, existingUnitId);
+
+    // Act
+    const result = await getQuestionnairesFromCourse(
+      services.state,
+      existingCourseId,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toHaveLength(0);
+  });
+
+  test("should not count deleted questionnaires", async () => {
+    // Arrange - Add multiple questionnaire sections
+    const quizId = await createQuestionnaireSectionMock(
+      services,
+      user.id,
+      existingUnitId,
+    );
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+
+    // Arrange - Delete the unit
+    await deleteQuestionnaireSectionMock(services, user.id, quizId);
+
+    // Act
+    const result = await getQuestionnairesCountFromCourse(
+      services.state,
+      existingCourseId,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toBe(1);
+  });
+
+  test("should not return deleted questionnaires", async () => {
+    // Arrange - Add multiple questionnaire sections
+    const quizId = await createQuestionnaireSectionMock(
+      services,
+      user.id,
+      existingUnitId,
+    );
+    await createQuestionnaireSectionMock(services, user.id, existingUnitId);
+
+    // Arrange - Delete the unit
+    await deleteQuestionnaireSectionMock(services, user.id, quizId);
+
+    // Act
+    const result = await getQuestionnairesFromCourse(
+      services.state,
+      existingCourseId,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toHaveLength(1);
   });
 });

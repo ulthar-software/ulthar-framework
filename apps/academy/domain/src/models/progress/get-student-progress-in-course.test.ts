@@ -13,8 +13,11 @@ import {
   createModuleMock,
   deleteModuleMock,
 } from "../mocks/create-module-mock.js";
-import { createQuestionnaireSectionMock } from "../mocks/create-questionnaire-section-mock.js";
-import { createUnitMock } from "../mocks/create-unit-mock.js";
+import {
+  createQuestionnaireSectionMock,
+  deleteQuestionnaireSectionMock,
+} from "../mocks/create-questionnaire-section-mock.js";
+import { createUnitMock, deleteUnitMock } from "../mocks/create-unit-mock.js";
 import { createUserMock } from "../mocks/create-user-mock.js";
 import type { User } from "../user.js";
 import { getStudentProgressInCourse } from "./get-student-progress-in-course.js";
@@ -160,6 +163,57 @@ describe("Get User Progress in Course", () => {
 
     // Assert
     expect(result).toEqual([]);
+  });
+
+  test("Given a deleted unit, it should not count for the progress", async () => {
+    // Arrange - Create a new user and submit a response
+    await mockCorrectQuizResponse(existingQuizId1, 1);
+    await mockCorrectQuizResponse(existingQuizId2, 1);
+    await mockWrongQuizResponse(existingQuizId3, 1);
+
+    // Act - Delete the unit and check progress
+    await deleteUnitMock(services, user.id, existingUnitId);
+
+    const result = await getStudentProgressInCourse(
+      services.state,
+      existingCourseId,
+      user.id,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toEqual([]);
+  });
+
+  test("Given a deleted quiz, it should not count for the progress", async () => {
+    // Arrange - Create a new user and submit a response
+    await mockCorrectQuizResponse(existingQuizId1, 1);
+    await mockCorrectQuizResponse(existingQuizId2, 1);
+    await mockWrongQuizResponse(existingQuizId3, 1);
+
+    // Act - Delete the quiz and check progress
+    await deleteQuestionnaireSectionMock(services, user.id, existingQuizId1);
+
+    const result = await getStudentProgressInCourse(
+      services.state,
+      existingCourseId,
+      user.id,
+    ).runOrThrow();
+
+    // Assert
+    expect(result).toEqual([
+      {
+        responseVersion: 1,
+        quizVersion: 1,
+        quizTitle: "Quiz 2",
+        score: 100,
+      },
+      {
+        responseVersion: 1,
+        quizVersion: 1,
+        quizTitle: "Quiz 3",
+        score: 0,
+      },
+    ]);
   });
 
   async function mockCorrectQuizResponse(
