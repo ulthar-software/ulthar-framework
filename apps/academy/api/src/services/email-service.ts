@@ -63,6 +63,7 @@ export class EmailQueueService {
       this.scheduleBatchEmailProcessing.bind(this);
     for (const eventName of eventNames) {
       events.subscribe(
+        "*",
         eventName,
         (event) => {
           const processEmailEvent = EmailSubscriptions[eventName] as (
