@@ -3,6 +3,9 @@ import type { TaggedError } from "../../error/tagged-error.js";
 import { UnexpectedError } from "../../error/unexpected-error.js";
 import type { PosixDate } from "../../time/posix-date.js";
 import type { CircularDependencyError } from "../../utils/sort-by-dependencies.js";
+import { Field } from "../models/fields.js";
+import { Model } from "../models/model.js";
+import type { Infer } from "../models/schema.js";
 import type { StoreQueryError } from "../value-store/index.js";
 import type { ValueStoreDriver } from "../value-store/value-store-driver.js";
 import type {
@@ -10,13 +13,22 @@ import type {
   EventStreamFromName,
   PossibleEvents,
 } from "./event-stream.js";
-import type { EventToType } from "./event.js";
-import { DomainEvent } from "./event.js";
+import type { DomainEvent, EventToType } from "./event.js";
+
+const EventModel = new Model("events", {
+  id: Field.uuid({ isPrimaryKey: true }),
+  streamName: Field.string(),
+  type: Field.string(),
+  streamId: Field.uuid(),
+  version: Field.integer({ isUnsigned: true }),
+  timestamp: Field.posixDate(),
+  payload: Field.embedded({}),
+});
+
+type EventType = Infer<typeof EventModel>;
 
 export class EventStore<TEventStreams extends readonly EventStream[]> {
   private eventSubscriptions: SubscriptionMap = {};
-
-  private eventModel = new DomainEvent("events", {});
 
   constructor(
     private readonly storageDriver: ValueStoreDriver,
@@ -28,7 +40,7 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
   }
 
   sync(): Effect<void, CircularDependencyError | StoreQueryError> {
-    return this.storageDriver.sync([this.eventModel]);
+    return this.storageDriver.sync([EventModel]);
   }
 
   /**
@@ -44,9 +56,9 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
     event: EventToType<TEvent>,
   ): Effect<EventToType<TEvent>, UnexpectedError> {
     return this.storageDriver
-      .insert(this.eventModel, {
+      .insert(EventModel, {
         into: "events",
-        values: [event],
+        values: [{ ...event, streamName }],
       })
       .flatMap(() => {
         const subscriptionKey = `${streamName}:${event.type}`;
@@ -92,7 +104,7 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
 
   replayAll(): Effect<void, StoreQueryError | TaggedError> {
     return this.storageDriver
-      .get<EventToType<DomainEvent>>(this.eventModel, {
+      .get(EventModel, {
         from: "events",
         orderBy: {
           timestamp: "ASC",
@@ -100,28 +112,23 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
       })
       .flatMap((events) => {
         return Effect.allInSequence(() =>
-          events.map((event) => this.replayEvent(event)),
+          events.map((event) => this.replayEvent(event as EventType)),
         ).discardValue();
       });
   }
 
-  private replayEvent(
-    event: EventToType<DomainEvent>,
-  ): Effect<void, TaggedError> {
+  private replayEvent(event: EventType): Effect<void, TaggedError> {
     const eventName = event.type;
+    const streamName = event.streamName;
 
-    // Find all subscriptions that match this event type across all streams
-    const matchingSubscriptions: Subscription[] = [];
+    // Use the stored streamName to find the exact subscription
+    const subscriptionKey = `${streamName}:${eventName}`;
+    const subscriptions = this.eventSubscriptions[subscriptionKey];
 
-    for (const key in this.eventSubscriptions) {
-      if (key.endsWith(`:${eventName}`)) {
-        matchingSubscriptions.push(...this.eventSubscriptions[key]);
-      }
-    }
-
-    if (matchingSubscriptions.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (subscriptions) {
       return Effect.allInSequence(() =>
-        matchingSubscriptions.map((subscription) => {
+        subscriptions.map((subscription) => {
           if (subscription.opts.callOnReplay) {
             return subscription.subscriber(event).catchAll((e) => {
               console.error(e);

@@ -301,4 +301,81 @@ describe("EventStore", async () => {
     expect(streamASubscriber2).toHaveBeenCalledTimes(0);
     expect(streamBSubscriber2).toHaveBeenCalledTimes(1);
   });
+
+  test("Given two event streams with events of the same name and replay, subscribers should only be triggered for events from the correct stream during replay", async () => {
+    // Create a shared event type that will be used in both streams
+    const UserCreatedEventModel = new DomainEvent("UserCreated", {
+      name: Field.string(),
+    });
+
+    // Create two different event streams that both use the same event name
+    const streamA = new EventStream("StreamA", [
+      UserCreatedEventModel,
+    ] as const);
+    const streamB = new EventStream("StreamB", [
+      UserCreatedEventModel,
+    ] as const);
+
+    const eventStreams = [streamA, streamB];
+    const localEventStore = new EventStore(
+      new ValueStoreDriverMock(),
+      eventStreams,
+    );
+    await localEventStore.sync().runOrThrow();
+
+    // Create events for each stream
+    const streamAEvent = UserCreatedEventModel.from({
+      id: crypto.randomUUID(),
+      streamId: crypto.randomUUID(),
+      version: 1,
+      payload: { name: "Alice from Stream A" },
+    });
+
+    const streamBEvent = UserCreatedEventModel.from({
+      id: crypto.randomUUID(),
+      streamId: crypto.randomUUID(),
+      version: 1,
+      payload: { name: "Bob from Stream B" },
+    });
+
+    // Append events to both streams
+    await localEventStore.append("StreamA", streamAEvent).runOrThrow();
+    await localEventStore.append("StreamB", streamBEvent).runOrThrow();
+
+    // Create mock subscribers for each stream that will be called on replay
+    const streamASubscriber = fnMock(() => Effect.ok());
+    const streamBSubscriber = fnMock(() => Effect.ok());
+
+    // Subscribe to events with callOnReplay: true
+    localEventStore.subscribe("StreamA", "UserCreated", streamASubscriber, {
+      callOnReplay: true,
+    });
+    localEventStore.subscribe("StreamB", "UserCreated", streamBSubscriber, {
+      callOnReplay: true,
+    });
+
+    // Replay all events
+    await localEventStore.replayAll().runOrThrow();
+
+    // This test should pass when the fix is implemented:
+    // StreamA subscriber should only receive the StreamA event
+    // StreamB subscriber should only receive the StreamB event
+    expect(streamASubscriber).toHaveBeenCalledTimes(1);
+    expect(streamBSubscriber).toHaveBeenCalledTimes(1);
+
+    // Verify the correct events were received
+    expect(streamASubscriber).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "UserCreated",
+        payload: { name: "Alice from Stream A" },
+      }),
+    );
+
+    expect(streamBSubscriber).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "UserCreated",
+        payload: { name: "Bob from Stream B" },
+      }),
+    );
+  });
 });
