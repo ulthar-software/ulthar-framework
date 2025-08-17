@@ -7,7 +7,10 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuthHasPerm } from "../../utils/auth/use-auth-has-perm";
 import { useModal } from "../../utils/modal/modal-hooks";
+import { useRPC } from "../../utils/rpc/use-rpc";
 import { clx } from "../../utils/styles/clx.ts";
+import { showErrorToast } from "../../utils/toasts/show-error-toast";
+import { showSuccessToast } from "../../utils/toasts/show-success-toast";
 import { Anchor } from "../ui/anchor.tsx";
 import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
@@ -78,6 +81,7 @@ export function CourseSidebar({
   const isEditable = useAuthHasPerm(Permission.EDIT_COURSE);
   const { showModal } = useModal();
   const navigate = useNavigate();
+  const changeUnitOrderRPC = useRPC("changeUnitOrder");
 
   const handleEditCourseTitle = () => {
     const [closeModal] = showModal(
@@ -102,6 +106,78 @@ export function CourseSidebar({
         }}
       />,
     );
+  };
+
+  const handleMoveUnitUp = async (unitId: UUID, moduleId: UUID) => {
+    const currentModule = courseData.modules.find((m) => m.id === moduleId);
+    if (!currentModule) return;
+
+    const currentUnitIndex = currentModule.units.findIndex(
+      (u) => u.id === unitId,
+    );
+    if (currentUnitIndex <= 0) return; // Already at the top
+
+    const currentUnit = currentModule.units[currentUnitIndex];
+    const previousUnit = currentModule.units[currentUnitIndex - 1];
+
+    try {
+      await Promise.all([
+        changeUnitOrderRPC({
+          unitId: currentUnit.id,
+          order: previousUnit.order,
+        }).then((result) => {
+          if (result.isError()) throw result.value;
+        }),
+        changeUnitOrderRPC({
+          unitId: previousUnit.id,
+          order: currentUnit.order,
+        }).then((result) => {
+          if (result.isError()) throw result.value;
+        }),
+      ]);
+
+      showSuccessToast("Orden de unidad actualizado");
+      await refreshCourse();
+    } catch (error) {
+      console.error("Error changing unit order:", error);
+      showErrorToast("Error al cambiar el orden de la unidad");
+    }
+  };
+
+  const handleMoveUnitDown = async (unitId: UUID, moduleId: UUID) => {
+    const currentModule = courseData.modules.find((m) => m.id === moduleId);
+    if (!currentModule) return;
+
+    const currentUnitIndex = currentModule.units.findIndex(
+      (u) => u.id === unitId,
+    );
+    if (currentUnitIndex >= currentModule.units.length - 1) return; // Already at the bottom
+
+    const currentUnit = currentModule.units[currentUnitIndex];
+    const nextUnit = currentModule.units[currentUnitIndex + 1];
+
+    try {
+      await Promise.all([
+        changeUnitOrderRPC({
+          unitId: currentUnit.id,
+          order: nextUnit.order,
+        }).then((result) => {
+          if (result.isError()) throw result.value;
+        }),
+        changeUnitOrderRPC({
+          unitId: nextUnit.id,
+          order: currentUnit.order,
+        }).then((result) => {
+          if (result.isError()) throw result.value;
+        }),
+      ]);
+
+      showSuccessToast("Orden de unidad actualizado");
+      await refreshCourse();
+    } catch (error) {
+      console.error("Error changing unit order:", error);
+      showErrorToast("Error al cambiar el orden de la unidad");
+    }
   };
 
   return (
@@ -218,7 +294,7 @@ export function CourseSidebar({
               {isExpanded && (
                 <nav>
                   <ul className="py-1">
-                    {module.units.map((unit) => (
+                    {module.units.map((unit, unitIndex) => (
                       <li key={unit.id} className="flex items-center">
                         <Anchor
                           onClick={onCloseSidebar}
@@ -233,24 +309,56 @@ export function CourseSidebar({
                           {unit.title}
                         </Anchor>
                         {isEditable && (
-                          <Button
-                            onClick={() => {
-                              const [closeModal] = showModal(
-                                <DeleteUnitModal
-                                  unitId={unit.id}
-                                  unitTitle={unit.title}
-                                  refreshCourse={refreshCourse}
-                                  closeModal={() => {
-                                    closeModal();
-                                  }}
-                                />,
-                              );
-                            }}
-                            className="text-gray-400 hover:text-red-400 mr-2"
-                            title="Eliminar unidad"
-                          >
-                            <Icon name="bx-trash" className="text-sm" />
-                          </Button>
+                          <div className="flex items-center">
+                            {/* Up button - only show if not first unit */}
+                            {unitIndex > 0 && (
+                              <Button
+                                onClick={() =>
+                                  handleMoveUnitUp(unit.id, module.id)
+                                }
+                                className="text-gray-400 hover:text-primary mr-1"
+                                title="Mover unidad hacia arriba"
+                              >
+                                <Icon
+                                  name="bx-chevron-up"
+                                  className="text-sm"
+                                />
+                              </Button>
+                            )}
+                            {/* Down button - only show if not last unit */}
+                            {unitIndex < module.units.length - 1 && (
+                              <Button
+                                onClick={() =>
+                                  handleMoveUnitDown(unit.id, module.id)
+                                }
+                                className="text-gray-400 hover:text-primary mr-1"
+                                title="Mover unidad hacia abajo"
+                              >
+                                <Icon
+                                  name="bx-chevron-down"
+                                  className="text-sm"
+                                />
+                              </Button>
+                            )}
+                            <Button
+                              onClick={() => {
+                                const [closeModal] = showModal(
+                                  <DeleteUnitModal
+                                    unitId={unit.id}
+                                    unitTitle={unit.title}
+                                    refreshCourse={refreshCourse}
+                                    closeModal={() => {
+                                      closeModal();
+                                    }}
+                                  />,
+                                );
+                              }}
+                              className="text-gray-400 hover:text-red-400 mr-2"
+                              title="Eliminar unidad"
+                            >
+                              <Icon name="bx-trash" className="text-sm" />
+                            </Button>
+                          </div>
                         )}
                       </li>
                     ))}
