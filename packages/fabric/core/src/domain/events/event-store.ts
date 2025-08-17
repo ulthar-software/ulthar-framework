@@ -62,13 +62,19 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
       })
       .flatMap(() => {
         const subscriptionKey = `${streamName}:${event.type}`;
-        const subs = this.eventSubscriptions[subscriptionKey];
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (!subs) {
+        const wildcardKey = `*:${event.type}`;
+
+        const specificSubs = this.eventSubscriptions[subscriptionKey] ?? [];
+        const wildcardSubs = this.eventSubscriptions[wildcardKey] ?? [];
+
+        const allSubscribers = [...specificSubs, ...wildcardSubs];
+
+        if (allSubscribers.length === 0) {
           return Effect.ok();
         }
+
         return Effect.allInSequence(() =>
-          subs.map((subscription) => subscription.subscriber(event)),
+          allSubscribers.map((subscription) => subscription.subscriber(event)),
         ).discardValue();
       })
       .tapError((error) => {
@@ -85,7 +91,7 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
       { name: TEventName }
     >,
   >(
-    streamName: TEventStreams[number]["name"],
+    streamName: TEventStreams[number]["name"] | "*",
     eventName: TEventName,
     subscriber: EventSubscriber<TEvent>,
     opts?: SubscriptionOptions,
@@ -121,14 +127,18 @@ export class EventStore<TEventStreams extends readonly EventStream[]> {
     const eventName = event.type;
     const streamName = event.streamName;
 
-    // Use the stored streamName to find the exact subscription
+    // Use the stored streamName to find the exact subscription and wildcard subscriptions
     const subscriptionKey = `${streamName}:${eventName}`;
-    const subscriptions = this.eventSubscriptions[subscriptionKey];
+    const wildcardKey = `*:${eventName}`;
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (subscriptions) {
+    const specificSubs = this.eventSubscriptions[subscriptionKey] ?? [];
+    const wildcardSubs = this.eventSubscriptions[wildcardKey] ?? [];
+
+    const allSubscribers = [...specificSubs, ...wildcardSubs];
+
+    if (allSubscribers.length > 0) {
       return Effect.allInSequence(() =>
-        subscriptions.map((subscription) => {
+        allSubscribers.map((subscription) => {
           if (subscription.opts.callOnReplay) {
             return subscription.subscriber(event).catchAll((e) => {
               console.error(e);

@@ -378,4 +378,161 @@ describe("EventStore", async () => {
       }),
     );
   });
+
+  test("Given a wildcard subscription, when events are appended to different streams, the wildcard subscriber should be triggered for all events", async () => {
+    // Create a shared event type that will be used in both streams
+    const UserCreatedEventModel = new DomainEvent("UserCreated", {
+      name: Field.string(),
+    });
+
+    // Create two different event streams that both use the same event name
+    const streamA = new EventStream("StreamA", [
+      UserCreatedEventModel,
+    ] as const);
+    const streamB = new EventStream("StreamB", [
+      UserCreatedEventModel,
+    ] as const);
+
+    const eventStreams = [streamA, streamB];
+    const localEventStore = new EventStore(
+      new ValueStoreDriverMock(),
+      eventStreams,
+    );
+    await localEventStore.sync().runOrThrow();
+
+    // Create mock subscribers
+    const wildcardSubscriber = fnMock(() => Effect.ok());
+    const streamASubscriber = fnMock(() => Effect.ok());
+
+    // Subscribe with wildcard and specific stream
+    localEventStore.subscribe("*", "UserCreated", wildcardSubscriber);
+    localEventStore.subscribe("StreamA", "UserCreated", streamASubscriber);
+
+    // Create events for each stream
+    const streamAEvent = UserCreatedEventModel.from({
+      id: crypto.randomUUID(),
+      streamId: crypto.randomUUID(),
+      version: 1,
+      payload: { name: "Alice from Stream A" },
+    });
+
+    const streamBEvent = UserCreatedEventModel.from({
+      id: crypto.randomUUID(),
+      streamId: crypto.randomUUID(),
+      version: 1,
+      payload: { name: "Bob from Stream B" },
+    });
+
+    // Append event to Stream A
+    await localEventStore.append("StreamA", streamAEvent).runOrThrow();
+
+    // Both wildcard subscriber and specific stream subscriber should be called
+    expect(wildcardSubscriber).toHaveBeenCalledTimes(1);
+    expect(streamASubscriber).toHaveBeenCalledTimes(1);
+
+    // Create new mocks for the second test
+    const wildcardSubscriber2 = fnMock(() => Effect.ok());
+    const streamASubscriber2 = fnMock(() => Effect.ok());
+
+    // Create a new event store to avoid interference
+    const localEventStore2 = new EventStore(
+      new ValueStoreDriverMock(),
+      eventStreams,
+    );
+    await localEventStore2.sync().runOrThrow();
+
+    localEventStore2.subscribe("*", "UserCreated", wildcardSubscriber2);
+    localEventStore2.subscribe("StreamA", "UserCreated", streamASubscriber2);
+
+    // Append event to Stream B
+    await localEventStore2.append("StreamB", streamBEvent).runOrThrow();
+
+    // Only wildcard subscriber should be called (no specific StreamB subscriber)
+    expect(wildcardSubscriber2).toHaveBeenCalledTimes(1);
+    expect(streamASubscriber2).toHaveBeenCalledTimes(0);
+
+    // Verify the wildcard subscriber received the event
+    expect(wildcardSubscriber2).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "UserCreated",
+        payload: { name: "Bob from Stream B" },
+      }),
+    );
+  });
+
+  test("Given wildcard subscriptions with replay, the wildcard subscriber should be triggered for events from all streams during replay", async () => {
+    // Create a shared event type that will be used in both streams
+    const UserCreatedEventModel = new DomainEvent("UserCreated", {
+      name: Field.string(),
+    });
+
+    // Create two different event streams that both use the same event name
+    const streamA = new EventStream("StreamA", [
+      UserCreatedEventModel,
+    ] as const);
+    const streamB = new EventStream("StreamB", [
+      UserCreatedEventModel,
+    ] as const);
+
+    const eventStreams = [streamA, streamB];
+    const localEventStore = new EventStore(
+      new ValueStoreDriverMock(),
+      eventStreams,
+    );
+    await localEventStore.sync().runOrThrow();
+
+    // Create events for each stream
+    const streamAEvent = UserCreatedEventModel.from({
+      id: crypto.randomUUID(),
+      streamId: crypto.randomUUID(),
+      version: 1,
+      payload: { name: "Alice from Stream A" },
+    });
+
+    const streamBEvent = UserCreatedEventModel.from({
+      id: crypto.randomUUID(),
+      streamId: crypto.randomUUID(),
+      version: 1,
+      payload: { name: "Bob from Stream B" },
+    });
+
+    // Append events to both streams
+    await localEventStore.append("StreamA", streamAEvent).runOrThrow();
+    await localEventStore.append("StreamB", streamBEvent).runOrThrow();
+
+    // Create mock subscribers for replay
+    const wildcardSubscriber = fnMock(() => Effect.ok());
+    const streamASubscriber = fnMock(() => Effect.ok());
+
+    // Subscribe with callOnReplay: true
+    localEventStore.subscribe("*", "UserCreated", wildcardSubscriber, {
+      callOnReplay: true,
+    });
+    localEventStore.subscribe("StreamA", "UserCreated", streamASubscriber, {
+      callOnReplay: true,
+    });
+
+    // Replay all events
+    await localEventStore.replayAll().runOrThrow();
+
+    // Wildcard subscriber should receive both events
+    expect(wildcardSubscriber).toHaveBeenCalledTimes(2);
+    // StreamA subscriber should only receive StreamA event
+    expect(streamASubscriber).toHaveBeenCalledTimes(1);
+
+    // Verify the correct events were received
+    expect(wildcardSubscriber).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "UserCreated",
+        payload: { name: "Alice from Stream A" },
+      }),
+    );
+
+    expect(wildcardSubscriber).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "UserCreated",
+        payload: { name: "Bob from Stream B" },
+      }),
+    );
+  });
 });
