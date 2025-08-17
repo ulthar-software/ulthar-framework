@@ -76,6 +76,13 @@ export const EmptyRPCContext: RpcClient = {
   getDetailedStudentProgress:
     emptyMock<UseCaseRPC<"getDetailedStudentProgress">>(),
   getProgressByModule: emptyMock<UseCaseRPC<"getProgressByModule">>(),
+  deleteModule: emptyMock<UseCaseRPC<"deleteModule">>(),
+  deleteQuestionnaireSection:
+    emptyMock<UseCaseRPC<"deleteQuestionnaireSection">>(),
+  deleteTextSection: emptyMock<UseCaseRPC<"deleteTextSection">>(),
+  deleteUnit: emptyMock<UseCaseRPC<"deleteUnit">>(),
+  deleteVideoSection: emptyMock<UseCaseRPC<"deleteVideoSection">>(),
+  cloneCourse: emptyMock<UseCaseRPC<"cloneCourse">>(),
 };
 
 export const RpcContext = createContext<RpcClient>(EmptyRPCContext);
