@@ -13,6 +13,8 @@ import { Button } from "../ui/button.tsx";
 import { Icon } from "../ui/icon.tsx";
 import { AddModuleModal } from "./modals/course-crud/add-module-modal.tsx";
 import { AddUnitModal } from "./modals/course-crud/add-unit-modal.tsx";
+import { DeleteModuleModal } from "./modals/course-crud/delete-module-modal.tsx";
+import { DeleteUnitModal } from "./modals/course-crud/delete-unit-modal.tsx";
 import { EditCourseTitleModal } from "./modals/course-crud/edit-course-title-modal.tsx";
 
 interface CourseSidebarProps {
@@ -163,25 +165,45 @@ export function CourseSidebar({
                   <span>{module.title}</span>
                   <div className="flex items-center gap-2">
                     {isEditable && (
-                      <Button
-                        onClick={() => {
-                          const [closeModal] = showModal(
-                            <AddUnitModal
-                              navigate={navigate}
-                              courseId={courseId}
-                              moduleId={module.id}
-                              refreshCourse={refreshCourse}
-                              closeModal={() => {
-                                closeModal();
-                              }}
-                            />,
-                          );
-                        }}
-                        className="text-gray-400 hover:text-primary"
-                        title="Agregar unidad"
-                      >
-                        <Icon name="bx-plus" className="text-xl" />
-                      </Button>
+                      <>
+                        <Button
+                          onClick={() => {
+                            const [closeModal] = showModal(
+                              <AddUnitModal
+                                navigate={navigate}
+                                courseId={courseId}
+                                moduleId={module.id}
+                                refreshCourse={refreshCourse}
+                                closeModal={() => {
+                                  closeModal();
+                                }}
+                              />,
+                            );
+                          }}
+                          className="text-gray-400 hover:text-primary"
+                          title="Agregar unidad"
+                        >
+                          <Icon name="bx-plus" className="text-xl" />
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            const [closeModal] = showModal(
+                              <DeleteModuleModal
+                                moduleId={module.id}
+                                moduleTitle={module.title}
+                                refreshCourse={refreshCourse}
+                                closeModal={() => {
+                                  closeModal();
+                                }}
+                              />,
+                            );
+                          }}
+                          className="text-gray-400 hover:text-red-400"
+                          title="Eliminar módulo"
+                        >
+                          <Icon name="bx-trash" className="text-xl" />
+                        </Button>
+                      </>
                     )}
                     {isExpanded ? (
                       <Icon name="bx-chevron-up" className="text-xl" />
@@ -197,12 +219,12 @@ export function CourseSidebar({
                 <nav>
                   <ul className="py-1">
                     {module.units.map((unit) => (
-                      <li key={unit.id}>
+                      <li key={unit.id} className="flex items-center">
                         <Anchor
                           onClick={onCloseSidebar}
                           href={`/course/${courseId}?unitId=${unit.id}`}
                           className={clx(
-                            "block px-6 py-2 text-sm hover:bg-gray-700",
+                            "flex-1 block px-6 py-2 text-sm hover:bg-gray-700",
                             currentUnitId === unit.id
                               ? "bg-gray-700 text-primary"
                               : "text-gray-300",
@@ -210,6 +232,26 @@ export function CourseSidebar({
                         >
                           {unit.title}
                         </Anchor>
+                        {isEditable && (
+                          <Button
+                            onClick={() => {
+                              const [closeModal] = showModal(
+                                <DeleteUnitModal
+                                  unitId={unit.id}
+                                  unitTitle={unit.title}
+                                  refreshCourse={refreshCourse}
+                                  closeModal={() => {
+                                    closeModal();
+                                  }}
+                                />,
+                              );
+                            }}
+                            className="text-gray-400 hover:text-red-400 mr-2"
+                            title="Eliminar unidad"
+                          >
+                            <Icon name="bx-trash" className="text-sm" />
+                          </Button>
+                        )}
                       </li>
                     ))}
                   </ul>
