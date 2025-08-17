@@ -1,6 +1,7 @@
 export * from "./add-questionnaire-response.js";
 export * from "./change-course-description.js";
 export * from "./change-course-title.js";
+export * from "./clone-course.js";
 export * from "./create-course.js";
 export * from "./enrollment/index.js";
 export * from "./errors.js";
