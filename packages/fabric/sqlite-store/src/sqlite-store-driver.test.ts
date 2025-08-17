@@ -306,6 +306,36 @@ describe("State Store", () => {
     expect(result).toBe(2);
   });
 
+  test("should order results", async () => {
+    const newId = crypto.randomUUID();
+
+    await store
+      .insertInto("users")
+      .manyValues([
+        {
+          name: "C",
+          id: newId,
+        },
+        {
+          name: "B",
+          id: crypto.randomUUID(),
+        },
+        {
+          name: "A",
+          id: crypto.randomUUID(),
+        },
+      ])
+      .runOrThrow();
+
+    const result = await store
+      .from("users")
+      .orderBy({ name: "ASC" })
+      .select()
+      .runOrThrow();
+
+    expect(result.map((u) => u.name)).toEqual(["A", "B", "C"]);
+  });
+
   test("should find the maximum value", async () => {
     await store
       .insertInto("nonReferenceModel")

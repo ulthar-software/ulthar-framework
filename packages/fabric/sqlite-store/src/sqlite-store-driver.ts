@@ -263,6 +263,14 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
     const queryFilter = filterToSQL(model, query.where);
     const limit = query.limit ? `LIMIT ${query.limit}` : "";
     const offset = query.offset ? `OFFSET ${query.offset}` : "";
+    const orderBy = query.orderBy
+      ? `ORDER BY ${Object.entries(query.orderBy)
+          .map(([key, order]) => {
+            const transformedKey = transformManualKey(model, key);
+            return `${transformedKey} ${order}`;
+          })
+          .join(", ")}`
+      : "";
 
     // Handle joins if they exist
     const joinClauses = [];
@@ -285,6 +293,7 @@ export class SQLiteStoreDriver implements ValueStoreDriver {
       `FROM ${query.from}`,
       joinSql,
       queryFilter,
+      orderBy,
       limit,
       offset,
     ]
