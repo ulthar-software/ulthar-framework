@@ -27,6 +27,7 @@ import {
   ChangeModuleOrderUseCase,
   ChangeModuleTitleUseCase,
   ChangeUnitTitleUseCase,
+  CloneCourseUseCase,
   CourseNotFoundError,
   CreateCourseUseCase,
   CreateTagUseCase,
@@ -132,6 +133,7 @@ export const DomainUseCases = [
   DeleteQuestionnaireSectionUseCase,
   DeleteVideoSectionUseCase,
   DeleteTextSectionUseCase,
+  CloneCourseUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
