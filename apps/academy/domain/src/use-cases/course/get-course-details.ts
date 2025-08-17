@@ -25,12 +25,14 @@ export type GetCourseDetailsInput = Infer<typeof GetCourseDetailsInputModel>;
 export interface UnitSummary {
   id: UUID;
   title: string;
+  order: number;
 }
 
 export interface ModuleSummary {
   id: UUID;
   title: string;
   units: UnitSummary[];
+  order: number;
 }
 
 export interface GetCourseDetailsOutput {
@@ -117,6 +119,7 @@ export const GetCourseDetailsUseCase = new UseCase({
                   unitsByModule[unit.moduleId].push({
                     id: unit.id,
                     title: unit.title,
+                    order: unit.order,
                   });
                 });
 
@@ -126,6 +129,7 @@ export const GetCourseDetailsUseCase = new UseCase({
                     id: module.id,
                     title: module.title,
                     units: unitsByModule[module.id] || [],
+                    order: module.order,
                   }),
                 );
 
