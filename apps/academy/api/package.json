@@ -38,8 +38,8 @@
     "check": "tsc",
     "build": "tsc -p tsconfig.build.json",
     "run-seeds": "tsx src/seeds/run-seeds.ts",
-    "recreate-state": "tsx src/recreate-state.ts",
-    "test-email": "tsx src/test-email.ts",
-    "test-sendmail": "tsx src/test-sendmail.ts"
+    "db": "tsx src/scripts/db-ops",
+    "test:email": "tsx src/test-email.ts",
+    "test:sendmail": "tsx src/test-sendmail.ts"
   }
 }

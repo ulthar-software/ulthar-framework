@@ -2,9 +2,12 @@ import "dotenv/config";
 
 import { Field, Model, WritableValueStore } from "@fabric/core";
 import { SQLiteStoreDriver } from "@fabric/sqlite-store";
-import fs from "node:fs/promises";
-import { dirname, join } from "node:path";
 import { initializeDependencies } from "../services/build-dependencies.js";
+import {
+  backupDatabases,
+  removeBackups,
+  restoreDatabases,
+} from "../utils/database-operations.js";
 import { getHashOfSeed } from "./get-hash-of-seed.js";
 import { PROD_SEEDS } from "./prod-seeds.js";
 
@@ -20,7 +23,7 @@ const SeedModel = new Model("seeds", {
 const seedStore = new SQLiteStoreDriver(deps.env.get("MIGRATIONS_DB"));
 const store = new WritableValueStore(seedStore, [SeedModel]);
 
-await backupDatabases();
+await backupDatabases(deps.env);
 
 try {
   await deps.state.sync().runOrThrow();
@@ -64,7 +67,7 @@ for (let i = 0; i < PROD_SEEDS.length; i++) {
     deps.state.close();
     deps.events.close();
 
-    await restoreDatabases();
+    await restoreDatabases(deps.env);
 
     process.exit(1);
   }
@@ -83,59 +86,4 @@ for (let i = 0; i < PROD_SEEDS.length; i++) {
 console.log("All seeds run successfully");
 console.log("Removing backups");
 
-await removeBackups();
-
-async function backupDatabases() {
-  const migrationsDbDirectory = dirname(deps.env.get("MIGRATIONS_DB"));
-  const migrationsEventsDbPath = join(
-    migrationsDbDirectory,
-    "migration-events-bkp.db",
-  );
-  const migrationsStateDbPath = join(
-    migrationsDbDirectory,
-    "migration-state-bkp.db",
-  );
-  if (
-    (await fs.stat(migrationsEventsDbPath).catch(() => false)) ||
-    (await fs.stat(migrationsStateDbPath).catch(() => false))
-  ) {
-    console.log("Backup already exists, skipping backup creation.");
-    process.exit(1);
-  }
-
-  await fs.cp(deps.env.get("EVENTS_DB"), migrationsEventsDbPath);
-  await fs.cp(deps.env.get("STATE_DB"), migrationsStateDbPath);
-}
-
-async function restoreDatabases() {
-  const migrationsDbDirectory = dirname(deps.env.get("MIGRATIONS_DB"));
-  const migrationsEventsDbPath = join(
-    migrationsDbDirectory,
-    "migration-events-bkp.db",
-  );
-  const migrationsStateDbPath = join(
-    migrationsDbDirectory,
-    "migration-state-bkp.db",
-  );
-
-  await fs.rm(deps.env.get("EVENTS_DB"));
-  await fs.rm(deps.env.get("STATE_DB"));
-
-  await fs.cp(migrationsEventsDbPath, deps.env.get("EVENTS_DB"));
-  await fs.cp(migrationsStateDbPath, deps.env.get("STATE_DB"));
-}
-
-async function removeBackups() {
-  const migrationsDbDirectory = dirname(deps.env.get("MIGRATIONS_DB"));
-  const migrationsEventsDbPath = join(
-    migrationsDbDirectory,
-    "migration-events-bkp.db",
-  );
-  const migrationsStateDbPath = join(
-    migrationsDbDirectory,
-    "migration-state-bkp.db",
-  );
-
-  await fs.rm(migrationsEventsDbPath);
-  await fs.rm(migrationsStateDbPath);
-}
+await removeBackups(deps.env);
