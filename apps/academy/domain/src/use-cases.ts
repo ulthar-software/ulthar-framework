@@ -30,6 +30,11 @@ import {
   CourseNotFoundError,
   CreateCourseUseCase,
   CreateTagUseCase,
+  DeleteModuleUseCase,
+  DeleteQuestionnaireSectionUseCase,
+  DeleteTextSectionUseCase,
+  DeleteUnitUseCase,
+  DeleteVideoSectionUseCase,
   EditQuestionnaireSectionContentUseCase,
   EditResourceUseCase,
   EditTextSectionContentUseCase,
@@ -67,10 +72,12 @@ import {
   ResourceNotFoundError,
   StudentAlreadyEnrolledError,
   TagAlreadyExistsError,
+  TextSectionNotFoundError,
   UnitNotFoundError,
   UserAlreadyExistsError,
   UserAlreadyInvitedError,
   UserNotFoundError,
+  VideoSectionNotFoundError,
 } from "./use-cases/index.js";
 import type {
   UseCaseDependencies,
@@ -120,6 +127,11 @@ export const DomainUseCases = [
   CancelInviteUseCase,
   GetDetailedStudentProgressUseCase,
   GetProgressByModuleUseCase,
+  DeleteModuleUseCase,
+  DeleteUnitUseCase,
+  DeleteQuestionnaireSectionUseCase,
+  DeleteVideoSectionUseCase,
+  DeleteTextSectionUseCase,
 ] as const;
 
 export type DomainUseCases = typeof DomainUseCases;
@@ -157,6 +169,8 @@ export const DomainUseCaseErrorsMap = {
   AlreadyExistsError: AlreadyExistsError,
   InvalidPasswordResetTokenError: InvalidPasswordResetTokenError,
   NotFoundError: NotFoundError,
+  TextSectionNotFoundError: TextSectionNotFoundError,
+  VideoSectionNotFoundError: VideoSectionNotFoundError,
 } as const satisfies Record<
   DomainUseCaseErrors["_tag"],
   ClassConstructor<DomainUseCaseErrors>
