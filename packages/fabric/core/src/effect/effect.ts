@@ -262,6 +262,18 @@ export class Effect<
     });
   }
 
+  tap(
+    fn: (value: TValue) => MaybePromise<void>,
+  ): Effect<TValue, TError, TDeps> {
+    return new Effect(async (deps: TDeps) => {
+      const result = await this.fn(deps);
+      if (result.isOk()) {
+        await fn(result.value);
+      }
+      return result;
+    });
+  }
+
   catchAll(
     fn: (error: TError) => MaybePromise<TValue>,
   ): Effect<TValue, never, TDeps> {
