@@ -37,6 +37,7 @@
     "test:coverage": "vitest run --coverage",
     "check": "tsc",
     "build": "tsc -p tsconfig.build.json",
+    "start": "node ./dist/main.js",
     "run-seeds": "tsx src/seeds/run-seeds.ts",
     "db": "tsx src/scripts/db-ops",
     "test:email": "tsx src/test-email.ts",
