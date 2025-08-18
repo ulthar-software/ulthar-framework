@@ -14,5 +14,6 @@ export function fakeModuleSummary(
       fakeUnitSummary(),
       fakeUnitSummary(),
     ],
+    order: module?.order ?? 0,
   };
 }
