@@ -5,32 +5,39 @@ import "dotenv/config";
 import { initializeEnvironment } from "../services/build-dependencies.js";
 import {
   backupDatabases,
+  cleanupWalFiles,
   recreateState,
-  removeBackups,
+  removeOldBackups,
   restoreDatabases,
 } from "../utils/database-operations.js";
 
 const COMMANDS = {
   backup: "backup",
   restore: "restore",
-  clear: "clear",
+  cleanup: "cleanup",
+  removeOldBackups: "removeOldBackups",
   replay: "replay",
 } as const;
 
 type Command = (typeof COMMANDS)[keyof typeof COMMANDS];
 
 function printUsage() {
-  console.log("Usage: tsx src/scripts/db-ops.ts <command>");
+  console.log("Usage: yarn db <command>");
   console.log("");
   console.log("Commands:");
-  console.log("  backup         - Create backup of events and state databases");
-  console.log("  restore        - Restore databases from backup");
-  console.log("  clear          - Remove backup files");
+  console.log(`  backup             - Create timestamped backup of events, state, and migrations databases
+  restore            - Restore databases from the latest backup
+  removeOldBackups   - Remove old backup files (keeps the latest backup of each database)
+  cleanup            - Clean up WAL cache files for all databases
+  recreateState      - Recreate the state database
+  `);
   console.log("");
   console.log("Examples:");
-  console.log("  tsx src/scripts/db-ops.ts backup");
-  console.log("  tsx src/scripts/db-ops.ts restore");
-  console.log("  tsx src/scripts/db-ops.ts clear");
+  console.log("  yarn db backup");
+  console.log("  yarn db restore");
+  console.log("  yarn db removeOldBackups");
+  console.log("  yarn db recreateState");
+  console.log("  yarn db cleanup");
 }
 
 function isValidCommand(command: string): command is Command {
@@ -45,6 +52,11 @@ async function main() {
     console.log("");
     printUsage();
     process.exit(1);
+  }
+
+  if (command === "help" || command === "--help" || command === "-h") {
+    printUsage();
+    process.exit(0);
   }
 
   if (!isValidCommand(command)) {
@@ -70,10 +82,16 @@ async function main() {
         console.log("Databases restored successfully.");
         break;
 
-      case COMMANDS.clear:
-        console.log("Removing database backups...");
-        await removeBackups(env);
-        console.log("Database backups removed successfully.");
+      case COMMANDS.cleanup:
+        console.log("Cleaning up WAL cache...");
+        await cleanupWalFiles(env);
+        console.log("WAL cache cleaned up successfully.");
+        break;
+
+      case COMMANDS.removeOldBackups:
+        console.log("Removing old database backups...");
+        await removeOldBackups(env);
+        console.log("Old database backups removed successfully.");
         break;
 
       case COMMANDS.replay:

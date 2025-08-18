@@ -5,7 +5,6 @@ import { SQLiteStoreDriver } from "@fabric/sqlite-store";
 import { initializeDependencies } from "../services/build-dependencies.js";
 import {
   backupDatabases,
-  removeBackups,
   restoreDatabases,
 } from "../utils/database-operations.js";
 import { getHashOfSeed } from "./get-hash-of-seed.js";
@@ -84,6 +83,3 @@ for (let i = 0; i < PROD_SEEDS.length; i++) {
 }
 
 console.log("All seeds run successfully");
-console.log("Removing backups");
-
-await removeBackups(deps.env);

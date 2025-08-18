@@ -8,6 +8,7 @@ export const EnvSchema = new Schema({
   EVENTS_DB: Field.string(),
   STATE_DB: Field.string(),
   MIGRATIONS_DB: Field.string(),
+  BACKUPS_DIRECTORY: Field.string(),
 
   JWT_SECRET: Field.string(),
 
