@@ -20,6 +20,7 @@ import {
 import { mockUserAccess } from "../../../utils/mock-user-access.js";
 import { UnauthorizedError } from "../../../utils/use-case.js";
 import { AddQuestionnaireResponseUseCase } from "../add-questionnaire-response.js";
+import { CloneCourseUseCase } from "../clone-course.js";
 import { GetCourseEnrollmentsUseCase } from "./get-course-enrollments.js";
 
 describe("Get Course Enrollments Use Case", () => {
@@ -313,5 +314,41 @@ describe("Get Course Enrollments Use Case", () => {
     expect(user1Result.quizzesCompleted).toEqual(0);
     expect(user2Result.quizzesTried).toEqual(0);
     expect(user2Result.quizzesCompleted).toEqual(0);
+  });
+
+  test("After cloning a course, it should not return any user from the original course", async () => {
+    await enrollUsersAndInvites();
+
+    const result = await callUseCase();
+
+    expect(result.students).toHaveLength(3);
+    expect(result.invites).toHaveLength(3);
+
+    // Clone the course
+    const cloneResult = await CloneCourseUseCase.call(
+      {
+        ...services,
+        currentUser: {
+          id: courseOwner.id,
+          permissions: [Permission.CREATE_COURSE],
+        },
+      },
+      {
+        sourceId: courseId,
+        title: "Cloned Course",
+        description: "Cloned Course",
+      },
+    ).runOrThrow();
+
+    const resultAfterCloning = await GetCourseEnrollmentsUseCase.call(
+      {
+        state: services.state,
+        currentUser: mockUserAccess(services, [Permission.ENROLL_STUDENTS]),
+      },
+      { courseId: cloneResult.courseId },
+    ).runOrThrow();
+
+    expect(resultAfterCloning.students).toHaveLength(0);
+    expect(resultAfterCloning.invites).toHaveLength(0);
   });
 });

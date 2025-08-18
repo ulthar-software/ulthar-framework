@@ -71,7 +71,9 @@ export const GetCourseEnrollmentsUseCase = new UseCase({
                 },
                 { "e.courseId": courseId, lastName: isLike(`%${filter}%`) },
               ]
-            : undefined,
+            : {
+                "e.courseId": courseId,
+              },
         )
         .select(UserViewModelProperties);
 
@@ -101,7 +103,9 @@ export const GetCourseEnrollmentsUseCase = new UseCase({
         .where(
           filter
             ? [{ "e.courseId": courseId, email: isLike(`%${filter}%`) }]
-            : undefined,
+            : {
+                "e.courseId": courseId,
+              },
         )
         .select(UserInviteViewModelProperties);
 
