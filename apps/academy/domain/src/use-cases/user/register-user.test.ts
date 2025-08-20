@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { AlreadyExistsError, type Email, type UUID } from "@fabric/core";
+import { type Email, type UUID } from "@fabric/core";
 import { beforeEach, describe, expect, test } from "@fabric/testing";
 import { createUserMock } from "../../models/mocks/create-user-mock.js";
 import { UserInvitedEvent } from "../../models/user-invite.js";
@@ -8,6 +8,7 @@ import {
   createServiceMocks,
   type MockedDependencies,
 } from "../../services/mocks/create-mock-services.js";
+import { UserAlreadyExistsError } from "./invite-user.js";
 import {
   InvalidInviteCodeError,
   RegisterUserUseCase,
@@ -181,7 +182,7 @@ describe("Register User Use Case", () => {
     // Assert
     expect(result.isError()).toBe(true);
     const error = result.unwrapErrorOrThrow();
-    expect(error).toBeInstanceOf(AlreadyExistsError);
+    expect(error).toBeInstanceOf(UserAlreadyExistsError);
   });
 
   test("Should register users with different roles based on invitation", async () => {

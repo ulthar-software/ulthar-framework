@@ -1,6 +1,7 @@
 import type { Infer, Result, Schema, SchemaParsingError } from "@fabric/core";
 import type { PropsWithChildren } from "react";
 import { useState } from "react";
+import { showErrorToast } from "../../utils/toasts/show-error-toast.ts";
 import type { FormState } from "./form-context.ts";
 import { FormContext } from "./form-context.ts";
 
@@ -48,7 +49,13 @@ export function Form<TSchema extends Schema>({
     }
 
     if (result.isOk()) {
-      await onSubmit(result.value);
+      try {
+        await onSubmit(result.value);
+      } catch {
+        showErrorToast(
+          "Hubo un error inesperado... Si el problema persiste, por favor contactá a un administrador en Discord",
+        );
+      }
     }
 
     if (cleanAfterSubmit) {

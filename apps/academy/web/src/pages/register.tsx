@@ -65,6 +65,11 @@ export default function Register() {
             "Ocurrió un error inesperado. Prueba nuevamente más adelante. Si el problema persiste, por favor, contactá a soporte.",
           );
           break;
+        case "UserAlreadyExistsError":
+          showErrorToast(
+            "Ya existe una cuenta con este email. Por favor, intentá iniciar sesión o restablecé tu contraseña.",
+          );
+          break;
         default:
           exhaustiveCheck(error);
       }

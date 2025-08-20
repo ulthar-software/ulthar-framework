@@ -6,6 +6,7 @@ import { AccessPolicy } from "../../security/access-policy.js";
 import type { DomainEventStore } from "../../services/event-store.js";
 import type { DomainStateStore } from "../../services/state-store.js";
 import { UseCase } from "../../utils/use-case.js";
+import { UserAlreadyExistsError } from "./invite-user.js";
 
 // Input model for the register user use case
 export const RegisterUserInputModel = new Schema({
@@ -47,9 +48,16 @@ export const RegisterUserUseCase = new UseCase({
   effect: (
     { state, events, crypto }: RegisterUserDependencies,
     { firstName, lastName, email, password, inviteCode }: RegisterUserInput,
-  ): Effect<RegisterUserOutput, UnexpectedError | InvalidInviteCodeError> => {
+  ): Effect<
+    RegisterUserOutput,
+    UnexpectedError | InvalidInviteCodeError | UserAlreadyExistsError
+  > => {
     return Effect.fromGen(function* () {
-      yield* state.from("users").where({ email }).assertNone();
+      yield* state
+        .from("users")
+        .where({ email })
+        .assertNone()
+        .mapError(() => new UserAlreadyExistsError(email));
 
       const invite = yield* state
         .from("userInvites")
