@@ -27,6 +27,7 @@ export function QuestionnaireContentSectionBlock({
   const [answers, setAnswers] = useState<Record<number, number> | null>(null);
   const rpcAddResponse = useRPC("addQuestionnaireResponse");
   const [isSendingResponse, setIsSendingResponse] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isLoading, questionnaireResponse, error] = useQuery(
     "getQuestionnaireResponse",
@@ -66,17 +67,23 @@ export function QuestionnaireContentSectionBlock({
   }
 
   function startQuiz() {
+    if (isModalOpen) return;
+    setIsModalOpen(true);
+    const prevAnswers = answers;
     setAnswers(null);
     const [closeModal] = showModal(
       <QuestionnaireModal
         questions={questions}
         onCancel={() => {
           closeModal();
+          setIsModalOpen(false);
+          setAnswers(prevAnswers);
         }}
         onSubmit={(answers) => {
           closeModal();
           updateScore(answers);
           void sendRPC(answers);
+          setIsModalOpen(false);
         }}
       />,
     );
@@ -159,6 +166,8 @@ export function QuestionnaireContentSectionBlock({
 
   function showCorrectAnswers() {
     if (!answersSubmitted) return;
+    if (isModalOpen) return;
+    setIsModalOpen(true);
 
     const [closeModal] = showModal(
       <QuestionnaireResultsModal
@@ -166,6 +175,7 @@ export function QuestionnaireContentSectionBlock({
         answers={answers}
         closeModal={() => {
           closeModal();
+          setIsModalOpen(false);
         }}
       />,
     );
